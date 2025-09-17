@@ -4,7 +4,7 @@
 
 ---
 
-## 🛠️ 문제 해결 과정 & 배운 점 (Problem-Solving & Lessons Learned)
+##  문제 해결 과정 & 배운 점
 
 <details>
 <summary><b>09/14: 몬스터 물리 충돌 및 플레이어 접근 버그 해결</b></summary>
