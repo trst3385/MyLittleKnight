@@ -53,7 +53,8 @@
 3. **플레이어에게 `Box Collider 2D` 추가**:
   - 3-1 **물리 충돌용 콜라이더**: (`Is Trigger` 끔): 타일맵 벽에 부딪혀 막히는 역할.
   - 3-2 **몬스터 감지용 콜라이더**: (`Is Trigger` 켬): 몬스터와 접촉을 감지하는 역할.
-  - 3-3 **Layer Collision Matrix 설정**: Player 레이어와 Monster 레이어를 만들고, 플레이어에 Player 레이어, 몬스터에게 Monster 레이어를 추가, Layer Collision Matrix** 에서 Player 레이어와 Monster 레이어의 충돌을 비활성화.
+  - 3-3 **Layer Collision Matrix 설정**: Player 레이어와 Monster 레이어를 만들고, 플레이어에 Player 레이어, 몬스터에게 Monster 레이어를 추가.<br/>
+     Layer Collision Matrix** 에서 Player 레이어와 Monster 레이어의 충돌을 비활성화.
 
 </details>
 
