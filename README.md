@@ -58,7 +58,7 @@
 </details>
 
 <details>
-<summary><b>09/15: 플레이어 타일맵 이탈 문제 및 Rigidbody 설정 해결</b></summary>
+<summary><b>플레이어 타일맵 이탈 문제 및 Rigidbody 설정 해결</b></summary>
 <br/>
 
 [여기에 09/15 기록을 드롭다운 형식으로 작성]
@@ -66,7 +66,7 @@
 </details>
 
 <details>
-<summary><b>09/16: 빌드 및 무기 시스템 리팩토링</b></summary>
+<summary><b>빌드 및 무기 시스템 리팩토링</b></summary>
 <br/>
 
 [여기에 09/16 기록을 드롭다운 형식으로 작성]
