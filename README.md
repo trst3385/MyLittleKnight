@@ -44,7 +44,8 @@
     ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/blob/main/Image/Monster.Bug.gif?raw=true)
 
 
-    
+
+        
 - **다중 역할 충돌**: 플레이어에게 콜라이더가 하나만 있어, 벽에 부딪히는 물리적 충돌과 몬스터와 겹치는 감지 역할을 동시에 수행할 수 없었습니다.
 
 ### 해결 과정
