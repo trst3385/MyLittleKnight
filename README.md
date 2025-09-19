@@ -47,10 +47,13 @@
 1.  **몬스터 프리팹 수정**:
     - `Box Collider 2D`를 추가하여 물리 충돌용과 감지용 콜라이더의 역할을 분리했습니다.
     - 기존 콜라이더는 몬스터 감지용(`Is Trigger` 켬), 새로 추가한 콜라이더는 몬스터 간 물리 충돌용(`Is Trigger` 끔)으로 설정했습니다.
+      
 2.  **플레이어 콜라이더 역할 분리**:
     - **물리 충돌용 콜라이더**(`Is Trigger` 끔)와 **몬스터 감지용 콜라이더**(`Is Trigger` 켬)를 따로 만들어 각 역할에 맞게 설정했습니다.
+      
 3.  **레이어 설정**:
     - `Layer Collision Matrix`를 활용하여 플레이어 레이어와 몬스터 레이어의 충돌을 비활성화해 의도하지 않은 물리적 상호작용을 방지했습니다.
+      
 4.  **`SwordPoint` 수정**:
     - `SwordPoint`의 `Is Trigger`를 `켜짐` 상태로 변경하여, 물리적인 충돌을 일으키지 않고 감지 영역 역할만 하도록 수정했습니다.
 
@@ -80,8 +83,10 @@
 
 1. **플레이어의 몸통 중앙 위치를 반환하는 함수 구현**:
    - `Player` 스크립트에 `GetCenterPosition()` 함수를 추가하고, 플레이어의 `BoxCollider2D`의 `bounds.center`를 반환하도록 구현.
+     
 2.  **몬스터 추적 목표 수정**:
    - `Enemy.cs` 스크립트에서 플레이어의 `transform.position` 대신 `playerScript.GetCenterPosition()`을 사용하여 몬스터의 추적 목표 위치를 플레이어의 몸통 중앙으로 변경.
+     
 3.  **수동 위치 보정**:
    - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함.
    - `FixedUpdate` 함수에서(물리 계산 로직이 Update보다 더욱 효과적) `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
