@@ -163,8 +163,7 @@
      
 3.  **수동 위치 보정**:
    - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함,
-   - `FixedUpdate` 함수에서 물리 계산에 더 효과적인 `Vector3` 지역변수인 `playerCenterPosition`을 추가하고, 플레이어 스크립트의 GetCenterPosition() 함수를 호출하여 플레이어의 몸통 중앙 위치를 가져오고,  
-       `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
+   - `FixedUpdate` 함수에서 물리 계산에 더 효과적인 `Vector3` 지역변수인 `playerCenterPosition`을 추가하고, 플레이어 스크립트의 GetCenterPosition() 함수를 호출하여 플레이어의 몸통 중앙 위치를 가져오고, `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
 
 ### 배운 점
 
