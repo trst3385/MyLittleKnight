@@ -159,11 +159,12 @@
    - `Player` 스크립트에 `GetCenterPosition()` 함수를 추가하고, 플레이어의 `BoxCollider2D`의 `bounds.center`를 반환하도록 구현.
      
 2.  **몬스터 추적 목표 수정**:
-   - `Enemy.cs` 스크립트에서 플레이어의 `transform.position` 대신 `playerScript.GetCenterPosition()`을 사용하여 몬스터의 추적 목표 위치를 플레이어의 몸통 중앙으로 변경.
+   - `Enemy.cs` 스크립트에서 플레이어의 `transform.position` 대신 `playerScript.GetCenterPosition()` 처럼 플레이어 스크립트의 `GetCenterPosition()` 함수를 참조해서 몬스터의 추적 목표 위치를 플레이어의 몸통 중앙으로 변경.
      
 3.  **수동 위치 보정**:
-   - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함.
-   - `FixedUpdate` 함수에서(물리 계산 로직이 Update보다 더욱 효과적) `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
+   - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함,
+   - `FixedUpdate` 함수에서(물리 계산 로직이 Update보다 더욱 효과적) Vector3 지역변수인 playerCenterPosition을 추가해 플레이어 스크립트의 GetCenterPosition() 함수를 호출.
+      - `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
 
 ### 배운 점
 
