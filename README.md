@@ -207,7 +207,7 @@
     1-1 **종합적인 GetValidSpawnPosition()** 함수의 작동과정:  
      int maxAttempts = 100;   
      for(int a = 0; a < maxAttempts; a++)  
-     {  
+       {  
       - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
       - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지)  
       - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인한다.  
