@@ -206,15 +206,12 @@
       
 1-1. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:
 ![GetValidSpawnPosition함수](https://github.com/trst3385/MyLittleKnight/blob/main/Image/EnemySpawn-Vector3%20GetValidSpawnPosition().png?raw=true)
-    - int maxAttempts = 100;  
-    - for(int a = 0; a < maxAttempts; a++)  
-    - {  
       - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
       - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
       - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
       - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
       - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다  
-    - }  
+    
 
       
 2. **플레이어 반응형 스폰 로직 구현**:
