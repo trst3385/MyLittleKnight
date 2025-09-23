@@ -203,11 +203,14 @@
     - `EnemySpawn` 스크립트에 `GetValidSpawnPosition()` 함수를 구현하여 몬스터가 타일맵 `(Tilemap)` 내에서만 스폰되도록 했습니다.
     - `TargetTilemap.cellBounds` 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, `TargetTilemap.HasTile()` 로 해당 위치에 타일이 있는지 확인했습니다.
     - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.
+         - **종합적인 GetValidSpawnPosition() 함수의 작동과정
       
 2. **플레이어 반응형 스폰 로직 구현**:
     - **타이머 스폰**: `Update()` 함수에서 `spawnTimer`를 사용해 일정 시간마다 `Normal` **몬스터**를 생성하도록 했습니다. 이는 게임의 기본적인 흐름을 담당합니다.
     - **킬 기반 스폰**: `Normal` **몬스터**가 죽을 때마다 `normalEnemyKilledSinceLastStrong` 변수를 증가시켜 **`Normal` 몬스터 3마리를 잡으면 Strong 몬스터가 스폰되도록 했습니다**. 이는 플레이어의 전투 성과에 따라 새로운 위협을 제공하는 동적 난이도 조절 시스템입니다.
     - **점수 기반 스폰**: 플레이어의 점수가 특정 점수`(EliteSpawnScoreThreshold)` 에 도달할 때마다 `Elite` **몬스터**가 스폰되도록 했습니다. `nextEliteSpawnScore` 를 갱신하여 점진적으로 난이도가 상승하도록 설계했습니다.
+
+
 
 ### 배운 점
 
