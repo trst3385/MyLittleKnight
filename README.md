@@ -206,15 +206,43 @@
       
 2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:
 ![GetValidSpawnPosition함수](https://github.com/trst3385/MyLittleKnight/blob/main/Image/EnemySpawn-Vector3%20GetValidSpawnPosition().png?raw=true)
-      - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
-      - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
-      - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
-      - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
-      - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다  
+```csharp
+Vector3 GetValidSpawnPosition()
+{
+    int maxAttempts = 100;
+    for(int a = 0; a < maxAttempts; a++)
+    {
+        if(TargetTilemap == null)
+        {
+            Debug.LogError("TargetTilemap이 할당되지 않았어!");
+            return Vector3.zero;
+        }
+
+        BoundsInt bounds = TargetTilemap.cellBounds;
+        int randomX = Random.Range(bounds.xMin, bounds.xMax);
+        int randomY = Random.Range(bounds.yMin, bounds.yMax);
+        Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
+
+        if (TargetTilemap.HasTile(randomCell))
+        {
+            Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
+            if (colliders.Length == 0)
+                return cellCenterWorld;
+        }
+    }
+    return Vector3.zero;
+}
+```
+ - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
+ - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
+ - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
+ - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
+ - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다  
     
 
       
-3. **플레이어 반응형 스폰 로직 구현**:
+4. **플레이어 반응형 스폰 로직 구현**:
     - **타이머 스폰**: `Update()` 함수에서 `spawnTimer`를 사용해 일정 시간마다 `Normal` **몬스터**를 생성하도록 했습니다. 이는 게임의 기본적인 흐름을 담당합니다.
     - **킬 기반 스폰**: `Normal` **몬스터**가 죽을 때마다 `normalEnemyKilledSinceLastStrong` 변수를 증가시켜 **`Normal` 몬스터 3마리를 잡으면 Strong 몬스터가 스폰되도록 했습니다**. 이는 플레이어의 전투 성과에 따라 새로운 위협을 제공하는 동적 난이도 조절 시스템입니다.
     - **점수 기반 스폰**: 플레이어의 점수가 특정 점수`(EliteSpawnScoreThreshold)` 에 도달할 때마다 `Elite` **몬스터**가 스폰되도록 했습니다. `nextEliteSpawnScore` 를 갱신하여 점진적으로 난이도가 상승하도록 설계했습니다.
