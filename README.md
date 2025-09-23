@@ -203,7 +203,7 @@
     - `EnemySpawn` 스크립트에 `GetValidSpawnPosition()` 함수를 구현하여 몬스터가 타일맵 `(Tilemap)` 내에서만 스폰되도록 했습니다.
     - `TargetTilemap.cellBounds` 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, `TargetTilemap.HasTile()` 로 해당 위치에 타일이 있는지 확인했습니다.
     - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.
-2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:  
+1-1. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:  
     int maxAttempts = 100;   
     for(int a = 0; a < maxAttempts; a++)  
       {
