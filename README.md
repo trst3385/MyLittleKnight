@@ -1,4 +1,4 @@
-# My Little Knight
+ # My Little Knight
 
 간단한 2D 픽셀 스타일의 로그라이크 생존 게임입니다.
 
@@ -11,7 +11,7 @@
 
 - **몬스터 강화**: 게임이 진행될수록 20초마다 몬스터의 능력치 (Normal 몬스터 스폰 수, 체력, 데미지, 이동속도) 가 강화되어 난이도가 점차 상승합니다.
   
-- **특정한 상황에 등장하는 강화 몬스터**: 총 세 종류의 몬스터가 등장하며, 일반적으로 스폰되는 Normal 몬스터, Normal 몬스터 셋을 잡으면 스폰되는 Strong 몬스터, 특정 점수를 획득해야 스폰되는 Elite 몬스터.
+- **특정한 상황에 등장하는 강화 몬스터**: 총 세 종류의 몬스터가 등장하며, 일반적으로 스폰되는 Normal 몬스터, Normal 몬스터 셋을 잡으면 스폰되는 Strong 몬스터, 특정 점수를 획득해야 스폰되는 Elite 몬스터. 세 종류 입니다.
 
 - **생존에 도움을 주는 각종 아이템**:
   - 활과 검의 공격력 상승 아이템, 체력과 방어력을 회복하는 아이템, 이동속도 증가 아이템이 맵 내에서 랜덤 스폰됩니다.
@@ -88,11 +88,14 @@
 ### 해결 과정
 
 1. **접근 감지 로직 분리**: 물리 충돌 시스템 대신 **거리 기반 감지** 로직을 도입했습니다. `FixedUpdate()` 함수에서 몬스터와 플레이어의 거리를 지속적으로 계산하여, 특정 거리(`StopDistance`변수) 이내에 접근했는지 판별했습니다.
+ 
 2. **데미지 로직 함수화**: 몬스터의 공격 애니메이션 이벤트(`Attack()`)와 별개로, **닿았을 때 데미지를 주는 로직**을 **`ApplyTouchDamage()`** 함수로 분리했습니다.
    * 이 함수는 플레이어의 방어막(`PlayerShield`) 유무를 확인하고, 방어막이 있으면 방어막에, 없으면 체력(`PlayerHealth`)에 데미지를 주는 역할을 수행합니다.
+     
 3. **데미지 로직과 애니메이션 분리**: `ProcessMovementAndAttack()` 함수 내에서 **공격 쿨타임(`AttackCooldown`)**을 기준으로 데미지를 주는 로직과 공격 애니메이션을 재생하는 로직을 분리했습니다.
     * `if (canAttack)` 조건문을 추가하여 `AttackCooldown`이 지날 때마다 **`ApplyTouchDamage()`** 함수를 호출했습니다.
     * `animator.SetBool("Attack", true)`는 닿았을 때 데미지 로직과 별개로 일반적인 몬스터가 정지 거리에 있을 때 공격모션으로 데미지를 줄때 실행되도록 했습니다.
+      
 4. **코드 리팩토링**: 데미지가 이중으로 들어가는 버그를 해결하기 위해, `FixedUpdate()` 함수에서 `ApplyTouchDamage()`를 직접 호출하는 코드를 제거하고, 오직 `ProcessMovementAndAttack()` 함수 내에서만 호출되도록 수정했습니다.
 
 
@@ -125,10 +128,14 @@
 ### 해결 과정
 
 1.  **공격 방식 변경**: `OnTriggerEnter2D` 이벤트 방식 대신, 검을 휘두르는 **애니메이션 이벤트**에서 `Physics2D.OverlapBoxAll` 함수를 직접 호출하는 방식으로 변경했습니다.  
-    - **OnTriggerEnter2D = 콜라이더에 '진입' 하는 순간 한 번만 작동, OverlapBoxAll = 특정 순간에 '스냅샷' 을 찍듯 범위 안의 모든 콜라이더들을 감지. 그래서 검이 휘둘러지는 그 순간에 공격 범위에 있는 모든 적에게 데미지를 줄 수 있다** 
+    - **OnTriggerEnter2D = 콜라이더에 '진입' 하는 순간 한 번만 작동, OverlapBoxAll = 특정 순간에 '스냅샷' 을 찍듯 범위 안의 모든 콜라이더들을 감지. 그래서 검이 휘둘러지는 그 순간에 공격 범위에 있는 모든 적에게 데미지를 줄 수 있다**
+       
 2.  **공격 대상 감지**: `Physics2D.OverlapBoxAll`을 사용하여 특정 순간(애니메이션 프레임)에 검의 공격 범위 내에 있는 **모든** `Collider2D`를 감지하도록 구현했습니다.
+   
 3.  **적 필터링**:  public string EnemyTag = "Enemy" 변수를 선언,  감지된 콜라이더들 중 `hitCollider.CompareTag(EnemyTag)`를 통해 **"Enemy" 태그** 가 붙은 오브젝트만 공격 대상으로 필터링하여 데미지를 적용했습니다.
+   
 4.  **넉백 로직 구현**: 적에게 데미지를 주는 동시에, **넉백 벡터**를 계산하여 적이 공격 방향으로 밀려나도록 `TakeKnockback` 함수를 호출했습니다.
+   
 
 ### 배운 점
 
@@ -159,11 +166,11 @@
    - `Player` 스크립트에 `GetCenterPosition()` 함수를 추가하고, 플레이어의 `BoxCollider2D`의 `bounds.center`를 반환하도록 구현.
      
 2.  **몬스터 추적 목표 수정**:
-   - `Enemy.cs` 스크립트에서 플레이어의 `transform.position` 대신 `playerScript.GetCenterPosition()`을 사용하여 몬스터의 추적 목표 위치를 플레이어의 몸통 중앙으로 변경.
+   - `Enemy.cs` 스크립트에서 플레이어의 `transform.position` 대신 `playerScript.GetCenterPosition()` 처럼 플레이어 스크립트의 `GetCenterPosition()` 함수를 참조해서 몬스터의 추적 목표 위치를 플레이어의 몸통 중앙으로 변경.
      
 3.  **수동 위치 보정**:
-   - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함.
-   - `FixedUpdate` 함수에서(물리 계산 로직이 Update보다 더욱 효과적) `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
+   - `Enemy.cs`에 `playerTargetOffsetY` 변수를 추가하여 몬스터의 Y축 위치를 수동으로 인스펙터에서 조절할 수 있게 함,
+   - `FixedUpdate` 함수에서 물리 계산에 더 효과적인 `Vector3` 지역변수인 `playerCenterPosition`을 추가하고, 플레이어 스크립트의 GetCenterPosition() 함수를 호출하여 플레이어의 몸통 중앙 위치를 가져오고, `playerCenterPosition.y += playerTargetOffsetY;` 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정.
 
 ### 배운 점
 
@@ -173,6 +180,84 @@
 
 
 </details>
+
+
+<details>
+<summary><b>몬스터 스폰 시스템</b></summary>
+<br/>
+
+
+### 문제점
+
+- 몬스터가 맵의 유효하지 않은 위치(벽이나 장애물)에 스폰되거나, 스폰 위치를 찾지 못하는 문제가 있었습니다.
+- 게임 진행 상황에 따라 몬스터의 종류나 수가 자동으로 변하지 않아 게임 난이도 조절에 한계가 있었습니다.
+
+### 원인 분석
+
+- 몬스터를 단순히 무작위 위치에 스폰할 경우, **맵의 경계나 오브젝트에 겹쳐서** 스폰될 수 있었습니다.
+- 모든 몬스터를 동일한 방식으로 스폰하면, **플레이어의 성장(점수, 킬 수)에 반응하는 역동적인 게임 플레이를 구현하기 어려웠습니다**
+
+### 해결 과정
+
+1. **타일맵 기반 유효 스폰 위치 탐색**:
+    - `EnemySpawn` 스크립트에 `GetValidSpawnPosition()` 함수를 구현하여 몬스터가 타일맵 `(Tilemap)` 내에서만 스폰되도록 했습니다.
+    - `TargetTilemap.cellBounds` 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, `TargetTilemap.HasTile()` 로 해당 위치에 타일이 있는지 확인했습니다.
+    - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.  
+        
+2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:
+```csharp
+Vector3 GetValidSpawnPosition()
+{
+    int maxAttempts = 100;
+    for(int a = 0; a < maxAttempts; a++)
+    {
+        if(TargetTilemap == null)
+        {
+            Debug.LogError("TargetTilemap이 할당되지 않았어!");
+            return Vector3.zero;
+        }
+
+        BoundsInt bounds = TargetTilemap.cellBounds;
+        int randomX = Random.Range(bounds.xMin, bounds.xMax);
+        int randomY = Random.Range(bounds.yMin, bounds.yMax);
+        Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
+
+        if (TargetTilemap.HasTile(randomCell))
+        {
+            Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
+            if (colliders.Length == 0)
+                return cellCenterWorld;
+        }
+    }
+    return Vector3.zero;
+}
+```
+ - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
+ - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
+ - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
+ - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
+ - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다    
+
+      
+3. **플레이어 반응형 스폰 로직 구현**:
+    - **타이머 스폰**: `Update()` 함수에서 `spawnTimer`를 사용해 일정 시간마다 `Normal` **몬스터**를 생성하도록 했습니다. 이는 게임의 기본적인 흐름을 담당합니다.
+    - **킬 기반 스폰**: `Normal` **몬스터**가 죽을 때마다 `normalEnemyKilledSinceLastStrong` 변수를 증가시켜 **`Normal` 몬스터 3마리를 잡으면 Strong 몬스터가 스폰되도록 했습니다**. 이는 플레이어의 전투 성과에 따라 새로운 위협을 제공하는 동적 난이도 조절 시스템입니다.
+    - **점수 기반 스폰**: 플레이어의 점수가 특정 점수`(EliteSpawnScoreThreshold)` 에 도달할 때마다 `Elite` **몬스터**가 스폰되도록 했습니다. `nextEliteSpawnScore` 를 갱신하여 점진적으로 난이도가 상승하도록 설계했습니다.
+
+
+
+### 배운 점
+
+- **절차적 생성(Procedural Generation)**: 무작위 위치를 찾는 단순한 로직을 넘어, `Tilemap` 을 활용해 유효한 스폰 영역을 체계적으로 관리하는 방법을 익혔습니다.
+- **게임 로직 설계**: 타이머, 킬 수, 점수와 같은 게임 내 변수를 활용하여 **동적으로 난이도를 조절하는** 다양한 스폰 로직을 구현하는 경험을 쌓았습니다.
+- **코드 모듈화**: 여러 몬스터 타입의 스폰 로직에서 공통으로 사용되는 부분을 `SpawnEnemy()` 함수로 분리하여 코드의 재사용성과 가독성을 크게 높였습니다.
+
+</details>
+
+
+
+
 
 
 
