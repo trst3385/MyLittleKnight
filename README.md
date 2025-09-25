@@ -3,7 +3,7 @@
 간단한 2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
 
 <p align="center">
-  **👇 클릭해서 핵심 기능 시연 영상 보기 (1분 30초)**
+  **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
 </p>  
 
 [![My Little Knight 핵심 기능 시연 영상](https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true)](https://youtu.be/bpVB-y_zS_Y)
