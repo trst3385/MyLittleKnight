@@ -6,8 +6,11 @@
   **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
 </p>  
 
-[![My Little Knight 핵심 기능 시연 영상](https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true)](https://youtu.be/bpVB-y_zS_Y)
-
+<p align="center">
+  <a href="https://youtu.be/bpVB-y_zS_Y">
+    <img src="https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+  </a>
+</p>
 
 
 
