@@ -4,7 +4,8 @@
 
 <p align="center">
   **👇 클릭해서 핵심 기능 시연 영상 보기 (1분 30초)**
-</p>
+</p>  
+
 [![My Little Knight 핵심 기능 시연 영상](https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true)](https://youtu.be/bpVB-y_zS_Y)
 
 
