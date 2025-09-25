@@ -1,9 +1,11 @@
  # My Little Knight
 
 간단한 2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
+https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true
 
-[![My Little Knight 핵심 기능 시연 영상](https://raw.githubusercontent.com/trst3385/MyLittleKnight/main/Image/youtube_thumbnail.png)]([유튜브_영상_URL](https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true
-))
+[![My Little Knight 핵심 기능 시연 영상]([https://raw.githubusercontent.com/trst3385/MyLittleKnight/main/Image/youtube_thumbnail.png](https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true))]([유튜브_영상_URL](https://youtu.be/bpVB-y_zS_Y))
+
+
 
 
 
