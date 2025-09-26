@@ -1,6 +1,19 @@
  # My Little Knight
 
-간단한 2D 픽셀 스타일의 로그라이크 생존 게임입니다.
+간단한 2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
+
+<p align="center">
+  **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
+</p>  
+
+<p align="center">
+  <a href="https://youtu.be/bpVB-y_zS_Y">
+    <img src="https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+  </a>
+</p>
+
+
+
 
 ---
 ## 🎮 게임 플레이 & 특징
@@ -48,7 +61,7 @@
 
 1.  **몬스터 프리팹 수정**:
     - `Box Collider 2D`를 추가하여 물리 충돌용과 감지용 콜라이더의 역할을 분리했습니다.
-    - 기존 콜라이더는 몬스터 감지용(`Is Trigger` 켬), 새로 추가한 콜라이더는 몬스터 간 물리 충돌용(`Is Trigger` 끔)으로 설정했습니다.
+    - 기존 콜라이더는 몬스터 감지용(`Is Trigger` 켬), 새로 추가한 콜라이더는 몬스터끼리 겹치지 않게 물리 충돌용(`Is Trigger` 끔)으로 설정했습니다.
       
 2.  **플레이어 콜라이더 역할 분리**:
     - **물리 충돌용 콜라이더**(`Is Trigger` 끔)와 **몬스터 감지용 콜라이더**(`Is Trigger` 켬)를 따로 만들어 각 역할에 맞게 설정했습니다.
