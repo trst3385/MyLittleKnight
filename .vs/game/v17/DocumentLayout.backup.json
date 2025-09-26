@@ -1,0 +1,454 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\trst3\\Desktop\\game\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\obstacle\\obstacledifficultymanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\obstacle\\obstacledifficultymanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|c:\\users\\trst3\\desktop\\game\\assets\\cha\\enemy\\enemyspawn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\enemy\\enemyspawn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\enemy\\enemydifficulty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\enemy\\enemydifficulty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\attackcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\attackcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\swordweapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\swordweapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\scenes\\mainscene\\script\\mainmenustartmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\scenes\\mainscene\\script\\mainmenustartmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\playerstatseffects.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\playerstatseffects.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\bowweapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\bowweapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\item\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\item\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\scenes\\mainscene\\script\\mainmenucutscenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\scenes\\mainscene\\script\\mainmenucutscenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\scenes\\mainscene\\player\\mainmenuplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\scenes\\mainscene\\player\\mainmenuplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\scenes\\mainscene\\script\\mainmenuexitmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\scenes\\mainscene\\script\\mainmenuexitmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\scenes\\mainscene\\script\\backgroundscroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\scenes\\mainscene\\script\\backgroundscroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\enemy\\enemyhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\enemy\\enemyhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\enemy\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\enemy\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\countdownmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\countdownmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\optionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\optionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|C:\\Users\\trst3\\Desktop\\game\\assets\\cha\\player\\swordenergy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AF7E356-2D58-7119-FE6C-C1ED31A62E64}|Assembly-CSharp.csproj|solutionrelative:assets\\cha\\player\\swordenergy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 24,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MainMenuExitManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuExitManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuExitManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuExitManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuExitManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:21:00.357Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "MainMenuCutsceneManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuCutsceneManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuCutsceneManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuCutsceneManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuCutsceneManager.cs",
+              "ViewState": "AgIAAIIAAAAAAAAAAAAYwJUAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:20:08.048Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "BackgroundScroller.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\BackgroundScroller.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\Script\\BackgroundScroller.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\BackgroundScroller.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\Script\\BackgroundScroller.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:19:59.057Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainMenuStartManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuStartManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuStartManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuStartManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\Script\\MainMenuStartManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:19:19.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "MainMenuPlayer.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Player\\MainMenuPlayer.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\Player\\MainMenuPlayer.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\Player\\MainMenuPlayer.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\Player\\MainMenuPlayer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:16:51.174Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "MainMenuStartManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuStartManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T06:12:10.571Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "BackgroundScroller.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\BackgroundScroller.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T05:50:27.865Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "MainMenuExitManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuExitManager.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T05:50:16.597Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "MainMenuCutsceneManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\MainMenu\\MainMenuCutsceneManager.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAAAIwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T05:50:14.911Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MainMenuCutsceneManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Scenes\\MainScene\\MainMenuCutsceneManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-16T05:49:43.947Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "OptionManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\OptionManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\OptionManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\OptionManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\OptionManager.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAxwBoAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T05:54:01.702Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "CountdownManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\CountdownManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\CountdownManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\CountdownManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\CountdownManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T06:15:08.99Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ObstacleDifficultyManager.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Obstacle\\ObstacleDifficultyManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Obstacle\\ObstacleDifficultyManager.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Obstacle\\ObstacleDifficultyManager.cs",
+              "RelativeToolTip": "Assets\\Cha\\Obstacle\\ObstacleDifficultyManager.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAuwB0AAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T06:05:01.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EnemyDifficulty.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemyDifficulty.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Enemy\\EnemyDifficulty.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemyDifficulty.cs",
+              "RelativeToolTip": "Assets\\Cha\\Enemy\\EnemyDifficulty.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAADwvx0AAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T05:32:35.639Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EnemySpawn.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemySpawn.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Enemy\\EnemySpawn.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemySpawn.cs",
+              "RelativeToolTip": "Assets\\Cha\\Enemy\\EnemySpawn.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAADwvxwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T05:32:20.205Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SwordWeapon.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\SwordWeapon.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\SwordWeapon.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\SwordWeapon.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\SwordWeapon.cs",
+              "ViewState": "AgIAAH0AAAAAAAAAAAAQwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-28T05:35:55.042Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "BowWeapon.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\BowWeapon.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\BowWeapon.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\BowWeapon.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\BowWeapon.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACoAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-28T05:16:38.636Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PlayerStatsEffects.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\PlayerStatsEffects.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\PlayerStatsEffects.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\PlayerStatsEffects.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\PlayerStatsEffects.cs",
+              "ViewState": "AgIAAHQAAAAAAAAAAAASwDUAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-23T06:33:17.756Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AttackController.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\AttackController.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\AttackController.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\AttackController.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\AttackController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAABIwGAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-28T05:12:56.055Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Item.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Item\\Item.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Item\\Item.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Item\\Item.cs",
+              "RelativeToolTip": "Assets\\Cha\\Item\\Item.cs",
+              "ViewState": "AgIAAIYAAAAAAAAAAAAcwJQAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-28T05:13:11.896Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "EnemyHealth.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemyHealth.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Enemy\\EnemyHealth.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\EnemyHealth.cs",
+              "RelativeToolTip": "Assets\\Cha\\Enemy\\EnemyHealth.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAADwvzQAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-23T07:27:47.244Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Enemy.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\Enemy.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Enemy\\Enemy.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Enemy\\Enemy.cs",
+              "RelativeToolTip": "Assets\\Cha\\Enemy\\Enemy.cs",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAAwDIAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-23T06:56:04.982Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Player.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\Player.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\Player.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\Player.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\Player.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-23T05:42:22.695Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "SwordEnergy.cs",
+              "DocumentMoniker": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\SwordEnergy.cs",
+              "RelativeDocumentMoniker": "Assets\\Cha\\Player\\SwordEnergy.cs",
+              "ToolTip": "C:\\Users\\trst3\\Desktop\\game\\Assets\\Cha\\Player\\SwordEnergy.cs",
+              "RelativeToolTip": "Assets\\Cha\\Player\\SwordEnergy.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-23T06:55:32.22Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
