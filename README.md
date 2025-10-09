@@ -7,7 +7,7 @@
 </p>  
 
 <p align="center">
-  <a href="https://youtu.be/KPx-UccrzaE">
+  <a href="https://youtu.be/ni5Eyr5b5mA">
     <img src="https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
@@ -37,6 +37,23 @@
 
 ---
 
+## [주요 소스 코드 위치 안내]
+
+본 프로젝트의 핵심 로직과 설계 원칙(SRP)이 적용된 스크립트는 아래 경로에서 체계적으로 분류되어 있습니다.
+
+경로: MyLittleKnight(프로젝트 폴더) → Assets → Cha
+
+→ 핵심 스크립트 폴더:
+
+Player 폴더: 캐릭터의 움직임, 공격(검/활), 체력 및 방어력 관련 스크립트
+
+Enemy 폴더: 몬스터의 로직,공격,  체력, 타일맵 내 생성, 시간이 따른 몬스터 강화, 추적 통합 스크립트
+
+Item 폴더: 아이템 프리팹, 스폰, 상자 로직 관련 스크립트
+
+나머지 폴더들 (Background, Obstacle, Sound 등) 역시 각 폴더의 역할에 맞게 스크립트가 명확히 분류되어 있습니다. 필요하신 경우, 폴더 이름만으로 해당 스크립트의 주요 책임을 쉽게 파악하실 수 있습니다.
+
+--- 
 
 ##  주요 문제 해결 과정 & 배운 점
 
