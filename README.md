@@ -12,7 +12,6 @@
   </a>
 </p>
 
-https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true
 
 ---
 ## 🎮 게임 플레이 & 특징
