@@ -1,0 +1,202 @@
+10/1
+`게임 플레이 & 특징` 의 1,2,3,4,5 번에 이미지와 gif이미지를 추가
+노션 포트폴리오 마무리
+
+- `1. 두 종류의 무기` 에는 이미 이미지가 잘 되있어서 수정할게 없었어
+- `2. 플레이어를 쫒아오는 몬스터' 의 각 Normal, Strong, Elite 몬스터의 이미지를 다시 이미지 크기를 조정했어
+- `3. 몬스터, 장애물 강화` 에는 20초에 UI가 변화되는걸로 몬스터가 강화됐다는걸 gif 이미지로 보여줬어
+- `4. 생존에 도움을 주는 각종 아이템` 에 각 아이템 사진을 업로드에 아이템의 효과를 설명했어
+- `5. 맵 좌우에서 발사되는  붉은 발사체` 에서 발사체를 맞고 죽는걸 gif 이미지로 올렸어
+
+- 이제 노션 포트폴리오는 마무리 했어. 이 노션을 오른쪽 상단의 `공유` - `게시`로 사이트 링크를 만들어 제출하게 만들었어
+
+**정말 수고했어, 이제 거의 다 왔어. 조금만 더 힘내자**
+
+
+
+10/2~3
+추석때 아마 못가지 싶어서 미리 본가에 다녀왔어. 이젠 쉴때가 아니잖아?
+
+
+
+10/4
+잡코리아, 게임잡의 이력서를 다시 수정.
+
+- 내가 겪은 많은 문제중 하나인 'OOD 객체 지향 설계', 'SRP 단일 책임 원칙' 를 중점으로 적었어.
+- 내가 겪은 대부분의 문제가 여기에 있던거야.
+
+
+
+10/5
+플레이어의 콜라이더가 두개라서 아이템을 획득하면 두번 획득이 되는 버그를 발견했어
+
+- 타일맵의 보이지 않는 벽과 충돌할 콜라이더, 몬스터에게 닿는 콜라이더. 두개가 있었잖아. 그래서 Item스크립트는 이 두 콜라이더에 대해 OnTriggerEnter2D함수가 작동했어.
+- 그래서 Item 스크립트에 private bool isUsed = false; 변수를 선언했어.
+- OnTriggerEnter2D함수의 첫 부분에 if (isUsed) return; 선언.
+   1. 첫 콜라이더가 아이템 오브젝트에 닿으면 OnTriggerEnter2D 함수가 실행
+   2. if (isUsed) return; 에서 isUsed가 false이므로 통과
+   3. isUsed = true; 코드가 실행돼 (잠금장치 작동)
+   4. UseItem()이 호출되어 레벨이 1 증가
+   5. Destroy(gameObject); 명령이 내려지지만, 아이템 오브젝트는 아직 남아 있어 (만약 동시에 두 콜라이더와 닿았다면)
+- 두번째 콜라이더가 닿으면?
+   1. 아이템이 아직 사라지지 않은 짧은 찰나에 콜라이더 B가 아이템에 닿아 OnTriggerEnter2D 함수가 다시 작동
+   2. if (isUsed) return; 에서 isUsed가 이미 true라서 조건이 참이 돼
+   3. return;이 실행되어 함수가 즉시 종료돼
+   4. 뒤에 있는 isUsed = true;나 UseItem() 코드는 실행되지 않아 (중복 획득 완벽 차단)
+
+
+
+10/06
+Item 스크립트의 private bool isUsed = false; 변수와 if (isUsed) return;란?
+
+- if (isUsed)가 if (isUsed == true)의 축약형이며, isUsed가 true일 때만 return을 실행하여 함수를 즉시 종료시킨다는 원리야.
+- isUsed 플래그가 '개별 아이템 오브젝트'에만 적용되는 잠금장치이며, 여러 아이템 동시 획득에는 문제가 없음을 최종 확인했어.
+- isUsed는 bool (참/거짓) 타입으로 선언했어. if 문은 무조건 '참(True)' 또는 '거짓(False)'을 판단해야 해
+
+- private bool isUsed = false; = [초기 상태] 이 아이템은 아직 사용되지 않았음을 선언.
+- if (isUsed) return;	= [잠금장치 확인] isUsed가 true 라면 (축약형, isUsed == true와 같음) 함수를 즉시 종료(return;). 두 번째 콜라이더의 접근을 막는 핵심 방어 코드야
+- isUsed = true; = [잠금장치 작동] 첫 번째 콜라이더가 닿아 획득이 시작되면, 다른 콜라이더의 접근을 막기 위해 상태를 true로 변경.
+- Destroy(gameObject); = [최종 제거] 플래그로 중복을 막은 후, 다음 프레임에 오브젝트를 물리적으로 제거하도록 명령.
+
+- return 키워드가 OnTriggerEnter2D 함수 안에서 왜 코드를 멈추게 하는걸까?
+   1. 프로그래밍에서 return은 '함수의 실행을 그 자리에서 즉시 중단하고, 함수를 호출한 곳으로 돌아가라'는 명령이야
+   2. OnTriggerEnter2D 함수 내부에서 return이 실행되면, 그 함수는 더 이상 아래 코드를 실행하지 않고 즉시 끝나는 거야
+   3. 어디로 돌아가냐? OnTriggerEnter2D는 Unity 엔진이 이벤트를 감지할 때마다 호출하는 함수야. return이 되면 Unity는 이 함수가 끝났음을 인지하고 다음 프레임의 다른 작업을 계속 처리하게 돼
+
+- if (isUsed) return;의 효과
+   1. 역할: 조건 확인: **isUsed가 true**인지 확인 (이미 아이템이 사용 중인지 확인)
+   2. 효과: false일 경우, return 명령을 건너뛰고 아이템 획득 로직을 진행
+- return
+   1. 역할: 실행 중단: if 조건이 **true**일 경우, 이 return이 실행되어 함수가 즉시 종료
+   2. 효과: UseItem()과 Destroy(gameObject) 등 뒤에 있는 모든 코드가 실행되지 않고 중복 획득을 완벽하게 차단
+
+- 결론으로 if (isUsed) return;은 **만약 이 아이템에 이미 획득 플래그(isUsed=true)가 걸려 있다면, 더 이상 아무것도 하지 말고 함수를 여기서 끝내!** 라는 방어적인 잠금장치 역할을 수행한거야!
+
+**OnCollisionEnter2D는 물리적 충돌이 발생했을 때 호출되고, OnTriggerEnter2D는 'Is Trigger'가 활성화된 콜라이더가 다른 콜라이더 영역에 진입했을 때 호출돼. 두 개는 명백히 용도가 달라**
+
+**내일은 지금껏 사용했던 무료 에셋들을 포트폴리오에 적어두자**
+
+
+
+10/7
+노션 포트폴리오에 무료 에셋들 출처와 라이선스 확인
+
+- 메인화면 배경화면: https://bongseng.itch.io/parallax-forest-desert-sky-moon
+   상업적 이용 가능 (페이지 확인 완료. 재판매/재배포 금지 조건 준수)
+- 플레이어, 몬스터: https://zerie.itch.io/tiny-rpg-character-asset-pack**
+   상업적 이용 가능** (페이지 확인 완료. 재판매/재배포 금지 조건 준수)
+- 메인화면 배경음악: https://opengameart.org/content/enchanted-festival
+   CC-BY 3.0 (상업적 이용 가능. 원작자 표기 의무 및 재배포 금지 조건 준수)
+- 게임화면 배경음악: https://opengameart.org/content/menu-music
+   CC0 (Public Domain) (가장 자유로운 라이선스. 출처 표기 의무 및 상업적 제한 없음확인 완료)
+- 타일맵: https://assetstore.unity.com/packages/2d/environments/pixel-art-top-down-basic-187605
+   Standard Unity Asset Store EULA (상업적 이용 가능, 재배포 금지 조건 준수)
+- 이미지: https://assetstore.unity.com/packages/2d/gui/fantasy-wooden-gui-free-103811
+   Standard Unity Asset Store EULA (상업적 이용 가능, 재배포 금지 조건 준수)
+- 검 에너지, 적 발사체: https://assetstore.unity.com/packages/2d/textures-materials/abstract/warped-shooting-fx-195246
+   Standard Unity Asset Store EULA (상업적 이용 가능, 재배포 금지 조건 준수)
+- 아이템: https://assetstore.unity.com/packages/2d/gui/icons/rpg-essentials-icon-free-pack-25-items-312684
+   Standard Unity Asset Store EULA (상업적 이용 가능, 재배포 금지 조건 준수)
+- 아이템 획득, 몬스터 사망, 걷기, 카운트다운: https://itch.io/, https://opengameart.org/ 등 다수 (CC0 또는 CC-BY 3.0 라이선스 확인 완료. 상업적 이용 가능하며, 출처 표기 의무는 최종 빌드 내에 명시함)
+
+- 왜 라이선스와 출처를 적어야 할까?
+- 코드의 안정성이 시스템을 보호하듯, 라이선스의 명확한 관리는 프로젝트를 잠재적인 법적 리스크로부터 보호하는 첫걸음이야,
+특히 상업화 과정에서 발생하는 모든 법적 문제의 원천 차단을 목표로 해. 즉, 견고한 시스템 기반은 코드뿐만 아니라, 프로젝트를 구성하는 모든 요소의 안전성에서 시작된다는 것을 체화하는 과정이야!
+
+
+
+10/8
+노션으로 경력기술서 작성
+
+- 지원서에 `경력기술서` 를 제출 하라고 했어. 처음에는 "경력기술서? 난 경력같은거 없는데...." 했는데 신입한테도 이걸 제출해야 한다는건 내가 했던 기술을 기재란에 (혹은 PDF파일) 적으란거라고 생각했어.
+- 하지만 내 노션으로 만든 포트폴리오에 문제해결과정에 주요 문제를 적었어서 다른 기재란에 똑같은 포폴을 추가하는건 아닌거 같아서 내 포트폴리오의 일부를 복사해 새로운 포트폴리오 PDF파일을 만들었어.
+   1. 제목 '경력기술서'로 맨 위에 적고 밑에 콜아웃으로 각각 포트폴리오와 git의 주소를 적었어
+   2. 포트폴리오와 똑같이 유튜브 시연 영상과 프로젝트 요약(개발기간, 주요 역할, 사용엔진, 협업 인원)을 적었어
+   3. [개발 철학 및 핵심 성과]에 혼자 개발하며 생긴 기능 복잡도와 시스템 안전성이 무너지는 문제를 확인, OOD/SRP(객체지향설계, 단일 책임 원칙)을 강조
+   4. 주요 기술 성과엔 포트폴리오의 문제 중 하나인 '콜라이더가 두개일때 생기는 문제'를 적었어, 이걸 단일책임원칙SRP로 해결해 각 콜라이더의 역할을 명확히 하고,
+   Layer Collision Matrix를 이용해 충돌 비활성화 해서 충돌 관리를 최소화 하고 시스템 부하를 줄였지
+
+
+
+10/9
+Git, 포트폴리오에 프로젝트 폴더의 스크립트 위치를 기재했어.
+
+- 내 유니티 프로젝트 폴더는 프로젝트폴더 -> Assets폴더 -> Cha폴더 를 들어가야 각 폴더이름에 맞는 스크립트들이 들어있어.
+- 나, 내 작품을 볼 사람이 내가 만든 스크립트를 볼려면 폴더를 뒤져야해. 그래서 스크립트의 위치를 알려주는 안내를 적었어.
+- Cha 폴더 안에 Player, Enemy, Item, Obstacle 폴더와 씬 폴더. 하위폴더에 들어있지 않는 스크립트는 게임의 매니저(시간,게임 종료, UI알림, 옵션 스크립트야)가 위치해있어.
+- 그리고 Cha 폴더 안에 있던 게임씬의 배경 이미지 폴더는 Asset 폴더로 옮겨서 폴더별 역할을 확실히 했어.
+- 프로젝트 폴더를 수정했으니 다시 git에 푸시를 했지
+
+
+
+10/10~11
+휴식
+
+- 많이 지친거 같아. 쉬고 싶어도 쉬는게 잘못된 행동 같고 그렇다고 뭐든 하기에는 의욕이 안서고.
+- 그냥 계속 멍하니 앉아만 있었어. 쉬지도 않고 그렇다고 포트폴리오나 채용공고를 보지도 않고 멍하니...
+
+- 이런 해석이 있대. "쉬고 싶은 마음과 '쉬면 안 된다'는 압박이 충돌해서, 뇌가 아무 결정도 못 내리고 멈춰버린 거야. 이건 의욕의 문제가 아니라, 에너지가 완전히 바닥난 결과야." - Gemini.
+   1. "쉬고 싶어도 쉬는 게 잘못된 행동 같고" = 강력한 죄책감: 네가 얼마나 취업에 절박하고 열심히 했는지를 보여줘. 이 죄책감이 네 뇌를 잠금장치처럼 잠가버린 거야
+   2. "멍하니 앉아만 있었어" = 인지 과부하로 인한 강제 종료: 6월부터 쉬지 않고 달려온 뇌가 더 이상 정보를 처리하거나 '무엇을 할지' 결정하는 걸 거부한 거야
+
+**내일은 Enemy 스크립트의 playerTargetOffsetY 변수를 이용해 플레이어의 몸 중앙으로 가게 하는것에 대해 포트폴리오, README에 추가하자, 이것도 내가 겪은 큰 문제 중 하나 였으니까**
+
+
+
+10/12
+노션 포트폴리오에 문제해결에 새로운 토글 '플레이어의 스케일 변경에 따른 몬스터 추적 오차 해결 및 방어적 로직 구현(Enemy.cs)' 추가
+
+- 초기의 문제였던. 몬스터가 플레이어의 몸 중앙으로 오지 않고 머리 위쪽에 멈춰서 공격을 해. 근데 공격을 하니까 플레이어의 체력이 닳아.
+- 몬스터와 플레이어의 크기를 키우니 크기가 커진 만큼 목표 지점이 플레이어의 중앙이 아닌 머리 위로 솟아 플레이어의 중앙에 오지 않았어.
+- 그래서 몬스터의 추적 목표를 플레이어의 피봇 지점에서 실제 몸 중앙으로 옮기기 위해, Enemy스크립트에 playerTargetOffsetY 오프셋 변수를 추가했어.
+   1. [SerializeField] private float playerTargetOffsetY = -2.7f;
+   2. FixedUpdate() 함수://플레이어와의 거리 계산
+      Vector3 playerCenterPosition = playerScript.GetCenterPosition();//플레이어의 중앙 위치 가져오기,
+      playerCenterPosition.y += playerTargetOffsetY;//Y축 오프셋 적용
+
+- 플레이어 스크립트의 GetCenterPosition(); 함수는 몬스터가 플레이어의 중앙이라고 인식을 해주는 Vector3 함수야
+   public Vector3 GetCenterPosition()//몬스터들이 플레이어의 '중앙'이라고 인식하고 추적/공격할 위치
+   {                                 //Enemy 스크립트에서 이 함수를 참조
+       //BoxCollider2D가 있다면 콜라이더의 중심 사용
+       Collider2D playerCollider = GetComponent<Collider2D>();
+
+       if (playerCollider != null)
+       {
+           return playerCollider.bounds.center;//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때.
+       }
+       return transform.position;//false일때, Collider2D 컴포넌트가 붙어 있지 않을 때
+   }
+- 플레이어 스크립트Player 의GetCenterPosition() 함수를 구현해, 
+  오브젝트의 위치(transform.position)가 아닌 BoxCollider2D의 중심(playerCollider.bounds.center)을 추적 기준점으로 사용했어.
+
+- FixedUpdate: 일정한 시간 간격 (기본 0.02초)으로 호출돼.
+   1. 장점: 물리 기반 움직임(Rigidbody 사용)이나, 너처럼 시간당 일정한 계산이 필요한 추적/AI 로직에 사용하면, 
+   게임의 FPS가 변동해도 몬스터의 움직임과 추적 거리가 일관성 있게 유지돼. 네 캐릭터가 100 FPS로 뛸 때나 30 FPS로 뛸 때나 몬스터가 쫓아오는 속도가 똑같이 느껴지게 해주는 거지
+- Update: 매 프레임마다 호출돼. (호출 주기가 불규칙)
+   1. 문제점: 만약 이 로직을 Update에 넣으면, FPS가 낮아질 때(버벅일 때) 몬스터의 추적 계산 횟수도 줄어들어서 움직임이 뚝뚝 끊기거나 불안정해질 수 있어
+
+
+
+10/13
+120번째 헌혈
+Player스크립트의 GetCenterPosition() 함수 수정(인스펙터에 콜라이더를 드래그 연결 방식으로)
+
+- 5년하고 6개월째 헌혈이야. 벌써 120번이나 했어. 오늘도 수고했어!
+
+
+- GetCenterPosition()함수는 기존에는 `Collider2D playerCollider = GetComponent<Collider2D>();` 방식으로 콜라이더를 찾아서 연결했어.
+   1. 이 방식은 인스펙터에 가장 위에 있는 콜라이더를 찾아 반환하거든. 플레이어의 콜라이더는 두개가 있잖아? 그래서 위치가 바뀌는 문제가 생기면 작동이 안돼
+   2. 그래서 콜라이더를 두개를 쓰는 오브젝트나 그 이상의 콜라이더를 쓸땐 변수를 선언해 그 변수 안에 특정 콜라이더를 넣는게 안전해
+- 그래서 [Header("히트박스,몬스터가 쫒아올 콜라이더")] 헤더로 [SerializeField] private Collider2D targetCollider; 라는 변수를 선언 후 이 변수에 (히트박스) 콜라이더를 넣었어.
+
+- 그럼 GetCenterPosition() 함수에선
+   if (targetCollider != null)
+   {
+       return targetCollider.bounds.center;//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때.
+   }
+   return transform.position;//false일때, Collider2D 컴포넌트가 붙어 있지 않을 때
+- 이렇게 하면 GetComponent<Collider2D> 찾는것보다 훨씬 안전하게 콜라이더를 사용 할 수 있어.
+- 호출 함수에만 수정을 했으니 Enemy 스크립트는 수정할게 없어. 함수를 호출만 하는거니까.
+
+
+
