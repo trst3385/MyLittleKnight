@@ -202,3 +202,20 @@ Player스크립트의 GetCenterPosition() 함수 수정(인스펙터에 콜라�
 
 
 
+10/14
+if문에서 (변수)!=, !(변수), (변수)일때의 상황.
+
+- if (trst != null)	trst가 null이 아니면 (할당되어 있고 파괴되지 않았으면) 실행.
+- if (trst)	trst가 유효하면 (boolean으로 변환했을 때 true면) 실행.
+
+- if (trst == null)	trst가 null이면 (할당되지 않았거나 파괴되었으면) 실행.
+- if (!trst)	trst가 유효하지 않으면 (boolean으로 변환했을 때 false면) 실행.
+
+- 몬스터 추적 시 FixedUpdate를 사용해야 하는 이유
+   1. 물리 객체 제어 (Rigidbody): 몬스터가 플레이어를 쫓아가기 위해 Rigidbody2D를 사용해서 velocity를 직접 설정하거나, AddForce()를 사용해서 힘을 가할 가능성이 높아,
+   이런 물리적인 조작은 항상 FixedUpdate() 안에서 이루어져야 가장 안정적이고 부드러워. Update()에서 하면 떨림(Jittering) 현상이 생기거나 충돌 처리가 불안정해질 수 있어.
+   3. 일관된 움직임: 몬스터의 이동 속도는 게임의 물리 프레임에 맞춰 일관성 있게 유지되어야 해,
+   FixedUpdate()는 프레임 속도와 상관없이 정해진 시간 간격으로 실행되므로, 어떤 컴퓨터에서 실행하든 몬스터가 같은 속도로 쫓아가게 보장해 줘.
+
+
+
