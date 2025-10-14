@@ -71,8 +71,7 @@ Item 스크립트의 private bool isUsed = false; 변수와 if (isUsed) return;�
    2. 효과: UseItem()과 Destroy(gameObject) 등 뒤에 있는 모든 코드가 실행되지 않고 중복 획득을 완벽하게 차단
 
 - 결론으로 if (isUsed) return;은 **만약 이 아이템에 이미 획득 플래그(isUsed=true)가 걸려 있다면, 더 이상 아무것도 하지 말고 함수를 여기서 끝내!** 라는 방어적인 잠금장치 역할을 수행한거야!
-
-**OnCollisionEnter2D는 물리적 충돌이 발생했을 때 호출되고, OnTriggerEnter2D는 'Is Trigger'가 활성화된 콜라이더가 다른 콜라이더 영역에 진입했을 때 호출돼. 두 개는 명백히 용도가 달라**
+- OnCollisionEnter2D는 물리적 충돌이 발생했을 때 호출되고, OnTriggerEnter2D는 'Is Trigger'가 활성화된 콜라이더가 다른 콜라이더 영역에 진입했을 때 호출돼. 두 개는 명백히 용도가 달라.
 
 **내일은 지금껏 사용했던 무료 에셋들을 포트폴리오에 적어두자**
 
