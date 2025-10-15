@@ -234,3 +234,4 @@ Rigidbody2D.velocity란 (rb.velocity)
 
 
 
+
