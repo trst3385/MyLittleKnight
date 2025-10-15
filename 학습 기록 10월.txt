@@ -219,3 +219,19 @@ if문에서 (변수)!=, !(변수), (변수)일때의 상황.
 
 
 
+10/15
+Rigidbody2D.velocity란 (rb.velocity)
+
+- 2D 물리 엔진에 의해 움직이는 오브젝트의 선형 속도를 나타내는 속성(property).
+- Rigidbody2D 컴포넌트가 붙어있는 오브젝트가 현재 얼마나 빨리, 어느 방향으로 움직이고 있는지를 알려주는 Vector2 값인 거야.
+   1. 속도(Velocity): 물체의 X축과 Y축 방향의 속도를 나타내. Z축은 2D라서 없어
+   2. 물리 적용: 이 값은 중력, 마찰, 다른 물체와의 충돌, AddForce() 같은 힘의 적용 등으로 인해 물리 시뮬레이션에 의해 계속해서 변해
+
+- Player 스크립트의 FixedUpdate()함수에서 rb.velocity를 직접 설정하면, 유니티의 물리 시스템이 다음 FixedUpdate까지 이 속도를 유지해
+   1. 유니티는 내부적으로 (velocity * Time.fixedDeltaTime)만큼 물체를 이동시켜
+   2. FixedUpdate() 함수에서 속도를 제어 하면 프레임 속도와 관계없이 `물리 계산이 정확하고 일관되게` 이루어지기 때문에 캐릭터 이동에 가장 적합한 방법이야
+   3. FixedUpdate 사용 이유?:  FixedUpdate는 이 Time.fixedDeltaTime 간격과 동기화되어 호출되기 때문에, 물리 기반의 이동(속도 설정)은 반드시 이 함수 내에서 처리해야 가장 정확하고 안정적인 결과를 얻을 수 있다는 점을 강조하는 거야
+   4. Time.fixedDeltaTime의 역할: 유니티는 물리 시뮬레이션에서 시간을 Time.fixedDeltaTime 간격으로 쪼개서 계산해. 물체의 새 위치 `ΔP는 ΔP=V×Time.fixedDeltaTime` 공식으로 계산되지. 이 계산을 유니티 엔진이 알아서 해줘
+
+
+
