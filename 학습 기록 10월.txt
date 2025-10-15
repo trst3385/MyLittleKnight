@@ -219,29 +219,46 @@ if문에서 (변수)!=, !(변수), (변수)일때의 상황.
 
 
 10/15
-Rigidbody2D.velocity란 (rb.velocity)
+Rigidbody2D.velocity란? (rb.velocity)
+Rigidbody2D.AddForce()란?
 
-- 2D 물리 엔진에 의해 움직이는 오브젝트의 선형 속도를 나타내는 속성(property).
+- velocity는 2D 물리 엔진에 의해 움직이는 오브젝트의 선형 속도를 나타내는 속성(property).
 - Rigidbody2D 컴포넌트가 붙어있는 오브젝트가 현재 얼마나 빨리, 어느 방향으로 움직이고 있는지를 알려주는 Vector2 값인 거야.
    1. 속도(Velocity): 물체의 X축과 Y축 방향의 속도를 나타내. Z축은 2D라서 없어
    2. 물리 적용: 이 값은 중력, 마찰, 다른 물체와의 충돌, AddForce() 같은 힘의 적용 등으로 인해 물리 시뮬레이션에 의해 계속해서 변해
-
-- Player 스크립트의 FixedUpdate()함수에서 rb.velocity를 직접 설정하면, 유니티의 물리 시스템이 다음 FixedUpdate까지 이 속도를 유지해
+- Player 스크립트의 FixedUpdate()함수에서 rb.velocity를 직접 설정하면, 유니티의 물리 시스템이 다음 FixedUpdate까지 이 속도를 유지해.
    1. 유니티는 내부적으로 (velocity * Time.fixedDeltaTime)만큼 물체를 이동시켜
    2. FixedUpdate() 함수에서 속도를 제어 하면 프레임 속도와 관계없이 `물리 계산이 정확하고 일관되게` 이루어지기 때문에 캐릭터 이동에 가장 적합한 방법이야
-   3. FixedUpdate 사용 이유?:  FixedUpdate는 이 Time.fixedDeltaTime 간격과 동기화되어 호출되기 때문에, 물리 기반의 이동(속도 설정)은 반드시 이 함수 내에서 처리해야 가장 정확하고 안정적인 결과를 얻을 수 있다는 점을 강조하는 거야
+   3. FixedUpdate 사용 이유?: FixedUpdate는 유니티 설정에 따라 Time.fixedDeltaTime이라는 정확히 정해진 시간 간격으로 호출되어 물리 시뮬레이션을 위한 고정된 타임스텝을 제공해,
+   물리 기반의 이동(속도 설정)은 반드시 이 함수 내에서 처리해야 가장 정확하고 안정적인 결과를 얻을 수 있다는 점을 강조하는 거야
    4. Time.fixedDeltaTime의 역할: 유니티는 물리 시뮬레이션에서 시간을 Time.fixedDeltaTime 간격으로 쪼개서 계산해. 물체의 새 위치 `ΔP는 ΔP=V×Time.fixedDeltaTime` 공식으로 계산되지. 이 계산을 유니티 엔진이 알아서 해줘
 
-- 왜 Time.fixedDeltaTime은 FixedUpdate에서 해야 하는가?
-- 1. 물리 시뮬레이션의 일관성. (중요!)
+- 왜 Time.fixedDeltaTime은 FixedUpdate()함수에서 해야 하는가?
+- 1. 물리 시뮬레이션의 일관성.(중요!)
    1-1. Update()의 문제: Update()는 컴퓨터의 성능이나 게임의 복잡도에 따라 호출되는 속도(프레임 속도)가 불안정해. 한 프레임은 0.01초일 수도, 렉이 걸리면 0.1초일 수도 있어,
    움직임을 1프레임에 1미터 이동하게 코드를 짜면, 프레임 속도에 따라 캐릭터가 빠르게 또는 느리게 움직여서 불안정해져
    1-2. FixedUpdate()의 해결책: FixedUpdate()함수는 유니티 설정(Project Settings -> Time)에 있는 Time.fixedDeltaTime 값(0.02초 등)에 맞춰 일정한 시간 간격으로만 호출돼,
    이렇게 하면 물리 엔진이 항상 똑같은 시간(0.02초)을 기준으로 충돌, 중력, 마찰 등을 계산하기 때문에 어떤 컴퓨터에서 실행해도 물리 결과가 예측 가능하고 일관되게 유지돼
 - 2. Rigidbody2D.velocity의 작동 방식과 동기화.
-   2-1. 이 rb.velocity = (V)라고 설정하는 건 "다음 물리 업데이트까지 이 속도를 써!"라는 명령이야
+   2-1. rb.velocity = (V)라고 설정하는 건 "다음 물리 업데이트까지 이 속도를 써!"라는 명령이야
    2-2. 유니티는 FixedUpdate()함수가 끝난 후에 물리 계산을 시작하고, 이때 설정한 속도 V를 가지고 ΔP=V×Time.fixedDeltaTime 연산을 통해 물체를 이동시켜
    2-3. 즉! velocity를 사용하는 코드를 FixedUpdate 안에 넣어야 네가 의도한 속도 V가 물리 엔진의 고정된 시간 주기와 완벽하게 동기화되는 거야
+
+- 물리 기반의 이동(Rigidbody2D.velocity, AddForce)이나, 충돌 체크, 물리 설정 변경 등 물리 시뮬레이션에 영향을 미치는 모든 코드는 FixedUpdate()함수에 두는 것이 규칙이자 가장 좋은 방법이야.
+- FixedUpdate() 함수 안에 Time.deltaTime을 써도 되긴 해. 유니티가 FixedUpdate()함수 안에서는 Time.deltaTime이 자동으로 Time.fixedDeltaTime 값을 반환하도록 해놨거든, 하지만 헷갈리지 않으려면 물리 코드에서는 명시적
+  Time.fixedDeltaTime을 쓰는 게 더 명확하지!
+
+
+- Rigidbody2D.AddForce()는 물체에 힘(Force)을 가해서 속도를 점진적/순간적으로 변화시키는 함수야.
+   1. 이 함수는 항상 물체의 질량(Mass)을 고려하고, 힘의 종류(ForceMode2D)에 따라 물체의 가속도를 변화시켜.
+   2. 점프, 폭발, 로켓 추진, 그리고 Enemy 스크립트의 TakeKnockback() 함수처럼 넉백 같은 외부 충격 효과를 만들 때 써.
+- AddForce와 ForceMode2D의 관계: AddForce를 사용할 때 어떤 방식으로 힘을 줄지 지정하는 게 ForceMode2D야.
+   1. Force (기본값): 지속적인 힘. 시간이 지남에 따라 물체가 점점 빨라지게(가속) 만들 때 써. (예: 로켓 엔진), 힘 F는 Time.fixedDeltaTime 동안 지속적으로 적용돼.
+   2. Impulse: 순간적인 힘, 충격량. (네 넉백 코드에서 사용했지!) 질량에 비례해 순간적으로 속도를 확 바꿔버려. (예: 총알, 폭발, 넉백),
+   Impulse 모드에서는 유니티가 내부적으로 ×1/Time.fixedDeltaTime 같은 계산을 해서, FixedUpdate 주기와 상관없이 항상 일정한 충격을 줄 수 있도록 보정해 줘
+- 왜 FixedUpdate에서 써야해?
+   1. 원칙은 동일: AddForce가 물체의 속도(Velocity)에 영향을 주므로, 물리 계산의 정확성을 위해 반드시 FixedUpdate() 안에서 호출해야 해
+   2. FixedUpdate 밖에서 쓰면 힘이 적용되는 간격이 프레임 속도에 따라 변해서 넉백 거리가 들쭉날쭉해지는 문제가 생길 수 있어
 
 
 
