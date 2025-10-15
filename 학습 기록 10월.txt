@@ -232,6 +232,25 @@ Rigidbody2D.velocity란 (rb.velocity)
    3. FixedUpdate 사용 이유?:  FixedUpdate는 이 Time.fixedDeltaTime 간격과 동기화되어 호출되기 때문에, 물리 기반의 이동(속도 설정)은 반드시 이 함수 내에서 처리해야 가장 정확하고 안정적인 결과를 얻을 수 있다는 점을 강조하는 거야
    4. Time.fixedDeltaTime의 역할: 유니티는 물리 시뮬레이션에서 시간을 Time.fixedDeltaTime 간격으로 쪼개서 계산해. 물체의 새 위치 `ΔP는 ΔP=V×Time.fixedDeltaTime` 공식으로 계산되지. 이 계산을 유니티 엔진이 알아서 해줘
 
+- 왜 Time.fixedDeltaTime은 FixedUpdate에서 해야 하는가?
+- 1. 물리 시뮬레이션의 일관성. (중요!)
+   1-1. Update()의 문제: Update()는 컴퓨터의 성능이나 게임의 복잡도에 따라 호출되는 속도(프레임 속도)가 불안정해. 한 프레임은 0.01초일 수도, 렉이 걸리면 0.1초일 수도 있어,
+   움직임을 1프레임에 1미터 이동하게 코드를 짜면, 프레임 속도에 따라 캐릭터가 빠르게 또는 느리게 움직여서 불안정해져
+   1-2. FixedUpdate()의 해결책: FixedUpdate()함수는 유니티 설정(Project Settings -> Time)에 있는 Time.fixedDeltaTime 값(0.02초 등)에 맞춰 일정한 시간 간격으로만 호출돼,
+   이렇게 하면 물리 엔진이 항상 똑같은 시간(0.02초)을 기준으로 충돌, 중력, 마찰 등을 계산하기 때문에 어떤 컴퓨터에서 실행해도 물리 결과가 예측 가능하고 일관되게 유지돼
+- 2. Rigidbody2D.velocity의 작동 방식과 동기화.
+   2-1. 이 rb.velocity = (V)라고 설정하는 건 "다음 물리 업데이트까지 이 속도를 써!"라는 명령이야
+   2-2. 유니티는 FixedUpdate()함수가 끝난 후에 물리 계산을 시작하고, 이때 설정한 속도 V를 가지고 ΔP=V×Time.fixedDeltaTime 연산을 통해 물체를 이동시켜
+   2-3. 즉! velocity를 사용하는 코드를 FixedUpdate 안에 넣어야 네가 의도한 속도 V가 물리 엔진의 고정된 시간 주기와 완벽하게 동기화되는 거야
+
+
+
+
+
+
+
+
+
 
 
 
