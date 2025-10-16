@@ -302,6 +302,7 @@ SwordWeapon 스크립트의 SwordAttack() 함수 수정 (검기 에너지를 따
       LaunchSwordEnergy();//검기 에너지 발사
       lastSwordSkillTime = Time.time;//검공격 후 다시 쿨타임
 - 이렇게 추가를 했어.
+
    
   
 
