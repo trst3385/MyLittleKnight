@@ -234,3 +234,39 @@ Rigidbody2D.velocity란 (rb.velocity)
 
 
 
+10/16
+주석 설명 수정 (Enemy 스크립트 TakeKnockback()함수)
+SwordWeapon 스크립트의 SwordAttack() 함수 수정 (검기 에너지를 따로 함수로 분리)
+
+- TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration) 넉백 함수의 주석글인 '//PlayerAttack 스크립트에서 호출될 넉백 함수' 를 수정했어.
+- 이젠 플레이어의 공격 스크립트는 PlayerAttack 스크립트에서 전부 처리하는것이 아닌 활(BowWeapon), 검(SwordWeapon), 공격 입력 처리(AttackController) 로 나눴잖아.
+- TakeKnockback() 함수의 주석을 '//SwordWeapon 스크립트에서 호출될 넉백 함수' 라고 수정했어.
+- BowWeapon 스크립트:
+   1. 화살(arrow프리팹,스크립트)를 발사
+   2. 발사시 플레이어 기준 360도 방향으로 발사. ShootArrow() 함수 
+   3. 활 공격의 기본 데미지, 화살이 날라가는 속도
+   4. 활 아이템 획득시 공격속도, 쿨타임, 사운드
+   5. 활 공격속도 UI 업데이트 UpdateBowUI() 함수
+- SwordWeapon 스크립트:
+   1. 검 공격의 기본 데미지, 검기 에너지(SwordEnergy프리팹, 스크립트)를 발사
+   2. 검기 에너지의 생성과 발사 방향 LaunchSwordEnergy() 함수
+   3. 공격 시 콜라이더 범위 안에 들어온 몬스터에 피해 입힘. SwordAttack() 함수
+   4. 검 공격 쿨타임 CanAttack() 함수. 기본 10초 쿨타임
+   5. 검 공격 쿨타임 아이콘 UI 업데이트 UpdateSwordSkillUI() 함수
+
+
+- SwordWeapon 스크립트의 SwordAttack() 함수는 줄이 길어서 가독성이 떨어져. 그래서 제일 밑의 검기 에너지에 대한 로직을 따로 함수로 만들어 SwordAttack() 함수로 호출하는 식으로 수정했어.
+- SwordAttack()함수 밑에 LaunchSwordEnergy() 라는 함수를 만들고 이 안에 검기 에너지의 로직을 추가.
+- 위치를 옮기는거라 수정할건 거의 없었어. 단, 마지막에 `lastSwordSkillTime = Time.time;//검공격 후 다시 쿨타임`  이 코드는 SwordAttack()함수의 맨 밑에 위치시켰어.
+   1. SwordAttack() 함수는 플레이어의 '검 스킬을 사용했다' 는 행위 전체를 나타내는 유일한 진입점이야
+   2. LaunchSwordEnergy()함수는 SwordAttack()함수의 부속품, 세트메뉴 같은거지. SwordAttack()함수가 발동되어야 LaunchSwordEnergy()함수가 발동 되니까
+   3. 둘 다 검 공격을 하면 발동되는거라 전체적으로 관리하는 SwordAttack()함수에 추가하는게 옳아
+- 그래서 SwordAttack()함수의 맨 밑에...
+      LaunchSwordEnergy();//검기 에너지 발사
+      lastSwordSkillTime = Time.time;//검공격 후 다시 쿨타임
+- 이렇게 추가를 했어.
+   
+  
+
+
+
