@@ -262,15 +262,6 @@ Rigidbody2D.AddForce()란?
 
 
 
-
-
-
-
-
-
-
-
-
 10/16
 주석 설명 수정 (Enemy 스크립트 TakeKnockback()함수)
 SwordWeapon 스크립트의 SwordAttack() 함수 수정 (검기 에너지를 따로 함수로 분리)
@@ -303,6 +294,13 @@ SwordWeapon 스크립트의 SwordAttack() 함수 수정 (검기 에너지를 따
       lastSwordSkillTime = Time.time;//검공격 후 다시 쿨타임
 - 이렇게 추가를 했어.
 
+
+
+10/17~18
+게임잡, 원티드 채용공고 확인
+
+- 원티드에서도 채용공고를 확인했어.
+- 어제 SwordWeapon 스크립트를 수정했으니 빌드된 파일이랑 프로젝트 폴더를 다시 레포지토리에 푸시했어
    
   
 
