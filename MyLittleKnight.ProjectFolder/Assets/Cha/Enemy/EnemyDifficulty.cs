@@ -2,61 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ±â À§ÇØ Ãß°¡
+using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ ì¶”ê°€
 
 
-//ÀÌ ½ºÅ©¸³Æ®(EnemyDifficulty)´Â '¸ó½ºÅÍ °­È­ ¾Ë¸²' UI (DifficultyStatsText)¸¦ Á÷Á¢ Á¦¾î.
-//ÀåÁ¡: Æ¯Á¤ ±â´É(¸ó½ºÅÍ °­È­)¿¡ Á¾¼ÓµÈ °£´ÜÇÑ ¾Ë¸²À» ºü¸£°Ô ±¸ÇöÇÏ±â ¿ëÀÌÇÕ´Ï´Ù.
-//´ÜÁ¡: ÆäÀÌµå ÀÎ/¾Æ¿ô°ú °°Àº ½Ã°¢Àû È¿°ú°¡ ¾øÀ¸¸ç, ¿©·¯ Á¾·ùÀÇ ¾Ë¸²À» ÅëÇÕ °ü¸®ÇÏ±â ¾î·Á¿ö!
+//ì´ ìŠ¤í¬ë¦½íŠ¸(EnemyDifficulty)ëŠ” 'ëª¬ìŠ¤í„° ê°•í™” ì•Œë¦¼' UI (DifficultyStatsText)ë¥¼ ì§ì ‘ ì œì–´.
+//ì¥ì : íŠ¹ì • ê¸°ëŠ¥(ëª¬ìŠ¤í„° ê°•í™”)ì— ì¢…ì†ëœ ê°„ë‹¨í•œ ì•Œë¦¼ì„ ë¹ ë¥´ê²Œ êµ¬í˜„í•˜ê¸° ìš©ì´í•©ë‹ˆë‹¤.
+//ë‹¨ì : í˜ì´ë“œ ì¸/ì•„ì›ƒê³¼ ê°™ì€ ì‹œê°ì  íš¨ê³¼ê°€ ì—†ìœ¼ë©°, ì—¬ëŸ¬ ì¢…ë¥˜ì˜ ì•Œë¦¼ì„ í†µí•© ê´€ë¦¬í•˜ê¸° ì–´ë ¤ì›Œ!
 
 
 
 public class EnemyDifficulty : MonoBehaviour
 {
-    //ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ÇÒ º¯¼öµé
-    [Header("Normal ¸ó½ºÅÍ ½ºÆù ÁÖ±â Á¶Àı")]//Çì´õ´Â ÀÌ°Ç ¼øÀüÈ÷ À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ Ã¢À» Á¤¸®ÇÏ°í º¸±â ÁÁ°Ô ¸¸µé±â À§ÇÑ ±â´ÉÀÌ¾ß
-    public float InitialNormalSpawnTime = 4f;//°ÔÀÓ ½ÃÀÛ ½Ã Normal ¸ó½ºÅÍÀÇ ½ºÆù ÁÖ±â (¿¹: 4ÃÊ)
-    public float MinNormalSpawnTime = 1f;//½ºÆù ÁÖ±â°¡ ¾Æ¹«¸® »¡¶óÁ®µµ ÀÌ °ª ÀÌÇÏ·Î´Â ¾È ³»·Á°¨ (¿¹: 1ÃÊ)
-    public float SpawnTimeDecreaseRate = 0.1f;//¸î ÃÊ¸¶´Ù ½ºÆù ÁÖ±â¸¦ ¾ó¸¶³ª ÁÙÀÏÁö (¿¹: 0.1ÃÊ¾¿ ÁÙ¾îµê)
-    public float DecreaseInterval = 10f;//½ºÆù ÁÖ±â°¡ ÁÙ¾îµå´Â ½Ã°£ °£°İ (¿¹: 10ÃÊ¸¶´Ù ÇÑ ¹ø¾¿)
-    //decreaseIntervalÀÇ nÃÊ ¸¶´Ù ¸ó½ºÅÍÀÇ ½ºÆù ½Ã°£ÀÌ spawnTimeDecreaseRateÀÇ nÃÊ ¸¸Å­ ÁÙ¾îµç´Ù.
+    //ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•  ë³€ìˆ˜ë“¤
+    [Header("Normal ëª¬ìŠ¤í„° ìŠ¤í° ì£¼ê¸° ì¡°ì ˆ")]//í—¤ë”ëŠ” ì´ê±´ ìˆœì „íˆ ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„° ì°½ì„ ì •ë¦¬í•˜ê³  ë³´ê¸° ì¢‹ê²Œ ë§Œë“¤ê¸° ìœ„í•œ ê¸°ëŠ¥ì´ì•¼
+    public float InitialNormalSpawnTime = 4f;//ê²Œì„ ì‹œì‘ ì‹œ Normal ëª¬ìŠ¤í„°ì˜ ìŠ¤í° ì£¼ê¸° (ì˜ˆ: 4ì´ˆ)
+    public float MinNormalSpawnTime = 1f;//ìŠ¤í° ì£¼ê¸°ê°€ ì•„ë¬´ë¦¬ ë¹¨ë¼ì ¸ë„ ì´ ê°’ ì´í•˜ë¡œëŠ” ì•ˆ ë‚´ë ¤ê° (ì˜ˆ: 1ì´ˆ)
+    public float SpawnTimeDecreaseRate = 0.1f;//ëª‡ ì´ˆë§ˆë‹¤ ìŠ¤í° ì£¼ê¸°ë¥¼ ì–¼ë§ˆë‚˜ ì¤„ì¼ì§€ (ì˜ˆ: 0.1ì´ˆì”© ì¤„ì–´ë“¦)
+    public float DecreaseInterval = 10f;//ìŠ¤í° ì£¼ê¸°ê°€ ì¤„ì–´ë“œëŠ” ì‹œê°„ ê°„ê²© (ì˜ˆ: 10ì´ˆë§ˆë‹¤ í•œ ë²ˆì”©)
+    //decreaseIntervalì˜ nì´ˆ ë§ˆë‹¤ ëª¬ìŠ¤í„°ì˜ ìŠ¤í° ì‹œê°„ì´ spawnTimeDecreaseRateì˜ nì´ˆ ë§Œí¼ ì¤„ì–´ë“ ë‹¤.
     
-    [Header("Normal ¸ó½ºÅÍ µ¿½Ã ½ºÆù °³¼ö Á¶Àı")]
-    public int InitialNormalSpawnCount = 1;//°ÔÀÓ ½ÃÀÛ ½Ã Normal ¸ó½ºÅÍ µ¿½Ã ½ºÆù °³¼ö
-    public int SpawnCountIncreasePerLevel = 1;//³­ÀÌµµ ·¹º§¸¶´Ù µ¿½Ã ½ºÆù °³¼ö Áõ°¡·®
-    public int MaxNormalSpawnCount = 5;//µ¿½Ã ½ºÆù °³¼ö ÃÖ´ëÄ¡ (³Ê¹« ¸¹¾ÆÁö´Â °Í ¹æÁö)
+    [Header("Normal ëª¬ìŠ¤í„° ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì¡°ì ˆ")]
+    public int InitialNormalSpawnCount = 1;//ê²Œì„ ì‹œì‘ ì‹œ Normal ëª¬ìŠ¤í„° ë™ì‹œ ìŠ¤í° ê°œìˆ˜
+    public int SpawnCountIncreasePerLevel = 1;//ë‚œì´ë„ ë ˆë²¨ë§ˆë‹¤ ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì¦ê°€ëŸ‰
+    public int MaxNormalSpawnCount = 5;//ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ìµœëŒ€ì¹˜ (ë„ˆë¬´ ë§ì•„ì§€ëŠ” ê²ƒ ë°©ì§€)
 
-    //¸ó½ºÅÍ ½ºÅÈ ³­ÀÌµµ Á¶Àı º¯¼öµé
-    [Header("¸ó½ºÅÍ ½ºÅÈ ³­ÀÌµµ Á¶Àı")]
-    [SerializeField] private float statInterval = 20f;//¸ó½ºÅÍ ½ºÅÈÀÌ °­ÇØÁö´Â ½Ã°£ °£°İ (ÃÊ)
-    [SerializeField] private float atkIncrease = 0.2f;//³­ÀÌµµ ·¹º§¸¶´Ù ¸ó½ºÅÍ °ø°İ·Â Áõ°¡ ºñÀ² (20% = 0.2) -> 20%¾¿
-    [SerializeField] private float hpIncrease = 0.2f;//³­ÀÌµµ ·¹º§¸¶´Ù ¸ó½ºÅÍ Ã¼·Â Áõ°¡ ºñÀ² (20% = 0.2) -> 20%¾¿
-    [SerializeField] private float speedIncrease = 0.1f;//³­ÀÌµµ ·¹º§¸¶´Ù ¸ó½ºÅÍ ÀÌµ¿ ¼Óµµ Áõ°¡ ºñÀ² (1% = 0.01) -> 1%¾¿
-
-    
-    [Header("UI, ¿ÀºêÁ§Æ® ¿¬°á")]//Çì´õ´Â ÀÌ°Ç ¼øÀüÈ÷ À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ Ã¢À» Á¤¸®ÇÏ°í º¸±â ÁÁ°Ô ¸¸µé±â À§ÇÑ ±â´ÉÀÌ¾ß
-    [SerializeField] private TextMeshProUGUI notificationText;//EnemyDifficultyStatsText UI¸¦ ¿¬°áÇØ!
-    [SerializeField] private TextMeshProUGUI enemyLevelText;//EnemyDifficultyLevelText UI¸¦ ¿¬°áÇØ!!
-    [SerializeField] private TextAlimManager textalimManager;//TextAlimManager UI¸¦ ¿¬°áÇØ!
-    [SerializeField] private EnemySpawn enemySpawnRef;//EnemySpawn ¿ÀºêÁ§Æ® ¿¬°áÇØ!!
-    
-
-    private float gameTimer = 0f;//°ÔÀÓ ½ÃÀÛ ÈÄ ÃÑ °æ°ú ½Ã°£
-    private int currentDifficultyLevel = 0;//ÇöÀç ¸ó½ºÅÍ ½ºÅÈ ³­ÀÌµµ ·¹º§
+    //ëª¬ìŠ¤í„° ìŠ¤íƒ¯ ë‚œì´ë„ ì¡°ì ˆ ë³€ìˆ˜ë“¤
+    [Header("ëª¬ìŠ¤í„° ìŠ¤íƒ¯ ë‚œì´ë„ ì¡°ì ˆ")]
+    [SerializeField] private float statInterval = 20f;//ëª¬ìŠ¤í„° ìŠ¤íƒ¯ì´ ê°•í•´ì§€ëŠ” ì‹œê°„ ê°„ê²© (ì´ˆ)
+    [SerializeField] private float atkIncrease = 0.2f;//ë‚œì´ë„ ë ˆë²¨ë§ˆë‹¤ ëª¬ìŠ¤í„° ê³µê²©ë ¥ ì¦ê°€ ë¹„ìœ¨ (20% = 0.2) -> 20%ì”©
+    [SerializeField] private float hpIncrease = 0.2f;//ë‚œì´ë„ ë ˆë²¨ë§ˆë‹¤ ëª¬ìŠ¤í„° ì²´ë ¥ ì¦ê°€ ë¹„ìœ¨ (20% = 0.2) -> 20%ì”©
+    [SerializeField] private float speedIncrease = 0.1f;//ë‚œì´ë„ ë ˆë²¨ë§ˆë‹¤ ëª¬ìŠ¤í„° ì´ë™ ì†ë„ ì¦ê°€ ë¹„ìœ¨ (1% = 0.01) -> 1%ì”©
 
     
-    //³»ºÎ¿¡¼­ »ç¿ëÇÒ º¯¼öµé
-    private float currentNormalSpawnTime;//ÇöÀç Normal ¸ó½ºÅÍ°¡ ½ºÆùµÇ´Â ½ÇÁ¦ ÁÖ±â (ÀÌ °ªÀÌ °è¼Ó º¯ÇÒ °Å¾ß)
-    private float timeSinceLastDecrease;//¸¶Áö¸·À¸·Î ½ºÆù ÁÖ±â¸¦ ÁÙÀÎ ÈÄ Áö³­ ½Ã°£
-    private int currentNormalSpawnCount;//ÇöÀç µ¿½Ã ½ºÆù ¸ó½ºÅÍ °³¼ö¸¦ ÀúÀåÇÒ º¯¼ö
+    [Header("UI, ì˜¤ë¸Œì íŠ¸ ì—°ê²°")]//í—¤ë”ëŠ” ì´ê±´ ìˆœì „íˆ ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„° ì°½ì„ ì •ë¦¬í•˜ê³  ë³´ê¸° ì¢‹ê²Œ ë§Œë“¤ê¸° ìœ„í•œ ê¸°ëŠ¥ì´ì•¼
+    [SerializeField] private TextMeshProUGUI notificationText;//EnemyDifficultyStatsText UIë¥¼ ì—°ê²°í•´!
+    [SerializeField] private TextMeshProUGUI enemyLevelText;//EnemyDifficultyLevelText UIë¥¼ ì—°ê²°í•´!!
+    [SerializeField] private TextAlimManager textalimManager;//TextAlimManager UIë¥¼ ì—°ê²°í•´!
+    [SerializeField] private EnemySpawn enemySpawnRef;//EnemySpawn ì˜¤ë¸Œì íŠ¸ ì—°ê²°í•´!!
+    
+
+    private float gameTimer = 0f;//ê²Œì„ ì‹œì‘ í›„ ì´ ê²½ê³¼ ì‹œê°„
+    private int currentDifficultyLevel = 0;//í˜„ì¬ ëª¬ìŠ¤í„° ìŠ¤íƒ¯ ë‚œì´ë„ ë ˆë²¨
+
+    
+    //ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤
+    private float currentNormalSpawnTime;//í˜„ì¬ Normal ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë˜ëŠ” ì‹¤ì œ ì£¼ê¸° (ì´ ê°’ì´ ê³„ì† ë³€í•  ê±°ì•¼)
+    private float timeSinceLastDecrease;//ë§ˆì§€ë§‰ìœ¼ë¡œ ìŠ¤í° ì£¼ê¸°ë¥¼ ì¤„ì¸ í›„ ì§€ë‚œ ì‹œê°„
+    private int currentNormalSpawnCount;//í˜„ì¬ ë™ì‹œ ìŠ¤í° ëª¬ìŠ¤í„° ê°œìˆ˜ë¥¼ ì €ì¥í•  ë³€ìˆ˜
     public static EnemyDifficulty Instance { get; private set; }
-    //private set;ÀÇ ÀÇ¹Ì:
-    //public static EnemyDifficulty Instance : ¿ÜºÎ(´Ù¸¥ ½ºÅ©¸³Æ®)¿¡¼­ EnemyDifficulty.Instance·Î ÀĞÀ» ¼ö ÀÖ°Ô Çã¿ë.
-    //get; : °ªÀ» °¡Á®¿À´Â °Ç ´©±¸³ª °¡´É.
-    //private set; : °ªÀ» ¼³Á¤ÇÏ´Â °Ç ¿ÀÁ÷ ÀÌ EnemyDifficulty Å¬·¡½º ³»ºÎ¿¡¼­¸¸ °¡´É.
+    //private set;ì˜ ì˜ë¯¸:
+    //public static EnemyDifficulty Instance : ì™¸ë¶€(ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸)ì—ì„œ EnemyDifficulty.Instanceë¡œ ì½ì„ ìˆ˜ ìˆê²Œ í—ˆìš©.
+    //get; : ê°’ì„ ê°€ì ¸ì˜¤ëŠ” ê±´ ëˆ„êµ¬ë‚˜ ê°€ëŠ¥.
+    //private set; : ê°’ì„ ì„¤ì •í•˜ëŠ” ê±´ ì˜¤ì§ ì´ EnemyDifficulty í´ë˜ìŠ¤ ë‚´ë¶€ì—ì„œë§Œ ê°€ëŠ¥.
 
 
-    //½ºÅÈ Å¸ÀÔÀ» ±¸ºĞÇÏ±â À§ÇÑ Enum
+    //ìŠ¤íƒ¯ íƒ€ì…ì„ êµ¬ë¶„í•˜ê¸° ìœ„í•œ Enum
     public enum StatType
     {
         AttackDamage,
@@ -66,128 +66,128 @@ public class EnemyDifficulty : MonoBehaviour
 
     void Awake()
     {
-        //°ÔÀÓ ½ÃÀÛ ½Ã ÀÌ ½ºÅ©¸³Æ®ÀÇ À¯ÀÏÇÑ ÀÎ½ºÅÏ½º¸¦ ¼³Á¤ÇØ.
+        //ê²Œì„ ì‹œì‘ ì‹œ ì´ ìŠ¤í¬ë¦½íŠ¸ì˜ ìœ ì¼í•œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì„¤ì •í•´.
         if(Instance != null && Instance != this)
-            Destroy(gameObject);//ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ ÀÖÀ¸¸é ÀÚ½ÅÀ» ÆÄ±«(Áßº¹ ¹æÁö)
+            Destroy(gameObject);//ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ìˆìœ¼ë©´ ìì‹ ì„ íŒŒê´´(ì¤‘ë³µ ë°©ì§€)
         else
         {
-            Instance = this as EnemyDifficulty;//ÀÚ½ÅÀÌ À¯ÀÏÇÑ ÀÎ½ºÅÏ½º°¡ µÊ
-            DontDestroyOnLoad(gameObject);//¾ÀÀÌ ¹Ù²î¾îµµ ÆÄ±«µÇÁö ¾Ê°Ô (°ÔÀÓ ÀüÃ¼ ³­ÀÌµµ °ü¸®¿ë)
-            //DontDestroyOnLoad´Â À¯´ÏÆ¼¿¡¼­ Æ¯Á¤ °ÔÀÓ ¿ÀºêÁ§Æ®¸¦ ÇöÀç ¾ÀÀÌ ¾Æ´Ñ
-            //´ÙÀ½ ¾ÀÀ¸·Î ³Ñ¾î°¥ ¶§µµ ÆÄ±«µÇÁö ¾Ê°í À¯ÁöµÇµµ·Ï ÇÒ ¶§ »ç¿ëÇÏ´Â ÇÔ¼ö
+            Instance = this;//ìì‹ ì´ ìœ ì¼í•œ ì¸ìŠ¤í„´ìŠ¤ê°€ ë¨
+            DontDestroyOnLoad(gameObject);//ì”¬ì´ ë°”ë€Œì–´ë„ íŒŒê´´ë˜ì§€ ì•Šê²Œ (ê²Œì„ ì „ì²´ ë‚œì´ë„ ê´€ë¦¬ìš©)
+            //DontDestroyOnLoadëŠ” ìœ ë‹ˆí‹°ì—ì„œ íŠ¹ì • ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ í˜„ì¬ ì”¬ì´ ì•„ë‹Œ
+            //ë‹¤ìŒ ì”¬ìœ¼ë¡œ ë„˜ì–´ê°ˆ ë•Œë„ íŒŒê´´ë˜ì§€ ì•Šê³  ìœ ì§€ë˜ë„ë¡ í•  ë•Œ ì‚¬ìš©í•˜ëŠ” í•¨ìˆ˜
         }
     }
     void Start()
     {
-        currentNormalSpawnTime = InitialNormalSpawnTime;//°ÔÀÓ ½ÃÀÛ ½Ã ÃÊ±â ½ºÆù ÁÖ±â·Î ¼³Á¤
-        timeSinceLastDecrease = 0f;//½Ã°£ ÃÊ±âÈ­
-        gameTimer = 0f;//°ÔÀÓ Å¸ÀÌ¸Ó ÃÊ±âÈ­
-        currentDifficultyLevel = 0;//³­ÀÌµµ ·¹º§ ÃÊ±âÈ­
-        currentNormalSpawnCount = InitialNormalSpawnCount;//½ÃÀÛ ½Ã µ¿½Ã ½ºÆù °³¼ö ÃÊ±âÈ­   
+        currentNormalSpawnTime = InitialNormalSpawnTime;//ê²Œì„ ì‹œì‘ ì‹œ ì´ˆê¸° ìŠ¤í° ì£¼ê¸°ë¡œ ì„¤ì •
+        timeSinceLastDecrease = 0f;//ì‹œê°„ ì´ˆê¸°í™”
+        gameTimer = 0f;//ê²Œì„ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
+        currentDifficultyLevel = 0;//ë‚œì´ë„ ë ˆë²¨ ì´ˆê¸°í™”
+        currentNormalSpawnCount = InitialNormalSpawnCount;//ì‹œì‘ ì‹œ ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì´ˆê¸°í™”   
         UpdateMonsterLevelText();
          
 
-        //EnemySpawn ÀÎ½ºÅÏ½º Ã£¾Æ¼­ ÀúÀå
+        //EnemySpawn ì¸ìŠ¤í„´ìŠ¤ ì°¾ì•„ì„œ ì €ì¥
         if (enemySpawnRef == null)
         {
-            Debug.LogError("EnemyDifficulty: EnemySpawn ½ºÅ©¸³Æ®¸¦ ¾À¿¡¼­ Ã£À» ¼ö ¾ø¾î!");
+            Debug.LogError("EnemyDifficulty: EnemySpawn ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì”¬ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ì–´!");
         }
         else
         {
-            //EnemySpawn ½ºÅ©¸³Æ®¿¡ ÃÊ±â µ¿½Ã ½ºÆù °³¼ö ¼³Á¤
+            //EnemySpawn ìŠ¤í¬ë¦½íŠ¸ì— ì´ˆê¸° ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì„¤ì •
             enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);
         }
    
         if(textalimManager == null)
-            Debug.LogError("EnemyDifficulty: TextAlimManager ½ºÅ©¸³Æ®¸¦ ¾À¿¡¼­ Ã£À» ¼ö ¾ø¾î!");
+            Debug.LogError("EnemyDifficulty: TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì”¬ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ì–´!");
 
-        if (notificationText != null)//°ÔÀÓ ½ÃÀÛ ½Ã UI ÅØ½ºÆ®¸¦ ºñ¿ò
+        if (notificationText != null)//ê²Œì„ ì‹œì‘ ì‹œ UI í…ìŠ¤íŠ¸ë¥¼ ë¹„ì›€
             notificationText.text = "";
     }
     
     void Update()
     {
-        //ÇÃ·¹ÀÌ¾î°¡ Á×¾úÀ» ¶§´Â ³­ÀÌµµ Á¶ÀıÀ» ¸ØÃßµµ·Ï ¿©±â¿¡ Á¶°Ç¹®À» Ãß°¡ÇØ¾ß ÇØ.
-        //¿¹¸¦ µé¾î, if (Player.Instance != null && !Player.Instance.isDead) { ... }
-        //Player ½ºÅ©¸³Æ®¿¡µµ ½Ì±ÛÅæ ÆĞÅÏÀ» Àû¿ëÇß´Ù¸é ÀÌ·¸°Ô Á¢±ÙÇÒ ¼ö ÀÖ¾î.
+        //í”Œë ˆì´ì–´ê°€ ì£½ì—ˆì„ ë•ŒëŠ” ë‚œì´ë„ ì¡°ì ˆì„ ë©ˆì¶”ë„ë¡ ì—¬ê¸°ì— ì¡°ê±´ë¬¸ì„ ì¶”ê°€í•´ì•¼ í•´.
+        //ì˜ˆë¥¼ ë“¤ì–´, if (Player.Instance != null && !Player.Instance.isDead) { ... }
+        //Player ìŠ¤í¬ë¦½íŠ¸ì—ë„ ì‹±ê¸€í†¤ íŒ¨í„´ì„ ì ìš©í–ˆë‹¤ë©´ ì´ë ‡ê²Œ ì ‘ê·¼í•  ìˆ˜ ìˆì–´.
 
-        //°ÔÀÓ ½Ã°£ °æ°ú ¹× ½ºÅÈ ³­ÀÌµµ ·¹º§ Áõ°¡ ·ÎÁ÷
+        //ê²Œì„ ì‹œê°„ ê²½ê³¼ ë° ìŠ¤íƒ¯ ë‚œì´ë„ ë ˆë²¨ ì¦ê°€ ë¡œì§
         gameTimer += Time.deltaTime;
         if(gameTimer >= (currentDifficultyLevel + 1) * statInterval)
         {
             currentDifficultyLevel++;
-            Debug.Log($"¸ó½ºÅÍ ½ºÅÈ ³­ÀÌµµ ·¹º§ Áõ°¡! ÇöÀç ·¹º§: {currentDifficultyLevel}, ÃÑ °æ°ú ½Ã°£: {gameTimer:F2}s");
-            //F2´Â C# ¹®ÀÚ¿­ Æ÷¸ËÆÃ¿¡¼­ ºÎµ¿¼Ò¼öÁ¡(Float) ¼ıÀÚ¸¦ ¼Ò¼öÁ¡ µÑÂ° ÀÚ¸®±îÁö Ç¥½ÃÇÏ¶ó´Â ÀÇ¹Ì
-            //gameTimer °ªÀÌ 123.45678f ¶ó°í ¿¹½Ã) F0ÀÌ¸é 123, F1ÀÌ¸é 123.5, F2ÀÌ¸é 123.46
+            Debug.Log($"ëª¬ìŠ¤í„° ìŠ¤íƒ¯ ë‚œì´ë„ ë ˆë²¨ ì¦ê°€! í˜„ì¬ ë ˆë²¨: {currentDifficultyLevel}, ì´ ê²½ê³¼ ì‹œê°„: {gameTimer:F2}s");
+            //F2ëŠ” C# ë¬¸ìì—´ í¬ë§·íŒ…ì—ì„œ ë¶€ë™ì†Œìˆ˜ì (Float) ìˆ«ìë¥¼ ì†Œìˆ˜ì  ë‘˜ì§¸ ìë¦¬ê¹Œì§€ í‘œì‹œí•˜ë¼ëŠ” ì˜ë¯¸
+            //gameTimer ê°’ì´ 123.45678f ë¼ê³  ì˜ˆì‹œ) F0ì´ë©´ 123, F1ì´ë©´ 123.5, F2ì´ë©´ 123.46
 
 
-            UpdateMonsterLevelText();//¸ó½ºÅÍ ·¹º§ÀÌ Áõ°¡ÇÑ Á÷ÈÄ, EnemyDifficultyLevelText UI¸¦ ¾÷µ¥ÀÌÆ®ÇÒ ÇÔ¼ö¸¦ È£ÃâÇØ
-                                     //UpdateMonsterLevelText() ÇÔ¼ö´Â currentDifficultyLevel °ªÀÌ º¯ÇÒ ¶§¸¶´Ù È£ÃâµÇ¾î¾ß ÇØ
-                                     //±×·¡¼­! currentDifficultyLevel++ ÄÚµå ¹Ù·Î ¾Æ·¡¿¡ Ãß°¡ÇÏ´Â °Ô °¡Àå ÀûÀıÇÑ°Å¾ß.
-                                     //¹ØÀÇ if¹®µéÀº currentDifficultyLevelÀÌ Áõ°¡ÇÏ¸é ±×°É ¹ŞÀ» ½ºÅ©¸³Æ®°¡ ÀÛµ¿ÀÌ µÇ´ÂÁö È®ÀÎ ÈÄ °ªÀ» Àü´ŞÇÏ´Â°Å¾ß
+            UpdateMonsterLevelText();//ëª¬ìŠ¤í„° ë ˆë²¨ì´ ì¦ê°€í•œ ì§í›„, EnemyDifficultyLevelText UIë¥¼ ì—…ë°ì´íŠ¸í•  í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•´
+                                     //UpdateMonsterLevelText() í•¨ìˆ˜ëŠ” currentDifficultyLevel ê°’ì´ ë³€í•  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ì–´ì•¼ í•´
+                                     //ê·¸ë˜ì„œ! currentDifficultyLevel++ ì½”ë“œ ë°”ë¡œ ì•„ë˜ì— ì¶”ê°€í•˜ëŠ” ê²Œ ê°€ì¥ ì ì ˆí•œê±°ì•¼.
+                                     //ë°‘ì˜ ifë¬¸ë“¤ì€ currentDifficultyLevelì´ ì¦ê°€í•˜ë©´ ê·¸ê±¸ ë°›ì„ ìŠ¤í¬ë¦½íŠ¸ê°€ ì‘ë™ì´ ë˜ëŠ”ì§€ í™•ì¸ í›„ ê°’ì„ ì „ë‹¬í•˜ëŠ”ê±°ì•¼
 
 
-            //½ºÅÈ ³­ÀÌµµ ·¹º§ Áõ°¡ ½Ã µ¿½Ã ½ºÆù °³¼ö ¾÷µ¥ÀÌÆ®
+            //ìŠ¤íƒ¯ ë‚œì´ë„ ë ˆë²¨ ì¦ê°€ ì‹œ ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì—…ë°ì´íŠ¸
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, InitialNormalSpawnCount + (currentDifficultyLevel * SpawnCountIncreasePerLevel));
-            Debug.Log($"Normal ¸ó½ºÅÍ µ¿½Ã ½ºÆù °³¼ö Áõ°¡! ÇöÀç °³¼ö: {currentNormalSpawnCount}¸¶¸®");
+            Debug.Log($"Normal ëª¬ìŠ¤í„° ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì¦ê°€! í˜„ì¬ ê°œìˆ˜: {currentNormalSpawnCount}ë§ˆë¦¬");
             if (enemySpawnRef != null)
-                enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn¿¡ º¯°æµÈ °³¼ö Àü´Ş
+                enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawnì— ë³€ê²½ëœ ê°œìˆ˜ ì „ë‹¬
 
 
-            if (notificationText != null)//EnemyDifficultyStatsText UI·Î Àü´Ş
+            if (notificationText != null)//EnemyDifficultyStatsText UIë¡œ ì „ë‹¬
             {
-                notificationText.text = $"<color=red>¸ó½ºÅÍ°¡ ´õ °­ÇØÁ³½À´Ï´Ù! (·¹º§ {currentDifficultyLevel})</color>";
+                notificationText.text = $"<color=red>ëª¬ìŠ¤í„°ê°€ ë” ê°•í•´ì¡ŒìŠµë‹ˆë‹¤! (ë ˆë²¨ {currentDifficultyLevel})</color>";
                 Invoke("ClearNotification", 3f);
             }
         }
-        //½Ã°£ÀÌ Èå¸§¿¡ µû¶ó ½ºÆù ÁÖ±â¸¦ ÁÙÀÌ´Â ·ÎÁ÷
-        timeSinceLastDecrease += Time.deltaTime;//¸¶Áö¸· °¨¼Ò ÈÄ ½Ã°£À» °è¼Ó ´õÇØ.
+        //ì‹œê°„ì´ íë¦„ì— ë”°ë¼ ìŠ¤í° ì£¼ê¸°ë¥¼ ì¤„ì´ëŠ” ë¡œì§
+        timeSinceLastDecrease += Time.deltaTime;//ë§ˆì§€ë§‰ ê°ì†Œ í›„ ì‹œê°„ì„ ê³„ì† ë”í•´.
 
-        if (timeSinceLastDecrease >= DecreaseInterval)//¼³Á¤ÇÑ °¨¼Ò °£°İÀÌ Áö³µÀ¸¸é
+        if (timeSinceLastDecrease >= DecreaseInterval)//ì„¤ì •í•œ ê°ì†Œ ê°„ê²©ì´ ì§€ë‚¬ìœ¼ë©´
         {
-            //currentNormalSpawnTimeÀ» °¨¼Ò½ÃÅ°µÇ, minNormalSpawnTime ÀÌÇÏ·Î´Â ³»·Á°¡Áö ¾Ê°Ô ÇØ
+            //currentNormalSpawnTimeì„ ê°ì†Œì‹œí‚¤ë˜, minNormalSpawnTime ì´í•˜ë¡œëŠ” ë‚´ë ¤ê°€ì§€ ì•Šê²Œ í•´
             currentNormalSpawnTime = Mathf.Max(MinNormalSpawnTime, currentNormalSpawnTime - SpawnTimeDecreaseRate);
-            timeSinceLastDecrease = 0f;//½Ã°£ ÃÊ±âÈ­ (´ÙÀ½ °¨¼Ò °£°İÀ» À§ÇØ)
-            Debug.Log($"Normal ¸ó½ºÅÍ ½ºÆù ÁÖ±â °¨¼Ò! ÇöÀç ÁÖ±â: {currentNormalSpawnTime}s");
+            timeSinceLastDecrease = 0f;//ì‹œê°„ ì´ˆê¸°í™” (ë‹¤ìŒ ê°ì†Œ ê°„ê²©ì„ ìœ„í•´)
+            Debug.Log($"Normal ëª¬ìŠ¤í„° ìŠ¤í° ì£¼ê¸° ê°ì†Œ! í˜„ì¬ ì£¼ê¸°: {currentNormalSpawnTime}s");
 
-            if (enemySpawnRef != null)//EnemySpawn¿¡°Ô »õ·Î¿î ½ºÆù ÁÖ±â¸¦ ¾Ë·ÁÁà!
+            if (enemySpawnRef != null)//EnemySpawnì—ê²Œ ìƒˆë¡œìš´ ìŠ¤í° ì£¼ê¸°ë¥¼ ì•Œë ¤ì¤˜!
                 enemySpawnRef.SetNormalSpawnTime(currentNormalSpawnTime);
-                //EnemySpawn ½ºÅ©¸³Æ®ÀÇ SetNormalSpawnTime() ÇÔ¼ö
+                //EnemySpawn ìŠ¤í¬ë¦½íŠ¸ì˜ SetNormalSpawnTime() í•¨ìˆ˜
         }
     }
 
-    private void UpdateMonsterLevelText()//EnemyDifficultyLevelText UI·Î º¸³¾ ÇÔ¼ö
-    {                                    //notificationText UI¶û ´Ù¸£°Ô Lv.0 ~ 1 ~ 2 Áõ°¡ÇÏ°Ô ÇÒ°Å¾ß
+    private void UpdateMonsterLevelText()//EnemyDifficultyLevelText UIë¡œ ë³´ë‚¼ í•¨ìˆ˜
+    {                                    //notificationText UIë‘ ë‹¤ë¥´ê²Œ Lv.0 ~ 1 ~ 2 ì¦ê°€í•˜ê²Œ í• ê±°ì•¼
         if (enemyLevelText != null)
-            enemyLevelText.text = $"¸ó½ºÅÍ Lv.{currentDifficultyLevel}";
+            enemyLevelText.text = $"ëª¬ìŠ¤í„° Lv.{currentDifficultyLevel}";
     }
 
 
-    private void ClearNotification()//ÀÌ ÇÔ¼ö´Â notificationText UI ¾Ë¸²À» È­¸é¿¡¼­ Áö¿öÁÖ´Â ¿ªÇÒ
-    {                               //ÀÌ ÇÔ¼ö´Â º¸Åë Invoke("ClearNotification", 3f);Ã³·³ ÀÏÁ¤ ½Ã°£ µÚ¿¡ ÀÚµ¿À¸·Î È£ÃâµÇµµ·Ï ÇØ¼­,
-                                    //"¸ó½ºÅÍ°¡ °­ÇØÁ³½À´Ï´Ù!" °°Àº ¾Ë¸²ÀÌ 3ÃÊ ÈÄ¿¡ »ç¶óÁö°Ô ¸¸µå´Â ¿ëµµ·Î ¾²¿©.
+    private void ClearNotification()//ì´ í•¨ìˆ˜ëŠ” notificationText UI ì•Œë¦¼ì„ í™”ë©´ì—ì„œ ì§€ì›Œì£¼ëŠ” ì—­í• 
+    {                               //ì´ í•¨ìˆ˜ëŠ” ë³´í†µ Invoke("ClearNotification", 3f);ì²˜ëŸ¼ ì¼ì • ì‹œê°„ ë’¤ì— ìë™ìœ¼ë¡œ í˜¸ì¶œë˜ë„ë¡ í•´ì„œ,
+                                    //"ëª¬ìŠ¤í„°ê°€ ê°•í•´ì¡ŒìŠµë‹ˆë‹¤!" ê°™ì€ ì•Œë¦¼ì´ 3ì´ˆ í›„ì— ì‚¬ë¼ì§€ê²Œ ë§Œë“œëŠ” ìš©ë„ë¡œ ì“°ì—¬.
         if (notificationText != null)
             notificationText.text = "";
     }
 
 
-    public float GetSpawnTime()//EnemySpawn ½ºÅ©¸³Æ®°¡ ÀÌ °ªÀ» °¡Á®°¥ ¼ö ÀÖµµ·Ï ÇÔ¼ö »ı¼º
-    {                          //ÀÌ ÇÔ¼ö´Â 'ÇöÀç ¸ó½ºÅÍ°¡ ½ºÆùµÇ´Â ÁÖ±â(½Ã°£)' °ªÀ» ´Ù¸¥ ½ºÅ©¸³Æ®¿¡°Ô ¾Ë·ÁÁÖ´Â ¿ªÇÒ
-                               //return currentNormalSpawnTime; ÀÌ ÄÚµå´Â EnemyDifficulty ½ºÅ©¸³Æ® ³»ºÎ¿¡¼­ °ü¸®ÇÏ°í ÀÖ´Â,
-                               //currentNormalSpawnTimeÀÌ¶ó´Â º¯¼ö °ªÀ» ±×´ë·Î ¹İÈ¯ÇØ Áà.
-        return currentNormalSpawnTime;//ÇöÀç °è»êµÈ ½ºÆù ÁÖ±â¸¦ µ¹·ÁÁà.
+    public float GetSpawnTime()//EnemySpawn ìŠ¤í¬ë¦½íŠ¸ê°€ ì´ ê°’ì„ ê°€ì ¸ê°ˆ ìˆ˜ ìˆë„ë¡ í•¨ìˆ˜ ìƒì„±
+    {                          //ì´ í•¨ìˆ˜ëŠ” 'í˜„ì¬ ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë˜ëŠ” ì£¼ê¸°(ì‹œê°„)' ê°’ì„ ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ê²Œ ì•Œë ¤ì£¼ëŠ” ì—­í• 
+                               //return currentNormalSpawnTime; ì´ ì½”ë“œëŠ” EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ ë‚´ë¶€ì—ì„œ ê´€ë¦¬í•˜ê³  ìˆëŠ”,
+                               //currentNormalSpawnTimeì´ë¼ëŠ” ë³€ìˆ˜ ê°’ì„ ê·¸ëŒ€ë¡œ ë°˜í™˜í•´ ì¤˜.
+        return currentNormalSpawnTime;//í˜„ì¬ ê³„ì‚°ëœ ìŠ¤í° ì£¼ê¸°ë¥¼ ëŒë ¤ì¤˜.
     }
      
     public int GetSpawnCount()
-    {//ÀÌ ÇÔ¼ö´Â 'ÇöÀç ÇÑ ¹ø¿¡ ½ºÆùµÇ´Â ¸ó½ºÅÍ ¸¶¸´¼ö' °ªÀ» ´Ù¸¥ ½ºÅ©¸³Æ®¿¡°Ô ¾Ë·ÁÁÖ´Â ¿ªÇÒ
-     //return currentNormalSpawnCount; ÀÌ ÄÚµå´Â EnemyDifficulty ½ºÅ©¸³Æ® ³»ºÎÀÇ currentNormalSpawnCount º¯¼ö °ªÀ» ±×´ë·Î ¹İÈ¯ÇØ Áà.
-     //GetCurrentNormalSpawnTime() ÇÔ¼ö¿Í ¿ªÇÒÀÌ ¶È°°¾Æ. ´ÜÁö float Å¸ÀÔÀÇ ½ºÆù ÁÖ±â ´ë½Å,
-     //int Å¸ÀÔÀÇ ½ºÆù °³¼ö¸¦ µ¹·ÁÁÙ »Ó
+    {//ì´ í•¨ìˆ˜ëŠ” 'í˜„ì¬ í•œ ë²ˆì— ìŠ¤í°ë˜ëŠ” ëª¬ìŠ¤í„° ë§ˆë¦¿ìˆ˜' ê°’ì„ ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ê²Œ ì•Œë ¤ì£¼ëŠ” ì—­í• 
+     //return currentNormalSpawnCount; ì´ ì½”ë“œëŠ” EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ ë‚´ë¶€ì˜ currentNormalSpawnCount ë³€ìˆ˜ ê°’ì„ ê·¸ëŒ€ë¡œ ë°˜í™˜í•´ ì¤˜.
+     //GetCurrentNormalSpawnTime() í•¨ìˆ˜ì™€ ì—­í• ì´ ë˜‘ê°™ì•„. ë‹¨ì§€ float íƒ€ì…ì˜ ìŠ¤í° ì£¼ê¸° ëŒ€ì‹ ,
+     //int íƒ€ì…ì˜ ìŠ¤í° ê°œìˆ˜ë¥¼ ëŒë ¤ì¤„ ë¿
         return currentNormalSpawnCount;
     }
 
-    public float GetAdjustedMonsterStat(float baseStat, StatType statType)//¸ó½ºÅÍ ½ºÅÈÀ» ÇöÀç ³­ÀÌµµ¿¡ ¸ÂÃç Á¶Á¤ÇÏ¿© ¹İÈ¯ÇÏ´Â ÇÔ¼ö
-    {       //Enemy ½ºÅ©¸³Æ®°¡ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇØ
+    public float GetAdjustedMonsterStat(float baseStat, StatType statType)//ëª¬ìŠ¤í„° ìŠ¤íƒ¯ì„ í˜„ì¬ ë‚œì´ë„ì— ë§ì¶° ì¡°ì •í•˜ì—¬ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜
+    {       //Enemy ìŠ¤í¬ë¦½íŠ¸ê°€ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•´
         float increaseRatio = 0f;
 
         switch (statType)
@@ -202,7 +202,7 @@ public class EnemyDifficulty : MonoBehaviour
                 increaseRatio = speedIncrease;
                 break;
             default:
-                Debug.LogWarning($"EnemyDifficulty: ¾Ë ¼ö ¾ø´Â ½ºÅÈ Å¸ÀÔ ¿äÃ»µÊ - {statType}");
+                Debug.LogWarning($"EnemyDifficulty: ì•Œ ìˆ˜ ì—†ëŠ” ìŠ¤íƒ¯ íƒ€ì… ìš”ì²­ë¨ - {statType}");
                 break;
         }
         float adjustedStat = baseStat * (1f + increaseRatio * currentDifficultyLevel);
