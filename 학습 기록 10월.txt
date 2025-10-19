@@ -318,7 +318,9 @@ EnemyDifficulty 스크립트 수정
 - Awake() 함수의 `if(Instance != null && Instance != this)` if문에의 else에서 불필요한 키워드를 확인했어. 'Instance = this as EnemyDifficulty;'
 - `public static EnemyDifficulty Instance { get; private set; }` 으로 싱글톤패턴으로 했기 때문에 this 자체는 이미 EnemyDifficulty 타입이니까 그냥 대입하면 됐어.
 - 그래서 else에선 `Instance = this as EnemyDifficulty;` 를 쓰지않고 `Instance = this;` 으로 수정했어.
-  
+
+**지금까진 너무 불필요한 방식을 썻어. 로직,주석, 동작은 결국 같지만 오늘처럼 Instance = this; 으로 바꿔도 유니티 프로젝트 폴더, 빌드된 폴더를 지우고 다시 푸시했거든,
+이젠 게임의 `기능적/실질적 변화` 있을때만 재빌드해서 푸시하고 스크립트 코드나 주석을 수정을 할땐 그 파일의 변경할 내용을 GIT 내부에서 수정하고 커밋하고 푸시하자.**
 
 
 
