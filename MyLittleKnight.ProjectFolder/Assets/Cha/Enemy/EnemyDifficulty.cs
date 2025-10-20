@@ -96,7 +96,7 @@ public class EnemyDifficulty : MonoBehaviour
         {
             //EnemySpawn 스크립트에 초기 동시 스폰 개수 설정
             enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);
-            enemySpawnRef.SetNormalSpawnTime(currentNormalSpawnTime);//둘 다 초기값 전달 필수
+            enemySpawnRef.SetNormalSpawnTime(currentNormalSpawnTime);//10.20일 추가. 스폰 주기 초기값 전달 기능 추가
 
         }
    
