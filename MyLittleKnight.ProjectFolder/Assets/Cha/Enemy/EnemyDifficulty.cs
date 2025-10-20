@@ -5,14 +5,13 @@ using UnityEngine;
 using TMPro;//TextMeshPro를 사용하기 위해 추가
 
 
-//이 스크립트(EnemyDifficulty)는 '몬스터 강화 알림' UI (DifficultyStatsText)를 직접 제어.
-//장점: 특정 기능(몬스터 강화)에 종속된 간단한 알림을 빠르게 구현하기 용이합니다.
-//단점: 페이드 인/아웃과 같은 시각적 효과가 없으며, 여러 종류의 알림을 통합 관리하기 어려워!
-
-
-
 public class EnemyDifficulty : MonoBehaviour
 {
+    //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 속성
+    public float CurrentNormalSpawnTime => currentNormalSpawnTime;
+    //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 속성
+    public int CurrentNormalSpawnCount => currentNormalSpawnCount;
+
     //인스펙터에서 설정할 변수들
     [Header("Normal 몬스터 스폰 주기 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float InitialNormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
@@ -96,6 +95,8 @@ public class EnemyDifficulty : MonoBehaviour
         {
             //EnemySpawn 스크립트에 초기 동시 스폰 개수 설정
             enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);
+            enemySpawnRef.SetNormalSpawnTime(currentNormalSpawnTime);//10.20일 추가. 스폰 주기 초기값 전달 기능 추가
+
         }
    
         if(textalimManager == null)
@@ -107,11 +108,7 @@ public class EnemyDifficulty : MonoBehaviour
     
     void Update()
     {
-        //플레이어가 죽었을 때는 난이도 조절을 멈추도록 여기에 조건문을 추가해야 해.
-        //예를 들어, if (Player.Instance != null && !Player.Instance.isDead) { ... }
-        //Player 스크립트에도 싱글톤 패턴을 적용했다면 이렇게 접근할 수 있어.
-
-        //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
+      //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
         gameTimer += Time.deltaTime;
         if(gameTimer >= (currentDifficultyLevel + 1) * statInterval)
         {
@@ -123,9 +120,6 @@ public class EnemyDifficulty : MonoBehaviour
 
             UpdateMonsterLevelText();//몬스터 레벨이 증가한 직후, EnemyDifficultyLevelText UI를 업데이트할 함수를 호출해
                                      //UpdateMonsterLevelText() 함수는 currentDifficultyLevel 값이 변할 때마다 호출되어야 해
-                                     //그래서! currentDifficultyLevel++ 코드 바로 아래에 추가하는 게 가장 적절한거야.
-                                     //밑의 if문들은 currentDifficultyLevel이 증가하면 그걸 받을 스크립트가 작동이 되는지 확인 후 값을 전달하는거야
-
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, InitialNormalSpawnCount + (currentDifficultyLevel * SpawnCountIncreasePerLevel));
@@ -170,21 +164,6 @@ public class EnemyDifficulty : MonoBehaviour
             notificationText.text = "";
     }
 
-
-    public float GetSpawnTime()//EnemySpawn 스크립트가 이 값을 가져갈 수 있도록 함수 생성
-    {                          //이 함수는 '현재 몬스터가 스폰되는 주기(시간)' 값을 다른 스크립트에게 알려주는 역할
-                               //return currentNormalSpawnTime; 이 코드는 EnemyDifficulty 스크립트 내부에서 관리하고 있는,
-                               //currentNormalSpawnTime이라는 변수 값을 그대로 반환해 줘.
-        return currentNormalSpawnTime;//현재 계산된 스폰 주기를 돌려줘.
-    }
-     
-    public int GetSpawnCount()
-    {//이 함수는 '현재 한 번에 스폰되는 몬스터 마릿수' 값을 다른 스크립트에게 알려주는 역할
-     //return currentNormalSpawnCount; 이 코드는 EnemyDifficulty 스크립트 내부의 currentNormalSpawnCount 변수 값을 그대로 반환해 줘.
-     //GetCurrentNormalSpawnTime() 함수와 역할이 똑같아. 단지 float 타입의 스폰 주기 대신,
-     //int 타입의 스폰 개수를 돌려줄 뿐
-        return currentNormalSpawnCount;
-    }
 
     public float GetAdjustedMonsterStat(float baseStat, StatType statType)//몬스터 스탯을 현재 난이도에 맞춰 조정하여 반환하는 함수
     {       //Enemy 스크립트가 이 함수를 호출해
