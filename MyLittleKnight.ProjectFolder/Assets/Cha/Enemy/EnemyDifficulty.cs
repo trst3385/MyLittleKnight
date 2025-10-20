@@ -7,6 +7,11 @@ using TMPro;//TextMeshPro를 사용하기 위해 추가
 
 public class EnemyDifficulty : MonoBehaviour
 {
+    //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 속성
+    public float CurrentNormalSpawnTime => currentNormalSpawnTime;
+    //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 속성
+    public int CurrentNormalSpawnCount => currentNormalSpawnCount;
+
     //인스펙터에서 설정할 변수들
     [Header("Normal 몬스터 스폰 주기 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float InitialNormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
@@ -159,21 +164,6 @@ public class EnemyDifficulty : MonoBehaviour
             notificationText.text = "";
     }
 
-
-    public float GetSpawnTime()//EnemySpawn 스크립트가 이 값을 가져갈 수 있도록 함수 생성
-    {                          //이 함수는 '현재 몬스터가 스폰되는 주기(시간)' 값을 다른 스크립트에게 알려주는 역할
-                               //return currentNormalSpawnTime; 이 코드는 EnemyDifficulty 스크립트 내부에서 관리하고 있는,
-                               //currentNormalSpawnTime이라는 변수 값을 그대로 반환해 줘.
-        return currentNormalSpawnTime;//현재 계산된 스폰 주기를 돌려줘.
-    }
-     
-    public int GetSpawnCount()
-    {//이 함수는 '현재 한 번에 스폰되는 몬스터 마릿수' 값을 다른 스크립트에게 알려주는 역할
-     //return currentNormalSpawnCount; 이 코드는 EnemyDifficulty 스크립트 내부의 currentNormalSpawnCount 변수 값을 그대로 반환해 줘.
-     //GetCurrentNormalSpawnTime() 함수와 역할이 똑같아. 단지 float 타입의 스폰 주기 대신,
-     //int 타입의 스폰 개수를 돌려줄 뿐
-        return currentNormalSpawnCount;
-    }
 
     public float GetAdjustedMonsterStat(float baseStat, StatType statType)//몬스터 스탯을 현재 난이도에 맞춰 조정하여 반환하는 함수
     {       //Enemy 스크립트가 이 함수를 호출해
