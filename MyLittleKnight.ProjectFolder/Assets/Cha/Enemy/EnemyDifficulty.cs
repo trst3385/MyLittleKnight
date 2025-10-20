@@ -5,12 +5,6 @@ using UnityEngine;
 using TMPro;//TextMeshPro를 사용하기 위해 추가
 
 
-//이 스크립트(EnemyDifficulty)는 '몬스터 강화 알림' UI (DifficultyStatsText)를 직접 제어.
-//장점: 특정 기능(몬스터 강화)에 종속된 간단한 알림을 빠르게 구현하기 용이합니다.
-//단점: 페이드 인/아웃과 같은 시각적 효과가 없으며, 여러 종류의 알림을 통합 관리하기 어려워!
-
-
-
 public class EnemyDifficulty : MonoBehaviour
 {
     //인스펙터에서 설정할 변수들
@@ -109,11 +103,7 @@ public class EnemyDifficulty : MonoBehaviour
     
     void Update()
     {
-        //플레이어가 죽었을 때는 난이도 조절을 멈추도록 여기에 조건문을 추가해야 해.
-        //예를 들어, if (Player.Instance != null && !Player.Instance.isDead) { ... }
-        //Player 스크립트에도 싱글톤 패턴을 적용했다면 이렇게 접근할 수 있어.
-
-        //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
+      //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
         gameTimer += Time.deltaTime;
         if(gameTimer >= (currentDifficultyLevel + 1) * statInterval)
         {
@@ -125,9 +115,6 @@ public class EnemyDifficulty : MonoBehaviour
 
             UpdateMonsterLevelText();//몬스터 레벨이 증가한 직후, EnemyDifficultyLevelText UI를 업데이트할 함수를 호출해
                                      //UpdateMonsterLevelText() 함수는 currentDifficultyLevel 값이 변할 때마다 호출되어야 해
-                                     //그래서! currentDifficultyLevel++ 코드 바로 아래에 추가하는 게 가장 적절한거야.
-                                     //밑의 if문들은 currentDifficultyLevel이 증가하면 그걸 받을 스크립트가 작동이 되는지 확인 후 값을 전달하는거야
-
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, InitialNormalSpawnCount + (currentDifficultyLevel * SpawnCountIncreasePerLevel));
