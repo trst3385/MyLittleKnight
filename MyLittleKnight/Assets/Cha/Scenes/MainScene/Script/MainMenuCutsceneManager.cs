@@ -43,6 +43,8 @@ public class MainMenuCutsceneManager : MonoBehaviour
     //ChangeStateX는 오른쪽 방향으로 갈때의 도달할 x값
     //ReturnPositionX는 반대로 왼쪽 방향으로 갈때의 도달할 x값
 
+   
+
     void Start()
     {
         //게임 시작 시 첫 번째 상태로 설정하고 컷씬을 시작
