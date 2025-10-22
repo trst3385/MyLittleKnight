@@ -5,23 +5,33 @@ using UnityEngine;
 using TMPro;//TextMeshPro를 사용하기 위해 추가
 
 
-
-
-
 public class EnemyDifficulty : MonoBehaviour
 {
     //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 속성
     public float CurrentNormalSpawnTime => currentNormalSpawnTime;
     //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 속성
     public int CurrentNormalSpawnCount => currentNormalSpawnCount;
+    /* * => (람다 연산자): '식 본문 멤버(Expression-bodied Member)' 문법으로, 
+     * 값을 계산 없이 단순히 반환할 때 get { return ... } 구문을 생략하고 간결하게 처리함.
+     * - 역할: Get 접근자를 대체하며, 뒤의 식(currentNormalSpawnTime) 값을 즉시 반환함.
+     * - 장점: 읽기 전용(Read-Only)임을 명확히 하고, 코드 간결성을 높임. (set 접근자 가질 수 없음)
+    */
+
+    //스탯 타입을 구분하기 위한 Enum
+    public enum StatType
+    {
+        AttackDamage,
+        Health,
+        MoveSpeed
+    }
 
     //인스펙터에서 설정할 변수들
-    [Header("Normal 몬스터 스폰 주기 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
+    [Header("Normal 몬스터 스폰 주기 조절")]
     public float InitialNormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
     public float MinNormalSpawnTime = 1f;//스폰 주기가 아무리 빨라져도 이 값 이하로는 안 내려감 (예: 1초)
     public float SpawnTimeDecreaseRate = 0.1f;//몇 초마다 스폰 주기를 얼마나 줄일지 (예: 0.1초씩 줄어듦)
     public float DecreaseInterval = 10f;//스폰 주기가 줄어드는 시간 간격 변수 (예: 10초마다 한 번씩)
-    //decreaseInterval의 n초 마다 몬스터의 스폰 시간이 spawnTimeDecreaseRate의 n초 만큼 줄어든다.
+    //n초 마다 몬스터의 스폰 시간이 spawnTimeDecreaseRate의 n초 만큼 줄어든다.
     
     [Header("Normal 몬스터 동시 스폰 개수 조절")]
     public int InitialNormalSpawnCount = 1;//게임 시작 시 Normal 몬스터 동시 스폰 개수
@@ -36,35 +46,24 @@ public class EnemyDifficulty : MonoBehaviour
     [SerializeField] private float speedIncrease = 0.1f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
 
     
-    [Header("UI, 오브젝트 연결")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
-    [SerializeField] private TextMeshProUGUI notificationText;//EnemyDifficultyStatsText UI를 연결해!
-    [SerializeField] private TextMeshProUGUI enemyLevelText;//EnemyDifficultyLevelText UI를 연결해!!
-    [SerializeField] private TextAlimManager textalimManager;//TextAlimManager UI를 연결해!
-    [SerializeField] private EnemySpawn enemySpawnRef;//EnemySpawn 오브젝트 연결해!!
-    
+    [Header("UI, 오브젝트 연결")]
+    [SerializeField] private TextMeshProUGUI notificationText;
+    [SerializeField] private TextMeshProUGUI enemyLevelText;
+    [SerializeField] private TextAlimManager textalimManager;
+    [SerializeField] private EnemySpawn enemySpawnRef;
 
+
+    public static EnemyDifficulty Instance { get; private set; }
+
+    //내부에서 사용할 변수들
     private float gameTimer = 0f;//게임 시작 후 총 경과 시간
     private int currentDifficultyLevel = 0;//현재 몬스터 스탯 난이도 레벨
-
-    
-    //내부에서 사용할 변수들
     private float currentNormalSpawnTime;//현재 Normal 몬스터가 스폰되는 실제 주기 (이 값이 계속 변할 거야)
     private float timeSinceLastDecrease;//마지막으로 스폰 주기를 줄인 후 지난 시간
     private int currentNormalSpawnCount;//현재 동시 스폰 몬스터 개수를 저장할 변수
-    public static EnemyDifficulty Instance { get; private set; }
-    //private set;의 의미:
-    //public static EnemyDifficulty Instance : 외부(다른 스크립트)에서 EnemyDifficulty.Instance로 읽을 수 있게 허용.
-    //get; : 값을 가져오는 건 누구나 가능.
-    //private set; : 값을 설정하는 건 오직 이 EnemyDifficulty 클래스 내부에서만 가능.
+   
 
-
-    //스탯 타입을 구분하기 위한 Enum
-    public enum StatType
-    {
-        AttackDamage,
-        Health,
-        MoveSpeed
-    }
+    
 
     void Awake()
     {
@@ -73,36 +72,26 @@ public class EnemyDifficulty : MonoBehaviour
             Destroy(gameObject);//이미 인스턴스가 있으면 자신을 파괴(중복 방지)
         else
         {
-            // Instance = this as EnemyDifficulty;// 굳이 이렇게 할 필요 없어
             Instance = this;//자신이 유일한 인스턴스가 됨
             DontDestroyOnLoad(gameObject);//씬이 바뀌어도 파괴되지 않게 (게임 전체 난이도 관리용)
-            //DontDestroyOnLoad는 유니티에서 특정 게임 오브젝트를 현재 씬이 아닌
-            //다음 씬으로 넘어갈 때도 파괴되지 않고 유지되도록 할 때 사용하는 함수
         }
     }
     void Start()
     {
         currentNormalSpawnTime = InitialNormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
+        currentNormalSpawnCount = InitialNormalSpawnCount;//시작 시 동시 스폰 개수 초기화
         timeSinceLastDecrease = 0f;//시간 초기화
         gameTimer = 0f;//게임 타이머 초기화
         currentDifficultyLevel = 0;//난이도 레벨 초기화
-        currentNormalSpawnCount = InitialNormalSpawnCount;//시작 시 동시 스폰 개수 초기화   
         UpdateMonsterLevelText();
          
 
         //EnemySpawn 인스턴스 찾아서 저장
         if (enemySpawnRef == null)
-        {
             Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
-        }
-        else
-        {
-            //EnemySpawn 스크립트에 초기 동시 스폰 개수 설정
-            enemySpawnRef.SetNormalSpawnCount(currentNormalSpawnCount);
-            enemySpawnRef.SetNormalSpawnTime(currentNormalSpawnTime);
-        }
-   
-        if(textalimManager == null)
+
+
+        if (textalimManager == null)
             Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
 
         if (notificationText != null)//게임 시작 시 UI 텍스트를 비움
@@ -111,10 +100,6 @@ public class EnemyDifficulty : MonoBehaviour
     
     void Update()
     {
-        //플레이어가 죽었을 때는 난이도 조절을 멈추도록 여기에 조건문을 추가해야 해.
-        //예를 들어, if (Player.Instance != null && !Player.Instance.isDead) { ... }
-        //Player 스크립트에도 싱글톤 패턴을 적용했다면 이렇게 접근할 수 있어.
-
         //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
         gameTimer += Time.deltaTime;
         if(gameTimer >= (currentDifficultyLevel + 1) * statInterval)
@@ -126,9 +111,7 @@ public class EnemyDifficulty : MonoBehaviour
 
 
             UpdateMonsterLevelText();//몬스터 레벨이 증가한 직후, EnemyDifficultyLevelText UI를 업데이트할 함수를 호출해
-                                     //UpdateMonsterLevelText() 함수는 currentDifficultyLevel 값이 변할 때마다 호출되어야 해
-                                     //그래서! currentDifficultyLevel++ 코드 바로 아래에 추가하는 게 가장 적절한거야.
-                                     //밑의 if문들은 currentDifficultyLevel이 증가하면 그걸 받을 스크립트가 작동이 되는지 확인 후 값을 전달하는거야
+
 
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
