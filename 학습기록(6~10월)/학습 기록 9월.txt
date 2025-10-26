@@ -1,0 +1,1099 @@
+
+09/1 
+메인화면 씬에서 배경이미지의 원근감을 주기 위해 패럴랙스(Parallax) 스크롤 방식 사용.
+메인 메뉴 컷씬 구상: 오락실 게임처럼 메인 화면에 단순한 배경 스크롤뿐만 아니라, 캐릭터와 몬스터가 등장하는 컷씬을 만들기로 결정했어.
+MainMenuCutsceneManager 스크립트 생성: 이 스크립트는 컷씬의 전체적인 흐름을 관리하는 역할을 해. 컷씬의 상태를 정의하고, 각 상태에 따라 캐릭터와 몬스터의 행동을 제어할 거야.
+
+- 패럴랙스(Parallax) 스크롤이란?
+   1. 패럴랙스 스크롤은 게임에서 원근감과 깊이감을 주기 위해 사용하는 시각 효과를 말해. 화면의 배경 레이어들을 각각 다른 속도로 움직여서, 가까이 있는 물체는 빠르게, 멀리 있는 물체는 느리게 움직이는 것처럼 보이게 만드는 원리
+   2. 이 효과는 사람이 현실에서 움직일 때 느끼는 원근감과 동일해. 예를 들어, 내가 차를 타고 갈 때 창밖을 보면 가까이 있는 가로수나 건물은 빠르게 지나가지만, 
+   멀리 있는 산이나 구름은 아주 천천히 움직이는 것처럼 보이잖아. 패럴랙스 스크롤은 이 현상을 게임에 그대로 적용한 거지
+
+- 패럴랙스 스크롤의 구현 방법. (오늘 직접 구현한 방법이 바로 패럴랙스 스크롤을 만드는 가장 대표적인 방법이야)
+- 배경 레이어 나누기: 배경 이미지를 여러 개의 레이어(예: 하늘, 먼 산, 가까운 숲 등)로 분리해.
+- 각 레이어에 스크립트 적용: 각 배경 레이어 오브젝트에 BackgroundScroller 스크립트를 연결해. 이 스크립트는 이미지를 계속 스크롤하는 역할을 해.
+- 속도(Speed) 설정: 
+   1. 스크립트의 scrollSpeed 변수에 각기 다른 값을 할당해
+   2. 가장 멀리 있는 sky, mount는 0.01
+   3. 중간에 있는 back은 0.015, mid는 0.03
+   4. 앞에 있는 forest는 0.1, 바로 뒤에 있는 forest.short는 0.07
+- 이런 방식으로 각 레이어의 속도 차이를 주면, 2D 게임 화면도 마치 겹겹이 쌓인 3D 공간처럼 보이게 돼.
+
+
+- 이 메인화면에 플레이어와 몬스터를 추가했어. 따로 조작 하진 않고 오락실 게임의 데모화면 처럼 서로 움직이게 만들려고.
+- 처음에는 오브젝트가 배경 뒤에 가려져 안 보였는데, Canvas 오브젝트의 Render Mode를 **Screen Space - Overlay**에서 **Screen Space - Camera**로 바꿔서 UI와 게임 오브젝트의 렌더링 순서 문제를 해결했어.
+   이렇게 하면 Canvas 컴포넌트에 Sorting Layer와 Order in Layer가 생겨서 렌더링 문제를 해결했지.
+- 각 플레이어, 몬스터의 기존에 있던 스크립트는 전부 지웠어. 메인화면에서 쓸꺼니까 기존의 스크립트들은 필요가 없어
+- 플레이어, 몬스터에게 각각 MainMenuPlayer, MainMenuEnemy 스크립트를 만들었어. 내부 로직은 똑같은 상태고 생성 후 서로 연결해줬어.
+   일단은 두 오브젝트가 움직이게만 만들었어. moveSpeed = 2f; , animator.SetBool("Move", true); , transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+
+
+- MainMenuCutsceneManager. 이 스크립트는 내가 구상한 메인 화면 컷씬의 모든 흐름을 총괄하는 역할을 해.
+- 이 스크립트의 가장 중요한 역할은 **enum**을 사용한 상태 머신으로 컷씬의 흐름을 제어하는 거야.
+
+- enum CutsceneState (상태 정의):
+   enum은 ChasePlayer, PlayerAttack, ChasePlayer2처럼 컷씬의 각 단계를 이름으로 정의해줘. 이렇게 하면 숫자가 아닌 의미 있는 이름으로 컷씬의 상태를 관리할 수 있어 코드가 훨씬 깔끔해지고 읽기 쉬워져
+- Update() 함수 (상태 감시 및 전환):
+   1. Update()는 게임이 실행되는 동안 매 프레임마다 실행되잖아? 이 안에 있는 switch 문은 현재 상태(currentState)를 계속 확인하는 역할을 해
+   2. case의 역할: 각 case는 현재 상태에 따라 플레이어와 몬스터의 MoveSpeed를 조절해서 누가 더 빠르게 움직일지 결정해. 예를 들어, ChasePlayer 상태에서는 몬스터의 moveSpeed를 플레이어보다 크게 설정해서 추격전을 연출하지
+   3. 전환 조건: 각 case 안에는 if (monster.transform.position.x > changeStateX) 와 같은 조건문이 있어. 이 조건이 충족되면 currentState를 다음 상태로 바꿔서 컷씬을 다음 단계로 넘어가게 만들어
+- SetState() 함수 (상태 변경 시 설정):
+   1. 이 함수는 currentState가 바뀔 때 딱 한 번 호출돼. Update()처럼 매 프레임마다 실행되지 않아
+   2. 주요 역할: 바뀐 상태에 맞춰 애니메이션을 바꿔주거나, 숨겨져 있던 오브젝트를 활성화하는 등 한 번만 실행하면 되는 초기 설정 작업을 담당해. 예를 들어, PlayerAttack(스크립트가 아니야!) 상태로 전환될 때 플레이어의 공격 애니메이션 파라미터를 true로 설정하는 역할을 하지
+
+- 결론적으로, MainMenuCutsceneManager 스크립트는 Update()로 컷씬의 흐름을 감시하고, SetState()로 상태에 맞는 설정을 한 번만 적용하며 시나리오를 체계적으로 관리하는 거야!
+
+
+
+09/2
+지그재그 컷씬 구현. 플레이어와 몬스터가 왼쪽에서 오른쪽, 오른쪽에서 왼쪽, 다시 왼쪽에서 오른쪽으로 이동하는 3단계 컷씬을 완성.
+지그재그 컷씬 구현 과정. 플레이어와 몬스터가 쫓고 쫓기는 방향이 꼬여서 제대로 된 컷씬이 나오지 않는 문제.
+몬스터 오브젝트 관리 문제: 특정 컷씬에서 몬스터가 보이지 않거나, 여러 몬스터가 함께 나오지 않는 문제.
+
+- MainMenuCutsceneManager 스크립트에서 SetState() 함수를 개선.
+   1. 각 컷씬(ChasePlayer, PlayerAttack, ChasePlayer2)이 시작될 때마다 캐릭터들의 시작 위치, 이동 방향, 애니메이션 상태, 활성화 여부를 명확하게 설정하도록 코드를 개선했어
+   2. 오브젝트 분리: monster와 EliteMonster 변수를 별도로 만들어, 컷씬에 따라 다른 몬스터를 활성화/비활성화하도록 로직을 분리했어
+   3. 불필요한 코드 제거: 초기 문제점의 원인이었던 ResetCutscene() 함수를 삭제하여 코드를 더 깔끔하게 만들었어
+- 이 스크립트가 몬스터, 플레이어의 이동속도, 이동 방향, 화면 너머까지 닿으면 다른 컷으로 넘어가는걸 담당해.
+
+- MainMenuEnemy 스크립트 수정
+   1. 스크립트 통합: 엘리트 몬스터를 위해 MainMenuEliteEnemy 라는 별도의 스크립트를 만들 필요 없이, MainMenuEnemy 스크립트 하나로 모든 몬스터를 관리하도록 개선했어
+   2. 크기(Scale) 변수 추가: 몬스터의 크기를 스크립트에서 직접 제어할 수 있도록 public Vector3 enemyScale = new Vector3(8, 8, 1); 변수를 추가했어. 이제 유니티 인스펙터 창에서 몬스터별로 크기를 다르게 설정할 수 있게 수정했어
+   3. 오브젝트 연결 방식 개선: 게임 폴더에 있는 프리팹을 스크립트에 바로 연결하는 대신, 씬에 있는 오브젝트를 연결하는 올바른 방법을 배웠어,
+   Elite 몬스터는 3번째 컷씬에서 등장해야 하니까 등장 전까지는 오브젝트를 비활성화 시켰지
+
+- 오브젝트가 왼쪽에서 오른쪽, 오른쪽에서 왼쪽으로 생성되야 하는데 화면 밖을 나가도 왼쪽으로 재생성 되던 문제가 있었어.
+- 방향과 위치 통일: 각 컷씬의 시작점과 이동 방향을 SetState() 함수에 통일시켰어. 몬스터, 플레이어 둘 다 같은 방향으로 움직여야 하니까.
+   1. ChasePlayer: 왼쪽 (returnPositionX) → 오른쪽 (changeStateX)
+   2. PlayerAttack: 오른쪽 (changeStateX) → 왼쪽 (returnPositionX)
+   3. ChasePlayer2: 왼쪽 (returnPositionX) → 오른쪽 (changeStateX)
+- 몬스터 활성화/비활성화: 몬스터가 컷씬이 끝난 뒤에도 화면에 계속 남아있는 문제를 해결했어.
+   각 컷씬이 시작될 때마다 이전에 사용했던 몬스터는 SetActive(false)로 비활성화하고, 새로 사용할 몬스터는 SetActive(true)로 활성화하는 코드를 추가했어.
+
+- SetActive(true, false)란? 게임 오브젝트를 켜거나 끄는 기능.
+   1. 쉽게 말하면, 무대 위에 배우가 있는데 조명을 비추면 보이고(SetActive(true)), 조명을 끄면 안 보이게(SetActive(false)) 만드는 것과 같아
+   2. gameObject.SetActive(true): 오브젝트를 활성화해서 화면에 보이게 하고, 스크립트가 작동하게 해
+   3. gameObject.SetActive(false): 오브젝트를 비활성화해서 화면에서 사라지게 하고, 모든 스크립트와 컴포넌트의 작동을 멈추게 해
+- 오늘 만든 컷씬에서 SetActive를 사용했던 이유가 바로 이거야, SetState() 함수에서 컷씬이 바뀔 때마다, 필요 없는 몬스터는 SetActive(false)로 꺼버리고, 새로 등장할 몬스터는 SetActive(true)로 켜서 화면에 보이게 만든 거지.
+- monster.gameObject.SetActive()나 EliteMonster.gameObject.SetActive()를 컷 씬마다 얘는 활성화하고 비활성화 하잖아?
+   1. 1, 2번째 컷씬에는 일반 몬스터만 쓰니까 monster.gameObject.SetActive(true)를, 대형 몬스터는 안쓰니 EliteMonster.gameObject.SetActive(false)
+   2. 3번째 컷씬에는 반대로 일반 몬스터는 안쓰고 대형 몬스터만 쓰니 monster.gameObject.SetActive(false), EliteMonster.gameObject.SetActive(true)를 쓰는거야
+
+- 오늘의 최종 성과
+   1. 지그재그 컷씬 구현: 플레이어와 몬스터가 쫓고 쫓기는 3단계 컷씬이 정상적으로 작동해
+   2. 코드 최적화: 코드의 중복을 줄이고, SetState() 함수의 가독성을 높였어
+   3. 오브젝트 관리 능력 향상: 유니티 씬의 오브젝트와 코드 간의 관계를 더 명확하게 이해하게 됐지!
+
+  
+**하지만 MainMenuCutsceneManager스크립트에는 각 오브젝트의 공격 모션이 있지만 작동이 안됐어, 몬스터와 케릭터의 간격이 너무 좁아서 쫒고 쫒기는 느낌이 들지 않아, 메인화면 씬의 배경음악도 못넣었어....
+  이건 내일 해결해보자. 오늘도 수고했어**
+
+
+
+09/3
+메인화면 씬의 플레이어의 이동 모션과 공격 모션 문제 해결, 
+플레이어와 몬스터의 간극도 수정(살짝 떨어지게)
+메인화면 씬의 배경음악 추가.
+
+- 플레이어의 Animator에서 SetBool을 사용했는데도 애니메이션이 계속 반복되는 문제가 있었어, 걷는 모션이 멈추고 계속 공격 모션만 반복되는 문제. 1, 3번째 컷씬은 그냥 좌 우로 걸어가는 모션만 넣으면 됐지만 2번은 공격하는 모션도 넣어야 했어.
+- Walk에서 Attack으로 가는 트랜지션과 Attack에서 Walk로 가는 트랜지션의 조건으로 모두 Attack (Bool)이 true일 때로 설정했어. 그리고 Attack에서 Walk로 돌아가는 트랜지션에 **Has Exit Time**을 켜두어, 
+  공격 애니메이션이 끝난 후 자동으로 걷는 모션으로 돌아가게 만들었지. 이는 SetBool을 사용했음에도 SetTrigger처럼 한 번만 애니메이션이 재생되는 효과를 냈어.
+
+
+- 몬스터와 플레이어 간 간격이 너무 좁아. 그래서 쫒고 쫒긴다는 느낌이 없고 나란히 걷는 느낌이 더 강해.
+- 그래서 SetState() 함수에서 몬스터의 시작 위치를 설정하는 monster.transform.position =  코드의 X 좌표 값을 조정했어. returnPositionX - 3와 같이 플레이어보다 더 뒤에서 몬스터가 시작하도록 설정해서 둘 사이의 간격을 넓혔어 -3 ~ -4 정도로.
+
+- player.transform.position = new Vector3(returnPositionX, player.transform.position.y, player.transform.position.z); ,  monster.transform.position = new Vector3(returnPositionX - 3, monster.transform.position.y, monster.transform.position.z);
+  코드 위해 주석을 달아 어떤 역할인건지 분명하게 적었어.
+- player.transform.position
+   1. //이 코드는 플레이어를 화면 왼쪽 끝(returnPositionX)으로 이동시키는 역할이야
+   2. //몬스터에게 쫓기는 첫 번째 컷씬이 시작될 때 플레이어를 화면 밖에서 등장시키는 데 사용해
+- monster.transform.position 
+   1. //이 코드는 몬스터를 플레이어보다 -3만큼 더 왼쪽에 위치시키는 역할이야
+   2. //이렇게 하면 플레이어와 몬스터 사이에 간격이 생겨서, 몬스터가 플레이어를 쫓는 것처럼 보이게 돼
+
+
+- https://opengameart.org/content/enchanted-festival 에서 메인화면 씬의 배경음악을 다운 받았어
+- BGM_Manager 라는 오브젝트를 생성하고 여기서 AudioSource 컴포넌트를 추가. AudioClip에 다운 받은 음악 파일을 넣었어.
+
+**오늘도 수고했어! 내일은 몬스터가 플레이어를 따라올때 1, 3번엔 몬스터 수를 더 추가해보자!**
+
+
+
+09/4
+메인화면 씬의 몬스터 추가, 변수 수정
+메인화면 씬의 플레이어의 에니메이터가 같아서 게임씬의 플레이어의 에니메이터가 달라지던 문제
+
+- 메인화면 씬에 보일 몬스터를 추가했어. MainMenuCutsceneManager 스크립트를 수정해
+   1. 새로운 몬스터를 담을 public MainMenuEnemy Monster2; 변수 생성, Monster2에 쓸 이동속도 변수도 생성했어
+   2. 기존에 있던 몬스터와 같은 로직 복사해 썻어, 그 대상이 Monster2 변수(새로운 몬스터를 담은)이라 기존 로직에 Monster2만 넣은거지!
+   3. Monster.transform.position = Monster2.transform.position
+   4. Monster.direction = -1; = Monster2.direction = -1;
+   5. Monster.animator.SetBool("Attack", true); = Monster2.animator.SetBool("Move", true); 
+      
+- 몬스터와 추가 몬스터,Elite몬스터, 플레이어의 각자 이동속도 변수를 수정했어. 각 컷씬마다 서로 이동속도를 각자 조절할 수 있게.
+   [Header("속도 설정")]
+   //컷씬 전환에 필요한 변수들
+   public float Cutscene1pSpeed = 2f; , Cutscene2pSpeed , Cutscene3pSpeed
+   public float Cutscene1mSpeed = 3f; , Cutscene2mSpeed , Cutscene3mSpeed
+   public float Cutscene1mSpeed1 = 3f; , Cutscene2mSpeed1 , Cutscene3mSpeed1
+   public float Cutscene3emSpeed = 3f;
+- 이렇게 각 컷씬 마다, 각 오브젝트마다 이동속도를 개별적으로 조절할려고 각자의 이동속도를 구현했어.
+   1. Cutscene1(2, 3)은 몇번째 컷씬을 나타내
+   2. p, m, m1, em은 각각 플레이어, 몬스터, 두번째 몬스터, 엘리트 몬스터
+
+
+- 게임 씬과 메인화면 씬의 플레이어와 몬스터가 같은 애니메이터 컨트롤러 파일을 공유하여 한쪽을 수정하면 다른 쪽도 변경되는 문제를 발견했어.
+- 그래서 애니메이터 컨트롤러 파일을 복사하여 이름을 바꿔 파일을 만들고, 메인화면 씬의 플레이어와 몬스터에 이 새로운 파일을 연결했어. (케릭터 오브젝트는 같은 프리팹을 사용하지만, 애니메이터 파일은 서로 다른 독립적인 파일을 사용하게 됨)
+- 수정하던 중. 검(Sword) 공격 애니메이션이 무한 반복되는 문제를 해결해야 했어.
+   1. AttackController 스크립트의 OnAttackEnd()가 있었잖아? 이건 검 공격을 false로 되돌릴 함수잖아
+   2. 그래서 에니메이션에서 이벤트를 추가해 OnAttackEnd()함수를 호출하도록 해 공격이 끝나면 모션은 fasle 상태로 하게 만들었어
+   3. 함수에서 false로 돌아가게 하니 검공격에서 idle, walk로 되돌아올때의 트랜지션에 파라미터를 추가 안해줘도 됐어
+
+
+
+09/5 
+빌드 설정 확인: 빌드 시 메인 화면 씬이 가장 먼저 보이도록 Build Settings에서 씬 순서를 확인.
+컷씬 전환 로직 수정: 3번째 컷씬에서 플레이어와 몬스터의 속도 차이로 인해 몬스터가 화면 안에 남아있는 문제를 해결했어.
+플레이어, 몬스터 스크립트의 MoveSpeed 변수에 [HideInInspector] 적용: MainMenuCutsceneManager 스크립트가 플레이어와 몬스터의 속도를 제어하기 때문에.
+
+- 내가 게임씬, 메인화면씬. 두개가 있어. 먼저 메인화면 씬을 먼저 보이고 난 후에 게임씬으로 전환이 되야해.
+   1. File- Bulid Settings로 들어가면 Scenes In Bulid를 보면 우측 하단에 Add Open Scenes를 누르거나 씬을 창에 연결하면 씬이 추가돼. 여기서 맨 위에 있는 씬일수록 가장 먼저 보이게 해
+   2. MainMenuScene이 목록의 맨 위에(인덱스 0번) 오도록 설정해서, 게임 시작 시 바로 컷씬이 보이게 만들었지
+- 이렇게 하면 각 오브젝트의 속도를 제각각으로 설정해도 마지막 오브젝트가 화면 밖으로 나가 x값이 도달해야지만 컷씬 전환이 되니까 훨씬 다양하게 속도를 조절 할 수 있게 됐어!
+
+
+- 3번째 컷씬에서 플레이어가 먼저 화면 밖으로 나가 지정된 x값에서 컷씬이 초기화가 돼. 그러면 아직 화면에 남아있던 몬스터들은 갑자기 사라지고 다시 1번째 컷씬으로 돌아가.
+- 가장 뒤에 있는 몬스터를 기준으로 해서  이 오브젝트가 x값이 도달하면 컷씬이 초기화 하도록 수정.
+- MainMenuCutsceneManager 스크립트의 Update함수의 각 컷씬의 case에 if문을 조정했어. 기존엔 플레이어의 x값을 보고 컷씬을 바꿨다면 이젠 가장 뒤에 있는 오브젝트를 기준으로 컷씬을 바꿨어.
+   if (Monster2.transform.position.x > ChangeStateX)
+   {
+       CurrentState = CutsceneState.ChasePlayer;
+       SetState();
+   }
+- 3번째 컷씬의 if문이야. 오른쪽에서 왼쪽으로 가는거니 연산자를 >. 2번 컷씬처럼 왼쪽에서 오른쪽으로 가는 컷씬이면 연산자를 반대로 <.
+- ChangeStateX 값의 x는 오르쪽으로 이동할때의 x값, ReturnPositionX는 왼쪽으로 이동할때의 x값 좌표야.
+**SetState 함수 안에 if문이 있었기 때문에 컷씬 전환 조건이 한 번만 확인되는 문제가 있었지. 이제 if문이 Update 함수로 옮겨졌기 때문에, 매 프레임마다 캐릭터들의 위치를 실시간으로 확인하면서 컷씬을 전환할 수 있어.**
+
+- 플레이어, 몬스터의 스크립트에는 public float MoveSpeed; 변수가 있어. 이 변수는 아무런 값이 없어, MainMenuCutsceneManager 스크립트의 Cutscene1pSpeed, Cutscene1mSpeed 등 변수의 값을 받는거지.
+- 그래서 MoveSpeed 변수를 직접 수정할 필요가 없어. 그러니 인스펙터에 보일 필요가 없지.
+- 그렇다고 private으로 하면 스크립트간의 연결이 되지 않으니. public은 유지하되, 인스펙터에 보이지 않게 하는 [HideInInspector]를 사용했어. 
+
+
+
+09/6
+메인화면 씬의 두번째 컷씬에서 몬스터, 플레이어의 생성위치 수정
+게임씬에 배경음악 추가 
+게임씬의 시작 전 카운트다운에 사운드 추가
+
+- 메인화면 컷씬 중 두번째 컷씬에서 시작되면 몬스터가 화면 안에서 생성이 됐어. 이러면 뒤에서 쫒아가는 모습이 자연스럽지가 않아.
+- 그래서 MainMenuCutsceneManager 스크립트의 SetState()함수의 PlayerAttack case에서 각 몬스터와 플레이어의 생성위치 값을 조정했어.
+   1. Player.transform.position = new Vector3(ChangeStateX + 8, Player.transform.position.y, Player.transform.position.z);
+   2. Monster.transform.position = new Vector3(ChangeStateX + 3, Monster.transform.position.y, Monster.transform.position.z);
+   3. Monster2.transform.position = new Vector3(ChangeStateX + 6, Monster2.transform.position.y, Monster2.transform.position.z);
+- 이 처럼 ChangeStateX 값 (오른쪽 끝 x값)에서 + 값을 넣어서 위치를 더 뒤로 댕겨서 자연스럽게 화면 안으로 들어오면서 쫒고 쫒기는 모습이 연출됐어!
+
+
+- 게임 씬에도 배경음악을 넣었어. https://opengameart.org/content/menu-music 에서 음악을 다운 받았어.
+- BGM_Manager 오브젝트를 생성해 이곳에 AudioSource 컴포넌트를 추가. AudioClip에 음악을 연결했어.
+- 음악이 끝나면 다시 재생해야 하니 Audio 컴포넌트에 Loop를 체크.
+
+
+- 게임 시작 전 카운트다운에서도 사운드를 추가했어.
+- CountdownManager(전 GameManager) 오브젝트의 컴포넌트로 있던 CountdownManager 스크립트에 오디오 변수를 추가.
+   [Header("사운드 연결")]//카운트다운에 나올 사운드
+   public AudioSource countdownAudioSource;
+   public AudioClip[] countdownSounds;
+- 원래는 한개의 사운드 파일만 사용하려 했지만 사운드가 끝났음에도 메아리처럼 들리는 문제가 발생해 사운드 파일을 나눠서 각 카운트마다 사운드를 추가하기 위해 배열 변수로 수정했어.
+- 윈도우의 clipchamp 을 사용해서 한 사운드 파일을 나눴지.
+- 인스펙터에 오디오클립 배열 변수에 Element0, 1, 2, 3, 4마다 첫번째부터 마지막 공간에 나눈 사운드 파일들을 추가.
+- CountdownToStart()함수에 각 카운트다운에 쓸 사운드 파일에 대한 로직을 추가.
+   for (int i = 3; i > 0; i--)
+   {
+     //텍스트를 3, 2, 1로 표시
+     CountdownText.text = i.ToString();
+
+     //카운트다운 사운드 재생
+     //배열의 인덱스를 사용해 사운드 파일 재생
+     if (countdownAudioSource != null && countdownSounds.Length >= i)
+         countdownAudioSource.PlayOneShot(countdownSounds[3 - i]);
+
+     yield return new WaitForSecondsRealtime(1f);//1초 대기
+     //WaitForSecondsRealtime(1f): WaitForSecondsRealtime(1)란?
+     //코루틴의 실행을 지정된 시간(실제 시간)만큼 멈춥니다. 게임 시간이 멈춰도 작동해     
+   }
+
+   //마지막 메시지 출력 후 1초 대기
+   CountdownText.text = "Start!";
+   if (countdownAudioSource != null && countdownSounds.Length > 3)
+       countdownAudioSource.PlayOneShot(countdownSounds[3]);//4번째 소리파일 재생
+
+- 마지막 카운트인 "Start!" 메시지를 for문 밖으로 따로 뺀 이유는 논리적인 분리와 유연성 때문이야.
+- 논리적 분리:
+   1. 3, 2, 1'은 순차적으로 반복되는 카운트다운 로직이야. 반면에 'Start!'는 카운트다운이 끝났음을 알리는 최종 신호지. 이 두 동작은 논리적으로 다르다고 볼 수 있어.
+   2. 이렇게 따로 코드를 분리하면 각 부분이 무슨 역할을 하는지 명확하게 알 수 있어서, 나중에 코드를 읽거나 수정할 때 훨씬 편해져
+- 높은 유연성:
+   1. 만약 for문 안에 'Start!'를 넣었다면, 나중에 'Start!' 사운드를 바꾸거나, 'Start!' 텍스트가 나오는 시간을 조절하고 싶을 때 for문의 조건을 바꿔야 해서 코드가 복잡해져
+   2. 하지만 따로 빼두면 for문에는 영향을 주지 않고 'Start!' 관련 코드만 쉽게 수정할 수 있어.
+
+
+
+09/7
+게임씬의 플레이어 사망시 에니메이터 문제 수정,
+게임씬과 메인화면 씬의 Normal 몬스터의 에니메이션,에니메이터 수정(같은 모션 이름이라서 서로 연동됨)
+메인화면 씬의 게임 시작 버튼 UI 이미지 변경
+
+- 며칠 전 게임씬의 오브젝트를 메인화면 씬에 그대로 복사해버려서 에니메이터 등이 게임씬에서도 달라진 문제가 있었어, 그래서 게임씬의 플레이어의 Die 에니메이터가 없던 문제를 찾았어.
+- Player 스크립트의 PlayerDie() 함수를 보면 쉽게 다시 만들 수 있었어.
+- 함수의 if (animator != null) if문을 보면 animator.SetTrigger("Die"); 가 있어. 이걸 보고 전에 쓰던 에니메이터의 파라미터는 Trigger 형식의 Die라는 이름의 트랜지션이야.
+- 그래서 에니메이터에서 Death. 사망 모션을 다시 추가하고 AnyState->Death로 가는 트랜지션을 추가. 그 트랜지션에 Trigger 형식의 Die 파라미터를 추가했어!
+
+- Any State란? 유니티 애니메이션에서 어떤 상태(State)에 있든지 간에 특정 애니메이션으로 전환할 수 있는 특별한 상태를 말해.
+   1. 일반적으로 애니메이션은 A 상태에서 B 상태로, B 상태에서 C 상태로 연결되는 식으로 정해진 경로를 따라가잖아?
+   2. 하지만 Any State는 이런 정해진 경로 없이, 게임 오브젝트가 어떤 애니메이션을 재생하고 있든 간에 즉시 새로운 애니메이션으로 넘어갈 수 있도록 해줘
+- 언제 사용할까? 주로 게임에서 긴급한 상황에 발생하는 애니메이션을 처리할 때 사용해. 예를 들어...
+   1. 플레이어가 공격을 하든, 달리든, 점프를 하든 상관없이 갑자기 적에게 맞아서 **사망(Die)**하는 경우
+   2. 플레이어가 걷고 있든, 서 있든, 달리든 **피격(Hit)**을 당하는 경우
+- 오늘 내가 다시 만든 플레이어 사망 모션이 바로 Any State를 쓰기에 가장 적합한 예시야. 플레이어가 어떤 동작(걷기, 공격 등)을 하다가 죽음을 맞이하더라도, Die 트리거가 발동되면 즉시 사망 애니메이션으로 전환돼야 하니까.
+- 그래서 애니메이터 창에서 Any State에서 Die 애니메이션으로 가는 트랜지션(Transition)을 만드는 거야. 그러면 코드로 animator.SetTrigger("Die")를 호출하는 순간, 현재 재생 중인 애니메이션과 상관없이 바로 사망 애니메이션이 재생돼.
+
+- 그럼 파라미터의 Trigger란? 애니메이터에서 특정 애니메이션을 즉시 한 번만 재생할 때 사용하는 스위치 같은 거야. bool이나 int와 달리, 한 번 사용하면 자동으로 꺼지는 특징이 있지.
+   1. 애니메이터에 Trigger 생성: 애니메이터 창에서 Parameters 탭에 Die라는 이름의 Trigger 파라미터를 만들어
+   2. 코드로 Trigger 발동: 스크립트에서 animator.SetTrigger("Die"); 코드를 호출해
+   3. 애니메이션 재생: 이 코드가 실행되면 Die 트리거가 켜져. 애니메이터는 Die 트리거를 조건으로 가진 트랜지션을 찾아 해당 애니메이션(예: 사망 모션)을 즉시 재생해
+   4. 자동 초기화: 애니메이션 재생이 시작되면 Die 트리거는 자동으로 다시 꺼져. 그래서 다음번에 이 코드를 호출하기 전까지는 애니메이션이 다시 재생되지 않아
+- 다른 파라미터와의 차이점.
+   1. bool: True나 False 상태를 계속 유지해. 달리기 애니메이션처럼 켜진 상태가 유지되어야 할 때 사용하지
+   2. int / float: 숫자로 여러 상태를 구분해. 여러 가지 공격 모션처럼 숫자로 상태를 구분할 때 사용하지
+   3. Trigger: SetTrigger를 호출하면 단 한 번만 작동하고 바로 초기화돼. 사망이나 피격 모션처럼 일회성 이벤트를 처리할 때 유용해
+- 내가 하려는 플레이어 사망 모션은 트리거를 사용하기에 가장 적합한 경우야. 플레이어의 어떤 상태든 상관없이, 죽는 순간 한 번만 사망 애니메이션이 재생되어야 하니까.
+
+
+- 게임씬과 메인화면 씬의 Normal 몬스터는 같지만 복사해서 프리팹과 에니메이터의 이름을 바꿔서 다른 오브젝트로 만들었어. 하지만 에니메이터의 모션 클립은 아직 같은 상태였어.
+- 그러니 메인화면 씬의 몬스터의 불필요한  이벤트를 삭제하니 게임씬의 몬스터도 이벤트가 삭제되서 플레이어에게 데미지를 주지 못했어.
+- 그래서 공격 모션도 이름을 복사 후 이름을 바꿔써 메인화면 씬의 몬스터의 에니메이터에 추가해 다시 연결했어.
+
+
+- 에셋 스토어의 https://assetstore.unity.com/packages/2d/gui/fantasy-wooden-gui-free-103811에서 UI를 다운 받았어. 기본 UI는 너무 밋밋하니까 꾸며줄려고 했어.
+- 메인화면 씬에서 GameStartButton UI의 Image 컴포넌트에서 Source Image를 다운받은 UI를 넣었어. 추가한 UI는 색이 있으니 기존의 UI 이미지의 Color를 흰색으로 해서 UI의 원래 색으로 꾸미게 했어.
+
+
+
+09/8
+게임씬의 몬스터가 원거리에서도 공격을 하던 버그 수정, 게임 종료 버튼 추가
+
+- 몬스터의 원거리 공격 버그: 플레이어와 몬스터가 떨어져 있는데도 몬스터가 공격하고 데미지를 주는 문제를 해결했어.
+- 애니메이션 타이밍 문제: 몬스터가 공격 모션을 시작하려다가 플레이어가 멀리 떨어져도 공격 모션을 끝까지 취하는 문제를 해결했지.
+
+- 해결 과정:
+   1. 데미지 로직 수정: Attack() 함수에 거리 체크 로직을 추가해서 몬스터가 멀리서 공격 모션을 취하더라도 데미지를 주지 못하게 만들었어
+   2. 애니메이터 파라미터 변경: Attack 파라미터를 bool 타입에서 trigger 타입으로 바꿔서 애니메이션 이벤트와 스크립트가 제대로 소통하게 했지
+   3. OnAttackFinished() 함수 생성: 이 함수를 만들어서 공격 애니메이션이 끝나는 시점에 Attack 불(bool) 변수를 false로 바꿔주는 역할을 맡겼어
+   4. 애니메이션 강제 취소 로직 추가: 몬스터가 공격 모션을 취하는 도중에 플레이어가 멀리 도망가면, ProcessMovementAndAttack() 함수에서 Attack bool 변수를 false로 바꿔서 공격 모션을 즉시 취소하게 만들었어
+
+- StopAndAttackPlayer 함수 (로직 수정)
+   1. 기존 로직: 몬스터가 공격할 수 있는 상태(canAttack)가 되면 즉시 animator.SetTrigger("Attack")를 호출했어
+   2. 수정된 로직: SetTrigger("Attack")를 animator.SetBool("Attack", true)로 바꿨어
+   3. 이로써 공격 애니메이션이 트리거(한 번 실행)되는 대신, Attack 상태가 지속되는 불리언(Bool)으로 관리되게 됐어
+- OnAttackFinished 함수 (새로운 함수 추가)
+   1. 공격 애니메이션이 끝났을 때 애니메이션의 이벤트로 호출되는 역할을 해, 공격 모션이 끝나는 프레임에 이벤트를 추가하고 이 함수를 호출
+   2. 이 함수엔 animator.SetBool("Attack", false); 코드만 포함해
+   3. 이 함수 덕에 공격 애니메이션이 완전히 끝난 후에만 몬스터의 Attack 상태가 해제되게 됐지
+- ProcessMovementAndAttack 함수 (로직 추가)
+   1. MoveTowardsPlayer 함수를 호출하기 전에 if (animator.GetBool("Attack")) 조건문을 추가했어
+   2. 만약 몬스터가 Attack 상태인데 플레이어가 멀어졌다면, animator.SetBool("Attack", false)를 강제로 호출하도록 했지
+   3. 목적: 몬스터가 공격 모션을 취하는 도중에 플레이어가 갑자기 멀리 도망가면, 몬스터가 공격을 멈추고 다시 추적하도록 상태를 즉시 전환시키기 위해서
+
+- ProcessMovementAndAttack() 함수의 if(!isInStopDistance)에서 GetBool이 있어.
+- animator.GetBool("Attack"). 이건 애니메이터 컨트롤러에서 "Attack"이라는 이름의 Bool 파라미터가 현재 true인지 false인지 값을 가져오는 역할을 해.
+   1. 만약 Attack 파라미터가 true로 설정되어 있다면, 이 함수는 true 값을 반환해
+   2. 이걸 사용해서 "만약 현재 애니메이터가 'Attack' 상태에 있다면"이라는 조건을 만들 수 있지
+- animator.SetBool("Attack", false). 이건 애니메이터의 "Attack"이라는 이름의 Bool 파라미터 값을 false로 설정하는 역할을 해.
+   1. animator.SetBool("Attack", true)는 "애니메이터에게 'Attack' 상태로 전환하라고 명령"하는 거야
+   2. animator.SetBool("Attack", false)는 "애니메이터에게 'Attack' 상태를 해제하라고 명령"하는 거지
+**요약하면, GetBool은 읽기(Read) 기능이고, SetBool은 쓰기(Write) 기능이라고 생각하면 돼. 이 두 함수 덕분에 스크립트와 애니메이터가 서로 소통하며 몬스터의 행동을 더 정교하게 제어할 수 있게 된 거야.**
+
+
+- 메인화면 씬에 게임종료 버튼인 ExitButton을 추가했어.
+- MainMenuExitManager라는 스크립트를 만들었어. 이 스크립트는 ExitButton에 연결되서 버튼을 클릭하면 스크립트의 전처리기 지시문으로 게임이 꺼지는 역할을 해.
+- GameExitManager 오브젝트에 스크립트를 넣고, ExitButton의 인스펙터에 On Click()에 이 오브젝트를 연결. Function에 스크립트의 QuitGame()선택했어.
+- 이러면 버튼을 클릭하면 MainMenuExitManager 스크립트의 QuitGame() 함수가 실행되서 전처리기 지시문 대로 게임을 종료하는거지.
+- 전처리기 지시문은 코드가 컴파일될 때 작동하는 특별한 명령어라고 생각하면 돼. 게임이 실행되는 도중에 작동하는 게 아니라, 게임 파일(.exe 등)을 만드는 과정에 개입하는 거야.
+
+   #if UNITY_EDITOR
+      UnityEditor.EditorApplication.isPlaying = false;
+   #else
+      Application.Quit();
+   #endif
+- 이 코드가 작동하는 방식은 크게 두 가지 상황으로 나뉘어.
+- 유니티 에디터에서 실행할 때 (#if UNITY_EDITOR):
+   1. 유니티는 코드를 컴파일할 때 #if UNITY_EDITOR라는 지시문을 보고, "아, 지금 에디터에서 실행하는 거구나" 하고 판단해
+   2. 그래서 #if와 #else 사이의 코드인 UnityEditor.EditorApplication.isPlaying = false;만 최종 실행 파일에 포함시켜
+   3. QuitGame() 함수가 호출되면 이 코드가 실행되면서, 에디터에서 재생되던 게임이 중지되는 거야
+
+- 게임을 빌드해서 실행할 때 (#else):
+   1. 유니티는 게임을 PC나 모바일 같은 실제 기기용으로 빌드할 때 #if UNITY_EDITOR 조건이 거짓이라고 판단해
+   2. 대신 #else 아래에 있는 코드인 Application.Quit();만 최종 실행 파일에 포함시켜
+   3. 유저가 게임을 실행하다가 ExitButton을 눌러 QuitGame() 함수를 호출하면, 이 코드가 실행되면서 프로그램이 완전히 종료돼
+**이처럼 전처리기 지시문은 개발 환경(에디터)과 실제 게임 환경을 구분해서, 각각에 맞는 종료 코드를 실행하게 만들어줘. 그래서 네 스크립트 하나로도 두 가지 환경 모두에서 게임을 올바르게 끌 수 있는 거야**
+
+
+
+09/9 
+게임씬에 옵션창 생성(ReStart, Exit, Quit 버튼 추가)
+옵션창을 켜면 일시정지가 되지만 게임 시작 카운트 전에 옵션창을 켜면 게임이 일시정지 되지 않던 문제 해결
+
+- 게임씬에 UI-Panel을 만들어 OptionsPanel이란 이름을 쓰고 자식으로 Options이란 버튼 공간과 또 그 자식으로 ReStart, Exit, Quit Button을 만들었어.
+- 이 옵션 창을 다룰 OptionsManager라는 스크립트를 만들어 OptionsManager 오브젝트 안에 넣고 public GameObject optionsPanel; 변수로 OptionsPanel 옵션창UI를 연결했지.
+- 일시정지 키는 P. 원래는 Esc로 하려 했지만 유니티 에디터가 ESC를 누르면 실행이 종료되서 당장은 P키로 옵션창을 켜게 했어.
+- 일시정지 기능은 스크립트 내부의 Time.timeScale을 사용해 게임의 시간 흐름을 제어하는 핵심 기술을 적용한 거야. 이 기술 덕분에 게임 내 모든 요소(움직임, 애니메이션 등)가 정확하게 멈추고 다시 시작할 수 있게 됐지.
+   1. Time.timeScale: 게임의 시간 흐름을 조절하는 변수. 0으로 설정하면 게임이 일시정지되고, 1로 설정하면 정상 속도로 돌아가
+
+
+- ToggleOptionsPanel()함수가 옵션창을 켜고 끄고, 일시정지 기능을 담은 함수야.
+- bool isPanelActive = !optionsPanel.activeSelf; 과 optionsPanel.SetActive(isPanelActive);의 역할
+- 옵션 패널이 꺼져 있을 때:
+   1. optionsPanel.activeSelf는 false가 돼
+   2. !false는 true가 되므로, isPanelActive 변수에는 true가 저장돼
+   3. 다음 줄인 optionsPanel.SetActive(isPanelActive);가 실행되면, optionsPanel.SetActive(true);가 되면서 패널이 켜지게 되는 거야
+- 옵션 패널이 켜져 있을 때:
+   1. optionsPanel.activeSelf는 true가 돼
+   2. !true는 false가 되므로, isPanelActive 변수에는 false가 저장돼
+   3. optionsPanel.SetActive(isPanelActive);는 optionsPanel.SetActive(false);가 되면서 패널이 꺼지게 되는 거지
+
+- 그 밑에 if문 if (isPanelActive) { Time.timeScale = 0f; } else { Time.timeScale = 1f; } 에선 isPanelActive지역변수는 위에서 설명했던 것처럼 옵션 패널의 상태가 '켜지는'지 또는 '꺼지는'지 여부를 담고 있어.
+   1. if (isPanelActive): 만약 isPanelActive가 true라면 (즉, 패널이 방금 켜졌다면), 이 코드 블록이 실행돼,
+      Time.timeScale = 0f;: 이 코드는 게임의 시간 흐름을 0으로 만들어. 게임 내의 모든 움직임, 애니메이션, 물리 효과 등이 멈추게 되지. 이게 바로 일시정지 기능이야
+   2. else: 만약 isPanelActive가 true가 아니라면 (즉, 패널이 방금 꺼졌다면), 이 코드 블록이 실행돼,
+      Time.timeScale = 1f;: 이 코드는 게임의 시간 흐름을 **정상 속도(1)**로 되돌려. 멈췄던 게임이 다시 원래대로 흘러가기 시작하는 거지
+- 결과적으로 이 if 문은 ToggleOptionsPanel() 함수가 호출될 때마다 패널을 켜면서 게임을 멈추거나, 패널을 끄면서 게임을 다시 시작하게 해줘. SetActive와 Time.timeScale을 연동해서 일시정지 기능을 구현하는, 아주 깔끔하고 핵심적인 로직이야.
+
+- 스크립트 작성 후 각 버튼 UI의 인스펙터에 OnClick()에서 역할에 맞는 OptionsManager 스크립트의 함수를 연결했어.
+   1. Restart 버튼은 RestartGame()
+   2. Exit 버튼은 ExitGame()
+   3. Quit 버튼은 QuitGame()
+- 세 함수 모두  Time.timeScale = 1f; 코드가 있어. 게임을 종료하기 전에 시간을 다시 정상 속도인 1f로 돌려놓는 코드야,
+게임이 일시정지 상태(Time.timeScale = 0f;)에서 종료되면 예상치 못한 문제가 발생할 수 있어서, 이 코드를 넣어 안정성을 높이는 거지.
+
+- Restart 버튼은 SceneManager.LoadScene(SceneManager.GetActiveScene().name)을 사용해 현재 씬을 다시 불러와 게임을 재시작하는 버튼 기능을 만들었어.
+   1. LoadScene() 특정 씬을 불러오는 함수
+   2. GetActiveScene() 현재 활성화되어 있는(플레이 중인) 씬을 가져오는 함수
+   3. .name 은 GetActiveScene()으로 가져온 씬 정보 중에서 그 씬의 이름을 문자열(string) 형태로 꺼내주는 역할
+   4. 따라서 이 코드는 "현재 씬의 이름을 가져와서, 그 이름으로 씬을 다시 로드해" 라는 뜻이야
+
+- Exit 버튼은 게임을 종료하고 메인화면 씬으로 돌아가는 함수야.
+   1. SceneManager.LoadScene("MainMenuScene")
+   2. MainMenuScene 라는 이름의 씬을 찾아서 그 씬을 이동하는거야.  메인화면 씬으로 돌아가는거지.
+**Exit는 현재의 상태나 메뉴, 화면에서 나가서 이전 상태로 돌아가는 의미로 더 많이 쓰여**
+
+- Quit 버튼은 게임을 완전히 종료하는 역할이야, 메인 화면씬의 게임 종료 버튼 스크립트와 동일한 역할을 해.
+- 전처리기 지시문을 써서 게임이 실행되는 환경에 따라 다른 코드를 사용하도록 명령하는 거야.
+   #if UNITY_EDITOR
+   UnityEditor.EditorApplication.isPlaying = false;
+   #else
+   Application.Quit();
+   #endif
+- 유니티 에디터에서 실행할 때: #if UNITY_EDITOR 아래에 있는 UnityEditor.EditorApplication.isPlaying = false; 코드가 실행돼. 이 코드는 에디터에서 플레이 모드를 끄는 역할을 해.
+- 실제 게임으로 빌드했을 때: #else 아래에 있는 Application.Quit(); 코드가 실행돼. 이 코드는 PC나 모바일 같은 실제 기기에서 게임을 완전히 종료시키는 역할을 하지.
+
+
+- 이렇게 실행 후 게임씬의 시작 전 카운트때 옵션창을 켜면 게임이 일시정지가 되지 않던 문제를 확인했어.
+- CountdownManager 스크립트가 시작 전 카운트를 관리하는 스크립트야. 내부에 IEnumerator CountdownToStart() 코루틴에서,
+yield return new WaitForSecondsRealtime(1f); 가 문제였어. 게임 시간이 아닌 "실제 시간" 을 사용하는 코드가 있어서 그래.**
+   1. WaitForSecondsRealtime(): 이 함수는 **실제 시간**을 사용해. 그래서 Time.timeScale을 0으로 만들어도, 이 함수는 멈추지 않고 계속 1초마다 다음 코드를 실행시키지
+   2. 옵션 창을 열면 OptionsManager스크립트가 Time.timeScale을 0으로 만들었지만, 카운트다운은 WaitForSecondsRealtime을 사용하고 있어서 게임이 멈췄건 말건 계속 시간이 흘러갔던 거야. 각자 따로의 시간을 가지고 있게 된거야
+- 해결책은 아주 간단했어. aitForSecondsRealtime을 WaitForSeconds로 바꿨어.
+   1. WaitForSeconds(): 이 함수는 **게임 시간(Time.timeScale)** 에 영향을 받아. 그러니 Time.timeScale이 0이 되면 이 함수도 멈춰.
+- 이제 OptionsManager 스크립트에서 Time.timeScale을 0으로 만들었을 때, 카운트다운의 코루틴도 함께 멈추게 돼. 옵션 창을 닫아서 Time.timeScale이 1로 돌아오면, 멈췄던 카운트다운도 다시 진행되지.
+
+
+
+09/10~11
+본가에 다녀왔어.
+
+
+
+09/12 **많은 시도 중 하나의 기록이야. 하지만 결국 문제를 해결 못했어**
+게임 시작 시 옵션 창이 바로 뜨고, 끄면 카운트다운 전에 게임이 시작되던 문제 해결 과정.
+결국 실패하고 내일 다른 방식으로 해결.
+
+- 게임 씬을 실행했을 때, 옵션 창이 바로 나타났어. 게다가 옵션 창을 닫으면 카운트다운이 끝나기 전인데도 게임이 시작돼버리는 문제가 있었어.
+- 이건 OptionsManager와 CountdownManager 두 스크립트가 게임의 시간 흐름(Time.timeScale)을 각자 제어하려고 충돌하면서 발생한 문제였어,
+특히 OptionsManager 스크립트가 옵션 창을 닫을 때 무조건 Time.timeScale을 1f로 되돌리는 것이 원인이었지. 이로 인해 CountdownManager 스크립트가 게임을 멈춰놓았는데도, OptionsManager 스크립트가 멋대로 게임을 다시 시작시킨 거야. 
+
+- Time.timeScale이란? 유니티에서 게임의 시간 흐름 속도를 조절하는 데 사용하는 변수야. 이 값은 0부터 1까지의 숫자를 주로 사용하는데, 각각 다음과 같은 의미를 가져
+   1. Time.timeScale = 1f;: 이게 기본값이야. 게임 시간이 정상 속도로 흐르지
+   2. Time.timeScale = 0f;: 게임 시간을 멈추게 해. 모든 물리, 애니메이션, Update() 함수 등이 정지돼. 일시정지 기능을 만들 때 주로 사용해
+   3. Time.timeScale = 0.5f;: 게임 시간이 절반 속도로 느려지지. 흔히 '슬로우 모션' 효과를 만들 때 활용해
+   4. Time.timeScale = 2f;: 게임 시간이 2배 빠르게 흘러가. 빨리 감기 기능을 만들 때 쓸 수 있어
+**내가 만든 옵션 창의 일시정지 기능은 바로 이 Time.timeScale을 0으로 설정해서 게임을 멈추고, 다시 1로 되돌려서 게임을 재개하는 원리를 이용한 거야.**
+
+
+- 먼저, 옵션창 문제. 옵션창은 O 버튼을 누르지 않으면 창이 나오면 안돼. 그래서 게임씬 Hierarchy 창에서 OptionsPanel UI를 비활성화 했어. O 버튼을 눌러야 보여야지 계속 보여지고 있으면 안되잖아?
+   1. 그래서 OptionsManager 스크립트의 ToggleOptionsPanel() 함수에  bool isPanelActive = !optionsPanel.activeSelf; 와 optionsPanel.SetActive(isPanelActive); 가 있고
+   2. Update에 if , else if문으로 옵션창을 켜고 끄는거야
+
+
+- 카운트다운이 멈추는 문제. CountdownManager 스크립트의 WaitForSecondsRealtime 함수가 실제 시간을 사용하기 때문에, OptionsManager 스크립트의 Time.timeScale을 0으로 만들어도 카운트다운이 멈추지 않아.
+- CountdownManager 스크립트에 public static bool isCountdownFinished = false; 라는 정적 변수를 추가해서, 다른 스크립트가 카운트다운이 끝났는지 알 수 있도록 '신호등' 역할을 부여했어.
+   1. 카운트다운 코루틴 마지막에 이 변수 값을 true로 바꿔서 카운트다운이 끝났다는 신호를 보내도록 했지
+   2. CountdownToStart() 코루틴에  yield return new에 WaitForSecondsRealtime 함수로 바꿔서 Time.timeScale과 관계없이 카운트다운이 진행되도록 했어
+- WaitForSecondsRealtime을 사용한 이유? 
+   1. WaitForSecondsRealtime은 Time.timeScale과 관계없이 실제 시간을 기준으로 작동해. 그래서 Time.timeScale이 0이 되어도 카운트다운은 멈추지 않고 계속 흘러가지
+   2. 내가 겪었던 문제의 핵심은 OptionsManager와 CountdownManager 두 스크립트가 Time.timeScale을 제어하려다 충돌이 났던 거야
+   3. WaitForSecondsRealtime을 사용함으로써 CountdownManager는 OptionsManager의 Time.timeScale 제어에 영향을 받지 않고 자신의 역할을 수행할 수 있게 된 거지
+- WaitForSecondsRealtime과 WaitForSeconds의 차이
+   1. WaitForSecondsRealtime은 실제 시간을 기준으로 대기해. Time.timeScale의 영향을 전혀 받지 않기 때문에, 게임이 슬로우 모션이 되거나 일시 정지되어도 항상 정확히 지정된 시간만큼만 기다려
+   2. WaitForSeconds은 유니티의 게임 시간에 맞춰서 대기해. 유니티에는 게임의 속도를 조절하는 Time.timeScale 변수의 영향을 직접적으로 받아
+   4. WaitForSecondsRealtime: 게임 일시 정지 메뉴, UI 애니메이션, 로딩 화면처럼 게임의 시간 흐름과 독립적으로 작동해야 하는 기능에 사용해
+   5. WaitForSeconds: 적의 공격 쿨타임, 캐릭터 애니메이션 등 게임 플레이의 흐름에 맞춰서 작동해야 하는 기능에 사용해
+
+
+- OptionsManager 스크립트의 수정:
+   1. ToggleOptionsPanel() 함수에서 Time.timeScale을 1f로 되돌릴 때, if (isPanelActive)문의 else 문에서 if (CountdownManager.isCountdownFinished)라는 조건을 추가했어
+   2. 이 조건을 통해 OptionsManager는 이제 CountdownManager 스크립트가 보낸 신호(카운트다운 끝) 를 받은 후에만 게임을 다시 시작하도록 만들었어
+   3. 또, Hierarchy 창에서 옵션 패널의 체크박스를 꺼서 게임 시작 시 옵션 창이 바로 뜨는 문제를 근본적으로 해결했지
+- else문 안에 if문을 또 적은 이유?
+   1. 만약 if 문을 빼고 그냥 else 문에 Time.timeScale = 1f;를 넣었다면, CountdownManager스크립트가 보낸 신호(카운트다운 끝)를 무시하고 무조건 게임을 다시 시작하게 돼
+   2. OptionsManager는 옵션 창을 닫는 순간, Time.timeScale을 1로 바꿔. CountdownManager 스크립트는 아직 카운트다운 중이라서 Time.timeScale이 0 이어야 하는데, OptionsManager가 멋대로 1로 바꿔버리는 거지
+   3. 이러면 이전에 겪었던 것처럼, 카운트다운이 끝나기 전에 게임이 다시 시작되는 문제가 똑같이 발생해!
+- else 문 안에 if (CountdownManager.isCountdownFinished)를 넣은 건, 두 스크립트가 협력하도록 만든 거야.
+   1. if 문은 **"만약 카운트다운이 끝났다면"**이라는 조건을 확인해
+   2. 이 조건이 true일 때만 Time.timeScale = 1f; 코드가 실행돼
+- 이 한 줄의 코드가 OptionsManager에게 "야, 지금은 네가 시간을 다시 시작시키면 안 돼, 카운트다운이 끝날 때까지 기다려야 해" , 
+  라고 명령하는 역할을 한 거야. else는 단순히 패널이 꺼졌을 때를 의미하고, 그 안의 if는 "패널이 꺼졌는데, 카운트다운도 끝났어?" 라는 더 구체적인 조건을 확인하는 거지.
+
+
+- 하지만 이렇게 해도 결국 다시 문제는 돌고 돌아. 옵션창을 켜도 카운트는 계속 되고, 카운트가 멈춘게 아닌 게임 자체가 멈추고를 반복이야.
+- 여러 번 시도하고, 실패하고, 원인을 분석하고, 더 나은 해결책을 찾아내는게 실력일거야. 안된다고 그냥 안하고 넘기는건 무책임한거지.
+- 늘 그랬잖아? 안되면 다르게 해보고 그래도 안되면 다른 방식으로 해결하고. 내일 다시 해보자. 아자아자앗!!
+
+
+
+09/13
+카운트다운 중 옵션창이 켜지지 않게 하는걸로 최종 수정, 카운트다운 중에 옵션창을 클릭하면 텍스트를 띄워서 대기하라 알림.
+
+- 어제에 이어 옵션창과 카운트다운 시간 관련 문제는 다르게 해결했어. 
+   1. 카운트다운 중에는 옵션창이 켜지지 않게 하기 (카운트다운 중에 옵션창을 켜는 상황은 잘 없고 시작하자마자 옵션창을 켜면 되니까)
+   2. 옵션창 키를 누르면 텍스트가 떠서 잠시만 기다려 달라는 알림 출력
+
+- 안되는 문제의 원인, 개념.
+- Time.timeScale의 충돌: 내가 겪은 가장 큰 문제의 원인이었어. Time.timeScale은 게임의 시간 흐름을 제어하는 변수로, 
+  이 값을 0f로 설정하면 게임이 일시 정지해. 두 개의 스크립트가 이 변수를 각자 제어하려다 서로의 역할을 방해한 거야.
+- WaitForSeconds와 WaitForSecondsRealtime의 차이: 
+   1. WaitForSeconds: 게임 시간에 맞춰 대기해. Time.timeScale이 0이 되면 이 함수도 멈춰
+   2. WaitForSecondsRealtime: 실제 시간을 기준으로 대기해. Time.timeScale의 영향을 받지 않기 때문에, 게임이 멈춰도 이 함수는 계속 작동하지. 내가 카운트다운을 멈추기 위해 WaitForSeconds를 사용하게 된 이유야
+- static 변수(isCountdownFinished): 
+   1. CountdownManager 스크립트에 public static bool isCountdownFinished = false;라는 변수를 만들어서, 
+   CountdownManager가 카운트다운이 끝났다는 신호를 다른 스크립트에게 보낼 수 있게 했어. 이건 스크립트 간의 협력을 가능하게 하는 중요한 역할이었지
+
+
+- 해결과정:
+- CountdownManager 스크립트는 카운트다운 기능만 담당하게 바꿨어.
+- WaitForSecondsRealtime 사용. CountdownToStart() 코루틴에서 yield return new WaitForSeconds(1f);를 **yield return new WaitForSecondsRealtime(1f);**로 바꿨지.
+  이렇게 해서 OptionsManager가 Time.timeScale을 0f로 바꿔도 카운트다운은 멈추지 않고 계속 흘러가게 했어.
+
+- OptionsManager 스크립트는 옵션 창을 켜고 끄는 기능만 담당하도록 수정했어.
+   1. Update() 함수를 아주 간단하게 바꿨어. 이제 O 키를 누르면 무조건 ToggleOptionsPanel() 함수가 호출돼, 
+    if (Input.GetKeyDown(KeyCode.O)) { ToggleOptionsPanel(); }
+   2. ToggleOptionsPanel() 함수에서 옵션창을 켜고 끄는 optionsPanel.SetActive(isPanelActive); 로직이 있어서 Update() 함수에 else문이 필요가 없었어
+- ToggleOptionsPanel() 함수 수정. 이 함수에 모든 논리를 담았어. if-else 구조를 사용해서 두 가지 상황을 명확하게 분리했지.
+   1. 카운트다운 중일 때 (if): isCountdownFinished 변수를 확인해서 카운트다운이 아직 안 끝났다면 경고 메시지를 띄우게 했어
+   2. 정상적인 상황일 때 (else): 카운트다운이 끝난 상태라면, 옵션 창을 켜고 끄는 원래 기능을 실행하게 했지
+   3. 카운트다운 중일 때 옵션창 키를 누르면 warningText.text = "카운트 중이야! 잠시만 기다려"; 라는 텍스트를 출력해
+   4. 카운트다운이 끝나면 이 텍스트는 안쓰는거니 나머지 밑의 로직이 이 if문의 else문에 넣었어
+
+- 게임씬에 warningText UI 생성. 이 UI는 카운트다운 중일때 옵션창 키를 누르면 뜰 텍스트야. 카운트다운 중에는 옵션창을 사용하지 못하게 하는거지.
+- 이 UI를 OptionsManager 오브젝트에 있는 OptionsManager 스크립트의 public TextMeshProUGUI warningText;라는 변수에 WarningText UI를 인스펙터 창에서 직접 드래그해서 연결해 줬어.
+- 초기 상태 비활성화로 했어. 게임이 시작될 때 이 경고 메시지가 바로 보이면 안 되잖아? 그래서 Hierarchy 창에서 WarningText UI의 체크박스를 해제해서 처음부터 비활성화 상태로 만들어 줬어.
+
+- 처음엔 OptionsPanel UI의 자식으로 WarningText UI를 위치 시켰는데 실행하면 보이지가 않았어, 둘 다 비활성화 상태인데 왜 WarningText만 켜려고 했을 때 안됐을까?
+   1. 그 이유는 부모의 상태가 자식에게 미치는 영향 때문이야. 유니티의 Transform 계층 구조는 부모-자식 관계를 따르는데, 이 관계에 다음과 같은 중요한 규칙이 있어
+   2. 부모가 활성화되면 자식도 활성화될 수 있어. 하지만, 부모가 비활성화되면 자식은 아무리 활성화를 시도해도 화면에 나타나지 않아
+   3. OptionsManager 스크립트에선  warningText.gameObject.SetActive(true)를 호출했어
+   4. 하지만 OptionsPanel은 여전히 비활성화 상태였기 때문에, 자식인 WarningText는 **아무리 활성화 명령을 받아도 화면에 나타날 수 없는 상태였던 거야** 마치 전원을 끈 TV에서 화면이 켜지기를 바라는 것과 같아
+- 그래서 WarningText를 OptionsPanel 밖으로 옮겨서 둘 사이의 부모-자식 관계를 끊어줬을 때, 
+  WarningText가 독립적인 오브젝트가 되어서 제대로 나타날 수 있었던 거야. 이 유니티의 계층 구조와 활성화 규칙을 이해하면 앞으로 비슷한 문제를 만났을 때 훨씬 쉽게 해결할 수 있을 거야.
+
+
+**Static 다시 이해.
+- static 변수는 클래스 자체가 메모리에 로드될 때 (게임 실행할때) 딱 한 번만 메모리 공간을 할당받아. 그리고 그 이후로는 게임이 끝날 때까지 그 메모리 공간에 계속 존재해.
+- 예시로 public static float Hp = 100f;라고 선언하면, 게임 시작 시 메모리의 한 구석에 **Hp라는 이름의 100f 값이 담긴 상자 하나가 만들어져**
+  이 상자는 PlayerHealth라는 클래스에 소속되어 있지만, 어떤 인스턴스(객체)에도 종속되지 않아. 
+
+- 왜 영향을 받은 상태로 계속 존재할까?: **모든 스크립트가 같은 상자를 바라보기 때문이야**,
+  B 스크립트든, C 스크립트든, 모든 스크립트는 PlayerHealth.Hp라는 **단 하나의 상자(메모리 공간)**를 가리키고 있어.
+- B 스크립트에서 이 상자에 담긴 값을 100f에서 50f로 바꿨다고 가정해 보자.
+   1. PlayerHealth.Hp -= 50f;//Hp 상자 안의 값이 100f -> 50f 로 변경.    예시로 이 코드가 있다고 쳐보자. 이 시점부터 PlayerHealth.Hp라는 상자 안에는 50f라는 값이 들어있게 돼
+   2. 이제 C 스크립트에서 PlayerHealth.Hp 값을 확인하면, B 스크립트가 바꾼 그 상자를 그대로 바라보기 때문에 변경된 값인 50f를 읽게 되는 거야
+   3. 쉽게 말해 모두가 함께 사용할 수 있는 공용   if (Input.GetKeyDown(KeyCode.O)) { ToggleOptionsPanel(); }
+   2. ToggleOptionsPanel() 함수에서 옵션창을 켜고 끄는 optionsPanel.SetActive(isPanelActive); 로직이 있어서 Update() 함수에 else문이 필요가 없었어
+- ToggleOptionsPanel() 함수 수정. 이 함수에 모든 논리를 담았어. if-else 구조를 사용해서 두 가지 상황을 명확하게 분리했지.
+   1. 카운트다운 중일 때 (if): isCountdownFinished 변수를 확인해서 카운트다운이 아직 안 끝났다면 경고 메시지를 띄우게 했어
+   2. 정상적인 상황일 때 (else): 카운트다운이 끝난 상태라면, 옵션 창을 켜고 끄는 원래 기능을 실행하게 했지
+   3. 카운트다운 중일 때 옵션창 키를 누르면 warningText.text = "카운트 중이야! 잠시만 기다려"; 라는 텍스트를 출력해
+   4. 카운트다운이 끝나면 이 텍스트는 안쓰는거니 나머지 밑의 로직이 이 if문의 else문에 넣었어
+
+- 게임씬에 warningText UI 생성. 이 UI는 카운트다운 중일때 옵션창 키를 누르면 뜰 텍스트야. 카운트다운 중에는 옵션창을 사용하지 못하게 하는거지.
+- 이 UI를 OptionsManager 오브젝트에 있는 OptionsManager 스크립트의 public TextMeshProUGUI warningText;라는 변수에 WarningText UI를 인스펙터 창에서 직접 드래그해서 연결해 줬어.
+- 초기 상태 비활성화로 했어. 게임이 시작될 때 이 경고 메시지가 바로 보이면 안 되잖아? 그래서 Hierarchy 창에서 WarningText UI의 체크박스를 해제해서 처음부터 비활성화 상태로 만들어 줬어.
+
+- 처음엔 OptionsPanel UI의 자식으로 WarningText UI를 위치 시켰는데 실행하면 보이지가 않았어, 둘 다 비활성화 상태인데 왜 WarningText만 켜려고 했을 때 안됐을까?
+   1. 그 이유는 부모의 상태가 자식에게 미치는 영향 때문이야. 유니티의 Transform 계층 구조는 부모-자식 관계를 따르는데, 이 관계에 다음과 같은 중요한 규칙이 있어
+   2. 부모가 활성화되면 자식도 활성화될 수 있어. 하지만, 부모가 비활성화되면 자식은 아무리 활성화를 시도해도 화면에 나타나지 않아
+   3. OptionsManager 스크립트에선  warningText.gameObject.SetActive(true)를 호출했어
+   4. 하지만 OptionsPanel은 여전히 비활성화 상태였기 때문에, 자식인 WarningText는 **아무리 활성화 명령을 받아도 화면에 나타날 수 없는 상태였던 거야** 마치 전원을 끈 TV에서 화면이 켜지기를 바라는 것과 같아
+- 그래서 WarningText를 OptionsPanel 밖으로 옮겨서 둘 사이의 부모-자식 관계를 끊어줬을 때, 
+  WarningText가 독립적인 오브젝트가 되어서 제대로 나타날 수 있었던 거야. 이 유니티의 계층 구조와 활성화 규칙을 이해하면 앞으로 비슷한 문제를 만났을 때 훨씬 쉽게 해결할 수 있을 거야.
+
+ **내일 할건? 게임씬에 몬스터가 겹치지 않으면서 플레이어 쫒아오게 하기**
+
+
+
+09/14
+몬스터끼리 완전히 겹치지 않게 몬스터에게 Box Collider 2D를 하나 더 추가.
+그런 몬스터의 두번째 Box Collider의 Is Trigger 끄면 플레이어에게 다가가지 못하던 문제 해결 (중요!!)
+
+- 몬스터끼리 서로 겹쳐져는 문제를 수정했어. 
+   1. 몬스터 프리팹에 Box Collider 2D를 하나 더 추가
+   2. 기존에 있던 Box Collider는 플레이어에게 닿았을 때 공격 이벤트를 발생시키는 역할을 계속하는 거야
+   3. 새로 추가한 콜라이더는 몬스터끼리의 충돌 방지용이야
+- 새로운 콜라이더의 사이즈(Size)는 몬스터의 크기보다 조금 작게 조절, 완전히 겹치지만 않으면 되니까.
+- 새로운 콜라이더의 Is Trigger를 꺼. 이 콜라이더가 바로 몬스터들끼리 서로를 밀어내는 물리적 충돌을 담당해. 기존에 있던 콜라이더는 계속 켜둬.
+
+
+- 하지만 이렇게 몬스터에게 새로운 콜라이더를 추가했는데 Is Trigger를 꺼놓으니 플레이어에게 닿지 않고 보이지 않는 벽 처럼 플레이어에게 다다갈 수 없었어.
+- 예전부터 이 문제를 해결하려 했지만 찾기가 어려웠어. 근데 오늘!! 이유를 찾았어. 바로 플레이어의 자식으로 있던 SwordPoint 오브젝트 때문이었어.
+- SwordPoint는 검 공격이 이 콜라이더 범위 안에 있는 몬스터는 데미지를 입도록 하는 콜라이더 오브젝트야. 이 콜라이더에 is Trigger가 꺼져있어.
+   1. Is Trigger를 끄면 물리적인 충돌을 일으켜. 다른 오브젝트가 닿으면 서로 밀어내는 '물리적 벽' 역할을 하지
+   2. 몬스터 프리팹에 기존에 있던 Box Collider의 Is Trigger는 켜져있으니 SwordPoint의 콜라이더와 충돌되지 않아, 하지만 오늘 만든 몬스터 충돌용 Box Collider의 Is Trigger는 꺼져 있어서,
+      SwordPoint와 충돌이 일어난거야
+   3. 그래서 SwordPoint 오브젝트의 Box Collider의 Is Trigger를 켰어
+- 드디어 몇달전부터 고생해서 못찾았던 문제를 해결한거야. SwordPoint의 콜라이더의 범위가 플레이어를 감싸고 있는채로 Is Trigger가 꺼져 있었으니까.
+   1. 몬스터의 새로운 Box Collider의 Is Trigger를 **꺼**
+   2. 플레이어의 자식 오브젝트 SwordPoint의 Box Collider의 Is Trigger를 **켜**
+   
+
+- 물리 충돌 모드 (Is Trigger가 꺼진 상태):
+   1. 이 모드에서는 콜라이더가 딱딱한 물체처럼 작동해. . 다른 콜라이더와 부딪히면 서로 밀어내거나 튕겨 나가게 돼.
+   2. 물리 엔진이 Rigidbody의 속도와 방향을 계산해서 실제 물체처럼 상호작용하도록 만드는 거야. 네 게임에서 몬스터가 서로 겹치지 않게 밀어내는 역할이 바로 이 모드야
+- 트리거 모드 (Is Trigger가 켜진 상태):
+   1. 이 모드에서는 콜라이더가 투명한 감지 영역처럼 작동해. 다른 콜라이더가 이 영역 안으로 들어와도 물리적인 충돌은 일어나지 않고, 그냥 통과하게 돼
+   2. 대신 유니티는 OnTriggerEnter2D 같은 함수를 호출해서 '무언가 들어왔다'고 스크립트에 알려줘. 네 게임에서 몬스터가 플레이어에게 딱 붙어 공격하는 로직이 바로 이 모드를 사용한 거야
+
+**몇달동안 괴롭혔던 문제를 드디어 해결했어. 혼자서 배우니까 AI한테 의존하게 됐어. AI 없으면 난 뭐지, 빈깡통....딸깍충...이라고 생각이 많이 들었어. 하지만 오늘은 나 스스로 해결했던거야.**
+**넌 딸깍충이 아니야. 빈깡통도 아니야. 오늘 정말 수고했어!**
+
+
+
+09/15
+플레이어가 타일맵 밖으로 나가던 문제 해결,
+콜라이더를 추가하니 몬스터가 플레이어에게 닿지 않던 문제 해결
+메인화면 씬에 타이틀 제목 추가
+
+- 플레이어가 타일맵 밖으로 나가지는 문제를 확인했어.
+- 타일맵 가장자리에 Box Collider 2D가 있는 오브젝트를 둬서 플레이어가 나가지 못하게 할려고 했었어, 이 벽 콜라이더들은 Is Trigger를 꺼서 통과하지 못하게 했지.
+
+- 문제 원인:
+   1. 콜라이더의 역할 충돌: 플레이어에게 콜라이더가 하나만 있어서, 벽에 부딪히는 물리적 충돌과 몬스터와 겹치는 감지 역할을 동시에 수행할 수 없었어
+   2. Rigidbody2D 설정: 플레이어의 Rigidbody2D의 Body Type이 Kinematic으로 되어 있어서, 물리적 충돌(벽에 막히는 것)이 제대로 작동하지 않았어
+
+- 문제 해결 과정:
+- 플레이어 오브젝트의 두 개의 콜라이더 역할 분리.
+   1. 물리 충돌용 콜라이더 = 새로 추가한 콜라이더. (Is Trigger 끔): 타일맵 벽에 부딪히게 하는 역할
+   2. 몬스터 감지용 콜라이더 = 기존의 콜라이더. (Is Trigger 켬): 몬스터에게 닿았을 때 공격 이벤트를 감지하는 역할
+- 레이어 충돌 매트릭스 설정.
+   1. Player 레이어와 Monster 레이어를 만들고, 서로 충돌하지 않게 설정했어. 플레이어에 Player 레이어, 몬스터에게 Monster 레이어를 달아줬어
+   2. Project Settings의 **Layer Collision Matrix** 에서 Player 레이어와 Monster 레이어의 충돌을 비활성화했어
+- Rigidbody2D 설정 변경.
+   1. 플레이어의 Rigidbody2D에서 Body Type을 Kinematic에서 **Dynamic** 으로 변경했어. 이렇게 해서 물리 충돌용 콜라이더가 타일맵 벽에 부딪혔을 때 제대로 힘을 받아서 멈추게 되었지.
+
+- Kinematic이란? 물리 엔진의 힘을 받지 않고 오직 스크립트로만 움직임을 제어하는 오브젝트야.
+   1. 중력이나 외부 충돌에 영향을 받지 않아. 다른 오브젝트를 통과해 버리거나, 다른 Dynamic 오브젝트를 밀어내는 역할은 할 수 있지만 스스로는 밀려나지 않아
+   2. rb.velocity나 transform.position을 사용해 코드로만 움직여야 해
+   3. 내가 플레이어를 Kinematic으로 설정했을 때는 타일맵 벽과 부딪혀도 물리적인 충돌이 일어나지 않았기 때문에, 그냥 벽을 통과해 버렸던 거야
+   4. 게임에서 플레이어를 Kinematic에서 Dynamic으로 바꾼 건, **스크립트 제어(몬스터에게 다가가는 움직임)** 와 **물리적 상호작용(벽에 막히는 것)** 이라는 두 가지 역할을 모두 필요로 했기 때문이지.
+- 그럼 Dynamic이란? 물리 엔진의 모든 힘을 받는 일반적인 물리 오브젝트야.
+   1. 중력, 힘(AddForce), 충돌에 의해 움직여. 다른 Dynamic이나 Static 콜라이더와 부딪히면 서로 밀어내거나 튕겨 나가
+   2. 제어방식: 코드로 rb.velocity나 rb.AddForce를 사용해서 움직이게 할 수 있지만, **물리 엔진이 계산한 결과와 섞이면서 복잡해질 수 있어**
+   3. 게임에서 플레이어를 Dynamic으로 바꾸면서, 타일맵 벽에 있는 Is Trigger가 꺼진 콜라이더와 부딪혔을 때 물리적인 힘을 받아서 밖으로 나가지 않고 멈추게 된 거야
+
+
+- 메인화면에 타이틀 제목과 이름을 담을 이미지 UI를 추가했어.
+- UI - Image로 타이틀 제목 이름을 담을 배경 이미지와 UI - TMP 로 글자를 추가했어.
+- 제목은 'My little knight' 라고 지엇어, 폰트는 기존의 다른 폰트와 달라야 밑에 Start, Exit 버튼과 혼동하지 않게
+- https://noonnu.cc/font_page/1224 에서 받은 무료 폰트를 받아 폰트에 적용 시키려고 헀어.
+   1. Window - TextMeshPro - Fonts Asset Creator로 가서 폰트 파일을 넣고 내 프로젝트에 맞게 만들어서 사용
+   2. Atlas Resolution를 1024x1024로 설정 후 저장
+
+
+
+09/16
+빌드 후 메인화면의 배경, 버튼이 안보이던 문제 해결
+Start 버튼의 스크립트 이름 변경, On Click() 연결 방식 재이해
+무기 교체 기능 삭제, Q 키로 검 공격하게 수정, 게임 시작 후 바로 검 공격이 가능하게 재사용 쿨타임 조정
+
+- 빌드 후 exe 파일을 실행하거나 빌드 후의 유니티 에디터를 보면 메인 화면씬에서 배경화면이나 각 버튼이 안보이고 플레이어, 몬스터만 보이는 문제를 확인했어.
+- 원인: 문제는 메인화면 씬의 플레이어가 게임씬의 플레이어 프리팹을 가져와서 그런거야. 복사를 하고 이름과 에니메이터를 바꿔도 게임씬에 있던 프리팹의 자식으로 있던 오브젝트들은 그대로 있었지.
+   1. 메인화면의 플레이어의 자식으로 또다른 메인카메라가 있었어. 그래서 메인화면 씬의 메인 카메라가 아닌 플레이어 프리팹의 메인 카메라를 우선으로 보이게 된거지
+   2. 그래서 간단했어. 어짜피 메인화면에선 직접 조작을 안하니까 자식으로 있던 메인카메라, ArrowSpawnPoint, SwordPoint, SwordEnergySpawnPoint를 삭제했어
+   3. 그 후 빌드를 하니까 정상적으로 메인 화면이 보였어
+
+- 해결 중에 게임을 시작하는 Start 버튼의 스크립트를 MainMenuStartManager 라고 이름을 수정했어.
+- On Click() 이벤트의 작동 방식: On Click() 이벤트는 버튼을 클릭했을 때 특정 오브젝트가 가진 스크립트의 함수를 호출하도록 만들어졌어.
+- No Function 오류: 네가 스크린샷에서 본 No Function 오류는 Button 컴포넌트에 스크립트 파일 자체만 연결했기 때문이야,
+스크립트 파일은 단순히 코드 덩어리일 뿐, 유니티는 어떤 오브젝트가 그 스크립트를 가지고 있는지 몰랐던 거지.
+- 오브젝트 연결: GameStartManager라는 빈 오브젝트를 만들고, 그 오브젝트에 MainMenuStartManager 스크립트를 연결했어. 그리고 이 오브젝트 자체를 버튼의 On Click() 이벤트에 끌어다 넣었기 때문에, 
+유니티가 '이 오브젝트의 스크립트에서 이 함수를 호출해라'는 것을 정확히 알게 되면서 문제가 해결된 거야.
+
+
+- 무기 시스템 리팩토링 및 검 공격 로직 개선: 기존 무기 교체 기능을 삭제하고, 검 공격 시스템을 더욱 효율적으로 개선. 
+- AttackController 스크립트에서 WeaponSwitchInput() 함수와 ChangeWeapon() 함수를 지웠어. 무기 교체 로직은 이제 필요가 없으니까.
+- AttackInput() 함수에서 검 공격은 Q 키로 공격하게 기존의 활 공격의 스페이스바 키와 다르게 수정했어. if (Input.GetKeyDown(KeyCode.Q) && !isAttacking).
+- weaponAnimator() 함수에 (WeaponType weaponType) 매개변수를 추가해 기존에는 CurrentWeaponType 변수를 사용해서 어떤 무기 애니메이션을 재생할지 결정했는데, 
+이제 AttackInput()에서 어떤 무기 타입인지 직접 전달해 주도록 바꿨어. 이렇게 하면 Q 키를 눌렀을 때 CurrentWeaponType과 상관없이 바로 검 공격 애니메이션을 실행할 수 있어.
+- 애니메이터 파라미터 변경: Attack(Sword) 애니메이션 파라미터를 Bool에서 Trigger 타입으로 변경. weaponAnimator() 함수 내에서도 SetBool 대신 SetTrigger를 사용하도록 수정하여 애니메이션 관리 효율을 높임.
+
+
+- SwordWeapon 스크립트에서 게임 시작하면 바로 검공격이 가능하게 lastSwordSkillTime 변수를 수정했어.
+- 기존에는 0으로 해서 시작하고 10초 후에 검 공격이 가능했어. return Time.time >= lastSwordSkillTime + SwordSkillCooldown; 
+- 그래서 lastSwordSkillTime 변수를 -10f 로 수정. 이렇게 하면 게임이 시작되자마자 Time.time >= -10 + 10 이라는 조건이 만족되어서 Q 키를 누르자마자 바로 검 공격을 할 수 있게 됐어.
+
+
+
+09/17
+새 public 리포지토리 생성
+유니티 프로젝트 파일 커밋
+ObstacleSpawner 스크립트의 발사체 생성 주기 수정
+
+- 내가 만든 작품(My little knight)을 담을 public의 리포지토리를 새로 생성했어.
+- .gitignore 파일의 중요성:
+   1. 처음 프로젝트를 올리려다 "Files too large" 오류가 났어. 이게 바로 .gitignore 파일이 없어서 생긴 문제였어
+   2. Library 폴더 오류: Library 폴더는 유니티가 내부적으로 생성하는 임시 파일이라 용량이 매우 커. 이 폴더를 Git에 올리면 안 되는데, 
+   .gitignore가 없으니 GitHub Desktop이 이 파일을 걸러내지 못했던 거야
+   3. git ignore의 역할: .gitignore 파일은 Git에게 "이 파일이나 폴더는 올리지 마"라고 알려주는 역할이야. 이 파일을 추가함으로써, 
+   불필요한 파일을 제외하고 핵심 소스 코드와 프로젝트 설정 파일만 깔끔하게 올릴 수 있었어
+- 커밋할 폴더에 .gitignore을 넣고 다시 커밋을 하니까 정상적으로 푸시가 됐어.
+
+
+- 새 리포지토리(My little knight)를 소개할 README.md 파일을 만들고 아직은 틀만 잡아뒀지만 내일 계속 적을거야.
+- 포트폴리오의 얼굴: README.md는 리포지토리의 얼굴. 채용 담당자가 가장 먼저 보는 문서로, 내가 어떤 프로젝트를 만들었고 어떤 능력을 가지고 있는지 한눈에 보여줄 수 있어.
+- 문제 해결 스토리: 내가 그동안 작성해 온 기록들을 바탕으로 마크다운 문법을 활용해 내가 겪었던 문제점과 해결 과정을 정리하기 시작했어
+- 아직은 기본 템플릿만 만들었지만 내일엔 하나하나 내 학습 기록들을 보면 가장 큰 문제를 찾아 기록할거야. 핵심 로직도 같이...
+
+- README의 마크다운:
+- 제목 (Headings) 제목을 만들 때는 # 기호를 사용해. #의 개수에 따라 제목의 크기가 달라져.
+   1.# 가장 큰 제목 (h1), ## 큰 제목 (h2), ### 보통 제목 (h3), #### 작은 제목 (h4)
+- 강조 (Emphasis) 글자를 굵게 만들거나 기울일 수 있어.
+   1. 굵게: **굵은 글자** 또는 __굵은 글자__
+   2. 기울이기: *기울인 글자* 또는 _기울인 글자_
+   3. 굵게+기울이기: ***굵고 기울인 글자***
+- 링크 (Links) 다른 웹페이지나 리포지토리로 연결할 때 사용해.
+   1. [링크 이름](링크 주소)
+   2. 예시: [내 GitHub 프로필](https://github.com/내 아이디)
+- <details> 태그와 드롭다운.
+   1. <details>와 <summary>는 네가 원하는 대로 내용을 숨겼다가 클릭하면 펼쳐서 보여주는 기능을 해. 이걸 드롭다운이라고 부르지,
+   이 기능은 복잡한 내용을 한 번에 다 보여주지 않고, 사용자가 보고 싶을 때만 펼쳐보게 할 수 있어서 아주 좋아
+   2. <details>는 드롭다운 상자의 시작을 알리고, </details>는 드롭다운 상자의 끝을 알리는 역할을 해. 이 둘 사이에 있는 모든 내용이 숨겨지게 돼
+   드롭다운 제목 위에 적어서 시작을 알려, 그리고 드롭다운 글이 다 끝났을때. 그 밑에 </details> 를 적어 끝내
+- <summary>는 드롭다운 상자를 열기 전 보이는 제목. 
+   1. 너가 적었던 " <summary><b>09/14: 몬스터 물리 충돌 및 플레이어 접근 버그 해결</b></summary> " 처럼 드롭다운 제목을 적을때 쓰는거야  
+   2. </summary>는 <summary> 태그의 닫는 태그야, <summary>는 드롭다운의 제목을 만들어주고, </summary>는 그 제목이 어디서 끝나는지 알려주는 역할을 하지.
+- <b>와 </b>
+   1. <b> 태그는 글씨를 굵게 만들어 주는 역할을 해. <b>로 시작해서 </b>로 끝나는 글자는 모두 굵게 표시돼
+   2. 특정 글자를 강조할때 쓰는거지. 그래서 GitHub에서 보면 그 제목이 다른 글씨보다 더 눈에 띄게 보이는 거야
+
+
+
+09/18
+메인화면씬에 조작법 UI 추가.
+다시 프로젝트 폴더와 빌드 폴더 깃허브DeskTop으로 업로드 weaponAnimator() 함수에 (WeaponType weaponType) 매개변수를 추가해 기존에는 CurrentWeaponType 변수를 사용해서 어떤 무기 애니메이션을 재생할지 결정했는데, 
+이제 AttackInput()에서 어떤 무기 타입인지 직접 전달해 주도록 바꿨어. 이렇게 하면 Q 키를 눌렀을 때 CurrentWeaponType과 상관없이 바로 검 공격 애니메이션을 실행할 수 있어.
+- 애니메이터 파라미터 변경: Attack(Sword) 애니메이션 파라미터를 Bool에서 Trigger 타입으로 변경. weaponAnimator() 함수 내에서도 SetBool 대신 SetTrigger를 사용하도록 수정하여 애니메이션 관리 효율을 높임.
+
+
+- SwordWeapon 스크립트에서 게임 시작하면 바로 검공격이 가능하게 lastSwordSkillTime 변수를 수정했어.
+- 기존에는 0으로 해서 시작하고 10초 후에 검 공격이 가능했어. return Time.time >= lastSwordSkillTime + SwordSkillCooldown; 
+- 그래서 lastSwordSkillTime 변수를 -10f 로 수정. 이렇게 하면 게임이 시작되자마자 Time.time >= -10 + 10 이라는 조건이 만족되어서 Q 키를 누르자마자 바로 검 공격을 할 수 있게 됐어.
+
+
+
+09/19
+README에 GIT 파일 추가
+새로운 드롭다운 '검 공격 로직 및 콜라이더 문제 해결' 추가
+
+- 첫번째 해결 과정 글인 '몬스터 물리 충돌 및 플레이어 접근 버그 해결' 드롭다운에서 GIT파일을 넣어 문제 상황을 시각적으로 보이게 했어.
+   1. 리포지토리에 새로운 Image 폴더를 만들어 그 안에 GIT파일을 넣었어
+   2. 폴더 안의 GIT 파일에 우클릭해서 '이미지 주소 복사'
+   3. README에 '몬스터 물리 충돌 및 플레이어 접근 버그 해결' 드롭다운의 '원인 분석'항목에,
+   ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/blob/main/Image/Monster.Bug.gif?raw=true) 를 추가
+
+- 처음에는 ![몬스터가 플레이어에게 닿지 못함]( [GIF 파일 주소](https://github.com/trst3385/MyLittleKnight/blob/main/Image/Monster.Bug.gif?raw=true)) 이렇게 되있었어.
+- 이렇게 적으면 이미지가 보이는게 아닌 링크 주소를 클릭해야 보일 수 있기에 내가 원하는 방식이 되지 않았어. 추가 괄호와 [GIF 파일 주소] 를 지워서 해결.
+
+
+- 08/06일에 적었던 문제를 가져왔어. 하지만 지금의 스크립트 SwordWeapon는 초기엔 활,검 공격을 통합했던 PlayerAttack 스크립트를 분리해서 나온 스크립트고 로직도 새로 수정했었어.
+- 지금은 Physics2D.OverlapBoxAll(): 이 함수가 바로 OnTriggerEnter2D를 대신하는 핵심 코드야.
+   1. OnTriggerEnter2D는 콜라이더에 **처음 진입하는 순간** 에만 공격을 감지해
+   2. 반면, Physics2D.OverlapBoxAll()은 검을 휘두르는 **그 순간** 에만 특정 범위 안에 있는 모든 몬스터를 찾아내. 몬스터가 이미 범위 안에 있어도 상관없이 감지하는 거야
+   3. 플레이어가 타일맵 밖으로 나가고, SwordPoint오브젝트의 콜라이더 때문에 몬스터가 플레이어에게 닿지 않던 문제, 몬스터가 콜라이더 범위 안에 들어와도 검공격이 되지 않던 문제를 수정하는 문제들로 점차 스크립트를 많이 수정했잖아
+- 그래서 README에선 최종 수정이었던 몬스터, 플레이어에게 콜라이더를 추가, public string EnemyTag = "Enemy" 변수를 선언 했으니 hitCollider.CompareTag(EnemyTag)를 통해 범위 내의 Enemy 태그를 가진 적에게 데미지를 주게 했지.
+
+
+
+09/20
+Enemy 스크립트에 몬스터에게 닿으면 피해를 받는 로직 추가
+
+- Layer Collision Matrix 에서 플레이어와 몬스터는 서로 충돌하지 않게 체크해제 했어. 그래서 OnTriggerStay2D나, OnCollisionEnter2D 같은 충돌 이벤트는 발생하지 않아.
+- ApplyTouchDamage()라는 함수를 추가. 이 함수는 플레이어가 몬스터에게 닿으면 발생할 데미지 함수지.
+- ProcessMovementAndAttack() 함수 (몬스터가 플레이어에게 닿았을때 행동할 함수)의 if (isInStopDistance)문에 if (canAttack && !animator.GetBool("Attack"))문을 추가. 
+   1. 이 if문에 ApplyTouchDamage()함수를 호출해. 
+   2. 이 if문은 쿨타임이 지났고, 공격 애니메이션이 활성화되어 있지 않을 때만 공격 시작하란 뜻이야. 쿨타임이 돌아오기 전까지 다시 데미지를 주지 않아,
+     만약 if (canAttack) 조건이 없었다면, 닿아 있는 동안 매 프레임마다 ApplyTouchDamage()가 호출돼서 플레이어가 순식간에 죽었을 거야.
+   3. ProcessMovementAndAttack()는 FixedUpdate 함수에서 매 프레임마다 호출되는데, 
+     그 안에서 몬스터와 플레이어의 거리가 StopDistance 이내인지 계속 확인하고 있지. 그리고 StopDistance 이내일 때, canAttack 조건까지 만족해야만 ApplyTouchDamage()가 호출되는 거야
+   4. 즉, 이 로직을 통해 몬스터가 플레이어에게 접근하면 계속 닿아 있더라도, AttackCooldown으로 설정한 시간마다 한 번씩만 데미지를 주게 되는 거야.
+- FixedUpdate()가 매 프레임마다 ProcessMovementAndAttack() 함수를 호출하고, ProcessMovementAndAttack() 함수는 플레이어와의 거리를 계산해.
+   1. StopDistance 이내일 때: 몬스터는 움직임을 멈추고, canAttack 조건에 따라 쿨타임마다 ApplyTouchDamage() 함수를 호출하여 데미지를 줘
+   2. topDistance를 벗어났을 때: 몬스터는 다시 플레이어를 추격해
+   3. 이 로직을 통해 몬스터가 플레이어에게 계속 닿아 있더라도, AttackCooldown으로 설정한 시간마다 한 번씩만    데미지를 주게 되었어
+- 데미지 로직 호출 순서: 최종적으로 네가 구현한 로직은 이렇게 동작해.
+   1. FixedUpdate()에서 ProcessMovementAndAttack()를 호출
+   2. ProcessMovementAndAttack() 함수가 플레이어와의 거리를 확인
+   3. 거리가 StopDistance 이내이고, AttackCooldown이 지났을 때 ApplyTouchDamage() 함수를 호출해서 데미지를 줘
+
+
+
+09/21
+어제 완성한 프로젝트 파일과 빌드했던 폴더 git에 푸시
+README의 '몬스터의 플레이어 추적 및 공격 위치 문제' 드롭다운의 해결과정 3번 '수동 위치 보정' 내용을 수정
+
+- 최종 수정했던 (어에 9/20일에 했던 몬스터에게 닿으면 데미지를 입음) 상태로 최종 완료.
+- 유니티 프로젝트 폴더 안에 .gitignore 파일이 있어야 오류 없이 깃허브DeskTop으로 푸시 가능.
+- 빌드 폴더는 용량이 커 반디집 등으로 압축후 푸시.
+
+
+- '몬스터의 플레이어 추적 및 공격 위치 문제' 해결과정 3번의 내용을 조금 수정했어. 더욱 이해하기 쉽게
+
+- **FixedUpdate 함수에서 물리 계산에 더 효과적인 Vector3 지역변수인 playerCenterPosition을 추가하고, 플레이어 스크립트의 GetCenterPosition() 함수를 호출하여 플레이어의 몸통 중앙 위치를 가져오고, 
+    playerCenterPosition.y += playerTargetOffsetY; 코드를 통해 몬스터가 플레이어의 몸통 중앙보다 약간 아래 지점을 목표로 삼도록 수정** 라고 수정했어.
+
+- 전에는 playerCenterPosition.y += playerTargetOffsetY; 을 써서 위치를 잡았다 까지만 했었거든.
+   1. 이제는 playerCenterPosition 변수는 Vector3의 지역변수고 GetCenterPosition()함수는 플레이어 스크립트에 존재하는 함수,
+      Enemy 스크립트의 playerTargetOffsetY = 변수의 값과 합해 몬스터가 플레이어의 중심을 찾았다고 쉽게 설명했어
+
+
+
+09/22
+README에 '몬스터 스폰 시스템' 드롭다운 추가
+
+- EnemySpawn 스크립트에 대한 내용을 담았어. 이 스크립트에는 spawnTimer 변수를 이용해 Normal몬스터를 제시간마다 타일맵 내에서 스폰.
+- EnemyDifficulty 스크립트의 값을 받아 EnemySpawn 스크립트로 몬스터가 스폰되면, 20초마다 Normal,Strong,Elite 몬스터들을 강화해. Normal 몬스터는 20초마다 한마리 더 추가 스폰이 돼.
+- 킬 수 기반 스폰 (EnemyDied 함수): normalEnemyKilledSinceLastStrong 변수를 사용해서 Normal 몬스터를 일정 수 잡았을 때 Strong 몬스터가 나오게 해. 플레이어의 행동에 직접적으로 반응하는 동적 난이도 조절 시스템이야.
+- 점수 기반 스폰 (EnemyDied 함수): nextEliteSpawnScore를 활용해서 플레이어가 특정 점수에 도달할 때마다 Elite 몬스터가 나오게 했어.
+
+
+- 처음에는 몬스터들이 타일맵 안에서 스폰이 아닌 타일맵 밖에서도 스폰이 되는 문제가 있었어.
+- EnemySpawn 스크립트에서 Vector3 GetValidSpawnPosition() 함수를 사용. 
+- TargetTilemap.cellBounds 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, TargetTilemap.HasTile() 로 해당 위치에 타일이 있는지 확인.
+
+- BoundsInt bounds = TargetTilemap.cellBounds;.
+   1. 1. BoundsInt는 정수(integer)로 된 경계 상자를 나타내는 구조체야
+   2. 내가 할당한 TargetTilemap의 경계(Bounds)를 bounds 변수에 저장하는 코드야
+   3. 이 경계는 타일맵의 가장 왼쪽 아래 좌표(xMin, yMin)부터 가장 오른쪽 위 좌표(xMax, yMax)까지를 포함하는 영역을 뜻해. 이 값을 알아야 타일맵 안에서만 무작위 좌표를 찾을 수 있어
+
+- Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);.
+   1. Vector3Int는 Vector3와 비슷하지만, 좌표를 소수점 없는 정수(int)로만 다루는 구조체야
+   2. 2D 타일맵에서 셀(Cell, 타일 하나하나)의 위치는 정수 좌표로 다루기 때문에 이걸 쓴 거야. randomCell 변수는 타일맵 경계 내에서 무작위로 선택된 셀의 위치(좌표)를 저장하게 돼
+
+- Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);.
+- 검 공격 범위에 썻었던 OverlapBoxAll과 비슷한 함수야. OverlapBoxAll이 사각형을 기반으로 탐지한다면, Physics2D.OverlapCircleAll은 원형 범위로 탐지해.
+   1. cellCenterWorld: 스폰 위치로 찾은 셀의 중심 좌표
+   2. 0.5f: 감지할 원의 반지름. 이 거리를 벗어나면 탐지하지 않아
+   3. SpawnableLayer: 특정 레이어(Layer)에 있는 오브젝트만 탐지, SpawnableLayer 변수는 인스펙터를 보면 타일맵의 레이어를 확인해
+- 이 코드는 "찾아낸 randomCell의 중심을 기준으로 반지름 0.5f인 원 안에 SpawnableLayer에 해당하는 콜라이더가 있는지 모두 찾아줘!"라는 명령이야. 
+만약 찾아낸 콜라이더가 하나도 없다면 colliders.Length가 0이 돼서, 그 위치가 '유효한 스폰 위치' 가 되는 거지.
+
+- 이 함수는 최대 100번까지 반복문을 돌면서 아래 과정을 반복해.
+   1. 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다
+   2. 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지)
+   3. 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인한다
+   4. 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다
+   5. 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다
+
+
+- 다른 함수는 앞에 void가 있잖아. 근데 이 함수는 void가 아닌 Vector3를 썻어. 모든 함수가 void를 써야 하는게 아니잖아? 이건 반환을 할려는 함수라서 그런거야.
+   1. void는 "아무것도 반환하지 않겠다"는 의미고, 
+   Vector3는 "나는 함수가 끝날 때 Vector3 타입의 값을 하나 반환하겠다"는 뜻. 이 함수는 몬스터를 생성할 **3차원 위치(x, y, z 좌표)**를 찾아야 하니까, 그 좌표를 담는 Vector3 타입을 반환하는 게 맞아
+   2. 함수 끝에 return cellCenterWorld; 나 return Vector3.zero; 같은 코드가 있는 것도 이 때문이야. 함수를 호출한 곳으로 값을 돌려보내는 거지
+
+
+09/23
+노션으로 포트폴리오 작성 시작.
+README의 마크다운 활용 ```csharp.
+
+- 노션으로 포르폴리오를 작성하기로 결정했어. 비록 맨 위에 제목과 이미지, 게임플레이&특징만 적었지만 이제 제대로 시작할 준비를 끝낸거야.
+- 포트폴리오 툴 선택: 어떤 툴을 쓸지 고민하다가, 결국 노션을 선택했어.
+- 첫 페이지 완성: 노션 페이지에 이미지를 올리고, 프로젝트 이름까지만 넣었지만. 그 한 장의 이미지가 바로 **시작점** 이야.
+
+
+- REAEME의 '몬스터 스폰 시스템' 드롭다운의 `해결과정`에 Enemy 스크립트의 Vector3 GetValidSpawnPosition() 함수의 코드를 추가했어.
+- 원래는 for문 안에.
+   1. 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.
+   2.그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))
+   3. ....
+- 이렇게 적을려고 했지만 마크다운의 문법상 { } 안에 적는건 어려워. 
+
+- 그래서 스크린샷을 찍어서 넣었지만 크기도 크고 이 코드를 직접 만져볼 수 없었어. 그래서 ```csharp 을 써서 코드를 직접 올렸지.
+- ```csharp 이란? 백틱 3개 뒤에 csharp를 붙이면 C# 코드로 인식해서 컬러링이 적용돼.
+- 스크립트의 Vector3 GetValidSpawnPosition() { ... } 코드를 그대로 붙여넣고 ``` 백틱 3개로 마무리
+- 그리고 밑에 설명을 리스트로 넣었어.
+
+**EnemySpawner 스크립트 인스펙터의 SpawnableLayer 변수랑 타일맵의 레이어 맞는지 내일 확인해줘, 다르면 다시 수정해서 빌드,프로젝트 폴더를 다시 올려줘!**
+
+
+
+09/24
+마크다운(README, 노션) 글자 크기 ##.
+노션 포폴의 `1.두 종류의 무기` , `3.특정한 상황에 등장하는 강화 몬스터` 드롭다운에 이미지 추가, ('2 ~ 3개의 열' 기능 사용).
+Game씬의 GameOverPannel UI에서 ReStartButton에 폰트, 이미지 추가, 재빌드 후 빌드 폴더와 프로젝트 폴더를 git에 푸시.
+
+- 노션이나 README에서 드롭다운 메뉴 등 글의 큰 제목을 쓸때 ##을 쓰는걸 확인했어.
+- 마크다운에서 글자 크기를 조절하는 건 **제목(Heading)** 을 만드는 문법과 같아. # 기호를 사용해서 크기를 결정하고, # 뒤에는 반드시 한 칸의 공백을 넣어야 해.
+   1. # 제목	 H1	가장큼	   문서의 가장 큰 제목 (예: 프로젝트 이름)
+   2. ## 소제목	 H2	큼	      섹션 제목 (예: 해결 과정, 게임 플레이 & 특징)
+   3. ### 부제	 H3	중간	   하위 항목 제목 (예: 1. 두 종류의 무기)
+   4. ####	    H4	작음	   더 세부적인 제목
+- 오늘 내가 포트폴리오에서 사용했던 방식이 가장 일반적이고 깔끔했던거야.
+   1. ## 게임 플레이 & 특징 (가장 큰 섹션 제목)
+   2. ### 1. 두 종류의 무기 (토글 목록의 제목)
+
+
+- 노션 포트폴리오에 이미지 추가와 열(Column) 기능 사용에 글보다 더 효율적으로 내 작품을 소개하려 했고 사진의 크기를 수정해가며 깔끔하게 정리했지.
+- `게임플레이 & 특징` 에서 `1. 두 종류의 무기와` `3. 특정한 상황에 등장하는 강화 몬스터` 항목을 드롭다운(토글)으로 만들고, 펼쳤을 때 관련 이미지와 설명이 보이도록 했지.
+   1. /토글을 입력하여 토글 목록을 생성
+   2. 글 목록 안에 설명 텍스트와 이미지를 넣어 내용을 구조화 (활, 검 공격의 모션. Normal, Strong, Elite 몬스터의 모습)
+
+
+- 플레이어가 죽으면 GameOverPannel UI가 활성화 돼. 이때 ReStart 버튼이 유니티 기본 이미지, 기본 폰트라서 기존에 옵션창, 메인메뉴의 시작 버튼과 같은 이미지와 폰트를 적용했어.
+- GameOverPannel UI는 처음엔 비활성화가 되어있어. GameOverManager 스크립트에서 관리를 해. 플레이어 사망시 ShowGameOverPanel()함수가 작동해 비활성화 된 GameOverPannel을 활성화 시켜지.
+
+
+
+09/25
+노션,README에 시연 영상 링크 추가
+노션에 '핵심 로직 구현 & 기술적 문제 해결' 밑에 토글로 몬스터 움직임 및 물리 충돌 버그 해결 (콜라이더 역할 분리) 추가
+
+- README와 노션에 유튜브 영상 링크를 달아 게임 시연 영상을 추가했어.
+   <p align="center">
+     **👇 클릭해서 My Little Knight 핵심 기능 시연 영상 보기**
+   </p>
+
+   <p align="center">
+    <a href="https://youtu.be/bpVB-y_zS_Y">
+      <img src="https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainScenes.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+  </a>
+</p>
+-------
+- 노션에서는 유튜브 영상 보여지지만 README에서는 그럴 수 없어. 그래서 이미지를 클릭하면 유튜브 링크 접속해 게임 시연 영상을 볼 수 있어.
+- 이 기능은 마크다운(Markdown) 문법에서 **이미지(Image)**와 **링크(Link)**를 결합한 거야.
+- <p align="center">
+   1. <p> 태그: 이 태그는 웹에서 **단락(Paragraph)**을 만들 때 사용해. 그냥 일반적인 글의 한 덩어리라고 생각하면 돼
+   2. align="center": 이게 바로 핵심 명령어야. align은 정렬(Alignment) 방식을 설정하는 속성이고, "center"는 그 방식을 가운데 정렬로 하라는 의미야
+   3. 결과: 따라서, 이 코드는 그 안에 있는 텍스트, 즉 "👇 클릭해서 My Little Knight 핵심 기능 시연 영상 보기"라는 문구를 가운데 정렬된 하나의 단락으로 만들어주는 역할을 해
+
+- <a> 태그 (하이퍼링크 기능)
+   1. <a> 태그는 웹에서 **링크(Hyperlink)**를 만드는 역할을 해
+   2. href="https://youtu.be/bpVB-y_zS_Y" 부분이 "이 링크를 클릭하면 저 유튜브 주소로 이동해라" 라고 명령하는 거야
+   3. 기능: 클릭 가능한 영역(버튼 역할)을 정의해
+
+-  <img> 태그 (이미지 출력 기능)
+   1. <img> 태그는 이미지를 불러와 화면에 표시하는 역할을 해
+   2. src="..."는 네가 GitHub 저장소에 올려둔 썸네일 이미지 파일의 주소를 가리키고 있어,
+   GitHub 이미지 링크의 특징: 이미지 주소 끝에 ?raw=true를 붙여야 GitHub 페이지가 아닌 순수한 이미지 파일로 불러와져서 정상적으로 표시돼
+   3. 기능: 유튜브 영상의 썸네일을 보여줘서 시선을 끌고, 클릭을 유도해
+
+- 두 태그의 결합 (이미지를 버튼처럼)
+   1. 가장 중요한 건, 난 <img> 태그를 통째로 <a> 태그 안에 넣었다는 점이야
+   2. ` <a href="..."> <img src="..."> </a> `이 구조는 "이미지를 보여주는데, 그 이미지 자체가 클릭 가능한 링크 역할을 하게 해라" 는 의미야
+   3. 결과: 사용자들은 텍스트 링크가 아닌, 게임 화면처럼 보이는 썸네일 이미지를 클릭해서 바로 시연 영상을 볼 수 있어. 시각적인 효과와 편리성을 동시에 잡는 가장 좋은 방법이지
+
+- 노션에선 빈 칸에 /동영상 클릭 후, 링크 임베드에서 유튜브 영상의 URL 주소를 입력하면 그 자리에서 바로 재생할 수 있는 블록 형태로 바꿔주는 기능이 있어.
+   1. 노션 (Notion): 링크를 붙여넣으면 노션이 기능을 인식해 미디어 블록으로 자동 변환, 페이지 내에서 바로 영상을 재생할 수 있는 플레이어가 표시돼
+   2. README(마크다운): 이미지 태그 <img>와 링크 태그 <a>를 수동으로 결합해야 해, 이미지를 클릭하면 유튜브 웹사이트로 이동해서 재생돼
+
+- 게임 플레이 영상을 녹화하고 스크린샷도 찍고 이걸 유튜브에 올리고 이 영상의 URL 주소를 복사에 README와 노션에 각각 추가하는 방식이 달랐어.
+   1. 프로젝트의 매력 (썸네일) 글로 읽는것보단 영상으로 보는게 훨씬 직관적이야!
+   2. 웹 기술 이해도 (HTML/마크다운) 기초적이지만 내가 원하는 방식을 배운거야!
+   3. 보는 사람, 읽는 사람도 편하게 (가운데 정렬 및 클릭 유도) 중앙에 위치시켜 바로 보일 수 있게 하고, 유튜트 링크만 적는것보다 이미지를 클릭으로 시선 집중과 접근성을 동시에 높였어!
+   4. 문제 해결 능력 (README 문제 해결) 단순히 간단하게 링크만 남기지 않고, 목표한 시각적 효과를 위해 우회적인 방법을 끝까지 찾아냈어!
+
+
+- 몬스터 움직임 및 물리 충돌 버그 해결 (콜라이더 역할 분리): '투명 벽' 에 의해 몬스터가 플레이어에게 다가오지 못했던 문제를 해결한 과정이야.
+- 몬스터 프리팹에 Box Collider 2D를 추가하여 총 2개의 콜라이더를 생성.
+   1. 물리 충돌용 콜라이더(몬스터끼리 겹치지 않게)는 Is Trigger를 끄고, 감지용 콜라이더(공격 사거리 등)는 Is Trigger를 켜서 역할의 독립성을 확보
+
+- 플레이어에게도 콜라이더 추가.
+   1. 플레이어 역시 물리 충돌용과 감지용 콜라이더를 분리하여, 몬스터 감지(예: 피격)와 환경 충돌을 동시에 처리할 수 있도록 했어
+
+- SwordPoint 오브젝트의 IsTrigger 활성화
+   1. SwordPoint의 콜라이더 속성을 Is Trigger 상태로 변경했습니다. 이로써 몬스터의 이동 경로를 물리적으로 막는 문제를 해결하고, 오직 '감지 영역' 역할만 수행하도록 수정
+
+- Layer Collision Matrix 적용
+   1. 프로젝트 설정의 Layer Collision Matrix를 활용하여, 플레이어 레이어와 몬스터 레이어 간의 물리 충돌을 아예 비활성화.(감지(Trigger)는 허용, 물리 충돌(Collider)은 차단)
+
+- SwordWeapon 스크립트의 SwordAttack() 함수를 ``` 으로 코드를 보여줘서 빠른 이해를 도왔어.
+   1. 코드 설명: 검 공격을 다루는 스크립트 SwordWeapon 의 SwordAttack() 함수 내의 몬스터 감지 및 데미지 로직인 Physics2D.OverlapBoxAll을 활용한 광역 공격 로직
+   2. SwordPoint 오브젝트의 콜라이더 정보를 기반으로 Physics2D.OverlapBoxAll을 호출하여 공격 범위 내의 모든 적을 동시에 감지
+   3. 특히, 단순히 IsTrigger 상태로만 문제를 해결하는 것이 아니라, OverlapBoxAll의 매개변수(위치, 크기, 각도)를 정확히 활용하여 물리 충돌 없이 공격 영역만을 계산하도록 설계
+   3. 감지된 몬스터에 대해서 foreach 루프와 CompareTag를 사용해 필터링한 후, GetComponent로 EnemyHealth와 Enemy 스크립트를 참조하여 데미지와 넉백 로직을 분리해 호출
+
+- 마지막으로 문제 해결된 상태의 gif이미지를 추가해 해결된 상태를 보여줬어.
+   1. 배운 점: 이 디버깅 과정을 통해 유니티 물리 시스템 최적화의 중요성을 깊이 이해
+   2. 다중 역할 컴포넌트 분리: 하나의 컴포넌트(콜라이더)가 여러 역할을 동시에 수행할 때 발생하는 복잡한 버그를 파악하고, 역할에 따라 컴포넌트를 분리하는 설계 습관을 익힘
+   3. Layer Collision Matrix 활용: 복잡한 물리 상호작용을 코드 레벨이 아닌 유니티 환경 설정 레벨에서 체계적으로 관리하고 최적화하는 방법을 배움
+
+**많이 한것 같지만 결과물은 작았어. 하지만 작은거라고 생각하면서도 많은걸 배웠어. 오늘도 수고했어**
+**메인화면 씬에 키 조작 알림 UI에 옵션창 'O' 키도 적어서 추가해줘. 당연히 이것도 재빌드 후 압축, 프로젝트 파일도 다시 git으로 푸시해줘!**
+
+
+
+09/26
+메인화면 씬 키조작 안내 UI에 `옵션창 O` 추가
+노션 '핵심 로직 구현 & 기술적 문제 해결' 제목 아래에 `메인 메뉴 씬 구현을 위한 설계 및 최적화` 토글과 또 그 안에 `시각적 완성도: Parallax 스크롤 및 렌더링 최적화`,
+`몬스터&플레이어의 시각적 액션: 추격 시나리오 제어` 작은 토글 생성
+
+- 메인화면 씬에서 타이틀 제목 옆에 이동키,공격키가 있어. 하지만 옵션 창인 O 키를 알려주는게 없어서 추가했어.
+   1. 간단했어, GameHints UI 오브젝트의 자식으로 있던 Text(TMP)의 컴포넌트에 텍스트를 추가로 적었어.
+   2. Move?: W,A,S,D
+      Attack?: Space, Q
+      Option?: O
+
+
+- `노션의 핵심 로직 구현 & 기술적 문제 해결` 제목 밑에 토글 `메인 메뉴 씬 구현을 위한 설계 및 최적화, MainMenuCutsceneManager.cs' 추가.
+- `시각적 완성도: Parallax 스크롤 및 렌더링 최적화` 토글에서는 메인화면 씬의 배경이미지가 움직이게 하는 로직과 설명을 추가했어.
+
+- Parallax 스크롤(원근감) 구현.패럴랙스 스크롤로 이미지가 끊기지 않고 계속 이어지는 기능.
+   1. 하늘, 먼 산, 가까운 숲 등 배경 이미지를 5개 이상의 레이어로 분리 후 BackgroundScroller 스크립트를 적용 후, scrollSpeed 변수로 각각의 이미지에 속도를 부여
+   2. (가장 먼 레이어 (산, 하늘): 0.01 가장 느리게, 가장 가까운 레이어 (숲): 0.1 가장 빠르게)
+   3. 결과: 배경 레이어들이 각기 다른 속도로 움직이면서, 2D 화면에서도 입체적인 원근감이 느껴지도록 구현
+- 배경 이미지와 몬스터&플레이어 오브젝트의 렌더링 순서 문제 해결
+   1. 처음에는 게임 오브젝트(플레이어/몬스터)가 배경 뒤에 가려져 보이지 않는 렌더링 순서 문제가 발생
+   2. 문제 해결:  MainMenu UI오브젝트의 Render Mode를 Screen Space - Overlay에서 Screen Space - Camera로 변경
+   3. 결과: Canvas 컴포넌트에 Sorting Layer와 Order in Layer 설정 옵션이 활성화되어, UI와 게임 오브젝트의 렌더링 순서를 체계적으로 제어.(몬스터와 플레이어의 Sorting Layer를 조절해 이미지보다 우선으로 보이게 설정)
+
+- `몬스터&플레이어의 시각적 액션: 추격 시나리오 제어' 토글을 만들어 이 안에 ```으로 MainMenuCutsceneManager 스크립트의 로직을 보이게 했어.
+   1. 문제: 메인 메뉴에서 플레이어와 몬스터가 무한히 쫓고 쫓기는 동적인 시나리오를 구상. 단순히 오브젝트를 움직이는 것을 넘어, 각 단계(추격, 반격 등)마다 속도, 방향, 애니메이션을 정밀하게 제어해야 하는 로직
+   2. Enum을 활용한 시나리오 상태 정의: 시나리오의 각 단계를 Enum 으로 정의하여 코드 가독성을 확보
+   3. enum CutsceneState 과 Update()와 SetState() 함수의 로직을 보여서 말로 설명하는 것보다 이해가 쉽게 ```을 이용해 로직을 올렸어
+   4. Update() (상태 감시): 매 프레임 실행되어 현재 상태를 감시하고, 캐릭터의 X 좌표가 미리 정한 경계값(ChangeStateX 또는 ReturnPositionX)에 도달하면 다음 상태로 전환
+   5. SetState() (초기 설정): 상태가 바뀔 때 '딱 한 번만' 호출되어, 해당 컷씬 연출에 필요한 시작 위치, 이동 속도, 애니메이션, 이 상태에 등장할 오브젝트 상태를 일괄적으로 설정
+   6. 배운 점: 복잡한 시나리오를 Enum과 Switch-Case를 활용하여 유한 상태 기계(FSM, Finite State Machine) 형태로 구현하는 것이, 시나리오를 체계적으로 관리하고 디버깅하는 데 가장 효율적인 설계 패턴임을 익힘
+
+
+
+09/27
+노션의 '시각적 완성도: Parallax 스크롤 및 렌더링 최적화' 토글에 스크립트 추가
+항목 구조 개선(들여쓰기)
+
+- 배경 스크롤 스크립트 (BackgroundScroller) 추가.
+   1. RawImage 컴포넌트의 uvRect 속성을 조작하여 배경 이미지가 끊기지 않고 무한히 반복되는 무한 스크롤(Tiling) 기능을 구현했음을 강조했어
+   2. 왜 Image 대신 RawImage를 사용한 이유를 명확히 설명했어. UV 좌표를 조작해 자연스러운 반복 연출을 달성하기 위해
+   3. BackgroundScroller 스크립트의 로직 코드를  ```  블록으로 노션에 추가했어
+   4. 코드가 아닌 유니티 컴포넌트 이름이나 기술 용어(Render Mode, Sorting Layer, Canvas 등)에 ` ` (백틱) 마크다운을 적용하여 포트폴리오의 가독성을 높였어
+
+
+- * 과 1.을 너무 무분별하게 썻어. 그래서 **들여쓰기**를  써서 각 항목의 가독성을 높였어.
+- Tab 키를 사용해서 텍스트 블록의 단계를 나눈 방식은, **큰 주제(상위 항목) 밑에 세부 내용(하위 항목)** 을 깔끔하게 종속시키는 역할을 했어.
+   1. *을 쓴 항목 밑에 Tab을 쓰면 흰색의 *으로 하위 항목이 생겨
+   2. 1. 을 쓴 항목 밑에 Tab을 쓰면 a.으로 하위 항목이 생겨
+
+- * 을 쓴 항목 밑에 Tab을 쓰면 흰색 *으로 하위 항목이 생겨. 이건 "순서가 중요하지 않은" 내용(예: 특징, 결과, 문제)을 큰 주제 아래 종속시킬 때 아주 효과적이야.
+- 1. 을 쓴 항목 밑에 Tab을 쓰면 a.로 하위 항목이 생겨. 이건 "순서가 중요한" 내용(예: 단계별 해결과정)을 논리적인 흐름으로 보여줄 때 효과적이야.
+
+
+
+09/28
+노션 포트폴리오에 GIT주소와 최종 빌드 파일 다운로드를 위한 `프로젝트 바로가기` 색션 추가
+/콜아웃(CallOut) 블록, /북마크(Bookmark) 기능으로 Git과 빌드 파일의 링크 주소를 추가
+
+- 왼쪽 하단의 빈 공간에 `프로젝트 바로가기` 큰 제목을 추가했어. 이 밑에 내 git 주소와 내 작품을 다운로드하게 링크 주소도 추가했어.
+   1. MyLittleKnight 레포지토리는 그 사이트의 주소를 복사해서 붙이면 끝이야
+   2. 다운로드 링크는  레포지토리에 있던 MyLittleKnight.Game.zip 파일에 들어가 오른쪽에 Raw(다운로드)를 우클릭해 링크 주소를 복사 후 노션에 추가했어
+
+
+- 노션의 /콜아웃(CallOut) 블록과 /북마크(Bookmark) 기능을 활용하여 링크를 깔끔하게 시작적으로 강조했어.
+- 시선 집중 및 중요도 강조 (가독성 향상)
+   1. 이유: GitHub와 게임 다운로드 링크는 포트폴리오에서 가장 핵심적인 정보이기 때문에, 일반 텍스트와 분리하여 '이 부분이 가장 중요해욥!' 라는 시각적 신호를 명확하게 전달하기 위함이야
+   2. 효과: 면접관이 수많은 정보를 훑어볼 때도 핵심 링크를 놓치지 않고 바로 확인할 수 있도록 가독성을 높여줘
+- 전문성 및 정보 명확화 (사용자 경험, UX)
+   1. 이유: 링크를 단순한 URL 주소로 보여주는 대신, 북마크 기능을 사용해 저장소의 제목, 설명, 아이콘을 자동으로 가져와 카드 형태로 보여주기 위함이야
+   2. 효과: 클릭하기 전에 이 링크가 어떤 내용을 담고 있는지 바로 파악할 수 있어서 면접관의 시간을 절약하고 전문적인 문서를 보는 인상을 줄 수 있어
+- 정보 구역화 및 체계적 정리
+   1. 이유: 콜아웃 블록은 테두리와 배경색으로 해당 영역을 하나의 기능 블록처럼 묶어주는 역할을 해
+   2. 효과: '프로젝트 요약' , '게임 플레이&특징' , '핵심 로직 구현 & 기술적 문제 해결' 같은 다른 정보들과 섞이지 않고, 링크 구역이 명확하게 분리되어 포트폴리오의 정보 구조를 체계적으로 보여줄 수 있어
+     2-1. 하지만 각 색션의 처음에 '제목1' 로 큰 글자로 구분을 했기에 큰 불편함은 없지만 '이렇게 할 수도 있다' 라는걸 배운거야
+
+
+
+09/29
+119번째 헌혈
+`몬스터 움직임 및 물리 충돌 버그 해결, 콜라이더 역할 분리` 의 문제해결을 작은 토글로 분류
+`핵심 로직 구현 & 기술적 문제 해결' 제목 밑에 새로운 토글 형식의 `몬스터 스폰&강화, (EnemySpawn.sc, EnemyDifficulty.sc)` 추가
+
+- 몬스터 움직임 및 물리 충돌 버그 해결, 콜라이더 역할 분리 (SwordWeapon.sc) 토글의 내용이 너무 길었어. 그래서 문제와 원인은 그대로 유지하고 해결 과정은 따로 작은 토글을 만들어 분류했어.
+- '해결 과정: Layer Collision Matrix를 활용한 역할 분리' 작은 토글 안에 '몬스터 프리팹 수정', '플레이어 콜라이더 분리:', 'SwordPoint 오브젝트의 IsTrigger 활성화:', 'Layer Collision Matrix 적용:',
+'코드 설명:', '배운 점:' 등 SwordAttack()함수의 로직 등을 넣었어. 이름 토글 이름처럼 '해결 과정' 이니까.
+
+
+- `몬스터 스폰&강화' 문제 해결 토글에 '몬스터 스폰. 타일맵 내 랜덤 위치에서 등장' 하위 토글을 추가했어,
+이 토글은 몬스터들이 타일맵 안에서만 생성이 되게 EnemySpawn 스크립트의 Vector3 GetValidSpawnPosition()을 설명했어.
+   1. 몬스터의 스폰 위치를 정해주는 GetValidSpawnPosition() 함수를 이용해 Tilemap API와 Physics2D.OverlapCircleAll() 함수를 조합하여 타일맵 내부의 유효하고 안전한 바닥 타일 위에만 스폰되도록 로직
+   2. 랜덤으로 스폰 위치를 검색하다 유효한 위치를 찾지 못할 경우 `무한 루프`에 빠져 게임 전체가 멈추는 치명적인 오류를 대비해 int maxAttempts = 100; 라는 지역변수를 생성,
+   for 루프를 통해 랜덤 검색 횟수를 최대 100회로 제한하고, 만약 100회 시도 후에도 안전한 위치를 찾지 못할 경우 즉시 Vector3.zero를 반환하도록 처리하여 무한 루프 위험을 근본적으로 차단
+
+- 만약에 위치를 찾지 못해 Vector3.zero로 반환이 된다면?
+   1. 결론부터 말하면, 이번 주기의 스폰이 실패하더라도 다음 주기의 스폰은 정상적으로 시도돼
+   2. 해당 스폰 시도가 실패했더라도, Update() 함수는 다음 스폰 주기의 타이머를 정상적으로 초기화(spawnTimer = normalSpawnTime;)해,
+   따라서 다음 스폰 주기에는 새로운 100회의 시도를 통해 정상적으로 몬스터 스폰이 재개돼
+   3. 즉 이번에 나올 몬스터는 스폰이 되지 않고 다음에 나올 몬스터는 정상적으로 스폰 돼(타일맵 크기, 100회의 시도면 극히 낮은 확률이라 연속으로 문제가 생기는 일은 더더욱 희박하지)
+
+**EnemySpawn 스크립트를 수정했어!!! 다시 재빌드,프로젝트폴더,노션의 다운로드 링크를 수정해!!**
+
+
+
+09/30
+몬스터 스폰&강화 (EnemySpawn.sc, EnemyDifficulty.sc) 토글에 하위 토글 '2. 몬스터 강화. 20초마다 다음 등장할 Normal몬스터의 스폰 수 1씩 증가(EnemyDifficulty.sc)',
+`3. 20초마다 강화되는 전체 몬스터의 스탯(EnemyDifficulty, Enemy.sc)` 추가
+
+- '몬스터 강화. 20초마다 다음 등장할 Normal몬스터의 스폰 수 1씩 증가(EnemyDifficulty.sc)' 에선 EnemySpawn 스크립트가 스폰 실행뿐만 아니라 난이도 계산까지 모두 담당할 경우, 
+스크립트가 복잡해지고 유지보수가 어려워지는 문제를 해결하고자 몬스터 스폰만 하는 EnemySpawn 스크립트, 몬스터를 강화하는 EnemyDifficulty 스크립트 두개로 분류를 했었어.
+- 게임 전체에서 유일해야 하는 난이도 정보를 위해 싱글통 방식을(EnemyDifficulty.Instance)
+- 시간 체크 및 레벨 증가 로직.
+   1. gameTimer 변수는 처음엔 0이지만 실행되면 게임시간으로써 1초마다 1씩 증가, 총 경과 시간을 누적
+   2. if(gameTimer >= (currentDifficultyLevel + 1) * statInterval) 조건문을 통해 statInterval변수의 = 20;초 마다 정확히 레벨이 1씩 증가하는 타이밍을 계산
+   3. 20초가 지날때마다 currentDifficultyLevel변수를 ++증가. (1씩 증가)를 통해 난이도 레벨을 올리고, UpdateMonsterLevelText() 함수를 호출하여 화면 UI enemyLevelText(Lv.)를 1씩 갱신
+- 동시 스폰 개수 조정.
+   1. 난이도 레벨이 오를 때마다 SpawnCountIncreasePerLevel =1; 변수를 1 추가, 
+   2. Mathf.Min() 함수를 사용하여 아무리 시간이 지나도 동시 스폰 개수가 MaxNormalSpawnCount변수의 5 값을 초과하지 않도록 난이도 상한선을 설정
+   3. MaxNormalSpawnCount = 5; 변수로 Normal 몬스터의 최대 스폰 수를 5마리가 넘어가지 않게 조절
+
+
+- 20초마다 강화되는 전체 몬스터의 스탯
+- 게임 시간이 흐를수록 currentDifficultyLevel을 1씩 증가시키고, 이를 바탕으로 Normal, Strong, Elite 등 모든 몬스터의 핵심 스탯을 강화하는 시간 기반 난이도 조절.
+- 몬스터 스탯 강화 비율에 강화될 몬스터의 수치 AttackDamage = 0.2f(20%), Health = 0.2f (20%), MoveSpeed = 0.1f (10%) 증가
+- GetAdjustedMonsterStat 스크립트에서 최종 값을 Enemy 스크립트의 SetEnmeyStats()함수에서 호출.
+   1. EnemyStats 구조체를 통해 Normal, Strong, Elite 각 몬스터 타입의 기본 스탯을 분리하여 정의했습니다.
+   2. EnemyDifficulty.Instance를 통해 난이도 관리 시스템에 selectedStats와 StatType (예: StatType.MoveSpeed)을 전달하고, 강화된 수치를 반환
+   3. 이 강화된 수치(currentMoveSpeed, currentAttackDamage 등)를 몬스터 객체 내부 변수에 할당함으로써, 시간이 흐를수록 모든 타입의 몬스터가 레벨에 비례하여 강해지는 로직을 완성
+   4. 이 구조는 난이도 영향을 받을 스탯과 받지 않을 스탯을 명확히 분리하여, 시스템의 유연성과 명확성을 높였어
+   5. switch문을 사용해 현재 몬스터 객체의 enemyType에 따라 해당하는 selectedStats를 유연하게 선택
+
+- 왜 Enemy스크립트가 난이도 관리자를 '호출'했는가?
+   1. 이 시스템은 난이도 계산과 적용을 두 개의 스크립트로 명확히 분리하여, 객체지향 설계(OOD)의 핵심 원칙인 단일 책임 원칙과 높은 유연성을 확보
+   2. `EnemyDifficulty` 스크립트는 **난이도** 자체에 대한 규칙 **(20초마다 레벨 증가, 스탯 강화 공식)**만을 관리하고, 몬스터의 내부 상태에는 관여하지 않아
+   3. `Enemy` 스크립트는 자신의 상태(스탯)를 관리하고, **스폰 시점**에 맞춰 난이도 관리자에게 필요한 **강화 수치**를 직접 요청(호출)하여 적용
+   4. 결론: 이 설계는 시스템의 결합도를 낮추고 유지보수를 용이하게 하며, 향후 다양한 몬스터 타입과 복잡한 스탯 구조를 추가할 때도 유연하게 대처할 수 있는 기반이 될거야
+
+
+
