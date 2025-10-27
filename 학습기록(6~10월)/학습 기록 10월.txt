@@ -416,6 +416,34 @@ EnemyDifficulty 스크립트의 CurrentNormalSpawnTime 속성 재확인 (10/20 �
 
 
 
+10/27
+유니티 버전 업데이트 2022.3.61f1 -> Unity6.2 6000.2.9f1
+Player, Enemy 스크립트 주석,헤더 등 한글이 깨짐 문제
+FindObjectOfType의 새로운 대체. FindFirstObjectByType<T>()나 FindAnyObjectByType<T>()
+
+- 기존에 쓰던 버전에 보안경고 표시가 떠서 6.2로 에디터로 바꿨어. 근데 문제가 많이 나오더라고...
+   1. 몇몇 스크립트의 한글이 깨짐. 유니코드(UTF-8) 등으로 해도 이미 깨진 한글은 복구가 안된대. 그래서 당장 Player, Enemy 스크립트의 주석을 git에 있던 프로젝트 폴더의 스크립트를 보고 다시 적었어
+   2. 컴포넌트를 찾을때 쓰던 FindObjectOfType이 이젠 사용을 못해, 그래서 FindFirstObjectByType<T>()나 FindAnyObjectByType<T>() 로 바꾸는 작업을 해야했어.
+
+
+- FindFirstObjectByType<T>, FindAnyObjectByType<T> 차이?
+- 유니티 6.2에선 FindObjectOfType<>가 쓰이지 않아. 그래서 새로운 두 함수가 쓰여.
+- 두 차이의 핵심은 '어떤 것을 찾을 때까지 검색을 계속할 것인가' 에 달려 있어.
+ 
+- FindAnyObjectByType<T>()
+   1. 목적: 타입이 맞는 오브젝트를 하나라도 찾으면 즉시 반환
+   2. 검색 순서: 정해진 순서가 없어. 유니티가 내부적으로 가장 빠르고 효율적인 순서(예: 메모리상에서 먼저 로드된 순서)로 검색해
+   3. 성능: 가장 빨라. 순서를 따지지 않기 때문에 검색이 매우 신속하게 끝나
+   4. 사용 시점: 씬에 해당 컴포넌트(T)가 단 하나만 존재하거나, 어떤 인스턴스를 가져와도 상관없을 때 (GameOverManager 스크립트처럼)
+
+- FindFirstObjectByType<T>()
+   1. 목적: 씬 계층 구조(Hierarchy)상에서 가장 위에 있는 오브젝트를 찾아 반환
+   2. 검색 순서: 씬 계층 구조의 순서를 따라. 위에서부터 아래로 순차적으로 검색
+   3. 성능: FindAnyObjectByType보다 느릴 수 있어. 순서를 지키기 위해 검색을 더 오래 해야 할 수도 있으니까
+   4. 사용 시점: 해당 컴포넌트가 여러 개 있는데, 반드시 씬 계층 구조상의 특정 순서를 따라 첫 번째 것을 찾아야 할 때만 사용해.
+
+- 대부분의 경우 (특히 매니저 스크립트처럼 씬에 하나만 있는 경우), FindAnyObjectByType<T>()를 쓰는 것이 성능상 가장 좋고 권장되는 방법이야.
+**유니티 C# 코드에서는 네가 작성하는 모든 동작이 public class Player : MonoBehaviour처럼 클래스 안에 정의되어 있는 '메서드'지만, 의미상으로는 '함수'라고 불러도 대부분 이해하는 데 문제없어. 하지만 정확한 용어는 메서드라는 걸 기억해 두면 돼!**
 
 
 
