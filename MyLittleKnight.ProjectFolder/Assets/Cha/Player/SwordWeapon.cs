@@ -1,39 +1,39 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;//UI »ç¿ëÀ» À§ÇØ Ãß°¡
+using UnityEngine.UI;//UI ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 
 
 public class SwordWeapon : MonoBehaviour
 {
 
-    [Header("UI,ÄÄÆ÷³ÍÆ® ¿¬°á")]
+    [Header("UI,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½")]
     public Image SwordSkillIcon;
     public Image CooldownOverlay;
     public TextMeshProUGUI CooldownText;
     private SpriteRenderer SpriteRenderer;
 
-    [Header("°Ë °ø°Ý °ü·Ã")]
-    //°Ë °ø°Ý °ü·Ã
-    public float SwordDamage = 2f;//°Ë °ø°Ý·Â(ÀÎ½ºÆåÅÍ ¼³Á¤)
-    public BoxCollider2D SwordAttackCollider;//SwordPoint ¿ÀºêÁ§Æ®ÀÇ BoxCollider2D¸¦ Á÷Á¢ ¿¬°á
-    public string EnemyTag = "Enemy";//ÀûÀ» ½Äº°ÇÒ ÅÂ±× (ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ °¡´É)
-    //°Ë °ø°Ý½Ã ¸ó½ºÅÍ ³Ë¹é °ü·Ã
-    public float KnockbackForce = 10f;//³Ë¹éÀÇ °­µµ(ÀÎ½ºÆåÅÍ¿¡¼­ Á¶Àý)
-    public float KnockbackDuration = 0.2f;//³Ë¹éÀÌ Àû¿ëµÇ´Â ½Ã°£ (¸ó½ºÅÍ°¡ Àá½Ã ³Ë¹é »óÅÂ°¡ µÇµµ·Ï)
-    //°Ë±â ¿¡³ÊÁö °ü·Ã
-    public float SwordEnergyDamage = 5f;//°Ë±â ±âº» °ø°Ý·Â(ÀÎ½ºÆåÅÍ¿¡ ¼³Á¤)
-    public float SwordEnergySpeed = 15f;//°Ë±â ¿¡³ÊÁö ¼Óµµ
-    public Transform SwordEnergySpawnPoint;//°Ë±â ¿¡³ÊÁö »ý¼º À§Ä¡ (ÀÎ½ºÆåÅÍ¿¡ ¿¬°á)
-    public GameObject SwordEnergy;//°Ë±â ¿¡³ÊÁö ÇÁ¸®ÆÕ (ÀÎ½ºÆåÅÍ¿¡¼­ ¿¬°á)
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public float SwordDamage = 2f;//ï¿½ï¿½ ï¿½ï¿½ï¿½Ý·ï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public BoxCollider2D SwordAttackCollider;//SwordPoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ BoxCollider2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public string EnemyTag = "Enemy";//ï¿½ï¿½ï¿½ï¿½ ï¿½Äºï¿½ï¿½ï¿½ ï¿½Â±ï¿½ (ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½Ý½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¹ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public float KnockbackForce = 10f;//ï¿½Ë¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public float KnockbackDuration = 0.2f;//ï¿½Ë¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½Ã°ï¿½ (ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ ï¿½Ë¹ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Çµï¿½ï¿½ï¿½)
+    //ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public float SwordEnergyDamage = 5f;//ï¿½Ë±ï¿½ ï¿½âº» ï¿½ï¿½ï¿½Ý·ï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public float SwordEnergySpeed = 15f;//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+    public Transform SwordEnergySpawnPoint;//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ (ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public GameObject SwordEnergy;//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 
-    [Header("°Ë °ø°Ý ¼Óµµ °ü·Ã")]
-    public float SwordSkillCooldown = 10f;//°Ë ½ºÅ³ ÄðÅ¸ÀÓ
-    public float lastSwordSkillTime = -10f;//¸¶Áö¸·À¸·Î ½ºÅ³À» »ç¿ëÇÑ ½Ã°£, Time.timeÀÌ ÇöÀç ½Ã°£À» ÀÌ º¯¼ö¿¡ ÀúÀåÇØ¼­ ÄðÅ¸ÀÓÀ» °è»êÇÒ ¶§ »ç¿ë
-    //ÀÌ º¯¼ö°¡ ¾øÀ¸¸é Time.time >= lastSwordSkillTime + swordSkillCooldown °°Àº ÄðÅ¸ÀÓ Ã¼Å© °ø½ÄÀÌ ¼º¸³µÇÁö ¾Ê¾Æ.
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public float SwordSkillCooldown = 10f;//ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½Å¸ï¿½ï¿½
+    public float lastSwordSkillTime = -10f;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½, Time.timeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Time.time >= lastSwordSkillTime + swordSkillCooldown ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ Ã¼Å© ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½.
 
-    [Header("°Ë °ø°Ý »ç¿îµå")]
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private AudioSource swordAudioSource;
     [SerializeField] private AudioClip swordAttackSound;
     
@@ -41,148 +41,148 @@ public class SwordWeapon : MonoBehaviour
 
     void Awake()
     {
-        //SpriteRenderer ÄÄÆ÷³ÍÆ®¸¦ °¡Á®¿Í¼­ º¯¼ö¿¡ ÇÒ´ç
+        //SpriteRenderer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½
         SpriteRenderer = GetComponent<SpriteRenderer>();
 
-        //ÂüÁ¶°¡ Á¦´ë·Î µÇ¾ú´ÂÁö È®ÀÎ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (SpriteRenderer == null)
-            Debug.LogError("SwordWeapon: SpriteRenderer ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î!");
+            Debug.LogError("SwordWeapon: SpriteRenderer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");
     }
     void Update()
     {
-        //Update ÇÔ¼ö°¡ ¸Å ÇÁ·¹ÀÓ¸¶´Ù È£ÃâµÇ°í ÀÖ´ÂÁö È®ÀÎ
+        //Update ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç°ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         UpdateSwordSkillUI();
     }
 
-    public void SwordAttack()//°Ë °ø°Ý ÇÔ¼ö(¾Ö´Ï¸ÞÀÌ¼Ç ÀÌº¥Æ®·Î È£ÃâµÉ ÇÔ¼ö)
-    {                        //SwordPointÀÇ BoxCollider2D¸¦ »ç¿ëÇÏ¿© OverlapBox·Î Ãæµ¹ °¨Áö
+    public void SwordAttack()//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½(ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½)
+    {                        //SwordPointï¿½ï¿½ BoxCollider2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ OverlapBoxï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½
 
-        //°Ë°ø°Ý »ç¿îµå Àç»ý
-        if (swordAudioSource != null && swordAttackSound != null)//audioSource¶û swordAttackSound°¡ != null. Áï Á¤»óÀûÀ¸·Î ¿¬°áµÈ »óÅÂ¿¡¼­ »ç¿îµå Àç»ý
+        //ï¿½Ë°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        if (swordAudioSource != null && swordAttackSound != null)//audioSourceï¿½ï¿½ swordAttackSoundï¿½ï¿½ != null. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             swordAudioSource.PlayOneShot(swordAttackSound);
-        //PlayOneShotÀº ÀÌ¸§ ±×´ë·Î ÇöÀç Àç»ý ÁßÀÎ ´Ù¸¥ ¼Ò¸®¸¦ ²÷Áö ¾Ê°í, »õ·Î¿î ¼Ò¸®¸¦ ÇÑ ¹ø¸¸ Àç»ýÇÏ´Â ÇÔ¼ö¾ß.
+        //PlayOneShotï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½.
 
-        Debug.Log("SwordAttack ÇÔ¼ö È£ÃâµÊ!");
+        Debug.Log("SwordAttack ï¿½Ô¼ï¿½ È£ï¿½ï¿½ï¿½!");
 
-        if (SwordAttackCollider == null)//swordAttackCollider°¡ null»óÅÂ¿Í °°´Ù¸é? ¹Ý´ë´Â !=
+        if (SwordAttackCollider == null)//swordAttackColliderï¿½ï¿½ nullï¿½ï¿½ï¿½Â¿ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½? ï¿½Ý´ï¿½ï¿½ !=
         {
-            Debug.LogError("PlayerAttack: Sword Attack Collider°¡ ¿¬°áµÇÁö ¾Ê¾Æ °Ë °ø°ÝÀ» ¼öÇàÇÒ ¼ö ¾ø¾î!");
+            Debug.LogError("PlayerAttack: Sword Attack Colliderï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");
             return;
         }
 
-        //SwordPoint ¿ÀºêÁ§Æ®ÀÇ BoxCollider2DÀÇ ¿ùµå °ø°£ À§Ä¡¿Í Å©±â¸¦ °¡Á®¿È.
+        //SwordPoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ BoxCollider2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Å©ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
         Vector2 colliderCenter = SwordAttackCollider.transform.position + (Vector3)SwordAttackCollider.offset;
         Vector2 colliderSize = SwordAttackCollider.size;
         float colliderAngle = SwordAttackCollider.transform.rotation.eulerAngles.z;
-        //BoxCollider2D ¿µ¿ª ³»ÀÇ ¸ðµç ÄÝ¶óÀÌ´õ¸¦ °¨ÁöÇØ. ¹ØÀÇ foreach¹®¿¡¼­ ¸ó½ºÅÍ¿¡°Õ Æ¯Á¤ÇÑ Çàµ¿À» ÇÏ°Ô ÇÏ´Â°ÅÁö!
+        //BoxCollider2D ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ foreachï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ï¿½ï¿½ ï¿½Ï°ï¿½ ï¿½Ï´Â°ï¿½ï¿½ï¿½!
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(colliderCenter, colliderSize, colliderAngle);
-        Debug.Log($"SwordAttack: {hitColliders.Length}°³ÀÇ ÄÝ¶óÀÌ´õ °¨ÁöµÊ.");
-        //OverlapBoxAll()·Î ÄÝ¶óÀÌ´õ ¹üÀ§ ¾È¿¡ ÀÖ´Â °ÍµéÀ» °¨ÁöÇÏ¸é, ±× °á°ú¹°(°¨ÁöµÈ ¸ðµç ÄÝ¶óÀÌ´õµé)Àº hitColliders¶ó´Â ¹è¿­ º¯¼ö¿¡ ´ã°Ü.
-        //ÀÌ hitColliders º¯¼ö´Â ÀÌÁ¦ '°¨ÁöµÈ ¿ÀºêÁ§Æ®µéÀÇ ¸ñ·Ï'ÀÌ µÇ´Â °ÅÁö.
+        Debug.Log($"SwordAttack: {hitColliders.Length}ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.");
+        //OverlapBoxAll()ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½Ö´ï¿½ ï¿½Íµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ï¿½ï¿½)ï¿½ï¿½ hitCollidersï¿½ï¿½ï¿½ ï¿½è¿­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
+        //ï¿½ï¿½ hitColliders ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½'ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 
         foreach (Collider2D hitCollider in hitColliders)
-        {//in Å°¿öµå´Â "~¾È¿¡ ÀÖ´Â" ¶Ç´Â "~ÀÇ ±¸¼º¿øÀÎ" ÀÌ¶ó´Â ÀÇ¹Ì·Î ÀÌÇØÇÏ¸é µÅ.
-         //foreach ¿¡¼­´Â "¿À¸¥ÂÊ¿¡ ÀÖ´Â ÄÃ·º¼Ç(hitColliders) ¾È¿¡ ÀÖ´Â °¢°¢ÀÇ ¿ä¼Ò(hitCollider)¿¡ ´ëÇØ" ¹Ýº¹ÇÏ¶ó´Â Áö½Ã¸¦ ³»¸®´Â ¿ªÇÒÀ» ÇØ.
-            //foreach ¹®À» ¾µ ¶§´Â in Å°¿öµå¸¦ ¹Ýµå½Ã ½á¾ß ÇØ. inÀÌ ¾øÀ¸¸é foreach ¹®Àº ¾î¶² ÄÃ·º¼Ç¿¡¼­ ¿ä¼Ò¸¦ ÇÏ³ª¾¿ ²¨³»¿Í¾ß ÇÒÁö ¾Ë ¼ö ¾ø¾î.
-            //foreach´Â in°ú ÇÔ²² ÇÏ³ªÀÇ ¹®¹ýÀûÀÎ Â¦²áÀÌ¶ó°í »ý°¢ÇÏ¸é µÅ.
+        {//in Å°ï¿½ï¿½ï¿½ï¿½ï¿½ "~ï¿½È¿ï¿½ ï¿½Ö´ï¿½" ï¿½Ç´ï¿½ "~ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" ï¿½Ì¶ï¿½ï¿½ ï¿½Ç¹Ì·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½.
+         //foreach ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½Ö´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½(hitColliders) ï¿½È¿ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(hitCollider)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" ï¿½Ýºï¿½ï¿½Ï¶ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
+            //foreach ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ in Å°ï¿½ï¿½ï¿½å¸¦ ï¿½Ýµï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½. inï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ foreach ï¿½ï¿½ï¿½ï¿½ ï¿½î¶² ï¿½Ã·ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ò¸ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+            //foreachï¿½ï¿½ inï¿½ï¿½ ï¿½Ô²ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Â¦ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½.
             
-            //ÇÃ·¹ÀÌ¾î ÀÚ½ÅÀÌ³ª SwordPoint ¿ÀºêÁ§Æ®´Â °Ç³Ê¶Ù±â
+            //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ú½ï¿½ï¿½Ì³ï¿½ SwordPoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ç³Ê¶Ù±ï¿½
             if (hitCollider.gameObject == this.gameObject || hitCollider.gameObject == SwordAttackCollider.gameObject)
                 continue;
-            //continue´Â foreach ¹®ÀÌ³ª ´Ù¸¥ ¹Ýº¹¹®(for, while µî)¿¡¼­ ÇöÀç ¹Ýº¹À» Áï½Ã °Ç³Ê¶Ù°í ´ÙÀ½ ¹Ýº¹À¸·Î ³Ñ¾î°¡°Ô ÇÏ´Â ¸í·É¾î¾ß.
+            //continueï¿½ï¿½ foreach ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½Ù¸ï¿½ ï¿½Ýºï¿½ï¿½ï¿½(for, while ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ýºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ç³Ê¶Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¡ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ï¿½.
 
-            //°¨ÁöµÈ ÄÝ¶óÀÌ´õÀÇ ÅÂ±×°¡ 'enemyTag' º¯¼ö¿Í ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½Â±×°ï¿½ 'enemyTag' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ï´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (hitCollider.CompareTag(EnemyTag))
             {
                 EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
                 {
-                    enemyHealth.TakeDamage(SwordDamage);//°Ë °ø°Ý·Â ¸¸Å­ µ¥¹ÌÁö Àû¿ë
-                    Debug.Log(hitCollider.name + "¿¡°Ô " + SwordDamage + "¸¸Å­ÀÇ °Ë µ¥¹ÌÁö ºÎ¿©! (SwordPoint °¨Áö)");
+                    enemyHealth.TakeDamage(SwordDamage);//ï¿½ï¿½ ï¿½ï¿½ï¿½Ý·ï¿½ ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                    Debug.Log(hitCollider.name + "ï¿½ï¿½ï¿½ï¿½ " + SwordDamage + "ï¿½ï¿½Å­ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½! (SwordPoint ï¿½ï¿½ï¿½ï¿½)");
 
-                    Enemy enemyScript = hitCollider.GetComponent<Enemy>();//³Ë¹é ·ÎÁ÷ È£Ãâ (Enemy ½ºÅ©¸³Æ®ÀÇ ÇÔ¼ö È£Ãâ)
+                    Enemy enemyScript = hitCollider.GetComponent<Enemy>();//ï¿½Ë¹ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ (Enemy ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ô¼ï¿½ È£ï¿½ï¿½)
                     if (enemyScript != null)
                     {
-                        //ÇÃ·¹ÀÌ¾î À§Ä¡¿¡¼­ ¸ó½ºÅÍ À§Ä¡·Î ÇâÇÏ´Â ¹æÇâ º¤ÅÍ °è»ê
-                        Vector2 knockbackDirection = hitCollider.transform.position - transform.position;//ÇÃ·¹ÀÌ¾î -> ¸ó½ºÅÍ ¹æÇâ º¤ÅÍ
+                        //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+                        Vector2 knockbackDirection = hitCollider.transform.position - transform.position;//ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ -> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                         if (knockbackDirection.x > 0)
-                            knockbackDirection = Vector2.right;//¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î ¿À¸¥ÂÊ¿¡ ÀÖÀ¸´Ï ¿À¸¥ÂÊÀ¸·Î ¹Ð±â
-                        else knockbackDirection = Vector2.left;//¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î ¿ÞÂÊ¿¡ ÀÖÀ¸´Ï ¿ÞÂÊÀ¸·Î ¹Ð±â
+                            knockbackDirection = Vector2.right;//ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
+                        else knockbackDirection = Vector2.left;//ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
 
                         enemyScript.TakeKnockback(knockbackDirection, KnockbackForce, KnockbackDuration);
                     }
                     else
-                        Debug.LogWarning(hitCollider.name + "¿¡´Â Enemy ½ºÅ©¸³Æ®°¡ ¾ø¾î¼­ ³Ë¹éÀ» Àû¿ëÇÒ ¼ö ¾ø¾î!");              
+                        Debug.LogWarning(hitCollider.name + "ï¿½ï¿½ï¿½ï¿½ Enemy ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½î¼­ ï¿½Ë¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");              
                 }
                 else
-                    Debug.LogWarning(hitCollider.name + "¿¡´Â EnemyHealth ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!");
+                    Debug.LogWarning(hitCollider.name + "ï¿½ï¿½ï¿½ï¿½ EnemyHealth ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
             }
         }
-        LaunchSwordEnergy();//°Ë±â ¿¡³ÊÁö ¹ß»ç
-        lastSwordSkillTime = Time.time;//°Ë°ø°Ý ÈÄ ´Ù½Ã ÄðÅ¸ÀÓ
+        LaunchSwordEnergy();//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+        lastSwordSkillTime = Time.time;//ï¿½Ë°ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½
     }
 
-    private void LaunchSwordEnergy()//°Ë±â ¿¡³ÊÁö¸¦ »ý¼ºÇÏ°í ÃÊ±â ¼Óµµ ¹× ¹æÇâÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
+    private void LaunchSwordEnergy()//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ê±ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     {
-        if (SwordEnergy == null)//°Ë±â ¿¡³ÊÁö ÇÁ¸®ÆÕ¿¡ ¿¬°áµÇÀÖÁö ¾ÊÀ¸¸é ½ÇÇàºÒ°¡¾ß!
+        if (SwordEnergy == null)//ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ï¿½!
         {
-            Debug.LogWarning("PlayerAttack: SwordEnergy ÇÁ¸®ÆÕÀÌ ¿¬°áµÇÁö ¾Ê¾Ò¾î! °Ë ¿¡³ÊÁö °ø°ÝÀ» ÇÒ ¼ö ¾ø¾î!");
+            Debug.LogWarning("PlayerAttack: SwordEnergy ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò¾ï¿½! ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");
             return;
         }
 
-        //ÇÃ·¹ÀÌ¾îÀÇ ¹æÇâ¿¡ µû¶ó ¹ß»ç ¹æÇâÀ» °áÁ¤
+        //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 launchDirection = SpriteRenderer.flipX ? Vector2.left : Vector2.right;
-        //°Ë±â ¿¡³ÊÁö »ý¼º, swordPowerSpawnPoint ¿ÀºêÁ§Æ®°¡ ¿¡³ÊÁö »ý¼º À§Ä¡¾ß
+        //ï¿½Ë±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, swordPowerSpawnPoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
         GameObject swordPowerInstance = Instantiate(SwordEnergy, SwordEnergySpawnPoint.position, Quaternion.identity);
 
-        SwordEnergy swordenergy = swordPowerInstance.GetComponent<SwordEnergy>();//SwordEnergy ½ºÅ©¸³Æ®¸¦ °¡Á®¿Í¼­ µ¥¹ÌÁö °ªÀ» ³Ñ°ÜÁÜ
+        SwordEnergy swordenergy = swordPowerInstance.GetComponent<SwordEnergy>();//SwordEnergy ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½
         if (swordenergy != null)
         {
             float totalDamage = SwordEnergyDamage;
             swordenergy.SetDamage(totalDamage);
         }
 
-        if (SpriteRenderer.flipX)//ÄÉ¸¯ÅÍ°¡ º¸´Â ¹æÇâ¿¡ µû¶ó ¿¡³ÊÁöÀÇ ¹æÇâ ¼³Á¤
-            //Ä³¸¯ÅÍ°¡ ¿ÞÂÊÀ» º¸°í ÀÖÀ¸¸é ¿¡³ÊÁö¸¦ 180µµ È¸Àü
+        if (SpriteRenderer.flipX)//ï¿½É¸ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 180ï¿½ï¿½ È¸ï¿½ï¿½
             swordPowerInstance.transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
-        else//Ä³¸¯ÅÍ°¡ ¿À¸¥ÂÊÀ» º¸°í ÀÖÀ¸¸é ¿¡³ÊÁö¸¦ 0µµ(¿ø·¡ ¹æÇâ)·Î ¼³Á¤
+        else//Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             swordPowerInstance.transform.rotation = Quaternion.AngleAxis(0, Vector3.forward);
 
-        //¿¡³ÊÁöÀÇ Rigidbody2D¸¦ °¡Á®¿Í¼­ ÈûÀ» °¡ÇØ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Rigidbody2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Rigidbody2D rb = swordPowerInstance.GetComponent<Rigidbody2D>();
         if (rb != null)
-            rb.velocity = launchDirection * SwordEnergySpeed;    
+            rb.linearVelocity = launchDirection * SwordEnergySpeed;    
     }
 
 
-    public bool CanAttack() // °Ë °ø°Ý ÄðÅ¸ÀÓ Ã¼Å© ÇÔ¼ö
+    public bool CanAttack() // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ Ã¼Å© ï¿½Ô¼ï¿½
     {
-        //ÄðÅ¸ÀÓÀÌ ³¡³µÀ» ¶§¸¸ True¸¦ ¹ÝÈ¯
+        //ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Trueï¿½ï¿½ ï¿½ï¿½È¯
         return Time.time >= lastSwordSkillTime + SwordSkillCooldown;
     }
     
-    private void UpdateSwordSkillUI()//°Ë ½ºÅ³ÀÇ ÄðÅ¸ÀÓÀ» °è»êÇÏ°í UI¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
-    {                                //Update ÇÔ¼ö·Î È£ÃâÇßÀ¸´Ï ¸Å ÇÁ·¹ÀÓ¸¶´Ù È£ÃâµÇÁö!
-        //³²Àº ÄðÅ¸ÀÓ °è»ê
-        float timeRemaining = lastSwordSkillTime + SwordSkillCooldown - Time.time;//¸¶Áö¸· ½ºÅ³ »ç¿ë ½ÃÁ¡ + ÃÑ ÄðÅ¸ÀÓ ½Ã°£ - ÇöÀç ½Ã°£
+    private void UpdateSwordSkillUI()//ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+    {                                //Update ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½!
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½
+        float timeRemaining = lastSwordSkillTime + SwordSkillCooldown - Time.time;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½Ã°ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
-        //ÄðÅ¸ÀÓÀÌ ³²¾ÆÀÖ´Ù¸é, timeRemainingÀÌ 0º¸´Ù Å©´Ù´Â °ÍÀº ¾ÆÁ÷ ÄðÅ¸ÀÓÀÌ ÁøÇà ÁßÀÌ¶ó´Â ¶æÀÌÀÝ¾Æ.
+        //ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´Ù¸ï¿½, timeRemainingï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ Å©ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ý¾ï¿½.
         if (timeRemaining > 0)
         {
-            CooldownText.gameObject.SetActive(true);//ÄðÅ¸ÀÓ ¼ýÀÚ(ÅØ½ºÆ®)¸¦ º¸ÀÌ°Ô ÇØ
+            CooldownText.gameObject.SetActive(true);//ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Ø½ï¿½Æ®)ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½ï¿½
             CooldownText.text = Mathf.Ceil(timeRemaining).ToString("F0");
 
-            //¿À¹ö·¹ÀÌ ÀÌ¹ÌÁöÀÇ fillAmount¸¦ Á¶ÀýÇØ¼­ ½Ã°¢ÀûÀ¸·Î º¸¿©ÁÜ
-            CooldownOverlay.gameObject.SetActive(true);//°ËÀº»ö ¿À¹ö·¹ÀÌ¸¦ º¸ÀÌ°Ô ÇØ.
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ fillAmountï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            CooldownOverlay.gameObject.SetActive(true);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½ï¿½.
             CooldownOverlay.fillAmount = timeRemaining / SwordSkillCooldown;
-            //³²Àº ÄðÅ¸ÀÓ ºñÀ²¿¡ ¸ÂÃç °ËÀº»ö ¿À¹ö·¹ÀÌ°¡ ¼­¼­È÷ »ç¶óÁöµµ·Ï ¸¸µé¾î.
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
         }
-        else//timeRemainingÀÌ 0º¸´Ù ÀÛ°Å³ª °°À» °æ¿ì(ÄðÅ¸ÀÓÀÌ ³¡³­ °æ¿ì) else ¹® ¾ÈÀÇ ÄÚµå°¡ ½ÇÇà
+        else//timeRemainingï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½Û°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½) else ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå°¡ ï¿½ï¿½ï¿½ï¿½
         {
-            //ÄðÅ¸ÀÓÀÌ ³¡³ª¸é
-            CooldownText.gameObject.SetActive(false);//ÄðÅ¸ÀÓ ¼ýÀÚ¸¦ ¼û°Ü
-            CooldownOverlay.gameObject.SetActive(false);//°ËÀº»ö ¿À¹ö·¹ÀÌ¸¦ ¼û°Ü(ºñÈ°¼ºÈ­)
+            //ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            CooldownText.gameObject.SetActive(false);//ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+            CooldownOverlay.gameObject.SetActive(false);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½È°ï¿½ï¿½È­)
         }
     }
 }

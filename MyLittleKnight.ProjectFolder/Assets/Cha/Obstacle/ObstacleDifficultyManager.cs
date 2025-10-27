@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,130 +6,130 @@ using System.Threading;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.UIElements;
-#if UNITY_EDITOR//UnityEditor ³×ÀÓ½ºÆäÀÌ½º¸¦ »ç¿ëÇÏ°í ÀÖ´Â ½ºÅ©¸³Æ®°¡ ºôµå¿¡ Æ÷ÇÔµÉ ¶§ ¹ß»ıÇØ.
+#if UNITY_EDITOR//UnityEditor ë„¤ì„ìŠ¤í˜ì´ìŠ¤ë¥¼ ì‚¬ìš©í•˜ê³  ìˆëŠ” ìŠ¤í¬ë¦½íŠ¸ê°€ ë¹Œë“œì— í¬í•¨ë  ë•Œ ë°œìƒí•´.
 using static UnityEditor.ShaderData;
-#endif//UnityEditor´Â ¿¡µğÅÍ¿¡¼­¸¸ ÀÛµ¿ÇÏ´Â ±â´ÉÀÌ¶ó, ½ÇÁ¦ °ÔÀÓ ºôµå¿¡´Â Æ÷ÇÔµÇ¸é ¾È µÇ°Åµç.
-//#if UNITY_EDITOR »ç¿ëÇØ ÇØ´ç ÄÚµå¸¦ ´ÙÀ½°ú °°ÀÌ ÀüÃ³¸®±â Áö½Ã¹®À¸·Î °¨½ÎÁà.
-using TMPro;//TextMeshPro UI¶û °°ÀÌ ½á¾ß ÇÏ´Ï±î Ãß°¡ÇÏÀÚ±¸!
+#endif//UnityEditorëŠ” ì—ë””í„°ì—ì„œë§Œ ì‘ë™í•˜ëŠ” ê¸°ëŠ¥ì´ë¼, ì‹¤ì œ ê²Œì„ ë¹Œë“œì—ëŠ” í¬í•¨ë˜ë©´ ì•ˆ ë˜ê±°ë“ .
+//#if UNITY_EDITOR ì‚¬ìš©í•´ í•´ë‹¹ ì½”ë“œë¥¼ ë‹¤ìŒê³¼ ê°™ì´ ì „ì²˜ë¦¬ê¸° ì§€ì‹œë¬¸ìœ¼ë¡œ ê°ì‹¸ì¤˜.
+using TMPro;//TextMeshPro UIë‘ ê°™ì´ ì¨ì•¼ í•˜ë‹ˆê¹Œ ì¶”ê°€í•˜ìêµ¬!
 
 public class ObstacleDifficultyManager : MonoBehaviour
 {
-    //--- ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ÇÒ ³­ÀÌµµ º¯¼öµé ---
-    [Header("¹ß»çÃ¼ ¼Óµµ Á¶Àı")]//Çì´õ´Â ÀÌ°Ç ¼øÀüÈ÷ À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ Ã¢À» Á¤¸®ÇÏ°í º¸±â ÁÁ°Ô ¸¸µé±â À§ÇÑ ±â´ÉÀÌ¾ß
-    public float InitialBoltSpeed = 5f;//ÃÊ±â ¹ß»çÃ¼ ¼Óµµ. °ÔÀÓÀÌ ½ÃÀÛµÉ ¶§ ¹ß»çÃ¼°¡ ¿òÁ÷ÀÌ´Â ±âº» ¼Óµµ
-    public float MaxBoltSpeed = 20f;//ÃÖ´ë ¹ß»çÃ¼ ¼Óµµ
-    public float SpeedIncreaseRate = 0.5f;//¼Óµµ Áõ°¡·®. ¹ß»çÃ¼ÀÇ ¼Óµµ°¡ ÇÑ ¹ø »¡¶óÁú ¶§¸¶´Ù ¸î¾¿ Áõ°¡ÇÒÁö Á¤ÇÏ´Â °ª
-    public float SpeedIncreaseInterval = 20f;//¼Óµµ Áõ°¡ °£°İ. n ÃÊ¸¶´Ù ¹ß»çÃ¼ÀÇ ¼Óµµ¸¦ ÇÑ ´Ü°è¾¿ ¿Ã¸±Áö Á¤ÇÏ´Â ½Ã°£ °£°İ.
-    [Header("¹ß»çÃ¼ »ı¼º ÁÖ±â Á¶Àı")]
-    public float InitialSpawnInterval = 3f;//ÃÊ±â »ı¼º ÁÖ±â. °ÔÀÓÀÌ ½ÃÀÛµÉ ¶§ ¹ß»çÃ¼°¡ »ı¼ºµÇ´Â ±âº» ½Ã°£ °£°İ.
-    public float MinSpawnInterval = 1f;//ÃÖ´ë »ı¼º ÁÖ±â. ³­ÀÌµµ°¡ °è¼Ó ¿Ã¶ó°¡µµ ÀÌ ½Ã°£º¸´Ù ´õ Âª¾ÆÁöÁö´Â ¾Ê¾Æ. ÃÖ´ë »ı¼ºµÇ´Â ½Ã°£ °£°İ.
-    public float IntervalDecreaseRate = 0.5f;//ÁÖ±â °¨¼Ò·®. ¹ß»çÃ¼ »ı¼º ÁÖ±â°¡ ÇÑ ¹ø ÁÙ¾îµé ¶§¸¶´Ù ¸î ÃÊ¾¿ ÁÙÀÏÁö Á¤ÇÏ´Â °ªÀÌ¾ß.
-    public float IntervalDecreaseInterval = 20f;//ÁÖ±â °¨¼Ò °£°İ. ¸î ÃÊ¸¶´Ù »ı¼º ÁÖ±â¸¦ ÇÑ ´Ü°è¾¿ ÁÙÀÏÁö Á¤ÇÏ´Â ½Ã°£ °£°İ. 10ÃÊ·Î ¼³Á¤ÇßÀ¸´Ï, 10ÃÊ¸¶´Ù intervalDecreaseRate¸¸Å­ »ı¼º ÁÖ±â°¡ Âª¾ÆÁö°ÚÁö.
-    [Header("¹ß»çÃ¼ µ¥¹ÌÁö Á¶Àı")]
-    public int InitialDamage = 5;//ÃÊ±â ¹ß»çÃ¼ µ¥¹ÌÁö
-    public int DamageIncrease = 2;//µ¥¹ÌÁö Áõ°¡·®. ¹ß»çÃ¼ÀÇ µ¥¹ÌÁö°¡ ÇÑ ¹ø °­ÇØÁú ¶§¸¶´Ù ¸î¾¿ Áõ°¡ÇÒÁö Á¤ÇÏ´Â °ª
-    public float DamageIncreaseInterval = 20f;//µ¥¹ÌÁö Áõ°¡ °£°İ. ¸î ÃÊ¸¶´Ù ¹ß»çÃ¼ÀÇ µ¥¹ÌÁö¸¦ ÇÑ ´Ü°è¾¿ ¿Ã¸±Áö Á¤ÇÏ´Â ½Ã°£ °£°İ. 20ÃÊ·Î ¼³Á¤ÇßÀ¸´Ï, 20ÃÊ¸¶´Ù damageIncrease¸¸Å­ µ¥¹ÌÁö°¡ Áõ°¡ÇÏ°ÚÁö.
-    [Header("UI ¾Ë¸²")]
-    public TextMeshProUGUI ObstacleLevelText;//UI ÅØ½ºÆ®¸¦ ´ãÀ» º¯¼ö
+    //--- ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•  ë‚œì´ë„ ë³€ìˆ˜ë“¤ ---
+    [Header("ë°œì‚¬ì²´ ì†ë„ ì¡°ì ˆ")]//í—¤ë”ëŠ” ì´ê±´ ìˆœì „íˆ ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„° ì°½ì„ ì •ë¦¬í•˜ê³  ë³´ê¸° ì¢‹ê²Œ ë§Œë“¤ê¸° ìœ„í•œ ê¸°ëŠ¥ì´ì•¼
+    public float InitialBoltSpeed = 5f;//ì´ˆê¸° ë°œì‚¬ì²´ ì†ë„. ê²Œì„ì´ ì‹œì‘ë  ë•Œ ë°œì‚¬ì²´ê°€ ì›€ì§ì´ëŠ” ê¸°ë³¸ ì†ë„
+    public float MaxBoltSpeed = 20f;//ìµœëŒ€ ë°œì‚¬ì²´ ì†ë„
+    public float SpeedIncreaseRate = 0.5f;//ì†ë„ ì¦ê°€ëŸ‰. ë°œì‚¬ì²´ì˜ ì†ë„ê°€ í•œ ë²ˆ ë¹¨ë¼ì§ˆ ë•Œë§ˆë‹¤ ëª‡ì”© ì¦ê°€í• ì§€ ì •í•˜ëŠ” ê°’
+    public float SpeedIncreaseInterval = 20f;//ì†ë„ ì¦ê°€ ê°„ê²©. n ì´ˆë§ˆë‹¤ ë°œì‚¬ì²´ì˜ ì†ë„ë¥¼ í•œ ë‹¨ê³„ì”© ì˜¬ë¦´ì§€ ì •í•˜ëŠ” ì‹œê°„ ê°„ê²©.
+    [Header("ë°œì‚¬ì²´ ìƒì„± ì£¼ê¸° ì¡°ì ˆ")]
+    public float InitialSpawnInterval = 3f;//ì´ˆê¸° ìƒì„± ì£¼ê¸°. ê²Œì„ì´ ì‹œì‘ë  ë•Œ ë°œì‚¬ì²´ê°€ ìƒì„±ë˜ëŠ” ê¸°ë³¸ ì‹œê°„ ê°„ê²©.
+    public float MinSpawnInterval = 1f;//ìµœëŒ€ ìƒì„± ì£¼ê¸°. ë‚œì´ë„ê°€ ê³„ì† ì˜¬ë¼ê°€ë„ ì´ ì‹œê°„ë³´ë‹¤ ë” ì§§ì•„ì§€ì§€ëŠ” ì•Šì•„. ìµœëŒ€ ìƒì„±ë˜ëŠ” ì‹œê°„ ê°„ê²©.
+    public float IntervalDecreaseRate = 0.5f;//ì£¼ê¸° ê°ì†ŒëŸ‰. ë°œì‚¬ì²´ ìƒì„± ì£¼ê¸°ê°€ í•œ ë²ˆ ì¤„ì–´ë“¤ ë•Œë§ˆë‹¤ ëª‡ ì´ˆì”© ì¤„ì¼ì§€ ì •í•˜ëŠ” ê°’ì´ì•¼.
+    public float IntervalDecreaseInterval = 20f;//ì£¼ê¸° ê°ì†Œ ê°„ê²©. ëª‡ ì´ˆë§ˆë‹¤ ìƒì„± ì£¼ê¸°ë¥¼ í•œ ë‹¨ê³„ì”© ì¤„ì¼ì§€ ì •í•˜ëŠ” ì‹œê°„ ê°„ê²©. 10ì´ˆë¡œ ì„¤ì •í–ˆìœ¼ë‹ˆ, 10ì´ˆë§ˆë‹¤ intervalDecreaseRateë§Œí¼ ìƒì„± ì£¼ê¸°ê°€ ì§§ì•„ì§€ê² ì§€.
+    [Header("ë°œì‚¬ì²´ ë°ë¯¸ì§€ ì¡°ì ˆ")]
+    public int InitialDamage = 5;//ì´ˆê¸° ë°œì‚¬ì²´ ë°ë¯¸ì§€
+    public int DamageIncrease = 2;//ë°ë¯¸ì§€ ì¦ê°€ëŸ‰. ë°œì‚¬ì²´ì˜ ë°ë¯¸ì§€ê°€ í•œ ë²ˆ ê°•í•´ì§ˆ ë•Œë§ˆë‹¤ ëª‡ì”© ì¦ê°€í• ì§€ ì •í•˜ëŠ” ê°’
+    public float DamageIncreaseInterval = 20f;//ë°ë¯¸ì§€ ì¦ê°€ ê°„ê²©. ëª‡ ì´ˆë§ˆë‹¤ ë°œì‚¬ì²´ì˜ ë°ë¯¸ì§€ë¥¼ í•œ ë‹¨ê³„ì”© ì˜¬ë¦´ì§€ ì •í•˜ëŠ” ì‹œê°„ ê°„ê²©. 20ì´ˆë¡œ ì„¤ì •í–ˆìœ¼ë‹ˆ, 20ì´ˆë§ˆë‹¤ damageIncreaseë§Œí¼ ë°ë¯¸ì§€ê°€ ì¦ê°€í•˜ê² ì§€.
+    [Header("UI ì•Œë¦¼")]
+    public TextMeshProUGUI ObstacleLevelText;//UI í…ìŠ¤íŠ¸ë¥¼ ë‹´ì„ ë³€ìˆ˜
 
-    //--- ³»ºÎ¿¡¼­ »ç¿ëÇÒ º¯¼öµé, ÇöÀçÀÇ º¯¼ö »óÅÂµéÀ» ´ãÀ» º¯¼öµé ---
+    //--- ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤, í˜„ì¬ì˜ ë³€ìˆ˜ ìƒíƒœë“¤ì„ ë‹´ì„ ë³€ìˆ˜ë“¤ ---
     private float timeSinceLastSpeedIncrease = 0f;
     private float timeSinceLastIntervalDecrease = 0f;
     private float timeSinceLastDamageIncrease = 0f;
     private float currentBoltSpeed;
     private float currentSpawnInterval;
     private int currentDamage;
-    private int currentLevel = 0;//ÇöÀç ³­ÀÌµµ ·¹º§À» ÀúÀåÇÒ º¯¼ö
+    private int currentLevel = 0;//í˜„ì¬ ë‚œì´ë„ ë ˆë²¨ì„ ì €ì¥í•  ë³€ìˆ˜
 
 
-    // ¾îµğ¼­µç ÀÌ ½ºÅ©¸³Æ®¿¡ Á¢±ÙÇÒ ¼ö ÀÖ°Ô ÇØÁÖ´Â '½Ì±ÛÅæ' ÆĞÅÏ
+    // ì–´ë””ì„œë“  ì´ ìŠ¤í¬ë¦½íŠ¸ì— ì ‘ê·¼í•  ìˆ˜ ìˆê²Œ í•´ì£¼ëŠ” 'ì‹±ê¸€í†¤' íŒ¨í„´
     public static ObstacleDifficultyManager Instance { get; private set; }
 
-    void Awake()//StartÇÔ¼öº¸´Ù ¸ÕÀú ½ÇÇà
-    {//ÇÔ¼ö ¾È¿¡ ÀÖ´Â if¹®Àº µü ÇÑ °¡Áö ¸ñÀûÀ» À§ÇØ Á¸ÀçÇØ. ÀÌ ½ºÅ©¸³Æ®¸¦ °¡Áø ¿ÀºêÁ§Æ®°¡ °ÔÀÓ¿¡ µü ÇÏ³ª¸¸ Á¸ÀçÇÏµµ·Ï º¸ÀåÇÏ´Â °Í
-        if (Instance != null && Instance != this)//¸¸¾à ÀÌ¹Ì 'À¯ÀÏÇÑ ÀÎ½ºÅÏ½º'°¡ Á¸ÀçÇÏ°í, ±×°Ô Áö±İ ³ª ÀÚ½ÅÀÌ ¾Æ´Ï¶ó¸é
-            Destroy(gameObject);//ÀÌ ÄÚµå°¡ "Áßº¹µÇ´Â ¿ÀºêÁ§Æ®¸¦ ÆÄ±«ÇÏ´Â ¿ªÇÒ"À» ÇØ.
+    void Awake()//Startí•¨ìˆ˜ë³´ë‹¤ ë¨¼ì € ì‹¤í–‰
+    {//í•¨ìˆ˜ ì•ˆì— ìˆëŠ” ifë¬¸ì€ ë”± í•œ ê°€ì§€ ëª©ì ì„ ìœ„í•´ ì¡´ì¬í•´. ì´ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ê°€ ê²Œì„ì— ë”± í•˜ë‚˜ë§Œ ì¡´ì¬í•˜ë„ë¡ ë³´ì¥í•˜ëŠ” ê²ƒ
+        if (Instance != null && Instance != this)//ë§Œì•½ ì´ë¯¸ 'ìœ ì¼í•œ ì¸ìŠ¤í„´ìŠ¤'ê°€ ì¡´ì¬í•˜ê³ , ê·¸ê²Œ ì§€ê¸ˆ ë‚˜ ìì‹ ì´ ì•„ë‹ˆë¼ë©´
+            Destroy(gameObject);//ì´ ì½”ë“œê°€ "ì¤‘ë³µë˜ëŠ” ì˜¤ë¸Œì íŠ¸ë¥¼ íŒŒê´´í•˜ëŠ” ì—­í• "ì„ í•´.
         else
         {
-            Instance = this;//ÀÌ°Ç "¿À, ¾ÆÁ÷ ¾Æ¹«µµ ¾ø³×? ±×·³ ³»°¡ ¹Ù·Î ±× 'À¯ÀÏÇÑ ÀÎ½ºÅÏ½º'°¡ µÇ¾î¾ß°Ú´Ù!" ¶ó´Â ¶æÀÌ¾ß.
-            DontDestroyOnLoad(gameObject);//EnemyDifficulty ½ºÅ©¸³Æ®¿¡¼­µµ ÀÖ´Â°Å¾ß. "¾ÀÀÌ ¹Ù²î¾îµµ ³ª¸¦ ÆÄ±«ÇÏÁö ¸¶!" ¶ó´Â ¶æÀÌ¾ß.
+            Instance = this;//ì´ê±´ "ì˜¤, ì•„ì§ ì•„ë¬´ë„ ì—†ë„¤? ê·¸ëŸ¼ ë‚´ê°€ ë°”ë¡œ ê·¸ 'ìœ ì¼í•œ ì¸ìŠ¤í„´ìŠ¤'ê°€ ë˜ì–´ì•¼ê² ë‹¤!" ë¼ëŠ” ëœ»ì´ì•¼.
+            DontDestroyOnLoad(gameObject);//EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ì—ì„œë„ ìˆëŠ”ê±°ì•¼. "ì”¬ì´ ë°”ë€Œì–´ë„ ë‚˜ë¥¼ íŒŒê´´í•˜ì§€ ë§ˆ!" ë¼ëŠ” ëœ»ì´ì•¼.
         }
     }
     void Start()
     {
-        //ÃÊ±â°ª ¼³Á¤
-        //°ÔÀÓÀÌ ½ÃÀÛµÉ ¶§, ÀÎ½ºÆåÅÍ¿¡ ¼³Á¤ÇØ µĞ ÃÊ±â°ª(initial)À»,
-        //½ÇÁ¦ °ÔÀÓ¿¡¼­ »ç¿ëÇÒ ÇöÀç °ª(current)¿¡ ³Ö¾îÁÖ´Â ¿ªÇÒÀ» ÇØ.
+        //ì´ˆê¸°ê°’ ì„¤ì •
+        //ê²Œì„ì´ ì‹œì‘ë  ë•Œ, ì¸ìŠ¤í™í„°ì— ì„¤ì •í•´ ë‘” ì´ˆê¸°ê°’(initial)ì„,
+        //ì‹¤ì œ ê²Œì„ì—ì„œ ì‚¬ìš©í•  í˜„ì¬ ê°’(current)ì— ë„£ì–´ì£¼ëŠ” ì—­í• ì„ í•´.
         currentBoltSpeed = InitialBoltSpeed;
         currentSpawnInterval = InitialSpawnInterval;
         currentDamage = InitialDamage;
 
-        //°ÔÀÓ ½ÃÀÛ ½Ã UI ÅØ½ºÆ®¿¡ ÃÊ±â ·¹º§À» Ç¥½Ã
+        //ê²Œì„ ì‹œì‘ ì‹œ UI í…ìŠ¤íŠ¸ì— ì´ˆê¸° ë ˆë²¨ì„ í‘œì‹œ
         UpdateLevelText();
     }
 
     void Update()
     {
-        //½Ã°£ÀÌ Áö³²¿¡ µû¶ó ³­ÀÌµµ Á¶Àı
+        //ì‹œê°„ì´ ì§€ë‚¨ì— ë”°ë¼ ë‚œì´ë„ ì¡°ì ˆ
         timeSinceLastSpeedIncrease += Time.deltaTime;
         timeSinceLastIntervalDecrease += Time.deltaTime;
         timeSinceLastDamageIncrease += Time.deltaTime;
 
-        //if¹®Àº Æ¯Á¤ Á¶°ÇÀÌ ÃæÁ·µÉ ¶§¸¸ ¾È¿¡ ÀÖ´Â ÄÚµå¸¦ ½ÇÇàÇÏ°Ô ÇÏ´Â°ÅÀİ¾Æ?
-        //nÃÊ°¡ Áö³µ´Ù¸é ÀÌ Á¶°ÇÀº 'Âü(true)' ÀÌ µÅ.
+        //ifë¬¸ì€ íŠ¹ì • ì¡°ê±´ì´ ì¶©ì¡±ë  ë•Œë§Œ ì•ˆì— ìˆëŠ” ì½”ë“œë¥¼ ì‹¤í–‰í•˜ê²Œ í•˜ëŠ”ê±°ì–ì•„?
+        //nì´ˆê°€ ì§€ë‚¬ë‹¤ë©´ ì´ ì¡°ê±´ì€ 'ì°¸(true)' ì´ ë¼.
 
-        //¼Óµµ Áõ°¡
+        //ì†ë„ ì¦ê°€
         if (timeSinceLastSpeedIncrease >= SpeedIncreaseInterval)
         {
             currentBoltSpeed = Mathf.Min(currentBoltSpeed + SpeedIncreaseRate, MaxBoltSpeed);
             timeSinceLastSpeedIncrease = 0f;
-            Debug.Log($"¹ß»çÃ¼ ¼Óµµ Áõ°¡! ÇöÀç ¼Óµµ: {currentBoltSpeed}");
+            Debug.Log($"ë°œì‚¬ì²´ ì†ë„ ì¦ê°€! í˜„ì¬ ì†ë„: {currentBoltSpeed}");
 
-            //³­ÀÌµµ ·¹º§ Áõ°¡ ¹× UI ¾÷µ¥ÀÌÆ®´Â ¿©±â¿¡¼­ ÇÑ ¹ø¸¸ È£Ãâ
-            currentLevel++;     //¼Óµµ Áõ°¡ if¹®¿¡ ³Ö¾îµµ ´Ù¸¥ if¹®Àº ÀüºÎ °°Àº ½Ã°£¿¡ °ªÀ» Áõ°¡ ÇÏÀİ¾Æ? ±×·¡¼­ ¼Â Áß ÇÏ³ª¿¡¸¸ ³Ö¾î¾ßÇØ.
-            UpdateLevelText();  //°¢ if¹® ¸¶´Ù ³ÖÀ¸¸é °¢ Á¶°ÇÀÌ ÂüÀÏ¶§¸¶´Ù ·¹º§1¾¿À» ÁÖ´Ï±î ·¹º§ nÃÊ¸¶´Ù ·¹º§ 1Áõ°¡°¡ ¾Æ´Ï¶ó 3Áõ°¡°¡ µÇ¹ö¸®Áö!
-                                //if¹®µéÀÌ µ¿½Ã¿¡ ÀÛµ¿ÇØ¼­ ·¹º§ÀÌ Áõ°¡ÇØ. °ÆÁ¤¸¶! ´ë½Å ¼ÂÀÇ °­È­ ½Ã°£À» ¶È°°ÀÌ ÇØ³ö¾ßÇØ!
+            //ë‚œì´ë„ ë ˆë²¨ ì¦ê°€ ë° UI ì—…ë°ì´íŠ¸ëŠ” ì—¬ê¸°ì—ì„œ í•œ ë²ˆë§Œ í˜¸ì¶œ
+            currentLevel++;     //ì†ë„ ì¦ê°€ ifë¬¸ì— ë„£ì–´ë„ ë‹¤ë¥¸ ifë¬¸ì€ ì „ë¶€ ê°™ì€ ì‹œê°„ì— ê°’ì„ ì¦ê°€ í•˜ì–ì•„? ê·¸ë˜ì„œ ì…‹ ì¤‘ í•˜ë‚˜ì—ë§Œ ë„£ì–´ì•¼í•´.
+            UpdateLevelText();  //ê° ifë¬¸ ë§ˆë‹¤ ë„£ìœ¼ë©´ ê° ì¡°ê±´ì´ ì°¸ì¼ë•Œë§ˆë‹¤ ë ˆë²¨1ì”©ì„ ì£¼ë‹ˆê¹Œ ë ˆë²¨ nì´ˆë§ˆë‹¤ ë ˆë²¨ 1ì¦ê°€ê°€ ì•„ë‹ˆë¼ 3ì¦ê°€ê°€ ë˜ë²„ë¦¬ì§€!
+                                //ifë¬¸ë“¤ì´ ë™ì‹œì— ì‘ë™í•´ì„œ ë ˆë²¨ì´ ì¦ê°€í•´. ê±±ì •ë§ˆ! ëŒ€ì‹  ì…‹ì˜ ê°•í™” ì‹œê°„ì„ ë˜‘ê°™ì´ í•´ë†”ì•¼í•´!
 
-            //¸¸¾à if¹®ÀÌ ¾Æ´Ñ Update ÇÔ¼ö¿¡ ÀûÀ¸¸é...·¹º§ÀÌ nÃÊ¸¶´Ù ¿À¸£´Â °Ô ¾Æ´Ï¶ó, ¸Å ÇÁ·¹ÀÓ¸¶´Ù °è¼ÓÇØ¼­ ¿Ã¶ó°¡°Ô µÉ °Å¾ß,
-            //Update ÇÔ¼ö´Â °ÔÀÓÀÌ ½ÇÇàµÇ´Â ³»³» ¸Å ÇÁ·¹ÀÓ¸¶´Ù È£ÃâµÇ´Â ÇÔ¼ö´Ï±î. ±×·¡¼­ if¹® ¾È¿¡ Àû´Â°Å¾ß
+            //ë§Œì•½ ifë¬¸ì´ ì•„ë‹Œ Update í•¨ìˆ˜ì— ì ìœ¼ë©´...ë ˆë²¨ì´ nì´ˆë§ˆë‹¤ ì˜¤ë¥´ëŠ” ê²Œ ì•„ë‹ˆë¼, ë§¤ í”„ë ˆì„ë§ˆë‹¤ ê³„ì†í•´ì„œ ì˜¬ë¼ê°€ê²Œ ë  ê±°ì•¼,
+            //Update í•¨ìˆ˜ëŠ” ê²Œì„ì´ ì‹¤í–‰ë˜ëŠ” ë‚´ë‚´ ë§¤ í”„ë ˆì„ë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜ë‹ˆê¹Œ. ê·¸ë˜ì„œ ifë¬¸ ì•ˆì— ì ëŠ”ê±°ì•¼
 
-            //currentLevel º¯¼ö´Â Update ÇÔ¼ö ¾È¿¡ ÀÖ´Â º¯¼ö°¡ ¾Æ´Ï¶ó ObstacleDifficultyManager¶ó´Â Å¬·¡½º ÀüÃ¼¿¡ ¼ÓÇØ ÀÖ´Â º¯¼öÀİ¾Æ,
-            //±×·¡¼­ ÀÌ Å¬·¡½º ¾È¿¡ ÀÖ´Â ¾î¶² ÇÔ¼öµç ÀÌ currentLevel º¯¼ö¿¡ ÀÚÀ¯·Ó°Ô Á¢±ÙÇÏ°í °ªÀ» ¹Ù²Ü ¼ö ÀÖ¾î.
+            //currentLevel ë³€ìˆ˜ëŠ” Update í•¨ìˆ˜ ì•ˆì— ìˆëŠ” ë³€ìˆ˜ê°€ ì•„ë‹ˆë¼ ObstacleDifficultyManagerë¼ëŠ” í´ë˜ìŠ¤ ì „ì²´ì— ì†í•´ ìˆëŠ” ë³€ìˆ˜ì–ì•„,
+            //ê·¸ë˜ì„œ ì´ í´ë˜ìŠ¤ ì•ˆì— ìˆëŠ” ì–´ë–¤ í•¨ìˆ˜ë“  ì´ currentLevel ë³€ìˆ˜ì— ììœ ë¡­ê²Œ ì ‘ê·¼í•˜ê³  ê°’ì„ ë°”ê¿€ ìˆ˜ ìˆì–´.
 
-            //1. currentLevel++; ÀÌ ÄÚµå°¡ ½ÇÇàµÇ¸é, ObstacleDifficultyManager ½ºÅ©¸³Æ® ¾È¿¡ ÀÖ´Â currentLevel º¯¼öÀÇ °ªÀÌ 1 Áõ°¡ÇØ¼­ ÀúÀåµÅ.
-            //2. ±×´ÙÀ½ ÁÙ¿¡ ÀÖ´Â UpdateLevelText(); ÇÔ¼ö°¡ È£ÃâµÅ.
-            //3. UpdateLevelText() ÇÔ¼ö ¾ÈÀÇ ÄÚµå°¡ ½ÇÇàµÇ´Âµ¥, ÀÌ¶§ {currentLevel} ºÎºĞÀ» ¸¸³ª¸é,
-            //½ºÅ©¸³Æ® ¾È¿¡ ÀúÀåµÈ currentLevel º¯¼öÀÇ ÇöÀç °ªÀ» Á÷Á¢ °¡Á®¿Í¼­ »ç¿ëÇÏ´Â °ÅÁö.
+            //1. currentLevel++; ì´ ì½”ë“œê°€ ì‹¤í–‰ë˜ë©´, ObstacleDifficultyManager ìŠ¤í¬ë¦½íŠ¸ ì•ˆì— ìˆëŠ” currentLevel ë³€ìˆ˜ì˜ ê°’ì´ 1 ì¦ê°€í•´ì„œ ì €ì¥ë¼.
+            //2. ê·¸ë‹¤ìŒ ì¤„ì— ìˆëŠ” UpdateLevelText(); í•¨ìˆ˜ê°€ í˜¸ì¶œë¼.
+            //3. UpdateLevelText() í•¨ìˆ˜ ì•ˆì˜ ì½”ë“œê°€ ì‹¤í–‰ë˜ëŠ”ë°, ì´ë•Œ {currentLevel} ë¶€ë¶„ì„ ë§Œë‚˜ë©´,
+            //ìŠ¤í¬ë¦½íŠ¸ ì•ˆì— ì €ì¥ëœ currentLevel ë³€ìˆ˜ì˜ í˜„ì¬ ê°’ì„ ì§ì ‘ ê°€ì ¸ì™€ì„œ ì‚¬ìš©í•˜ëŠ” ê±°ì§€.
         }
 
-        //»ı¼º ÁÖ±â °¨¼Ò
+        //ìƒì„± ì£¼ê¸° ê°ì†Œ
         if (timeSinceLastIntervalDecrease >= IntervalDecreaseInterval)
         {
             currentSpawnInterval = Mathf.Max(MinSpawnInterval, currentSpawnInterval - IntervalDecreaseRate);
             timeSinceLastIntervalDecrease = 0f;
-            Debug.Log($"¹ß»çÃ¼ »ı¼º ÁÖ±â °¨¼Ò! ÇöÀç ÁÖ±â: {currentSpawnInterval}");
+            Debug.Log($"ë°œì‚¬ì²´ ìƒì„± ì£¼ê¸° ê°ì†Œ! í˜„ì¬ ì£¼ê¸°: {currentSpawnInterval}");
         }
 
-        //µ¥¹ÌÁö Áõ°¡
+        //ë°ë¯¸ì§€ ì¦ê°€
         if (timeSinceLastDamageIncrease >= DamageIncreaseInterval)
         {
             currentDamage += DamageIncrease;
             timeSinceLastDamageIncrease = 0f;
-            Debug.Log($"¹ß»çÃ¼ µ¥¹ÌÁö Áõ°¡! ÇöÀç µ¥¹ÌÁö: {currentDamage}");
+            Debug.Log($"ë°œì‚¬ì²´ ë°ë¯¸ì§€ ì¦ê°€! í˜„ì¬ ë°ë¯¸ì§€: {currentDamage}");
         }    
     }
 
     
-    private void UpdateLevelText()//UI ÅØ½ºÆ®¸¦ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    private void UpdateLevelText()//UI í…ìŠ¤íŠ¸ë¥¼ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     {
         if (ObstacleLevelText != null)
         {
-            ObstacleLevelText.text = $"Àå¾Ö¹° Lv.{currentLevel}";
-            Debug.Log($"¹ß»çÃ¼ Àå¾Ö¹°ÀÌ °­È­µÆ¾î!");
+            ObstacleLevelText.text = $"ì¥ì• ë¬¼ Lv.{currentLevel}";
+            Debug.Log($"ë°œì‚¬ì²´ ì¥ì• ë¬¼ì´ ê°•í™”ëì–´!");
         }
     }
 
-    //´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ ÇöÀç °ªÀ» °¡Á®°¥ ¼ö ÀÖ´Â ÇÔ¼öµé
+    //ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ í˜„ì¬ ê°’ì„ ê°€ì ¸ê°ˆ ìˆ˜ ìˆëŠ” í•¨ìˆ˜ë“¤
     public float GetCurrentBoltSpeed()
     {
         return currentBoltSpeed;

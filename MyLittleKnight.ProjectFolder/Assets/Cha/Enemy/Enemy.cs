@@ -6,9 +6,7 @@ using Unity.Properties;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static EnemyDifficulty;//Enemy ½ºÅ©¸³Æ®¿¡¼­ EnemyDifficulty Å¬·¡½ºÀÇ static ¸â¹ö¸¦ ´õ ÆíÇÏ°Ô »ç¿ëÇÏ±â À§ÇÑ ¹®¹ıÀÌ¾ß.
-                             //¿ø·¡ Enemy ½ºÅ©¸³Æ®¿¡¼­ EnemyDifficultyÀÇ StatTypeÀ» »ç¿ëÇÏ·Á¸é EnemyDifficulty.StatTypeÀÌ¶ó°í ½á¾ß ÇØ.
-                             //ÇÏÁö¸¸ using static EnemyDifficulty;¸¦ ¼±¾ğÇÏ¸é, EnemyDifficulty¸¦ »ı·«ÇÏ°í ±×³É StatTypeÀÌ¶ó°í¸¸ ½áµµ µÅ.
+using static EnemyDifficulty;//Enemy ìŠ¤í¬ë¦½íŠ¸ì—ì„œ EnemyDifficulty í´ë˜ìŠ¤ì˜ static ë©¤ë²„ë¥¼ ë” í¸í•˜ê²Œ ì‚¬ìš©í•˜ê¸° ìœ„í•œ ë¬¸ë²•ì´ì•¼.
 
 public class Enemy : MonoBehaviour
 {
@@ -21,63 +19,63 @@ public class Enemy : MonoBehaviour
         public float AttackDamage = 2f;
         public float DetectionRange = 100f;
         public Color SpriteColor = Color.white;
-        public int ScoreValue = 10;//¸ó½ºÅÍ Ã³Ä¡ ½Ã ¾òÀ» Á¡¼ö (±âº»°ª 10Á¡, ÀÎ½ºÆåÅÍ¿¡¼­ ¼öÁ¤ °¡´É)
+        public int ScoreValue = 10;//ëª¬ìŠ¤í„° ì²˜ì¹˜ ì‹œ ì–»ì„ ì ìˆ˜ (ê¸°ë³¸ê°’ 10ì , ì¸ìŠ¤í™í„°ì—ì„œ ìˆ˜ì • ê°€ëŠ¥)
     }
 
 
     public enum EnemyType { Normal, Strong, Elite }
-    //ÀÎ½ºÆåÅÍÃ¢¿¡ µå·Ó´Ù¿îÀ¸·Î Normal, Strong, EliteÇ¥½Ã
-    public EnemyType enemyType = EnemyType.Normal;//ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ÇÒ ¸ó½ºÅÍ ±âº» Å¸ÀÔ
-     
-    [Header("¸ó½ºÅÍ Å¸ÀÔº° ½ºÅİ")]//ÀÎ½ºÆåÅÍ¿¡¼­ ±¸ºĞÇÏ±â À§ÇÑ Çì´õ,
-    public EnemyStats NormalStats = new EnemyStats();//Normal Å¸ÀÔÀÇ ´É·ÂÄ¡ ¼¼Æ®
-    public EnemyStats StrongStats = new EnemyStats();//Strong Å¸ÀÔÀÇ ´É·ÂÄ¡ ¼¼Æ®
-    public EnemyStats EliteStats = new EnemyStats();//Elite Å¸ÀÔÀÇ ´É·ÂÄ¡ ¼¼Æ®
+    //ì¸ìŠ¤í™í„°ì°½ì— ë“œë¡­ë‹¤ìš´ìœ¼ë¡œ Normal, Strong, Eliteí‘œì‹œ
 
-    [Header("EnemySpawner ¿¬°á")]
-    public EnemySpawn EnemySpawner;//EnemySpawn ½ºÅ©¸³Æ® ÂüÁ¶, [Header("»ç¿îµå")] Çì´õ ¶§¹®¿¡ À§Ä¡¸¦ À§ÂÊÀ¸·Î ¿Å°Ü³ù¾î
+    public EnemyType enemyType = EnemyType.Normal;//ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•  ëª¬ìŠ¤í„° ê¸°ë³¸ íƒ€ì…
+
+    [Header("ëª¬ìŠ¤í„° íƒ€ì…ë³„ ìŠ¤í…Ÿ")]
+    public EnemyStats NormalStats = new EnemyStats();
+    public EnemyStats StrongStats = new EnemyStats();
+    public EnemyStats EliteStats = new EnemyStats();
+
+    [Header("EnemySpawner ì—°ê²°")]
+    public EnemySpawn EnemySpawner;//EnemySpawn ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
    
     [Header("Targeting Offset")]
     [SerializeField] private float playerTargetOffsetY = -2.7f;
-    //ÇÃ·¹ÀÌ¾î ¸ñÇ¥ YÃà ¿ÀÇÁ¼Â (ÀÎ½ºÆåÅÍ³ª ½ºÅ©¸³Æ®¿¡¼­ Á¶ÀıÇØ. Áö±İÀº -2.7ÀÌ Á¦ÀÏ Àû´çÇØ)
-    
-    //»ç¿îµå °ü·Ã º¯¼ö
-    [Header("»ç¿îµå")]
+    //í”Œë ˆì´ì–´ ëª©í‘œ Yì¶• ì˜¤í”„ì…‹ (ì¸ìŠ¤í™í„°ë‚˜ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì¡°ì ˆí•´. ì§€ê¸ˆì€ -2.7ì´ ì œì¼ ì ë‹¹í•´)
+
+   
+    [Header("ì‚¬ìš´ë“œ")]//ì‚¬ìš´ë“œ ê´€ë ¨
     [SerializeField] private AudioSource deathAudioSource;
     [SerializeField] private AudioClip deathSound;
 
 
-    //³»ºÎ º¯¼öµé
+    //ë‚´ë¶€ë³€ìˆ˜
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private Player playerScript;
 
-    private float currentMoveSpeed;//ÀÌµ¿ ¼Óµµ
-    private float currentStopDistance;//ÇÃ·¹ÀÌ¾î¿Í ÀÌ °Å¸®¿¡ ´êÀ¸¸é ¸ØÃã
-    private float currentAttackCooldown;//°ø°İ ÄğÅ¸ÀÓ
-    private float lastAttackTime;//¸¶Áö¸·À¸·Î °ø°İÇÑ ½Ã°£
+    private float currentMoveSpeed;//ì´ë™ì†ë„
+    private float currentStopDistance;//í”Œë ˆì´ì–´ì™€ ì´ ê±°ë¦¬ì— ë‹¿ìœ¼ë©´ ë©ˆì¶¤
+    private float currentAttackCooldown;//ê³µê²© ì¿¨íƒ€ì„
+    private float lastAttackTime;//ë§ˆì§€ë§‰ìœ¼ë¡œ ê³µê²©í•œ ì‹œê°„
 
-    private float currentAttackDamage;//°ø°İ µ¥¹ÌÁö
-    private float currentDetectionRange;//¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¸¦ °¨ÁöÇÏ´Â °Å¸®
-    private int currentScoreValue;//¸ó½ºÅÍ Ã³Ä¡ ½Ã ÁÙ Á¡¼ö
+    private float currentAttackDamage;//ë°ë¯¸ì§€
+    private float currentDetectionRange;//ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ë¥¼ ê°ì§€í•˜ëŠ” ê±°ë¦¬
+    private int currentScoreValue;//ëª¬ìŠ¤í„° ì²˜ì¹˜ ì‹œ í”Œë ˆì´ì–´ê°€ ë°›ì„ ì ìˆ˜
 
-    private bool playerWasDead = false;//ÇÃ·¹ÀÌ¾î°¡ ÀÌÀü¿¡ Á×¾ú¾ú´ÂÁö ÃßÀûÇÏ´Â º¯¼ö
-    private bool isDead = false;//»ç¸Á º¯¼ö(±âº»°ª false)
-    private bool isKnockedBack = false;//³Ë¹é ÁßÀÎÁö ¿©ºÎ¸¦ ³ªÅ¸³»´Â ÇÃ·¡±×
+    private bool playerWasDead = false;//í”Œë ˆì´ì–´ê°€ ì´ì „ì— ì£½ì—ˆì—ˆëŠ”ì§€ ì¶”ì í•˜ëŠ” ë³€ìˆ˜
+    private bool isDead = false;//ì‚¬ë§ ë³€ìˆ˜(ê¸°ë³¸ê°’ false)
+    private bool isKnockedBack = false;//ë„‰ë°± ì¤‘ì¸ì§€ ì—¬ë¶€ë¥¼ ë‚˜íƒ€ë‚´ëŠ” í”Œë˜ê·¸
 
 
-    public void SetEnmeyStats()//¸ó½ºÅÍ ½ÃÀÛ ½Ã ´É·ÂÄ¡¿Í ¿ÜÇüÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
+    public void SetEnmeyStats()//ëª¬ìŠ¤í„° ì‹œì‘ ì‹œ ëŠ¥ë ¥ì¹˜ì™€ ì™¸í˜•ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
     {
-        if (spriteRenderer == null)//SpriteRenderer°¡ ¾øÀ¸¸é ´õ ÀÌ»ó ÁøÇàÇÏÁö ¾ÊÀ½
+        if (spriteRenderer == null)//SpriteRendererê°€ ì—†ìœ¼ë©´ ì§„í–‰ ë¶ˆê°€
         {
-            Debug.LogError($"Enemy: {gameObject.name}¿¡ SpriteRenderer ÄÄÆ÷³ÍÆ®°¡ ¾ø¾î! ½ºÅÈ ¼³Á¤¿¡ ½ÇÆĞÇß¾î!");
-            return;//¿¡·¯¸¦ ¾Ë¸° ÈÄ ÇÔ¼ö Á¾·á
+            Debug.LogError($"Enemy: {gameObject.name}ï¿½ï¿½ SpriteRenderer ì»´í¬ë„ŒíŠ¸ê°€ ì—†ì–´! ìŠ¤íƒ¯ ì„¤ì •ì— ì‹¤íŒ¨í–ˆì–´!");
+            return;
         }
                                                           
-        EnemyStats selectedStats;//ÇöÀç Å¸ÀÔ¿¡ ¸Â´Â ´É·ÂÄ¡ ¼¼Æ®¸¦ ÀúÀåÇÒ º¯¼ö
-       
+        EnemyStats selectedStats;//í˜„ì¬ íƒ€ì…ì— ë§ëŠ” ëŠ¥ë ¥ì¹˜ ì„¸íŠ¸ë¥¼ ì €ì¥í•  ë³€ìˆ˜ï¿½
         switch (enemyType)
         {
             case EnemyType.Normal:
@@ -89,23 +87,24 @@ public class Enemy : MonoBehaviour
             case EnemyType.Elite:
                 selectedStats = EliteStats;
                 break;
-            default:
-                selectedStats = NormalStats;//±âº»°ª
+            default://ê¸°ë³¸ê°’
+                selectedStats = NormalStats;
                 break;
         }
 
         if(EnemyDifficulty.Instance != null)
         {   
-            currentMoveSpeed = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.MoveSpeed, StatType.MoveSpeed);//selectedStats »ç¿ë
-            currentStopDistance = selectedStats.StopDistance;//³­ÀÌµµ ¿µÇâ ¾øÀ¸¸é ±×´ë·Î
-            currentAttackCooldown = selectedStats.AttackCooldown;//³­ÀÌµµ ¿µÇâ ¾øÀ¸¸é ±×´ë·Î
-            currentAttackDamage = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.AttackDamage, StatType.AttackDamage);//selectedStats »ç¿ë
-            currentDetectionRange = selectedStats.DetectionRange;//³­ÀÌµµ ¿µÇâ ¾øÀ¸¸é ±×´ë·Î
-            currentScoreValue = selectedStats.ScoreValue;//³­ÀÌµµ ¿µÇâ ¾øÀ¸¸é ±×´ë·Î
+            currentMoveSpeed = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.MoveSpeed, StatType.MoveSpeed);
+            //ë‚œì´ë„ ì˜í–¥ ì—†ìœ¼ë©´ ê·¸ëŒ€ë¡œ
+            currentStopDistance = selectedStats.StopDistance;
+            currentAttackCooldown = selectedStats.AttackCooldown;
+            currentAttackDamage = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.AttackDamage, StatType.AttackDamage);
+            currentDetectionRange = selectedStats.DetectionRange;
+            currentScoreValue = selectedStats.ScoreValue;
         }
-        else//EnemyDifficulty ÀÎ½ºÅÏ½º°¡ ¾øÀ¸¸é ±âº» ½ºÅÈ »ç¿ë
+        else//EnemyDifficulty ì¸ìŠ¤í„´ìŠ¤ê°€ ì—†ìœ¼ë©´ ê¸°ë³¸ ìŠ¤íƒ¯ ì‚¬ìš©
         {
-            Debug.LogWarning("EnemyDifficulty.Instance¸¦ Ã£À» ¼ö ¾ø¾î, ¸ó½ºÅÍ°¡ ±âº» ½ºÅÈÀ¸·Î »ı¼ºÇÒ°Ô.");
+            Debug.LogWarning("EnemyDifficulty.Instanceë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´, ëª¬ìŠ¤í„°ê°€ ê¸°ë³¸ ìŠ¤íƒ¯ìœ¼ë¡œ ìƒì„±í• ê²Œ.");
             currentMoveSpeed = selectedStats.MoveSpeed;
             currentStopDistance = selectedStats.StopDistance;
             currentAttackCooldown = selectedStats.AttackCooldown;
@@ -122,98 +121,92 @@ public class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        //"Player" ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ®·Î ÀÌµ¿(TransformÀ» ÇÒ´ç)
-        GameObject playerGameObject = GameObject.FindWithTag("Player");//ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ¿¬°á
+        //"Player" íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ë¡œ ì´ë™(Transformì„ í• ë‹¹)
+        GameObject playerGameObject = GameObject.FindWithTag("Player");
         if(playerGameObject != null)
-            playerScript = playerGameObject.GetComponent<Player>();//Player ½ºÅ©¸³Æ® ÂüÁ¶ °¡Á®¿À±â
+            playerScript = playerGameObject.GetComponent<Player>();
         else
         {         
             playerScript = null;
-            Debug.LogWarning("Enemy: Player ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø´Ù°í! 'Player' ÅÂ±×¸¦ È®ÀÎÇØ!");
+            Debug.LogWarning("Enemy: Player ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! 'Player' íƒœê·¸ë¥¼ í™•ì¸í•´!");
         }
-        //¸ó½ºÅÍ ½ÃÀÛ ½Ã ´É·ÂÄ¡¿Í ¿ÜÇüÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö È£Ãâ
-        SetEnmeyStats();
+        SetEnmeyStats();//ëª¬ìŠ¤í„° ì‹œì‘ ì‹œ ëŠ¥ë ¥ì¹˜ì™€ ì™¸í˜•ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
 
-        lastAttackTime = Time.time - currentAttackCooldown;//½ÃÀÛÇÏÀÚ¸¶ÀÚ °ø°İ°¡´É, ½ÇÇàµÇ°í ÄğÅ¸ÀÓ ±â´Ù¸®Áö ¾Ê°í ¹Ù·Î °ø°İ
+        lastAttackTime = Time.time - currentAttackCooldown;//ì‹œì‘í•˜ìë§ˆì ê³µê²©ê°€ëŠ¥, ì‹¤í–‰ë˜ê³  ì¿¨íƒ€ì„ ê¸°ë‹¤ë¦¬ì§€ ì•Šê³  ë°”ë¡œ ê³µê²©
 
-        //¿Àµğ¿À ÄÄÆ÷³ÍÆ® °¡Á®¿À±â
-        if (deathAudioSource == null)
-            Debug.LogError("Enemy: AudioSource ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î!");     
+        if (deathAudioSource == null)//ì˜¤ë””ì˜¤ ì»´í¬ë„ŒíŠ¸ ê°€ì ¸ì˜¤ê¸°
+            Debug.LogError("Enemy: AudioSource ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!");     
     }
     
 
-    void FixedUpdate()//¹°¸®°ü·Ã ·ÎÁ÷Àº FixedUpdate·Î 
-    {//FixedUpdate¿¡¼± Time.deltaTimeº¸´Ü Time.fixedDeltaTime(Á¤È®ÇÑ ¹°¸® °è»ê°ú ÀÏ°üµÈ ÀÌµ¿ ¼Óµµ¸¦ º¸Àå)
-
-        if (isDead)//¸ó½ºÅÍ »ç¸Á½Ã
+    void FixedUpdate()//FixedUpdateì—ì„  Time.deltaTimeë³´ë‹¨ Time.fixedDeltaTime(ì •í™•í•œ ë¬¼ë¦¬ ê³„ì‚°ê³¼ ì¼ê´€ëœ ì´ë™ ì†ë„ë¥¼ ë³´ì¥)
+    {
+        if (isDead)//ëª¬ìŠ¤í„° ì‚¬ë§ì‹œ
         {
-            rb.velocity = Vector2.zero;//»ç¸Á½Ã Áï½Ã ¸ØÃã
-            return;//»ç¸Á ½Ã ÀÌµ¿À» ÇÏÁö ¸øÇÔ
+            rb.linearVelocity = Vector2.zero;//ì¦‰ì‹œ ë©ˆì¶¤
+            return;
         }
 
-        if (isKnockedBack) return;//³Ë¹é ÁßÀÏ ¶§´Â ÀÌµ¿ ·ÎÁ÷À» °Ç³Ê¶Ü
-        
-        if (HandlePlayerDeath()) return;//ÇÃ·¹ÀÌ¾î »ç¸Á ½Ã Çàµ¿ Ã³¸® ¹× FixedUpdate Á¾·á, ÇÔ¼ö È£Ãâ
-        if (playerScript == null) return;//ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®°¡ ¾øÀ¸¸é ÀÌµ¿/°ø°İ ·ÎÁ÷ ÁøÇàÇÏÁö ¾ÊÀ½
+        if (isKnockedBack) return;//ë„‰ë°± ì¤‘ì¼ ë•ŒëŠ” ì´ë™ ë¡œì§ì„ ê±´ë„ˆëœ€
 
-        //ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸® °è»ê
-        Vector3 playerCenterPosition = playerScript.GetCenterPosition();//ÇÃ·¹ÀÌ¾îÀÇ Áß¾Ó À§Ä¡ °¡Á®¿À±â
-        playerCenterPosition.y += playerTargetOffsetY;//YÃà ¿ÀÇÁ¼Â Àû¿ë
+        if (HandlePlayerDeath()) return;//í”Œë ˆì´ì–´ ì‚¬ë§ ì‹œ ë©ˆì¶¤
+        if (playerScript == null) return;//Player ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìœ¼ë©´ ì´ë™/ê³µê²© ë¡œì§ ì§„í–‰í•˜ì§€ ì•ŠìŒ
+
+        //í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ ê³„ì‚°
+        Vector3 playerCenterPosition = playerScript.GetCenterPosition();//í”Œë ˆì´ì–´ì˜ ì¤‘ì•™ ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸°
+        playerCenterPosition.y += playerTargetOffsetY;//Yì¶• ì˜¤í”„ì…‹ ì ìš©
 
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerCenterPosition);
 
-        //if¹®ÀÌ ¸¹¾Æ °¡µ¶¼ºÀÌ ¶³¾îÁ® ¼³¸íÀü¿ë º¯¼ö Ãß°¡
+        //ê¸´ ì¡°ê±´ë¬¸ì„ ëŒ€ì²´í•˜ì—¬ ê°€ë…ì„±ì„ ë†’ì´ëŠ” ì§€ì—­ ë³€ìˆ˜
         bool isInDetectionRange = distanceToPlayer <= currentDetectionRange;
         bool isInStopDistance = distanceToPlayer <= currentStopDistance;
         bool canAttack = Time.time >= lastAttackTime + currentAttackCooldown;
 
-  
-        //ÁÖ ·ÎÁ÷ ºĞ¸® (¼¼ºĞÈ­µÈ ÇÔ¼ö È£Ãâ)
+
+        //ì£¼ ë¡œì§ ë¶„ë¦¬ (ì„¸ë¶„í™”ëœ í•¨ìˆ˜ í˜¸ì¶œ)
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
     }
 
-    public void Attack()//ÀÌ ÇÔ¼ö´Â °ø°İÀÌ ¼º°øÇßÀ» ¶§ µ¥¹ÌÁö¶ó´Â °á°ú¸¦ ¸¸µé¾î³»´Â ¿ªÇÒ
+    public void Attack()//ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ì—ê²Œ ë‹¿ìœ¼ë©´ ê³µê²©
     {
-        //Attack ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®°¡ È£ÃâµÉ ¶§, ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®¸¦ ´Ù½Ã È®ÀÎ
+        //Attack ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ê°€ í˜¸ì¶œë  ë•Œ, í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ë¥¼ ë‹¤ì‹œ í™•ì¸
         float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
 
-        if (distanceToPlayer <= currentStopDistance + 1f)//1f´Â ¿©À¯¸¦ ÁÖ±â À§ÇÑ °ª
-        {
-            if (playerScript == null || playerScript.IsDead)
-            {   //¸ó½ºÅÍ°¡ °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç µµÁß ÇÃ·¹ÀÌ¾î°¡ Á×°Å³ª ¾ø¾îÁø °æ¿ì¸¦ ´ëºñÇÑ ·Î±×
-                Debug.Log("ÇÃ·¹ÀÌ¾î°¡ ¾ø°Å³ª »ç¸ÁÇÏ¿© µ¥¹ÌÁö¸¦ ÁÙ ¼ö ¾ø¾î!");
+        if (distanceToPlayer <= currentStopDistance + 1.5f)//1.5fëŠ” ëª¬ìŠ¤í„° ë©ˆì¶¤ ì§€ì  ì™¸ ì¶”ê°€ ê³µê²© ë²”ìœ„. ì½œë¼ì´ë” ë°– ê±°ë¦¬ì—ì„œë„ ë°ë¯¸ì§€ ê°€ëŠ¥
+        { 
+            if (playerScript == null || playerScript.IsDead)//í”Œë ˆì´ì–´ì˜ ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ê±°ë‚˜ í”Œë ˆì´ì–´ê°€ ì£½ì—ˆìœ¼ë©´
+            {   
+                Debug.Log("í”Œë ˆì´ì–´ê°€ ì—†ê±°ë‚˜ ì‚¬ë§í•˜ì—¬ ë°ë¯¸ì§€ë¥¼ ì¤„ ìˆ˜ ì—†ì–´!");
                 return;
             }
 
             PlayerShield playerShield = playerScript.GetComponent<PlayerShield>();
-            if (playerShield != null)//ÇÃ·¹ÀÌ¾î¿¡°Ô PlayerShield ½ºÅ©¸³Æ®°¡ ÀÖ´Ù¸é, ¹æ¾î·Â¿¡ µ¥¹ÌÁö Àû¿ë
+            if (playerShield != null)//í”Œë ˆì´ì–´ì—ê²Œ ë°©ì–´ë ¥ì´ ìˆë‹¤ë©´, ë°©ì–´ë ¥ì— ë¨¼ì € ë°ë¯¸ì§€ ì ìš©
             {
                 playerShield.TakeShieldDamage(currentAttackDamage);
-                Debug.Log("¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾îÀÇ ¹æ¾î·Â¿¡ " + currentAttackDamage + " µ¥¹ÌÁö¸¦ Áá¾î!");
+                Debug.Log("ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ì˜ ë°©ì–´ë ¥ì— " + currentAttackDamage + " ë°ë¯¸ì§€ë¥¼ ì¤¬ì–´!");
             }
-            else//PlayerShield ½ºÅ©¸³Æ®°¡ ¾ø´Ù¸é, ±âÁ¸Ã³·³ PlayerHealth¿¡ Á÷Á¢ µ¥¹ÌÁö Àû¿ë
-            {   //¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¿¡°Ô µ¥¹ÌÁö¸¦ ÁÖ´Â ·ÎÁ÷
+            else//ë°©ì–´ë ¥ì´ ì—†ìœ¼ë©´ ì²´ë ¥ì— ë°ë¯¸ì§€ ì ìš©
+            {   
                 PlayerHealth playerhealth = playerScript.GetComponent<PlayerHealth>();
                 if (playerhealth != null)
                 {
                     playerhealth.TakeDamage(currentAttackDamage);
-                    Debug.Log("ÇÃ·¹ÀÌ¾î°¡ " + currentAttackDamage + " µ¥¹ÌÁö¸¦ ¹Ş¾Ò´Ù! ÇöÀç Ã¼·Â: " + playerhealth.CurrentHealth);
+                    Debug.Log("í”Œë ˆì´ì–´ê°€ " + currentAttackDamage + " ë°ë¯¸ì§€ë¥¼ ë°›ì•˜ë‹¤! í˜„ì¬ ì²´ë ¥: " + playerhealth.CurrentHealth);
                 }
-                else Debug.LogError("ÇÃ·¹ÀÌ¾î¿¡°Ô PlayerHealth ½ºÅ©¸³Æ®°¡ ¾ø¾î!");
+                else Debug.LogError("í”Œë ˆì´ì–´ì—ê²Œ PlayerHealth ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ì–´!");
             }
         }
-        else
-        {
-            Debug.Log("°ø°İ ¹üÀ§ ¹ÛÀÌ¶ó µ¥¹ÌÁö¸¦ ÁÙ ¼ö ¾ø¾î!");
-        }
+        else Debug.Log("ê³µê²© ë²”ìœ„ ë°–ì´ë¼ ë°ë¯¸ì§€ë¥¼ ì¤„ ìˆ˜ ì—†ì–´!");    
     }
 
-    void ApplyTouchDamage()//ÇÃ·¹ÀÌ¾î°¡ ¸ó½ºÅÍ¿¡°Ô ´êÀ¸¸é ¹ŞÀº µ¥¹ÌÁö ÇÔ¼ö
+    void ApplyTouchDamage()//í”Œë ˆì´ì–´ê°€ ëª¬ìŠ¤í„°ì—ê²Œ ë‹¿ìœ¼ë©´ ë°›ì€ ë°ë¯¸ì§€ í•¨ìˆ˜
     {
         if (playerScript == null || playerScript.IsDead)
         {
-            Debug.Log("ÇÃ·¹ÀÌ¾î°¡ ¾ø°Å³ª »ç¸ÁÇØ¼­ µ¥¹ÌÁö¸¦ ÁÙ ¼ö ¾ø¾î!");
+            Debug.Log("í”Œë ˆì´ì–´ê°€ ì—†ê±°ë‚˜ ì‚¬ë§í•´ì„œ ë°ë¯¸ì§€ë¥¼ ì¤„ ìˆ˜ ì—†ì–´!");
             return;
         }
 
@@ -221,7 +214,7 @@ public class Enemy : MonoBehaviour
         if (playerShield != null)
         {
             playerShield.TakeShieldDamage(currentAttackDamage);
-            Debug.Log("¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾îÀÇ ¹æ¾î·Â¿¡ " + currentAttackDamage + " µ¥¹ÌÁö¸¦ Áá¾î!");
+            Debug.Log("ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ì˜ ë°©ì–´ë ¥ì— " + currentAttackDamage + " ë°ë¯¸ì§€ë¥¼ ì¤¬ì–´!");
         }
         else
         {
@@ -229,44 +222,41 @@ public class Enemy : MonoBehaviour
             if (playerhealth != null)
             {
                 playerhealth.TakeDamage(currentAttackDamage);
-                Debug.Log("ÇÃ·¹ÀÌ¾î°¡ " + currentAttackDamage + " µ¥¹ÌÁö¸¦ ¹Ş¾Ò´Ù! ÇöÀç Ã¼·Â: " + playerhealth.CurrentHealth);
+                Debug.Log("í”Œë ˆì´ì–´ê°€ " + currentAttackDamage + " ë°ë¯¸ì§€ë¥¼ ë°›ì•˜ë‹¤! í˜„ì¬ ì²´ë ¥: " + playerhealth.CurrentHealth);
             }
-            else Debug.LogError("ÇÃ·¹ÀÌ¾î¿¡°Ô PlayerHealth ½ºÅ©¸³Æ®°¡ ¾ø¾î!");
+            else Debug.LogError("í”Œë ˆì´ì–´ì—ê²Œ PlayerHealth ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ì–´!");
         }
     }
-     
-  
-    //ÇÃ·¹ÀÌ¾î°¡ ¸ó½ºÅÍ °ø°İ ¹üÀ§ ¾È¿¡ µé¾î¿ÔÀ»¶§ ºĞ±âÁ¡ ¿ªÇÒ ÇÔ¼ö, ¹üÀ§¿¡ µû¶ó °¢°¢ÀÇ ÇÔ¼ö È£Ãâ
+
+
+    //í”Œë ˆì´ì–´ê°€ ëª¬ìŠ¤í„°ì˜ íƒì§€/ê³µê²© ë²”ìœ„ ì•ˆì— ë“¤ì–´ì™”ì„ ë•Œ í–‰ë™ì„ ê²°ì •í•˜ëŠ” í•µì‹¬ í•¨ìˆ˜ (AI ë¶„ê¸°ì )
     private void ProcessMovementAndAttack(bool isInDetectionRange, bool isInStopDistance, bool canAttack, Vector3 playerCenterPosition)
     {
-        if (!isInDetectionRange)
+        if (!isInDetectionRange)//íƒì§€ ë²”ìœ„ ë°–ì´ë¼ë©´ (ì¶”ê²© í¬ê¸°)
         {
             StopMovement();
             return;
         }
 
-        //ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®°¡ StopDistance ÀÌ³»ÀÏ °æ¿ì
+        //í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ê°€ StopDistance ì´ë‚´ì¼ ê²½ìš° (Attack ì¤€ë¹„)
         if (isInStopDistance)
         {
-            StopMovement();
+            StopMovement();//ëª¬ìŠ¤í„° ë©ˆì¶¤
 
-            //ÄğÅ¸ÀÓÀÌ Áö³µ°í, °ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ È°¼ºÈ­µÇ¾î ÀÖÁö ¾ÊÀ» ¶§¸¸ °ø°İ ½ÃÀÛ
+            //ì¿¨íƒ€ì„ ì²´í¬ ë° ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ë¯¸í™œì„±í™” ìƒíƒœ í™•ì¸
             if (canAttack && !animator.GetBool("Attack"))
             {
-                //´ê¾ÒÀ» ¶§ µ¥¹ÌÁö¸¦ ÁÖ´Â ÇÔ¼ö È£Ãâ
-                ApplyTouchDamage();
-                lastAttackTime = Time.time;
+                
+                ApplyTouchDamage();//ë‹¿ì•˜ì„ ë•Œ ë°ë¯¸ì§€ë¥¼ ì£¼ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
+                lastAttackTime = Time.time;//ì¿¨íƒ€ì„ ì‹œì‘ ì‹œê°„ ê¸°ë¡
             }
 
-            if (!animator.GetBool("Attack"))//°ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀº ´ê¾ÒÀ»¶§ µ¥¹ÌÁö¿Í º°°³·Î ½ÇÇàµÇµµ·Ï ·ÎÁ÷ ¼öÁ¤
-            {
+            if (!animator.GetBool("Attack"))//ë‹¿ì•˜ì„ë•Œ ë°ë¯¸ì§€ì™€ ë³„ê°œë¡œì•„ì§ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ì´ ì‹œì‘ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ì‹œì‘              
                 animator.SetBool("Attack", true);
-            }
         }
-        else//ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®°¡ StopDistanceº¸´Ù ¸Ö °æ¿ì,,,
+        else//í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ê°€ StopDistanceë³´ë‹¤ ë©€ ê²½ìš°
         {
-            //°ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ È°¼ºÈ­µÇ¾î ÀÖ´Ù¸é Ãë¼ÒÇÏ°í ÃßÀû ½ÃÀÛ
-            if (animator.GetBool("Attack"))
+            if (animator.GetBool("Attack"))// ê³µê²© ì• ë‹ˆë©”ì´ì…˜ì´ ì¼œì ¸ ìˆì—ˆë‹¤ë©´ ë„ê³  ì´ë™
             {
                 animator.SetBool("Attack", false);
             }
@@ -274,78 +264,75 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //SwordWeapon ½ºÅ©¸³Æ®¿¡¼­ È£ÃâµÉ ³Ë¹é ÇÔ¼ö
-    public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)
+    
+    public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon ìŠ¤í¬ë¦½íŠ¸ì—ì„œ í˜¸ì¶œë  ë„‰ë°± í•¨ìˆ˜
     {
-        if (isDead) return;//Á×Àº ¸ó½ºÅÍ´Â ³Ë¹éµÇÁö ¾ÊÀ½
+        if (isDead) return;//ì£½ì€ ëª¬ìŠ¤í„°ëŠ” ë„‰ë°±ë˜ì§€ ì•ŠìŒ
 
         if (rb == null)
         {
-            Debug.LogWarning(gameObject.name + "¿¡´Â Rigidbody2D°¡ ¾ø¾î¼­ ³Ë¹éÀ» ¹ŞÀ» ¼ö ¾ø¾î!");
+            Debug.LogWarning(gameObject.name + "ì—ëŠ” Rigidbody2Dê°€ ì—†ì–´ì„œ ë„‰ë°±ì„ ë°›ì„ ìˆ˜ ì—†ì–´!");
             return;
         }
 
-        //ÀÌ¹Ì ÁøÇà ÁßÀÎ ³Ë¹é ÄÚ·çÆ¾ÀÌ ÀÖ´Ù¸é ÁßÁö (Áßº¹ ³Ë¹é ¹æÁö)
-        StopAllCoroutines();//ÀÌ ½ºÅ©¸³Æ®ÀÇ ¸ğµç ÄÚ·çÆ¾ ÁßÁö (´Ù¸¥ Áß¿äÇÑ ÄÚ·çÆ¾ÀÌ ÀÖ´Ù¸é ÁÖÀÇ!)
-                            //Æ¯Á¤ ÄÚ·çÆ¾¸¸ ÁßÁöÇÏ°í ½Í´Ù¸é StopCoroutine(ÄÚ·çÆ¾_ÂüÁ¶); »ç¿ëÇØ¾ß ÇØ.
+        StopAllCoroutines();//ì´ë¯¸ ì§„í–‰ ì¤‘ì¸ ë„‰ë°± ì½”ë£¨í‹´ì´ ìˆë‹¤ë©´ ì¤‘ì§€ (ì¤‘ë³µ ë„‰ë°± ë°©ì§€)
 
-        isKnockedBack = true;//³Ë¹é »óÅÂ ÇÃ·¡±× ¼³Á¤
-        rb.velocity = Vector2.zero;//ÇöÀç ¼Óµµ ÃÊ±âÈ­ (ÀÌÀü ¿òÁ÷ÀÓ ¿µÇâ Á¦°Å)
+        isKnockedBack = true;//ë„‰ë°± í™œì„±í™”
+        rb.linearVelocity = Vector2.zero;//í˜„ì¬ ì†ë„ ì´ˆê¸°í™” (ì´ì „ ì›€ì§ì„ ì˜í–¥ ì œê±°)
 
-        //³Ë¹é Èû Àû¿ë
+        //ë„‰ë°± í˜ ì ìš©
         rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-        Debug.Log(gameObject.name + "¿¡°Ô ³Ë¹é " + knockbackForce + "¸¸Å­ Àû¿ë! ¹æÇâ: " + knockbackDirection);
 
-        //³Ë¹é Áö¼Ó ½Ã°£¸¸Å­ ±â´Ù¸° ÈÄ ³Ë¹é »óÅÂ ÇØÁ¦
-        StartCoroutine(KnockbackRoutine(duration));
+        
+        StartCoroutine(KnockbackRoutine(duration));//ë„‰ë°± ì§€ì† ì‹œê°„ë§Œí¼ ê¸°ë‹¤ë¦° í›„ ë„‰ë°± ìƒíƒœ í•´ì œ
     }
-    private IEnumerator KnockbackRoutine(float duration)//³Ë¹é ÄÚ·çÆ¾
+    private IEnumerator KnockbackRoutine(float duration)//ë„‰ë°± ì½”ë£¨í‹´
     {
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(duration);//SwordWeapon ìŠ¤í¬ë¦½íŠ¸ì˜ KnockbackDuration = 0.2f(ì´ˆ) ë™ì•ˆ ë°€ë ¤ë‚¨
 
-        //³Ë¹é ½Ã°£ Á¾·á ÈÄ ¼Óµµ ÃÊ±âÈ­ (¹Ğ·Á³ª´ø °ÍÀ» ¸ØÃß°Ô ÇØ)
-        rb.velocity = Vector2.zero;
-        isKnockedBack = false;//³Ë¹é »óÅÂ ÇÃ·¡±× ÇØÁ¦
-        Debug.Log(gameObject.name + " ³Ë¹é Á¾·á.");
+        
+        rb.linearVelocity = Vector2.zero;//ë„‰ë°± ì‹œê°„ ì¢…ë£Œ í›„ ì†ë„ ì´ˆê¸°í™” (ë°€ë ¤ë‚˜ë˜ ê²ƒì„ ë©ˆì¶”ê²Œ í•´)
+        isKnockedBack = false;//ë„‰ë°± ìƒíƒœ í•´ì œ
+        Debug.Log(gameObject.name + " ë„‰ë°± ì¢…ë£Œ.");
     }
 
-    private void MoveTowardsPlayer(Vector3 targetPosition)//ÇÃ·¹ÀÌ¾î ÃßÀû/ÀÌµ¿ ·ÎÁ÷
+    private void MoveTowardsPlayer(Vector3 targetPosition)//í”Œë ˆì´ì–´ ì¶”ì /ì´ë™ ë¡œì§
     {
         Vector2 direction = (targetPosition - transform.position).normalized;
-        rb.velocity = direction * currentMoveSpeed;
+        rb.linearVelocity = direction * currentMoveSpeed;
 
         animator.SetBool("Move", true);
-        FlipSprite(direction.x);//ÁÂ¿ì ¹İÀü ÇÔ¼ö È£Ãâ
+        FlipSprite(direction.x);//ì¢Œìš° ë°˜ì „ í•¨ìˆ˜ í˜¸ì¶œ
     }
-    public void OnAttackFinished()//°ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³­ ÈÄ¿¡ Attack BoolÀ» ´Ù½Ã false·Î ¹Ù²ãÁÖ´Â ÇÔ¼ö
+    public void OnAttackFinished()//ê³µê²© ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚œ í›„ì— Attack Boolì„ ë‹¤ì‹œ falseë¡œ ë°”ê¿”ì£¼ëŠ” í•¨ìˆ˜
     {                          
         animator.SetBool("Attack", false);
     }
 
-    private void StopMovement()//¿òÁ÷ÀÓ Á¤Áö ·ÎÁ÷
+    private void StopMovement()//ì›€ì§ì„ ì •ì§€ ë¡œì§
     {
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         animator.SetBool("Move", false);
     }
 
-    private void FlipSprite(float directionX)//¸ó½ºÅÍ ½ºÇÁ¶óÀÌÆ® ÁÂ¿ì ¹İÀü
+    private void FlipSprite(float directionX)//ëª¬ìŠ¤í„° ìŠ¤í”„ë¼ì´íŠ¸ ì¢Œìš° ë°˜ì „
     {
-        //¹æÇâÀÌ 0ÀÌ ¾Æ´Ò ¶§¸¸ Ã³¸® (0ÀÏ ¶© flipX°¡ À¯ÁöµÊ)
+        //ë°©í–¥ì´ 0ì´ ì•„ë‹ ë•Œë§Œ ì²˜ë¦¬ (0ì¼ ë• flipXê°€ ìœ ì§€ë¨)
         if (directionX != 0)
         {
-            //directionX°¡ À½¼öÀÏ ¶§ (¿ŞÂÊ) true, ¾ç¼öÀÏ ¶§ (¿À¸¥ÂÊ) false
+            //directionXê°€ ìŒìˆ˜ì¼ ë•Œ (ì™¼ìª½) true, ì–‘ìˆ˜ì¼ ë•Œ (ì˜¤ë¥¸ìª½) false
             spriteRenderer.flipX = directionX < 0;
         }
     }
 
 
-    private bool HandlePlayerDeath()//ÇÃ·¹ÀÌ¾î »ç¸Á »óÅÂ Ã³¸®
+    private bool HandlePlayerDeath()//í”Œë ˆì´ì–´ ì‚¬ë§ ìƒíƒœ ì²˜ë¦¬
     {
         bool isPlayerDead = (playerScript != null && playerScript.IsDead);
 
         if (isPlayerDead)
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             animator.SetBool("Move", false);
 
             if (!playerWasDead)
@@ -353,7 +340,7 @@ public class Enemy : MonoBehaviour
                 animator.SetTrigger("Idle");
                 playerWasDead = true;
             }
-            return true;//ÇÃ·¹ÀÌ¾î°¡ Á×¾úÀ¸´Ï ´õ ÀÌ»ó ÃßÀû/°ø°İ ·ÎÁ÷À» ÁøÇàÇÏÁö ¾ÊÀ½
+            return true;//í”Œë ˆì´ì–´ê°€ ì£½ì—ˆìœ¼ë‹ˆ ë” ì´ìƒ ì¶”ì /ê³µê²© ë¡œì§ì„ ì§„í–‰í•˜ì§€ ì•ŠìŒ
         }
         else
         {
@@ -362,50 +349,39 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void EnemyDie()//¸ó½ºÅÍ°¡ Á×À»¶§  
+    public void EnemyDie()//ëª¬ìŠ¤í„° ì‚¬ë§
     {       
-        if (isDead) return;//ÀÌ¹Ì Á×Àº »óÅÂ¶ó¸é, ´õ ÀÌ»ó ¾Æ¹«°Íµµ ÇÏÁö ¾Ê°í ÇÔ¼ö¸¦ Á¾·á
+        if (isDead) return;//ì´ë¯¸ ì£½ì€ ìƒíƒœë¼ë©´, ë” ì´ìƒ ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•Šê³  í•¨ìˆ˜ë¥¼ ì¢…ë£Œ
 
-        isDead = true;//»ç¸Á »óÅÂ·Î º¯°æ, ¸Ç À§¿¡ ¼±¾ğ¿¡´Â ¾ÆÁ÷ »ç¸Á ¸ğ¼ÇÀ» ÇÏ¸é ¾ÈµÇ´Ï false·Î
-        Debug.Log("Àû »ç¸Á!");
-       
-        //¸ó½ºÅÍ »ç¸Á½Ã »ç¸Á »ç¿îµå Àç»ı
-        if (deathAudioSource != null && deathSound != null)
+        isDead = true;
+        Debug.Log(enemyType + "ëª¬ìŠ¤í„° ì»·!");
+        
+        if (deathAudioSource != null && deathSound != null)//ëª¬ìŠ¤í„° ì‚¬ë§ì‹œ ì‚¬ë§ ì‚¬ìš´ë“œ ì¬ìƒ
+            deathAudioSource.PlayOneShot(deathSound);//PlayOneShotì€ í˜„ì¬ ì¬ìƒ ì¤‘ì¸ ë‹¤ë¥¸ ì†Œë¦¬ë¥¼ ëŠì§€ ì•Šê³ , ìƒˆë¡œìš´ ì†Œë¦¬ë¥¼ í•œ ë²ˆë§Œ ì¬ìƒ
+                                                     //ì˜ˆë¥¼ ë“¤ì–´, ëª¬ìŠ¤í„°ê°€ ì—¬ëŸ¬ ë§ˆë¦¬ ë™ì‹œì— ì£½ì„ ë•Œ ê°ì ì£½ëŠ” ì†Œë¦¬ê°€ ëª¨ë‘ ë“¤ë¦¬ê²Œ í•˜ë ¤ë©´ PlayOneShotì„ ì“°ëŠ” ê²Œ ì¢‹ì•„.
+                                                     //ë§Œì•½ ê·¸ëƒ¥ audioSource.Play()ë¥¼ ì¼ë‹¤ë©´, ë‹¤ë¥¸ ì†Œë¦¬ê°€ ì¬ìƒë  ë•Œë§ˆë‹¤ ì´ì „ ì†Œë¦¬ê°€ ëŠê¸°ê²Œ ë¼
+
+        if (playerScript != null)//!= nullì€ PlayerìŠ¤í¬ë¦½íŠ¸ê°€ nullê³¼ ê°™ì§€ ì•Šìœ¼ë©´?. ì¦‰ ì œëŒ€ë¡œ ìŠ¤í¬ë¦½íŠ¸ì™€ ì—°ê²°ëœ ìƒíƒœ.
         {
-            deathAudioSource.PlayOneShot(deathSound);//PlayOneShotÀº ÀÌ¸§ ±×´ë·Î ÇöÀç Àç»ı ÁßÀÎ ´Ù¸¥ ¼Ò¸®¸¦ ²÷Áö ¾Ê°í, »õ·Î¿î ¼Ò¸®¸¦ ÇÑ ¹ø¸¸ Àç»ıÇÏ´Â ÇÔ¼ö¾ß.
-            //¿¹¸¦ µé¾î, ¸ó½ºÅÍ°¡ ¿©·¯ ¸¶¸® µ¿½Ã¿¡ Á×À» ¶§ °¢ÀÚ Á×´Â ¼Ò¸®°¡ ¸ğµÎ µé¸®°Ô ÇÏ·Á¸é PlayOneShotÀ» ¾²´Â °Ô ÁÁ¾Æ.
-            //¸¸¾à ±×³É audioSource.Play()¸¦ ½è´Ù¸é, ´Ù¸¥ ¼Ò¸®°¡ Àç»ıµÉ ¶§¸¶´Ù ÀÌÀü ¼Ò¸®°¡ ²÷±â°Ô µÅ.
-        }
-
-        if (playerScript != null)//!= nullÀº Player½ºÅ©¸³Æ®°¡ null°ú °°Áö ¾ÊÀ¸¸é?. Áï Á¦´ë·Î ½ºÅ©¸³Æ®¿Í ¿¬°áµÈ »óÅÂ.
-        {
-
             if (playerScript != null)
-            {
                 playerScript.AddScore(currentScoreValue);
-            }
         }
 
         if (EnemySpawner != null)
-        {   //ÇöÀç ¸ó½ºÅÍÀÇ Å¸ÀÔÀÌ Strong ¶Ç´Â EliteÀÎÁö È®ÀÎ
+        {   //í˜„ì¬ ëª¬ìŠ¤í„°ì˜ íƒ€ì…ì´ Strong ë˜ëŠ” Eliteì¸ì§€ í™•ì¸
             bool isThisStrongOrElite = (enemyType == EnemyType.Strong || enemyType == EnemyType.Elite);
 
-            //EnemySpawn ½ºÅ©¸³Æ®ÀÇ EnemyDied ÇÔ¼ö¸¦ È£ÃâÇÏ¿© ¸ó½ºÅÍ°¡ Á×¾úÀ½À» ¾Ë¸²
-            //ÀÌ¶§, ÀÌ ¸ó½ºÅÍ°¡ °­ÇÑ/¿¤¸®Æ® ¸ó½ºÅÍÀÎÁö ¿©ºÎ¸¦ ÇÔ²² Àü´Ş
-            EnemySpawner.EnemyDied(isThisStrongOrElite);
+            EnemySpawner.EnemyDied(isThisStrongOrElite);//EnemySpawn ìŠ¤í¬ë¦½íŠ¸ì˜ EnemyDied í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ì—¬ ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆìŒì„ ì•Œë¦¼
         }
 
         if (animator != null)
         {
-            animator.SetTrigger("Die");//AnimatorÀÇ "Die" Æ®¸®°Å ¹ßµ¿
+            animator.SetTrigger("Die");
 
-            float DieTime = 1.5f;//»ç¸Á ÈÄ ~ÃÊ ÈÄ¿¡ »ç¶óÁü
-    
-            Destroy(gameObject, DieTime);//DestroyÇÔ¼ö´Â °ÔÀÓ ¿ÀºêÁ§Æ®³ª ÄÄÆ÷³ÍÆ®¸¦ °ÔÀÓ¿¡¼­ Á¦°Å(ÆÄ±«)ÇÒ ¶§ »ç¿ë
-            //Áï Enemy ¿ÀºêÁ§Æ®°¡ »ç¸ÁÇÏ¸é DieTime¿¡ ³ª¿Â ½Ã°£ (ÃÊ)°¡ Áö³­ ÈÄ Á¦°ÅÇÑ´Ù.
+            float DieTime = 1.5f;//ì‚¬ë§ í›„ ~ì´ˆ í›„ì— ì‚¬ë¼ì§
+
+            Destroy(gameObject, DieTime);
         }
-    }
-
-    
+    }   
 }
 

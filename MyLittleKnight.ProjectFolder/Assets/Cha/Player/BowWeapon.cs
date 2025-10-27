@@ -1,32 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;//UI »ç¿ëÀ» À§ÇØ Ãß°¡
+using UnityEngine.UI;//UI ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 
 
 public class BowWeapon : MonoBehaviour
 {
-    [Header("È° °ø°Ý °ü·Ã")]
-    //È° °ø°Ý °ü·Ã
-    public GameObject ArrowPrefab;//È­»ì ÇÁ¸®ÆÕÀ» ´ãÀ» º¯¼ö(ÀÎ½ºÆåÅÍ ¿¬°á)
-    public Transform ArrowSpawnPoint;//È­»ì »ý¼º À§Ä¡(ÀÎ½ºÆåÅÍ ¿¬°á)
-    public float ArrowSpeed = 10f;//È­»ìÀÌ ³¯¶ó°¡´Â ¼Óµµ(ÀÎ½ºÆåÅÍ ¼³Á¤)
-    public float ArrowDamage = 1f;//È­»ìÀÇ µ¥¹ÌÁö(ÀÎ½ºÆåÅÍ ¼³Á¤)
-    //È° °ø°Ý 360µµ È­»ì °ø°Ý °ü·Ã
-    public int NumberOfArrows360 = 8;//360µµ °ø°Ý ½Ã ¹ß»çÇÒ È­»ìÀÇ ¼ö (¿¹: 8¹æÇâ)
+    [Header("È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    //È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public GameObject ArrowPrefab;//È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public Transform ArrowSpawnPoint;//È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public float ArrowSpeed = 10f;//È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ó°¡´ï¿½ ï¿½Óµï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    public float ArrowDamage = 1f;//È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    //È° ï¿½ï¿½ï¿½ï¿½ 360ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public int NumberOfArrows360 = 8;//360ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ (ï¿½ï¿½: 8ï¿½ï¿½ï¿½ï¿½)
 
-    [Header("°ø°Ý ¼Óµµ °ü·Ã")]
-    public float BaseArrowCooldown = 2f;//È°ÀÇ ±âº» °ø°Ý ÄðÅ¸ÀÓ
-    [SerializeField]private float lastArrowAttackTime = -1f;//¸¶Áö¸·À¸·Î È° °ø°ÝÀ» ÇÑ ½Ã°£À» ±â·Ï
-    private float currentArrowCooldown;//È°ÀÇ ÇöÀç °ø°Ý ÄðÅ¸ÀÓ
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public float BaseArrowCooldown = 2f;//È°ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½
+    [SerializeField]private float lastArrowAttackTime = -1f;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    private float currentArrowCooldown;//È°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½
 
-    [Header("È° °ø°Ý »ç¿îµå")]//»ç¿îµå °ü·Ã º¯¼ö, ÇÏ³ªÀÇ AudioSource ÄÄÆ÷³ÍÆ®´Â ÇÑ ¹ø¿¡ ÇÏ³ªÀÇ AudioClip¸¸ Àç»ýÇÒ ¼ö ÀÖ±â ¶§¹®
-                        //Áö±Ý ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¿¡´Â Player ½ºÅ©¸³Æ®¿¡ °ÉÀ»¶§ »ç¿îµåµµ ÀÖÀÝ¾Æ? »ç¿îµå ÇÏ³ª´ç ¿Àµð¿À ÄÄÆ÷³ÍÆ® ÇÏ³ª¾¿ÀÌ¾ß!
+    [Header("È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Ï³ï¿½ï¿½ï¿½ AudioSource ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ AudioClipï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½
+                        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Player ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½åµµ ï¿½ï¿½ï¿½Ý¾ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ï³ï¿½ï¿½ï¿½ï¿½Ì¾ï¿½!
     [SerializeField] private AudioSource bowAudioSource;
     [SerializeField] private AudioClip bowAttackSound;
 
 
-    [Header("UI ¿¬°á")]
+    [Header("UI ï¿½ï¿½ï¿½ï¿½")]
     public Slider BowCooldownBar;
 
     void Start()
@@ -38,111 +38,111 @@ public class BowWeapon : MonoBehaviour
         UpdateBowUI();
     }
 
-    public void ShootArrow()//360µµ È­»ì °ø°Ý ·ÎÁ÷
+    public void ShootArrow()//360ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     {
-        if (bowAudioSource != null && bowAttackSound != null)//È° °ø°Ý½Ã º¯¼öµéÀÌ Àß ÀÛµ¿ÀÌ µÇ¸é
+        if (bowAudioSource != null && bowAttackSound != null)//È° ï¿½ï¿½ï¿½Ý½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ûµï¿½ï¿½ï¿½ ï¿½Ç¸ï¿½
             bowAudioSource.PlayOneShot(bowAttackSound);
-        //PlayOneShotÀº ÀÌ¸§ ±×´ë·Î ÇöÀç Àç»ý ÁßÀÎ ´Ù¸¥ ¼Ò¸®¸¦ ²÷Áö ¾Ê°í, »õ·Î¿î ¼Ò¸®¸¦ ÇÑ ¹ø¸¸ Àç»ýÇÏ´Â ÇÔ¼ö¾ß.
-        else Debug.LogWarning("È° °ø°Ý »ç¿îµå AudioSource ¶Ç´Â AudioClipÀÌ ¿¬°áµÇÁö ¾Ê¾Ò¾î!");
+        //PlayOneShotï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½.
+        else Debug.LogWarning("È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ AudioSource ï¿½Ç´ï¿½ AudioClipï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò¾ï¿½!");
 
       
-        if (ArrowPrefab == null)//È­»ì ÇÁ¸®ÆÕÀÌ Àß ¿¬°áµÇÀÖ³Ä ¾ÈµÇÀÖ³Ä
+        if (ArrowPrefab == null)//È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö³ï¿½ ï¿½Èµï¿½ï¿½Ö³ï¿½
         {
-            Debug.LogError("Arrow PrefabÀÌ ¿¬°áµÇÁö ¾Ê¾Ò¾î!");
+            Debug.LogError("Arrow Prefabï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò¾ï¿½!");
             return;
         }
 
-        //È­»ìÀÌ ¹ß»çµÉ¶§ ·Î±×¿¡ ¾Ë¸²
-        Debug.Log("È­»ì ¹ß»ç! ¼³Á¤µÈ µ¥¹ÌÁö: " + this.ArrowDamage);
+        //È­ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½É¶ï¿½ ï¿½Î±×¿ï¿½ ï¿½Ë¸ï¿½
+        Debug.Log("È­ï¿½ï¿½ ï¿½ß»ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: " + this.ArrowDamage);
 
-        //°¢ È­»ì »çÀÌÀÇ °¢µµ °è»ê
+        //ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         float angleStep = 360f / NumberOfArrows360;
 
         for (int i = 0; i < NumberOfArrows360; i++)
         {
-            float angle = i * angleStep;//ÇöÀç È­»ìÀÇ °¢µµ(0, 45, 90, ...)
+            float angle = i * angleStep;//ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(0, 45, 90, ...)
 
-            //°¢µµ¸¦ ¶óµð¾ÈÀ¸·Î º¯È¯
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
             float radianAngle = angle * Mathf.Deg2Rad;
 
-            //¹ß»ç ¹æÇâ º¤ÅÍ °è»ê
+            //ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
 
-            //È­»ì »ý¼º (ÇÃ·¹ÀÌ¾îÀÇ Á¤Áß¾Ó¿¡¼­ ¹ß»çµÇµµ·Ï transform.position »ç¿ë)                   
+            //È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ß¾Ó¿ï¿½ï¿½ï¿½ ï¿½ß»ï¿½Çµï¿½ï¿½ï¿½ transform.position ï¿½ï¿½ï¿½)                   
             GameObject arrow = Instantiate(ArrowPrefab, ArrowSpawnPoint.position, Quaternion.identity);
 
-            //È­»ìÀÇ Rigidbody2D °¡Á®¿À±â
+            //È­ï¿½ï¿½ï¿½ï¿½ Rigidbody2D ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
             if (arrowRb != null)
             {
-                arrowRb.velocity = direction * ArrowSpeed;
+                arrowRb.linearVelocity = direction * ArrowSpeed;
 
-                //È­»ìÀÌ ³¯¾Æ°¡´Â ¹æÇâ¿¡ ¸ÂÃç È¸Àü
+                //È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
                 angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
 
 
-                //È­»ìÀÇ Arrow ½ºÅ©¸³Æ®¿¡ µ¥¹ÌÁö Àü´Þ
+                //È­ï¿½ï¿½ï¿½ï¿½ Arrow ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 Arrow arrowScript = arrow.GetComponent<Arrow>();
                 if (arrowScript != null)
-                    arrowScript.ArrowDamage = this.ArrowDamage;//±âÁ¸ arrowDamage »ç¿ë                                                            
-                else Debug.LogWarning("¹ß»çµÈ È­»ì ÇÁ¸®ÆÕ¿¡ 'Arrow' ½ºÅ©¸³Æ®°¡ ¾ø´Ù! µ¥¹ÌÁö ¼³Á¤ ºÒ°¡!");
+                    arrowScript.ArrowDamage = this.ArrowDamage;//ï¿½ï¿½ï¿½ï¿½ arrowDamage ï¿½ï¿½ï¿½                                                            
+                else Debug.LogWarning("ï¿½ß»ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ 'Arrow' ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½!");
             }
-            else { Debug.LogWarning("¹ß»çµÈ È­»ì ÇÁ¸®ÆÕ¿¡ Rigidbody2D°¡ ¾ø¾î!"); }
+            else { Debug.LogWarning("ï¿½ß»ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ Rigidbody2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!"); }
         }
         lastArrowAttackTime = Time.time;
 
     }
 
-    public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//È° ¾ÆÀÌÅÛ È¹µæ ½Ã °ø¼Ó Áõ°¡ ÇÔ¼ö
-    {                                                  //ÄÚµåÀÇ ¾ÈÀü¼º, Àç»ç¿ë¼ºÀ» À§ÇØ µû·Î ÇÔ¼ö¸¦ ¸¸µé¾îµÎÀÚ!                     
-        Debug.Log($"DecreaseAttackCooldown ÇÔ¼ö È£ÃâµÊ. ÇöÀç ÄðÅ¸ÀÓ: {currentArrowCooldown}, °¨¼Ò·®: {coolDown}");
-        //ÄÚµåÀÇ ¾ÈÀü¼º, Àç»ç¿ë¼ºÀ» À§ÇØ µû·Î ÇÔ¼ö¸¦ ¸¸µé¾îµÎÀÚ!                     
+    public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//È° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¹ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+    {                                                  //ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ë¼ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!                     
+        Debug.Log($"DecreaseAttackCooldown ï¿½Ô¼ï¿½ È£ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½: {currentArrowCooldown}, ï¿½ï¿½ï¿½Ò·ï¿½: {coolDown}");
+        //ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ë¼ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!                     
         switch (weaponType)
         {
             case WeaponType.Bow:
                 currentArrowCooldown -= coolDown;
-                if (currentArrowCooldown < 1.0f)//¿©±â¼­ È° °ø°ÝÀÇ ÃÖ´ë ÄðÅ¸ÀÓÀ» 1ÃÊ·Î Á¦ÇÑ
+                if (currentArrowCooldown < 1.0f)//ï¿½ï¿½ï¿½â¼­ È° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ 1ï¿½Ê·ï¿½ ï¿½ï¿½ï¿½ï¿½
                     currentArrowCooldown = 1.0f;
                 break;
         }
-        Debug.Log($"ÄðÅ¸ÀÓ °¨¼Ò ÈÄ ÃÖÁ¾ ÄðÅ¸ÀÓ: {currentArrowCooldown}");
+        Debug.Log($"ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½: {currentArrowCooldown}");
     }
 
-    public bool CanAttack()//ÄðÅ¸ÀÓ Ã¼Å© ÇÔ¼ö
+    public bool CanAttack()//ï¿½ï¿½Å¸ï¿½ï¿½ Ã¼Å© ï¿½Ô¼ï¿½
     {   
-        //¸¶Áö¸· °ø°Ý ½Ã°£ÀÌ - 1f ÀÌ°Å³ª(°ÔÀÓ Ã¹ ½ÃÀÛ) ÄðÅ¸ÀÓÀÌ ³¡³µÀ» ¶§ True ¹ÝÈ¯
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ - 1f ï¿½Ì°Å³ï¿½(ï¿½ï¿½ï¿½ï¿½ Ã¹ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ True ï¿½ï¿½È¯
         if (lastArrowAttackTime < 0f || Time.time >= lastArrowAttackTime + currentArrowCooldown)
             return true;
         else
         {
-            // ÄðÅ¸ÀÓÀÌ ¾ÆÁ÷ ³²¾ÒÀ» ¶§ µð¹ö±× ·Î±× Ãâ·Â
+            // ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ ï¿½ï¿½ï¿½
             float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
-            Debug.Log("È° °ø°Ý ÄðÅ¸ÀÓ Áß. ³²Àº ½Ã°£: " + timeRemaining.ToString("F1") + "ÃÊ");
+            Debug.Log("È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½: " + timeRemaining.ToString("F1") + "ï¿½ï¿½");
             return false;
         }
     }
 
-    private void UpdateBowUI()//È° °ø°Ý ÄðÅ¸ÀÓ UI¹Ù ÇÔ¼ö
+    private void UpdateBowUI()//È° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ UIï¿½ï¿½ ï¿½Ô¼ï¿½
     {
-        //°ÔÀÓ ½ÃÀÛ ½Ã, ÄðÅ¸ÀÓÀÌ ¾ø´Â »óÅÂ¶ó¸é UI¸¦ ¹Ù·Î ºñÈ°¼ºÈ­
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ UIï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         if (lastArrowAttackTime < 0f)
         {
             BowCooldownBar.gameObject.SetActive(false);
-            return;//ÇÔ¼ö¸¦ Áï½Ã Á¾·á
+            return;//ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
 
-        //³²Àº ÄðÅ¸ÀÓ °è»ê
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½
         float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
 
-        //ÄðÅ¸ÀÓÀÌ ³²¾ÆÀÖ´Ù¸é
+        //ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´Ù¸ï¿½
         if (timeRemaining > 0)
         {
             BowCooldownBar.gameObject.SetActive(true);
-            BowCooldownBar.maxValue = currentArrowCooldown;//½½¶óÀÌ´õÀÇ ÃÖ´ë°ªÀ» ÃÑ ÄðÅ¸ÀÓÀ¸·Î ¼³Á¤
-            BowCooldownBar.value = timeRemaining;//½½¶óÀÌ´õ °ªÀ» ³²Àº ½Ã°£À¸·Î ¼³Á¤
+            BowCooldownBar.maxValue = currentArrowCooldown;//ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            BowCooldownBar.value = timeRemaining;//ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
-        else BowCooldownBar.gameObject.SetActive(false);//ÄðÅ¸ÀÓÀÌ ³¡³ª¸é ¹Ù¸¦ ¼û±è          
+        else BowCooldownBar.gameObject.SetActive(false);//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½          
     }
 }

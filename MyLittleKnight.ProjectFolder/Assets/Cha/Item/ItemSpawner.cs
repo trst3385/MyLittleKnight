@@ -1,42 +1,42 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Tilemaps;//Å¸ÀÏ¸ÊÀ» »ç¿ëÇÏ·Á¸é ÇÊ¿ä
+using UnityEngine.Tilemaps;//íƒ€ì¼ë§µì„ ì‚¬ìš©í•˜ë ¤ë©´ í•„ìš”
 
 public class ItemSpawner : MonoBehaviour
 {
 
-    //ÀÎ½ºÆåÅÍ¿¡ ÇÒ´çÇÒ º¯¼öµé
-    public GameObject[] ItemPrefabs;//½ºÆùÇÒ ¾ÆÀÌÅÛ ÇÁ¸®ÆÕ ¸ñ·Ï
-    [Header("¿ÀºêÁ§Æ®, ·¹ÀÌ¾î ¿¬°á")]//À§¿¡ itemPrefabs º¯¼ö´Â []·Î µå·Ó´Ù¿î ¸Ş´º°¡ »ı°Ü¼­ Çì´õ ¾È¿¡ Æ÷ÇÔÇÏÁö ¾Ê¾Ò¾î
-    public Tilemap TargetTilemap;//¾ÆÀÌÅÛÀ» ½ºÆùÇÒ Å¸ÀÏ¸Ê
-    public LayerMask SpawnableLayer;//¾ÆÀÌÅÛÀÌ ½ºÆùµÉ ¼ö ÀÖ´Â ·¹ÀÌ¾î (¹Ù´Ú µî)
-    [Header("¾ÆÀÌÅÛÀÌ ½ºÆùµÇ´Â ½Ã°£")]
-    public float ItemSpawnTime = 10f;//¾ÆÀÌÅÛÀÌ ½ºÆùµÇ´Â ÁÖ±â (ÃÊ)
+    //ì¸ìŠ¤í™í„°ì— í• ë‹¹í•  ë³€ìˆ˜ë“¤
+    public GameObject[] ItemPrefabs;//ìŠ¤í°í•  ì•„ì´í…œ í”„ë¦¬íŒ¹ ëª©ë¡
+    [Header("ì˜¤ë¸Œì íŠ¸, ë ˆì´ì–´ ì—°ê²°")]//ìœ„ì— itemPrefabs ë³€ìˆ˜ëŠ” []ë¡œ ë“œë¡­ë‹¤ìš´ ë©”ë‰´ê°€ ìƒê²¨ì„œ í—¤ë” ì•ˆì— í¬í•¨í•˜ì§€ ì•Šì•˜ì–´
+    public Tilemap TargetTilemap;//ì•„ì´í…œì„ ìŠ¤í°í•  íƒ€ì¼ë§µ
+    public LayerMask SpawnableLayer;//ì•„ì´í…œì´ ìŠ¤í°ë  ìˆ˜ ìˆëŠ” ë ˆì´ì–´ (ë°”ë‹¥ ë“±)
+    [Header("ì•„ì´í…œì´ ìŠ¤í°ë˜ëŠ” ì‹œê°„")]
+    public float ItemSpawnTime = 10f;//ì•„ì´í…œì´ ìŠ¤í°ë˜ëŠ” ì£¼ê¸° (ì´ˆ)
 
 
-    //³»ºÎ¿¡¼­ »ç¿ëÇÒ º¯¼öµé
+    //ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤
     private float spawnTimer;
     private int currentItemCount;
-    private TextAlimManager textalimManager;//TextAlimManager ½ºÅ©¸³Æ® ÂüÁ¶
+    private TextAlimManager textalimManager;//TextAlimManager ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
 
     void Start()
     {
-        //!= nullÀº "nullÀÌ ¾Æ´Ò ¶§" Áï, "¹«¾ğ°¡°¡ Á¸ÀçÇÒ ¶§"¸¦ ÀÇ¹ÌÇÏ°í,
-        //== nullÀº "nullÀÏ ¶§" Áï, "¾Æ¹«°Íµµ ¾ø°Å³ª ºñ¾îÀÖÀ» ¶§"¸¦ ÀÇ¹ÌÇØ.
+        //!= nullì€ "nullì´ ì•„ë‹ ë•Œ" ì¦‰, "ë¬´ì–¸ê°€ê°€ ì¡´ì¬í•  ë•Œ"ë¥¼ ì˜ë¯¸í•˜ê³ ,
+        //== nullì€ "nullì¼ ë•Œ" ì¦‰, "ì•„ë¬´ê²ƒë„ ì—†ê±°ë‚˜ ë¹„ì–´ìˆì„ ë•Œ"ë¥¼ ì˜ë¯¸í•´.
         spawnTimer = ItemSpawnTime;
         if (ItemPrefabs == null || ItemPrefabs.Length == 0)
-            Debug.LogError("ItemSpawner: ¾ÆÀÌÅÛ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
+            Debug.LogError("ItemSpawner: ì•„ì´í…œ í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
 
         if (TargetTilemap == null)
-            Debug.LogError("ItemSpawner: Å¸ÀÏ¸ÊÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
+            Debug.LogError("ItemSpawner: íƒ€ì¼ë§µì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
 
-        textalimManager = FindObjectOfType<TextAlimManager>();
+        textalimManager = FindFirstObjectByType<TextAlimManager>();
         if (textalimManager == null)
-            Debug.LogError("TextAlimManager ¾À¿¡¼­ Ã£À» ¼ö ¾ø¾î!");
+            Debug.LogError("TextAlimManager ì”¬ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ì–´!");
     }
 
     void Update()
@@ -53,10 +53,10 @@ public class ItemSpawner : MonoBehaviour
     {
         if (ItemPrefabs == null || ItemPrefabs.Length == 0) return;
 
-        Vector3 spawnPosition = GetValidSpawnPosition();//GetValidSpawnPositionÇÔ¼ö È£Ãâ
+        Vector3 spawnPosition = GetValidSpawnPosition();//GetValidSpawnPositioní•¨ìˆ˜ í˜¸ì¶œ
         if (spawnPosition == Vector3.zero)
         {
-            Debug.LogWarning("¾ÆÀÌÅÛ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£À» ¼ö ¾ø¾ú¾î!");
+            Debug.LogWarning("ì•„ì´í…œ ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´!");
             return;
         }
 
@@ -66,12 +66,12 @@ public class ItemSpawner : MonoBehaviour
         Instantiate(itemToSpawn, spawnPosition, Quaternion.identity);
         currentItemCount++;
 
-        // TextAlimManager ½ºÅ©¸³Æ®·Î ¾Ë¸² º¸³»±â, UI¿¡ ¶ã ÅØ½ºÆ®
+        // TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¡œ ì•Œë¦¼ ë³´ë‚´ê¸°, UIì— ëœ° í…ìŠ¤íŠ¸
         if (textalimManager != null)
-            textalimManager.ShowNotification("<color=yellow>¾ÆÀÌÅÛ µîÀå!</color>");
+            textalimManager.ShowNotification("<color=yellow>ì•„ì´í…œ ë“±ì¥!</color>");
     }
 
-    Vector3 GetValidSpawnPosition()//¾ÆÀÌÅÛÀÇ »ı¼º À§Ä¡¸¦ Á¤ÇÏ´Â ÇÔ¼ö, ·£´ıÀ¸·Î ¼¼ À§Ä¡Áß¿¡¼­ ¼±ÅÃ
+    Vector3 GetValidSpawnPosition()//ì•„ì´í…œì˜ ìƒì„± ìœ„ì¹˜ë¥¼ ì •í•˜ëŠ” í•¨ìˆ˜, ëœë¤ìœ¼ë¡œ ì„¸ ìœ„ì¹˜ì¤‘ì—ì„œ ì„ íƒ
     {
         int maxAttempts = 100;
 
@@ -86,18 +86,18 @@ public class ItemSpawner : MonoBehaviour
             {
                 Vector3 cellCenterTile = TargetTilemap.GetCellCenterWorld(randomCell);
 
-                //ÁÖº¯¿¡ ´Ù¸¥ Äİ¶óÀÌ´õ(¿ÀºêÁ§Æ®)°¡ ¾ø´ÂÁö È®ÀÎ
+                //ì£¼ë³€ì— ë‹¤ë¥¸ ì½œë¼ì´ë”(ì˜¤ë¸Œì íŠ¸)ê°€ ì—†ëŠ”ì§€ í™•ì¸
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterTile, 0.5f, SpawnableLayer);
 
-                //´Ù¸¥ Äİ¶óÀÌ´õ°¡ ¾øÀ¸¸é À¯È¿ÇÑ À§Ä¡
+                //ë‹¤ë¥¸ ì½œë¼ì´ë”ê°€ ì—†ìœ¼ë©´ ìœ íš¨í•œ ìœ„ì¹˜
                 if (colliders.Length == 0) return cellCenterTile;
             }
         }
         return Vector3.zero;
     } 
 
-    public void ItemDestroyed()//¾ÆÀÌÅÛÀ» ¸Ô°í »ç¶óÁú¶§ È£ÃâµÉ ÇÔ¼ö
-    {   //ÀÌ°Ç item ½ºÅ©¸³Æ®ÀÇ Destroy(gameObject);¶û ´Ş¶ó, currentItemCountº¯¼öÀÇ °ªÀ» 1 ÁÙÀÌ´Â°Å¾ß.
+    public void ItemDestroyed()//ì•„ì´í…œì„ ë¨¹ê³  ì‚¬ë¼ì§ˆë•Œ í˜¸ì¶œë  í•¨ìˆ˜
+    {   //ì´ê±´ item ìŠ¤í¬ë¦½íŠ¸ì˜ Destroy(gameObject);ë‘ ë‹¬ë¼, currentItemCountë³€ìˆ˜ì˜ ê°’ì„ 1 ì¤„ì´ëŠ”ê±°ì•¼.
         currentItemCount--;
     }
 }

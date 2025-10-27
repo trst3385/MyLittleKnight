@@ -1,73 +1,73 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Security.Principal;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Tilemaps;//Tilemap °ü·Ã ±â´ÉÀ» »ç¿ëÇÏ±â À§ÇØ
+using UnityEngine.Tilemaps;//Tilemap ê´€ë ¨ ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ê¸° ìœ„í•´
 
-public class EnemySpawn : MonoBehaviour//public ÇÊµå´Â ´ë¹®ÀÚ·Î ½ÃÀÛÇÏ´Â °ÍÀÌ C#ÀÇ Ç¥ÁØ ÄÚµù ÄÁº¥¼ÇÀÌ¾ß.
-{   //ÀÌ·¸°Ô ÅëÀÏÇÏ¸é ÄÚµå°¡ ÈÎ¾À ±ò²ûÇÏ°í ´Ù¸¥ °³¹ßÀÚµéÀÌ ºÃÀ» ¶§µµ ÀÌÇØÇÏ±â ½¬¿öÁ®.
+public class EnemySpawn : MonoBehaviour//public í•„ë“œëŠ” ëŒ€ë¬¸ìë¡œ ì‹œì‘í•˜ëŠ” ê²ƒì´ C#ì˜ í‘œì¤€ ì½”ë”© ì»¨ë²¤ì…˜ì´ì•¼.
+{   //ì´ë ‡ê²Œ í†µì¼í•˜ë©´ ì½”ë“œê°€ í›¨ì”¬ ê¹”ë”í•˜ê³  ë‹¤ë¥¸ ê°œë°œìë“¤ì´ ë´¤ì„ ë•Œë„ ì´í•´í•˜ê¸° ì‰¬ì›Œì ¸.
 
-    [Header("½ºÅ©¸³Æ®, ¿ÀºêÁ§Æ® ¿¬°á")]
-    //ÀÎ½ºÆåÅÍ¿¡ ÇÒ´çÇÒ º¯¼öµé
-    public GameObject[] EnemyPrefabs;//ÀÎ½ºÆåÅÍ¿¡¼­ ½ºÆùÇÒ ¸ó½ºÅÍ ÇÁ¸®ÆÕÀ» ÇÒ´ç (0¹ø ÀÎµ¦½º¿¡ Normal ¸ó½ºÅÍ)
-    public Tilemap TargetTilemap;//¸ó½ºÅÍ¸¦ ½ºÆùÇÒ Å¸ÀÏ¸ÊÀ» ÇÒ´ç (ÇÃ·¹ÀÌ °¡´ÉÇÑ ¿µ¿ª)
-    public LayerMask SpawnableLayer;//¸ó½ºÅÍ°¡ ½ºÆùµÉ ¼ö ÀÖ´Â ¿µ¿ª (¹Ù´Ú, º® µî)ÀÇ ·¹ÀÌ¾î ¸¶½ºÅ©
-    public Player PlayerScript;//ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ® ÂüÁ¶
+    [Header("ìŠ¤í¬ë¦½íŠ¸, ì˜¤ë¸Œì íŠ¸ ì—°ê²°")]
+    //ì¸ìŠ¤í™í„°ì— í• ë‹¹í•  ë³€ìˆ˜ë“¤
+    public GameObject[] EnemyPrefabs;//ì¸ìŠ¤í™í„°ì—ì„œ ìŠ¤í°í•  ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì„ í• ë‹¹ (0ë²ˆ ì¸ë±ìŠ¤ì— Normal ëª¬ìŠ¤í„°)
+    public Tilemap TargetTilemap;//ëª¬ìŠ¤í„°ë¥¼ ìŠ¤í°í•  íƒ€ì¼ë§µì„ í• ë‹¹ (í”Œë ˆì´ ê°€ëŠ¥í•œ ì˜ì—­)
+    public LayerMask SpawnableLayer;//ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë  ìˆ˜ ìˆëŠ” ì˜ì—­ (ë°”ë‹¥, ë²½ ë“±)ì˜ ë ˆì´ì–´ ë§ˆìŠ¤í¬
+    public Player PlayerScript;//í”Œë ˆì´ì–´ ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
 
-    [Header("Strong ¸ó½ºÅÍ ½ºÆù ¼³Á¤:¸î¸íÀ» Àâ¾Æ¾ß ½ºÆù,¸î¹øÂ° ÇÁ¸®ÆÕÀÇ ¸ó½ºÅÍ¸¦")]//Inspector¿¡¼­ ½Ã°¢ÀûÀ¸·Î ±¸ºĞ
-    public int NormalKillsForStrongEnemy = 3;//°­ÇÑ ¸ó½ºÅÍ ½ºÆùÀ» À§ÇØ Àâ¾Æ¾ß ÇÒ Normal ¸ó½ºÅÍ ¼ö
-    public int StrongEnemyPrefabIndex = 1;//°­ÇÑ ¸ó½ºÅÍ ÇÁ¸®ÆÕÀÇ EnemyPrefabs ¹è¿­ ÀÎµ¦½º (¿¹: EnemyPrefabs[1])
+    [Header("Strong ëª¬ìŠ¤í„° ìŠ¤í° ì„¤ì •:ëª‡ëª…ì„ ì¡ì•„ì•¼ ìŠ¤í°,ëª‡ë²ˆì§¸ í”„ë¦¬íŒ¹ì˜ ëª¬ìŠ¤í„°ë¥¼")]//Inspectorì—ì„œ ì‹œê°ì ìœ¼ë¡œ êµ¬ë¶„
+    public int NormalKillsForStrongEnemy = 3;//ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í°ì„ ìœ„í•´ ì¡ì•„ì•¼ í•  Normal ëª¬ìŠ¤í„° ìˆ˜
+    public int StrongEnemyPrefabIndex = 1;//ê°•í•œ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì˜ EnemyPrefabs ë°°ì—´ ì¸ë±ìŠ¤ (ì˜ˆ: EnemyPrefabs[1])
     
 
-    [Header("Elite ¸ó½ºÅÍ ½ºÆù ¼³Á¤: Æ¯Á¤ Á¡¼ö µµ´Ş ½Ã")]//Çì´õ´Â ÀÌ°Ç ¼øÀüÈ÷ À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ Ã¢À» Á¤¸®ÇÏ°í º¸±â ÁÁ°Ô ¸¸µé±â À§ÇÑ ±â´ÉÀÌ¾ß
-    public int EliteSpawnScoreThreshold = 150;//Elite ¸ó½ºÅÍ°¡ Ã³À½ ½ºÆùµÇ´Â Á¡¼ö
-    public int EliteSpawnScoreInterval = 150;//Ã¹ ½ºÆù ÀÌÈÄ¿¡ Elite ¸ó½ºÅÍ°¡ ½ºÆùµÇ´Â Á¡¼ö °£°İ (¿¹: ~~Á¡¸¶´Ù)
-    public int EliteEnemyPrefabIndex = 2;//Elite ¸ó½ºÅÍ ÇÁ¸®ÆÕÀÇ EnemyPrefabs ¹è¿­ ÀÎµ¦½º (¿¹: EnemyPrefabs[2])
-    private int nextEliteSpawnScore;//´ÙÀ½ Elite ¸ó½ºÅÍ°¡ ½ºÆùµÉ Á¡¼ö ÀÓ°è°ª
+    [Header("Elite ëª¬ìŠ¤í„° ìŠ¤í° ì„¤ì •: íŠ¹ì • ì ìˆ˜ ë„ë‹¬ ì‹œ")]//í—¤ë”ëŠ” ì´ê±´ ìˆœì „íˆ ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„° ì°½ì„ ì •ë¦¬í•˜ê³  ë³´ê¸° ì¢‹ê²Œ ë§Œë“¤ê¸° ìœ„í•œ ê¸°ëŠ¥ì´ì•¼
+    public int EliteSpawnScoreThreshold = 150;//Elite ëª¬ìŠ¤í„°ê°€ ì²˜ìŒ ìŠ¤í°ë˜ëŠ” ì ìˆ˜
+    public int EliteSpawnScoreInterval = 150;//ì²« ìŠ¤í° ì´í›„ì— Elite ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë˜ëŠ” ì ìˆ˜ ê°„ê²© (ì˜ˆ: ~~ì ë§ˆë‹¤)
+    public int EliteEnemyPrefabIndex = 2;//Elite ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì˜ EnemyPrefabs ë°°ì—´ ì¸ë±ìŠ¤ (ì˜ˆ: EnemyPrefabs[2])
+    private int nextEliteSpawnScore;//ë‹¤ìŒ Elite ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë  ì ìˆ˜ ì„ê³„ê°’
      
 
-    //³»ºÎ¿¡¼­ »ç¿ëÇÒ º¯¼öµé
-    private float spawnTimer;//½ºÆù ÁÖ±â °è»ê¿ë Å¸ÀÌ¸Ó
-    private float currentEnemyCount;//ÇöÀç »ı¼ºµÈ ¸ó½ºÅÍ ¼ö¸¦ ´ãÀ» º¯¼ö
-    private int normalEnemyKilledSinceLastStrong = 0;//¸¶Áö¸· °­ÇÑ ¸ó½ºÅÍ ½ºÆù ÈÄ ÀâÀº Normal ¸ó½ºÅÍ ¼ö
-    private TextAlimManager textalimManager;//TextAlimManager ½ºÅ©¸³Æ®¸¦ ÂüÁ¶ÇÒ º¯¼ö Ãß°¡
+    //ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤
+    private float spawnTimer;//ìŠ¤í° ì£¼ê¸° ê³„ì‚°ìš© íƒ€ì´ë¨¸
+    private float currentEnemyCount;//í˜„ì¬ ìƒì„±ëœ ëª¬ìŠ¤í„° ìˆ˜ë¥¼ ë‹´ì„ ë³€ìˆ˜
+    private int normalEnemyKilledSinceLastStrong = 0;//ë§ˆì§€ë§‰ ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í° í›„ ì¡ì€ Normal ëª¬ìŠ¤í„° ìˆ˜
+    private TextAlimManager textalimManager;//TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¸ì¡°í•  ë³€ìˆ˜ ì¶”ê°€
 
-    private float normalSpawnTime;//EnemyDifficulty ½ºÅ©¸³Æ®¿¡¼­ ¹Ş¾Æ¿Ã ÇöÀç Normal ¸ó½ºÅÍ ½ºÆù ÁÖ±â º¯¼ö
-    private int normalSpawnCount = 1;//EnemyDifficulty ½ºÅ©¸³Æ®¿¡¼­ ¹Ş¾Æ¿Ã µ¿½Ã ½ºÆù °³¼ö
+    private float normalSpawnTime;//EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ë°›ì•„ì˜¬ í˜„ì¬ Normal ëª¬ìŠ¤í„° ìŠ¤í° ì£¼ê¸° ë³€ìˆ˜
+    private int normalSpawnCount = 1;//EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ë°›ì•„ì˜¬ ë™ì‹œ ìŠ¤í° ê°œìˆ˜
 
     void Start()
     {
-        spawnTimer = 2f;//°ÔÀÓ ½ÃÀÛ ½Ã Ã¹ ¸ó½ºÅÍ ½ºÆùÀ» 2ÃÊ µÚ·Î ´ÊÃã
+        spawnTimer = 2f;//ê²Œì„ ì‹œì‘ ì‹œ ì²« ëª¬ìŠ¤í„° ìŠ¤í°ì„ 2ì´ˆ ë’¤ë¡œ ëŠ¦ì¶¤
 
-        nextEliteSpawnScore = EliteSpawnScoreThreshold;//Ã¹ Elite ½ºÆù Á¡¼ö ÃÊ±âÈ­
+        nextEliteSpawnScore = EliteSpawnScoreThreshold;//ì²« Elite ìŠ¤í° ì ìˆ˜ ì´ˆê¸°í™”
 
 
-        //EnemyPrefabs ¹è¿­ÀÌ ºñ¾îÀÖ´ÂÁö È®ÀÎw (¿¡·¯ ¹æÁö)
+        //EnemyPrefabs ë°°ì—´ì´ ë¹„ì–´ìˆëŠ”ì§€ í™•ì¸w (ì—ëŸ¬ ë°©ì§€)
         if (EnemyPrefabs == null || EnemyPrefabs.Length == 0)
-            Debug.LogError("EnemySpawn: EnemyPrefabs ¹è¿­¿¡ ¸ó½ºÅÍ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");
+            Debug.LogError("EnemySpawn: EnemyPrefabs ë°°ì—´ì— ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");
 
 
-        //°­ÇÑ ¸ó½ºÅÍ ÇÁ¸®ÆÕ ÀÎµ¦½º À¯È¿¼º °Ë»ç (EnemyPrefabs ¹è¿­ÀÇ Å©±âº¸´Ù Å©°Å³ª 0º¸´Ù ÀÛÀ¸¸é ¾ÈµÊ)
+        //ê°•í•œ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ì¸ë±ìŠ¤ ìœ íš¨ì„± ê²€ì‚¬ (EnemyPrefabs ë°°ì—´ì˜ í¬ê¸°ë³´ë‹¤ í¬ê±°ë‚˜ 0ë³´ë‹¤ ì‘ìœ¼ë©´ ì•ˆë¨)
         if (StrongEnemyPrefabIndex >= EnemyPrefabs.Length || StrongEnemyPrefabIndex < 0)
-            Debug.LogWarning("Strong Enemy Prefab Index°¡ EnemyPrefabs ¹è¿­ ¹üÀ§¸¦ ¹ş¾î³µ¾î! °­ÇÑ ¸ó½ºÅÍ ½ºÆùÀÌ ¾ÈµÉ ¼ö ÀÖ¾î!");
+            Debug.LogWarning("Strong Enemy Prefab Indexê°€ EnemyPrefabs ë°°ì—´ ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì–´! ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í°ì´ ì•ˆë  ìˆ˜ ìˆì–´!");
 
 
-        //Elite ¸ó½ºÅÍ ÇÁ¸®ÆÕ ÀÎµ¦½º À¯È¿¼º °Ë»ç
+        //Elite ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ì¸ë±ìŠ¤ ìœ íš¨ì„± ê²€ì‚¬
         if (EliteEnemyPrefabIndex >= EnemyPrefabs.Length || EliteEnemyPrefabIndex < 0)
-            Debug.LogWarning("Elite Enemy Prefab Index°¡ EnemyPrefabs ¹è¿­ ¹üÀ§¸¦ ¹ş¾î³µ¾î! ¿¤¸®Æ® ¸ó½ºÅÍ ½ºÆùÀÌ ¾ÈµÉ ¼ö ÀÖ¾î!");
+            Debug.LogWarning("Elite Enemy Prefab Indexê°€ EnemyPrefabs ë°°ì—´ ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì–´! ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í°ì´ ì•ˆë  ìˆ˜ ìˆì–´!");
 
-
-        //½ÃÀÛ ½Ã TextAlimManager ½ºÅ©¸³Æ®¸¦ Ã£¾Æ¼­ ÇÒ´ç
-        textalimManager = FindObjectOfType<TextAlimManager>();
+        
+        //ì‹œì‘ ì‹œ TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì•„ì„œ í• ë‹¹
+        textalimManager = FindFirstObjectByType<TextAlimManager>();
         if (textalimManager == null)
-            Debug.LogWarning("EnemySpawn: TextAlimManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù. ½ºÆù ¾Ë¸²ÀÌ Ç¥½ÃµÇÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogWarning("EnemySpawn: TextAlimManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. ìŠ¤í° ì•Œë¦¼ì´ í‘œì‹œë˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 
 
-        //EnemyDifficulty ½ºÅ©¸³Æ®¿¡¼­ ÃÊ±â ½ºÆù ÁÖ±â¸¦ °¡Á®¿Í
-        //½Ì±ÛÅæ ½ºÅ©¸³Æ®¶ó¼­ µû·Î ÂüÁ¶ º¯¼ö, ÀÎ½ºÆåÅÍ¿¡¼­ Á÷Á¢ ¿¬°áÇÒ ÇÊ¿ä ¾øÀÌ ÄÚµå ¾È¿¡¼­
-        //EnemyDifficulty.Instance ¸¦ ÅëÇØ ¹Ù·Î Á¢±ÙÇÒ ¼ö ÀÖ¾î. ½Ì±ÛÅæ ÆĞÅÏÀÇ °¡Àå Å« Æ¯Â¡ÀÌ¾ß!
+        //EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì´ˆê¸° ìŠ¤í° ì£¼ê¸°ë¥¼ ê°€ì ¸ì™€
+        //ì‹±ê¸€í†¤ ìŠ¤í¬ë¦½íŠ¸ë¼ì„œ ë”°ë¡œ ì°¸ì¡° ë³€ìˆ˜, ì¸ìŠ¤í™í„°ì—ì„œ ì§ì ‘ ì—°ê²°í•  í•„ìš” ì—†ì´ ì½”ë“œ ì•ˆì—ì„œ
+        //EnemyDifficulty.Instance ë¥¼ í†µí•´ ë°”ë¡œ ì ‘ê·¼í•  ìˆ˜ ìˆì–´. ì‹±ê¸€í†¤ íŒ¨í„´ì˜ ê°€ì¥ í° íŠ¹ì§•ì´ì•¼!
         if (EnemyDifficulty.Instance != null)
         {
             normalSpawnTime = EnemyDifficulty.Instance.CurrentNormalSpawnTime;
@@ -75,172 +75,172 @@ public class EnemySpawn : MonoBehaviour//public ÇÊµå´Â ´ë¹®ÀÚ·Î ½ÃÀÛÇÏ´Â °ÍÀÌ C#
         }
         else
         {
-            Debug.LogError("EnemySpawn: EnemyDifficulty.Instance¸¦ Ã£À» ¼ö ¾ø¾î! EnemyDifficulty ½ºÅ©¸³Æ®°¡ ¾À¿¡ ÀÖ´ÂÁö È®ÀÎÇØ!");
-            normalSpawnTime = 4f;//±âº»°ªÀ¸·Î ¼³Á¤ (¿À·ù ¹æÁö)
+            Debug.LogError("EnemySpawn: EnemyDifficulty.Instanceë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ê°€ ì”¬ì— ìˆëŠ”ì§€ í™•ì¸í•´!");
+            normalSpawnTime = 4f;//ê¸°ë³¸ê°’ìœ¼ë¡œ ì„¤ì • (ì˜¤ë¥˜ ë°©ì§€)
         }
             
-        //Player ½ºÅ©¸³Æ® ÂüÁ¶ °¡Á®¿À±â
+        //Player ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° ê°€ì ¸ì˜¤ê¸°
         GameObject playerGameObject = GameObject.FindWithTag("Player");
         if (playerGameObject != null)
         {
             PlayerScript = playerGameObject.GetComponent<Player>();
             if (PlayerScript == null)
-                Debug.LogError("EnemySpawn: Player ¿ÀºêÁ§Æ®¿¡ Player ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!");
+                Debug.LogError("EnemySpawn: Player ì˜¤ë¸Œì íŠ¸ì— Player ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
         }
         else
-            Debug.LogWarning("EnemySpawn: 'Player' ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø¾î!");
+            Debug.LogWarning("EnemySpawn: 'Player' íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!");
     }
 
     void Update()
     {
-        spawnTimer -= Time.deltaTime;//³²Àº ½Ã°£ °¨¼Ò
+        spawnTimer -= Time.deltaTime;//ë‚¨ì€ ì‹œê°„ ê°ì†Œ
 
-        if (spawnTimer <= 0f)//Å¸ÀÌ¸Ó°¡ 0ÀÌÇÏ°¡ µÇ¸é ½ºÆù
+        if (spawnTimer <= 0f)//íƒ€ì´ë¨¸ê°€ 0ì´í•˜ê°€ ë˜ë©´ ìŠ¤í°
         {
-            for (int i = 0; i < normalSpawnCount; i++)//normalSpawnCount ¸¸Å­ ¹İº¹ÇØ¼­ ½ºÆù
+            for (int i = 0; i < normalSpawnCount; i++)//normalSpawnCount ë§Œí¼ ë°˜ë³µí•´ì„œ ìŠ¤í°
             {
-                SpawnNormalEnemy();//ÀÏ¹İ ¸ó½ºÅÍ »ı¼º ÇÔ¼ö È£Ãâ
+                SpawnNormalEnemy();//ì¼ë°˜ ëª¬ìŠ¤í„° ìƒì„± í•¨ìˆ˜ í˜¸ì¶œ
             }  
-            spawnTimer = normalSpawnTime;//´ÙÀ½ ¸ó½ºÅÍ ½ºÆùÀ» À§ÇØ Å¸ÀÌ¸Ó ÃÊ±âÈ­
-            //08.23 ¿©±â if¹®Àº Áß°ıÈ£¸¦ ¾ø¾ÖÁö ¾Ê¾Ò¾î. if¹Ø¿¡´Â for¹®ÀÌ ÀÖ¾î. ±×·¡¼­ ´õ ¹ØÀÇ spawnTimer = normalSpawnTime°¡
-            //if¹®ÀÇ ¿µÇâÀ» ¹ŞÁö ¾Ê¾Æ¼­¾ß. °ıÈ£°¡ ¾øÀ¸¸é if¹Ø¿¡ ÀÖ´Â ÇÏ³ª¸¸ ÀÛµ¿ÇÏ°í ´õ ¹Ø¿¡ ÀÖ´Â°Ç if¹®°ú ¿¬°áµÇÁö ¾Ê¾Æ¼­¾ß
+            spawnTimer = normalSpawnTime;//ë‹¤ìŒ ëª¬ìŠ¤í„° ìŠ¤í°ì„ ìœ„í•´ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
+            //08.23 ì—¬ê¸° ifë¬¸ì€ ì¤‘ê´„í˜¸ë¥¼ ì—†ì• ì§€ ì•Šì•˜ì–´. ifë°‘ì—ëŠ” forë¬¸ì´ ìˆì–´. ê·¸ë˜ì„œ ë” ë°‘ì˜ spawnTimer = normalSpawnTimeê°€
+            //ifë¬¸ì˜ ì˜í–¥ì„ ë°›ì§€ ì•Šì•„ì„œì•¼. ê´„í˜¸ê°€ ì—†ìœ¼ë©´ ifë°‘ì— ìˆëŠ” í•˜ë‚˜ë§Œ ì‘ë™í•˜ê³  ë” ë°‘ì— ìˆëŠ”ê±´ ifë¬¸ê³¼ ì—°ê²°ë˜ì§€ ì•Šì•„ì„œì•¼
         }
     }
     public void SetNormalSpawnTime(float newTime)
     {
         normalSpawnTime = newTime;
-        Debug.Log($"EnemySpawn: Normal ¸ó½ºÅÍ ½ºÆù ÁÖ±â ¾÷µ¥ÀÌÆ®µÊ: {normalSpawnTime}s");
+        Debug.Log($"EnemySpawn: Normal ëª¬ìŠ¤í„° ìŠ¤í° ì£¼ê¸° ì—…ë°ì´íŠ¸ë¨: {normalSpawnTime}s");
     }
     
-    public void SetNormalSpawnCount(int newCount)//µ¿½Ã ½ºÆù °³¼ö¸¦ ¹ŞÀ½ ÇÔ¼ö
+    public void SetNormalSpawnCount(int newCount)//ë™ì‹œ ìŠ¤í° ê°œìˆ˜ë¥¼ ë°›ìŒ í•¨ìˆ˜
     {
         normalSpawnCount = newCount;
-        Debug.Log($"EnemySpawn: Normal ¸ó½ºÅÍ µ¿½Ã ½ºÆù °³¼ö ¾÷µ¥ÀÌÆ®µÊ: {normalSpawnCount}¸¶¸®");
+        Debug.Log($"EnemySpawn: Normal ëª¬ìŠ¤í„° ë™ì‹œ ìŠ¤í° ê°œìˆ˜ ì—…ë°ì´íŠ¸ë¨: {normalSpawnCount}ë§ˆë¦¬");
     }
 
-    void SpawnNormalEnemy()//Normal ¸ó½ºÅÍ¸¸ ½ºÆùÇÏ´Â ÇÔ¼ö
+    void SpawnNormalEnemy()//Normal ëª¬ìŠ¤í„°ë§Œ ìŠ¤í°í•˜ëŠ” í•¨ìˆ˜
     {
-        //¸ó½ºÅÍ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+        //ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸
         if (EnemyPrefabs == null || EnemyPrefabs.Length == 0)
         {
-            Debug.LogError("¸ó½ºÅÍ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!.");
+            Debug.LogError("ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!.");
             return;
         }
 
-        Vector3 spawnPosition = GetValidSpawnPosition();//À¯È¿ÇÑ ½ºÆù À§Ä¡ Ã£±â,GetValidSpawnPositionÇÔ¼ö¸¦ È£Ãâ
-        if (spawnPosition == Vector3.zero)//À¯È¿ÇÑ À§Ä¡¸¦ Ã£Áö ¸øÇßÀ¸¸é
+        Vector3 spawnPosition = GetValidSpawnPosition();//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ ì°¾ê¸°,GetValidSpawnPositioní•¨ìˆ˜ë¥¼ í˜¸ì¶œ
+        if (spawnPosition == Vector3.zero)//ìœ íš¨í•œ ìœ„ì¹˜ë¥¼ ì°¾ì§€ ëª»í–ˆìœ¼ë©´
         {
-            Debug.LogWarning("¿¤¸®Æ® ¸ó½ºÅÍ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£À» ¼ö ¾ø¾ú¾î!");
+            Debug.LogWarning("ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´!");
             return;
         }
 
-        //Ç×»ó ÀÎ½ºÆåÅÍÀÇ Element 0¿¡ ÀÖ´Â Normal ¸ó½ºÅÍ¸¸ ½ºÆù
+        //í•­ìƒ ì¸ìŠ¤í™í„°ì˜ Element 0ì— ìˆëŠ” Normal ëª¬ìŠ¤í„°ë§Œ ìŠ¤í°
         GameObject enemyToSpawn = EnemyPrefabs[0];
         Enemy.EnemyType enemyTypeToSpawn = Enemy.EnemyType.Normal;
 
 
-        SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);//InstantiateAndSetupEnemyÇÔ¼ö È£Ãâ
+        SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);//InstantiateAndSetupEnemyí•¨ìˆ˜ í˜¸ì¶œ
         
-        //TextAlimManager ½ºÅ©¸³Æ®¿¡ ÅØ½ºÆ® ¾Ë¸² Ç¥½Ã
+        //TextAlimManager ìŠ¤í¬ë¦½íŠ¸ì— í…ìŠ¤íŠ¸ ì•Œë¦¼ í‘œì‹œ
         if (textalimManager != null)
-            textalimManager.ShowNotification("¸ó½ºÅÍ ½ºÆù!");
+            textalimManager.ShowNotification("ëª¬ìŠ¤í„° ìŠ¤í°!");
     }
 
-    void SpawnStrongEnemy()//Strong ¸ó½ºÅÍ¸¦ È£ÃâÇÏ´Â ÇÔ¼ö
+    void SpawnStrongEnemy()//Strong ëª¬ìŠ¤í„°ë¥¼ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
     {
-        //¸ó½ºÅÍ ÇÁ¸®ÆÕ À¯È¿¼º °Ë»ç ¹× ÀÎµ¦½º È®ÀÎ
+        //ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ìœ íš¨ì„± ê²€ì‚¬ ë° ì¸ë±ìŠ¤ í™•ì¸
         if (EnemyPrefabs == null || EnemyPrefabs.Length <= StrongEnemyPrefabIndex || StrongEnemyPrefabIndex < 0)
         {
-            Debug.LogError("°­ÇÑ ¸ó½ºÅÍ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò°Å³ª ÀÎµ¦½º°¡ Àß¸øµÆ¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!.");
+            Debug.LogError("ê°•í•œ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ê±°ë‚˜ ì¸ë±ìŠ¤ê°€ ì˜ëª»ëì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!.");
             return;
         }
 
-        Vector3 spawnPosition = GetValidSpawnPosition();//À¯È¿ÇÑ ½ºÆù À§Ä¡ Ã£±â, GetValidSpawnPosition È£Ãâ
-        if (spawnPosition == Vector3.zero)//À¯È¿ÇÑ À§Ä¡¸¦ Ã£Áö ¸øÇßÀ¸¸é
+        Vector3 spawnPosition = GetValidSpawnPosition();//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ ì°¾ê¸°, GetValidSpawnPosition í˜¸ì¶œ
+        if (spawnPosition == Vector3.zero)//ìœ íš¨í•œ ìœ„ì¹˜ë¥¼ ì°¾ì§€ ëª»í–ˆìœ¼ë©´
         {
-            Debug.LogWarning("°­ÇÑ ¸ó½ºÅÍ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£À» ¼ö ¾ø¾ú¾î.");
+            Debug.LogWarning("ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´.");
             return;
         }
       
-        //°­ÇÑ ¸ó½ºÅÍ ÇÁ¸®ÆÕ ¼±ÅÃ 
+        //ê°•í•œ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ì„ íƒ 
         GameObject enemyToSpawn = EnemyPrefabs[StrongEnemyPrefabIndex];
         Enemy.EnemyType enemyTypeToSpawn =Enemy.EnemyType.Strong;
-        Debug.Log("<color=red>°­ÇÑ ¸ó½ºÅÍ ½ºÆù!</color>");
+        Debug.Log("<color=red>ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í°!</color>");
 
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);
 
-        //°­ÇÑ ¸ó½ºÅÍ°¡ ½ºÆùµÇ¾úÀ¸´Ï Ä«¿îÆ® ÃÊ±âÈ­
+        //ê°•í•œ ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë˜ì—ˆìœ¼ë‹ˆ ì¹´ìš´íŠ¸ ì´ˆê¸°í™”
         normalEnemyKilledSinceLastStrong = 0;
 
-        //TextAlimManager ½ºÅ©¸³Æ®¿¡ ÅØ½ºÆ® ¾Ë¸² Ç¥½Ã
+        //TextAlimManager ìŠ¤í¬ë¦½íŠ¸ì— í…ìŠ¤íŠ¸ ì•Œë¦¼ í‘œì‹œ
         if (textalimManager != null)
-            textalimManager.ShowNotification("<color=red>°­ÇÑ ¸ó½ºÅÍ µîÀå!</color>");
+            textalimManager.ShowNotification("<color=red>ê°•í•œ ëª¬ìŠ¤í„° ë“±ì¥!</color>");
 
     }
 
-    void SpawnEliteEnemy()//Elite ¸ó½ºÅÍ¸¦ È£ÃâÇÏ´Â ÇÔ¼ö
+    void SpawnEliteEnemy()//Elite ëª¬ìŠ¤í„°ë¥¼ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
     {
-        //¸ó½ºÅÍ ÇÁ¸®ÆÕ À¯È¿¼º °Ë»ç ¹× ÀÎµ¦½º È®ÀÎ
+        //ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ìœ íš¨ì„± ê²€ì‚¬ ë° ì¸ë±ìŠ¤ í™•ì¸
         if (EnemyPrefabs == null || EnemyPrefabs.Length <= EliteEnemyPrefabIndex || EliteEnemyPrefabIndex < 0)
         {
-            Debug.LogError("¿¤¸®Æ® ¸ó½ºÅÍ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò°Å³ª ÀÎµ¦½º°¡ Àß¸øµÆ¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!.");
+            Debug.LogError("ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ê±°ë‚˜ ì¸ë±ìŠ¤ê°€ ì˜ëª»ëì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!.");
             return;
         }
 
-        Vector3 spawnPosition = GetValidSpawnPosition();//À¯È¿ÇÑ ½ºÆù À§Ä¡ Ã£±â
-        if(spawnPosition == Vector3.zero)//À¯È¿ÇÑ À§Ä¡¸¦ Ã£Áö ¸øÇßÀ¸¸é
+        Vector3 spawnPosition = GetValidSpawnPosition();//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ ì°¾ê¸°
+        if(spawnPosition == Vector3.zero)//ìœ íš¨í•œ ìœ„ì¹˜ë¥¼ ì°¾ì§€ ëª»í–ˆìœ¼ë©´
         {
-            Debug.LogWarning("¿¤¸®Æ® ¸ó½ºÅÍ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£À» ¼ö ¾ø¾ú¾î!");
+            Debug.LogWarning("ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´!");
             return;
         }
 
-        //¿¤¸®Æ® ¸ó½ºÅÍ ÇÁ¸®ÆÕ ¼±ÅÃ
+        //ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ ì„ íƒ
         GameObject enemyToSpawn = EnemyPrefabs[EliteEnemyPrefabIndex];
         Enemy.EnemyType enemyTypeToSpawn = Enemy.EnemyType.Elite;
-        Debug.Log("<color=purple>¿¤¸®Æ® ¸ó½ºÅÍ ½ºÆù!</color>");//»ö±ò º¯°æ
+        Debug.Log("<color=purple>ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í°!</color>");//ìƒ‰ê¹” ë³€ê²½
 
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);
 
-        if (textalimManager != null)//TextAlimManager ½ºÅ©¸³Æ®¿¡ ÅØ½ºÆ® ¾Ë¸² Ç¥½Ã
-            textalimManager.ShowNotification("<color=purple>¿¤¸®Æ® ¸ó½ºÅÍ µîÀå!</color>");//»ö±ò º¯°æ
+        if (textalimManager != null)//TextAlimManager ìŠ¤í¬ë¦½íŠ¸ì— í…ìŠ¤íŠ¸ ì•Œë¦¼ í‘œì‹œ
+            textalimManager.ShowNotification("<color=purple>ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ë“±ì¥!</color>");//ìƒ‰ê¹” ë³€ê²½
     }
 
 
     void SpawnEnemy(GameObject prefab, Vector3 position, Enemy.EnemyType type)
-    {//¸ó½ºÅÍ¸¦ ½ÇÁ¦·Î »ı¼ºÇÏ°í ¼³Á¤ÇÏ´Â °øÅë ÇÔ¼ö
-     //ÀÌ ÇÔ¼ö´Â "¾î¶² Á¾·ùÀÇ ¸ó½ºÅÍ ÇÁ¸®ÆÕ(GameObject prefab)À», ¾î¶² À§Ä¡(Vector3 position)¿¡,
-     //±×¸®°í ¾î¶² ¸ó½ºÅÍ Å¸ÀÔ(Enemy.EnemyType type)À¸·Î »ı¼ºÇÒÁö" Á¤º¸¸¦ ¹Ş¾Æ¼­
-     //½ÇÁ¦·Î ¸ó½ºÅÍ¸¦ °ÔÀÓ ¾À¿¡ ¸¸µé°í ÇÊ¿äÇÑ ÃÊ±â ¼³Á¤À» ÇØÁÖ´Â ¿ªÇÒÀ» ÇØ
+    {//ëª¬ìŠ¤í„°ë¥¼ ì‹¤ì œë¡œ ìƒì„±í•˜ê³  ì„¤ì •í•˜ëŠ” ê³µí†µ í•¨ìˆ˜
+     //ì´ í•¨ìˆ˜ëŠ” "ì–´ë–¤ ì¢…ë¥˜ì˜ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹(GameObject prefab)ì„, ì–´ë–¤ ìœ„ì¹˜(Vector3 position)ì—,
+     //ê·¸ë¦¬ê³  ì–´ë–¤ ëª¬ìŠ¤í„° íƒ€ì…(Enemy.EnemyType type)ìœ¼ë¡œ ìƒì„±í• ì§€" ì •ë³´ë¥¼ ë°›ì•„ì„œ
+     //ì‹¤ì œë¡œ ëª¬ìŠ¤í„°ë¥¼ ê²Œì„ ì”¬ì— ë§Œë“¤ê³  í•„ìš”í•œ ì´ˆê¸° ì„¤ì •ì„ í•´ì£¼ëŠ” ì—­í• ì„ í•´
 
-        //prefabÀ¸·Î ¹ŞÀº ¸ó½ºÅÍ ÇÁ¸®ÆÕÀ» position À§Ä¡¿¡
-        //Quaternion.identity (È¸Àü ¾øÀ½) »óÅÂ·Î °ÔÀÓ ¾À¿¡ º¹Á¦ÇØ¼­ newEnemy¶ó´Â º¯¼ö¿¡ ÀúÀåÇØ.
+        //prefabìœ¼ë¡œ ë°›ì€ ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì„ position ìœ„ì¹˜ì—
+        //Quaternion.identity (íšŒì „ ì—†ìŒ) ìƒíƒœë¡œ ê²Œì„ ì”¬ì— ë³µì œí•´ì„œ newEnemyë¼ëŠ” ë³€ìˆ˜ì— ì €ì¥í•´.
         GameObject newEnemy = Instantiate(prefab, position, Quaternion.identity);
         Enemy newEnemyScript = newEnemy.GetComponent<Enemy>();
-        //Enemy ½ºÅ©¸³Æ®¸¦ newEnemyScript º¯¼ö¿¡ ÂüÁ¶
+        //Enemy ìŠ¤í¬ë¦½íŠ¸ë¥¼ newEnemyScript ë³€ìˆ˜ì— ì°¸ì¡°
 
         if ((newEnemyScript != null))
         {
-            newEnemyScript.EnemySpawner = this;//this´Â ±× ÇÔ¼ö°¡ ¼ÓÇØ ÀÖ´Â ½ºÅ©¸³Æ® °´Ã¼(ÀÎ½ºÅÏ½º)¸¦ °¡¸®ÄÑ.
+            newEnemyScript.EnemySpawner = this;//thisëŠ” ê·¸ í•¨ìˆ˜ê°€ ì†í•´ ìˆëŠ” ìŠ¤í¬ë¦½íŠ¸ ê°ì²´(ì¸ìŠ¤í„´ìŠ¤)ë¥¼ ê°€ë¦¬ì¼œ.
             newEnemyScript.enemyType = type;
             newEnemyScript.SetEnmeyStats();
         }
-        else//¸ó½ºÅÍ ÇÁ¸®ÆÕ¿¡ Enemy ½ºÅ©¸³Æ®°¡ ¾ø´Ù¸é            
-            Debug.LogWarning("»ı¼ºµÈ ¸ó½ºÅÍ¿¡ Enemy ½ºÅ©¸³Æ®°¡ ¾ø¾î!");
+        else//ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ì— Enemy ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ë‹¤ë©´            
+            Debug.LogWarning("ìƒì„±ëœ ëª¬ìŠ¤í„°ì— Enemy ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ì–´!");
 
 
         newEnemy.name = prefab.name + "_" + currentEnemyCount;
-        currentEnemyCount++;//ÃÑ ¸ó½ºÅÍ ¼ö Áõ°¡, ++ ¿¬»êÀÚ´Â º¯¼öÀÇ °ªÀ» 1¾¿ ´õÇØ
+        currentEnemyCount++;//ì´ ëª¬ìŠ¤í„° ìˆ˜ ì¦ê°€, ++ ì—°ì‚°ìëŠ” ë³€ìˆ˜ì˜ ê°’ì„ 1ì”© ë”í•´
     }
     
-    Vector3 GetValidSpawnPosition()//À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£´Â °øÅë ÇÔ¼ö(ÄÚµå°¡ ±æ¾îÁö´Ï ÇÔ¼ö·Î ºĞ¸®)
-    {//GetValidSpawnPosition¶ó´Â ÇÔ¼ö ¾È¿¡ Vector3·Î ¼³Á¤ÇÑ °ªÀÌ µé¾îÀÖ¾î!
-        int maxAttempts = 100;//ÃÖ´ë 100¹ø
+    Vector3 GetValidSpawnPosition()//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ëŠ” ê³µí†µ í•¨ìˆ˜(ì½”ë“œê°€ ê¸¸ì–´ì§€ë‹ˆ í•¨ìˆ˜ë¡œ ë¶„ë¦¬)
+    {//GetValidSpawnPositionë¼ëŠ” í•¨ìˆ˜ ì•ˆì— Vector3ë¡œ ì„¤ì •í•œ ê°’ì´ ë“¤ì–´ìˆì–´!
+        int maxAttempts = 100;//ìµœëŒ€ 100ë²ˆ
         for(int a = 0; a < maxAttempts; a++)
         {
             if(TargetTilemap == null)
             {
-                Debug.LogError("TargetTilemapÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
-                return Vector3.zero;//À¯È¿ÇÑ À§Ä¡ ¸ø Ã£À¸¸é Vector3.zero ¹İÈ¯
+                Debug.LogError("TargetTilemapì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
+                return Vector3.zero;//ìœ íš¨í•œ ìœ„ì¹˜ ëª» ì°¾ìœ¼ë©´ Vector3.zero ë°˜í™˜
             }
             
             BoundsInt bounds = TargetTilemap.cellBounds;
@@ -253,41 +253,41 @@ public class EnemySpawn : MonoBehaviour//public ÇÊµå´Â ´ë¹®ÀÚ·Î ½ÃÀÛÇÏ´Â °ÍÀÌ C#
                 Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
                 if (colliders.Length == 0)
-                    return cellCenterWorld;//À¯È¿ÇÑ À§Ä¡ Ã£À¸¸é ¹İÈ¯
+                    return cellCenterWorld;//ìœ íš¨í•œ ìœ„ì¹˜ ì°¾ìœ¼ë©´ ë°˜í™˜
             }
         }
-        return Vector3.zero;//100¹ø ½ÃµµÇØµµ ¸ø Ã£À¸¸é Vector3.zero ¹İÈ¯,void·Î µÈ Å¬·¡½º°¡ ¾Æ´Ï´Ï return»ç¿ë
+        return Vector3.zero;//100ë²ˆ ì‹œë„í•´ë„ ëª» ì°¾ìœ¼ë©´ Vector3.zero ë°˜í™˜,voidë¡œ ëœ í´ë˜ìŠ¤ê°€ ì•„ë‹ˆë‹ˆ returnì‚¬ìš©
     }
     
-    public void EnemyDied(bool isStrongOrEliteEnemyDied)//¸ó½ºÅÍ°¡ Á×¾úÀ» ¶§ È£ÃâµÉ ÇÔ¼ö(Enemy ½ºÅ©¸³Æ®¿¡¼­ È£ÃâÇØ¾ß ÇÔ)
-    {   //-- ¿¬»êÀÚ´Â º¯¼öÀÇ °ªÀ» 1¾¿ »©´Â ¿ªÇÒÀ» ÇØ
+    public void EnemyDied(bool isStrongOrEliteEnemyDied)//ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆì„ ë•Œ í˜¸ì¶œë  í•¨ìˆ˜(Enemy ìŠ¤í¬ë¦½íŠ¸ì—ì„œ í˜¸ì¶œí•´ì•¼ í•¨)
+    {   //-- ì—°ì‚°ìëŠ” ë³€ìˆ˜ì˜ ê°’ì„ 1ì”© ë¹¼ëŠ” ì—­í• ì„ í•´
         currentEnemyCount--;
 
-        //Strong ¸ó½ºÅÍ ½ºÆùÀ» À§ÇÑ Ä«¿îÆ®´Â ¿ÀÁ÷ Normal ¸ó½ºÅÍ°¡ Á×¾úÀ» ¶§¸¸ Áõ°¡
-        if (!isStrongOrEliteEnemyDied)//Á×Àº ¸ó½ºÅÍ°¡ Normal ¸ó½ºÅÍÀÏ ¶§
+        //Strong ëª¬ìŠ¤í„° ìŠ¤í°ì„ ìœ„í•œ ì¹´ìš´íŠ¸ëŠ” ì˜¤ì§ Normal ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆì„ ë•Œë§Œ ì¦ê°€
+        if (!isStrongOrEliteEnemyDied)//ì£½ì€ ëª¬ìŠ¤í„°ê°€ Normal ëª¬ìŠ¤í„°ì¼ ë•Œ
         {
-            normalEnemyKilledSinceLastStrong++;//Normal ¸ó½ºÅÍ Å³ Ä«¿îÆ® Áõ°¡, ++ ¿¬»êÀÚ´Â º¯¼öÀÇ °ªÀ» 1¾¿ ´õÇØ
-            Debug.Log("Normal ¸ó½ºÅÍ »ç¸Á! °­ÇÑ ¸ó½ºÅÍ ½ºÆù±îÁö ³²Àº Å³ ¼ö: " + (NormalKillsForStrongEnemy - normalEnemyKilledSinceLastStrong) + "¸¶¸®.");
+            normalEnemyKilledSinceLastStrong++;//Normal ëª¬ìŠ¤í„° í‚¬ ì¹´ìš´íŠ¸ ì¦ê°€, ++ ì—°ì‚°ìëŠ” ë³€ìˆ˜ì˜ ê°’ì„ 1ì”© ë”í•´
+            Debug.Log("Normal ëª¬ìŠ¤í„° ì‚¬ë§! ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í°ê¹Œì§€ ë‚¨ì€ í‚¬ ìˆ˜: " + (NormalKillsForStrongEnemy - normalEnemyKilledSinceLastStrong) + "ë§ˆë¦¬.");
 
-            //Strong ¸ó½ºÅÍ ½ºÆù Á¶°Ç ÃæÁ· ½Ã
+            //Strong ëª¬ìŠ¤í„° ìŠ¤í° ì¡°ê±´ ì¶©ì¡± ì‹œ
             if (normalEnemyKilledSinceLastStrong >= NormalKillsForStrongEnemy)
-                SpawnStrongEnemy();//Strong ¸ó½ºÅÍ ½ºÆù! (µû·Î ½ºÆùµÊ)
+                SpawnStrongEnemy();//Strong ëª¬ìŠ¤í„° ìŠ¤í°! (ë”°ë¡œ ìŠ¤í°ë¨)
 
         }
-        else//°­ÇÑ ¸ó½ºÅÍ³ª ¿¤¸®Æ® ¸ó½ºÅÍ°¡ Á×¾úÀ» ¶§ (°­ÇÑ ¸ó½ºÅÍ ½ºÆù Ä«¿îÆ®¿¡ ¿µÇâ ¾øÀ½)
-            Debug.Log("°­ÇÑ/¿¤¸®Æ® ¸ó½ºÅÍ°¡ »ç¸ÁÇß½À´Ï´Ù. Normal ¸ó½ºÅÍ Å³ Ä«¿îÆ®¿¡´Â ¿µÇâÀ» ÁÖÁö ¾Ê¾Æ!");
+        else//ê°•í•œ ëª¬ìŠ¤í„°ë‚˜ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆì„ ë•Œ (ê°•í•œ ëª¬ìŠ¤í„° ìŠ¤í° ì¹´ìš´íŠ¸ì— ì˜í–¥ ì—†ìŒ)
+            Debug.Log("ê°•í•œ/ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ê°€ ì‚¬ë§í–ˆìŠµë‹ˆë‹¤. Normal ëª¬ìŠ¤í„° í‚¬ ì¹´ìš´íŠ¸ì—ëŠ” ì˜í–¥ì„ ì£¼ì§€ ì•Šì•„!");
 
 
-        //Player ½ºÅ©¸³Æ®°¡ ¿¬°áµÇ¾î ÀÖ°í, ÇÃ·¹ÀÌ¾î°¡ »ì¾ÆÀÖÀ» ¶§¸¸ Á¡¼ö ±â¹İ ½ºÆù Ã¼Å©
+        //Player ìŠ¤í¬ë¦½íŠ¸ê°€ ì—°ê²°ë˜ì–´ ìˆê³ , í”Œë ˆì´ì–´ê°€ ì‚´ì•„ìˆì„ ë•Œë§Œ ì ìˆ˜ ê¸°ë°˜ ìŠ¤í° ì²´í¬
         if (PlayerScript != null && !PlayerScript.IsDead)
         { 
-            if (PlayerScript.CurrentScore >= nextEliteSpawnScore)//ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ Á¡¼ö°¡ ´ÙÀ½ ¿¤¸®Æ® ¸ó½ºÅÍ ½ºÆù ÀÓ°è°ª¿¡ µµ´ŞÇß´ÂÁö È®ÀÎ.
+            if (PlayerScript.CurrentScore >= nextEliteSpawnScore)//í˜„ì¬ í”Œë ˆì´ì–´ì˜ ì ìˆ˜ê°€ ë‹¤ìŒ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í° ì„ê³„ê°’ì— ë„ë‹¬í–ˆëŠ”ì§€ í™•ì¸.
             {
-                SpawnEliteEnemy();//SpawnEliteEnemyÇÔ¼ö·Î ¿¤¸®Æ® ¸ó½ºÅÍ¸¦ ½ºÆù
+                SpawnEliteEnemy();//SpawnEliteEnemyí•¨ìˆ˜ë¡œ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ë¥¼ ìŠ¤í°
 
-                //´ÙÀ½ ¿¤¸®Æ® ¸ó½ºÅÍ°¡ ½ºÆùµÉ Á¡¼ö ÀÓ°è°ªÀ» ¾÷µ¥ÀÌÆ®(ÇöÀç ÀÓ°è°ª + ¼³Á¤µÈ °£°İ)
-                nextEliteSpawnScore += EliteSpawnScoreInterval;//´ÙÀ½ Elite ½ºÆù Á¡¼ö °»½Å
-                Debug.Log($"´ÙÀ½ ¿¤¸®Æ® ¸ó½ºÅÍ´Â {nextEliteSpawnScore}Á¡ÀÏ ¶§ ½ºÆùµÉ ¿¹Á¤ÀÌ¾ß!");
+                //ë‹¤ìŒ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ê°€ ìŠ¤í°ë  ì ìˆ˜ ì„ê³„ê°’ì„ ì—…ë°ì´íŠ¸(í˜„ì¬ ì„ê³„ê°’ + ì„¤ì •ëœ ê°„ê²©)
+                nextEliteSpawnScore += EliteSpawnScoreInterval;//ë‹¤ìŒ Elite ìŠ¤í° ì ìˆ˜ ê°±ì‹ 
+                Debug.Log($"ë‹¤ìŒ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ëŠ” {nextEliteSpawnScore}ì ì¼ ë•Œ ìŠ¤í°ë  ì˜ˆì •ì´ì•¼!");
             }
         }
     }

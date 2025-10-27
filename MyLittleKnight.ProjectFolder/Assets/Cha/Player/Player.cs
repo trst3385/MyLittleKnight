@@ -1,227 +1,194 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_EDITOR//UnityEditor ³×ÀÓ½ºÆäÀÌ½º¸¦ »ç¿ëÇÏ°í ÀÖ´Â ½ºÅ©¸³Æ®°¡ ºôµå¿¡ Æ÷ÇÔµÉ ¶§ ¹ß»ıÇØ.
 using UnityEditor.UIElements;
-//UnityEditor´Â ¿¡µğÅÍ¿¡¼­¸¸ ÀÛµ¿ÇÏ´Â ±â´ÉÀÌ¶ó, ½ÇÁ¦ °ÔÀÓ ºôµå¿¡´Â Æ÷ÇÔµÇ¸é ¾È µÇ°Åµç.
-#endif//#if UNITY_EDITOR »ç¿ëÇØ ÇØ´ç ÄÚµå¸¦ ´ÙÀ½°ú °°ÀÌ ÀüÃ³¸®±â Áö½Ã¹®À¸·Î °¨½ÎÁà.
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;//TextMeshPro »ç¿ë ½Ã using ¹®¿¡ TMPro¸¦ Ãß°¡ÇØ
+using TMPro;
 
 
-//ÇÔ¼ö°¡ ±æ¾îÁø´Ù ½ÍÀ¸¸é µû·Î ÇÔ¼ö ¸¸µé±â!!
-//³ªÁß¿¡ if¹®ÀÌ ¸¹¾ÆÁö¸é bool·Î ¼±¾ğ¹®À¸·Î Âª°Ô ÇÏ±â!!
-
+//10.27ì¼ì— ìœ ë‹ˆí‹° ë²„ì „ì„ 2022.3.61f1ì—ì„œ Unity6.1ì˜ 6000.2.9f1ë¡œ ì—…ë°ì´íŠ¸í•´ì„œ í•œê¸€ì´ ì „ë¶€ ê¹¨ì ¸ì„œ ì£¼ì„ ëŒ€ë¶€ë¶„ì„ ì‚­ì œí–ˆì–´
 public enum WeaponType
 {
     None,
     Bow,
     Sword,
     Axe
-    //³ªÁß¿¡ ´Ù¸¥ ¹«±â Á¾·ù¸¦ Ãß°¡ÇÒ ¶§ ¿©±â¿¡ ´õ Àû¾îÁÖÀÚ
 }
 
 public class Player : MonoBehaviour
 {
-    [Header("ÀÌµ¿ °ü·Ã º¯¼ö")]
-    //ÀÌµ¿ °ü·Ã º¯¼ö
-    public float MoveSpeed = 5f;//ÀÌµ¿ ¼Óµµ     
+    [Header("ì´ë™ ê´€ë ¨ ë³€ìˆ˜")]
+    public float MoveSpeed = 5f;    
     private float horizontalInput;
     private float verticalInput;
     private Vector2 movement;
 
-    [Header("»ç¸Á °ü·Ã º¯¼ö")]
-    //»ç¸Á °ü·Ã º¯¼ö
-    public bool IsDead = false;//ÇÃ·¹ÀÌ¾îÀÇ »ç¸Á º¯¼ö,PlayerHealth½ºÅ©¸³Æ®¿¡ ¾²±â À§ÇØ publicÀ¸·Î ¼±¾ğ   
-    private PlayerHealth playerHealth; // PlayerHealth ½ºÅ©¸³Æ® ÂüÁ¶
-    private GameOverManager gameOverManager;//GameOverManager ½ºÅ©¸³Æ® ÂüÁ¶
+    [Header("ì‚¬ë§ ê´€ë ¨ ë³€ìˆ˜")]
+    public bool IsDead = false;
 
-    [Header("È÷Æ®¹Ú½º,¸ó½ºÅÍ°¡ ¦i¾Æ¿Ã Äİ¶óÀÌ´õ")]//IsTrigger°¡ ÄÑÁ®ÀÖ´Â Äİ¶óÀÌ´õ¾ß. 
+
+    [Header("íˆíŠ¸ë°•ìŠ¤,ëª¬ìŠ¤í„°ê°€ ì«’ì„ ì½œë¼ì´ë”")]
     [SerializeField] private Collider2D targetCollider;
 
 
-    [HideInInspector] public int CurrentScore = 0;//ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç Á¡¼ö(ÃÊ±â°ª 0)
-
-    [Header("ScoreText UI ¿¬°á")]
+    [Header("ScoreText UI ì—°ê²°")]
     public TextMeshProUGUI ScoreTextUI;
 
 
-    //GetComponent<T>() vs [SerializeField] Â÷ÀÌ
-    //GetComponent<T>(): ÀÌ ÇÔ¼ö´Â ÄÚµå¸¦ ÅëÇØ¼­ °ÔÀÓ ¿ÀºêÁ§Æ®ÀÇ ÄÄÆ÷³ÍÆ®¸¦ °¡Á®¿Ã ¶§ »ç¿ëÇÏ´Â °Å¾ß. ÁÖ·Î Start()³ª Awake() ÇÔ¼ö¿¡¼­ ½ÇÇàµÅ.
-    //[SerializeField]: ÀÌ Å°¿öµå´Â º¯¼ö¸¦ ÀÎ½ºÆåÅÍ¿¡ ³ëÃâ½ÃÄÑ¼­ °³¹ßÀÚ°¡ Á÷Á¢ ÄÄÆ÷³ÍÆ®¸¦ ¿¬°áÇÏ°Ô ¸¸µå´Â ¿ªÇÒÀ» ÇØ.
-    //GetComponent<T>()¸¦ ²À ½á¾ß ÇÏ´Â °Ç ¾Æ´Ï°í, [SerializeField]·Î ¼±¾ğµÈ º¯¼ö´Â ÀÎ½ºÆåÅÍ¿¡¼­ Á÷Á¢ µå·¡±×ÇØ¼­ ¿¬°áÇÏ¸é µÅ
-    //±×·¡¼­ GetComponent<AudioSource>()¸¦ ¾²Áö ¾Ê°í [SerializeField]¸¦ »ç¿ëÇØ ÀÎ½ºÆåÅÍ¿¡¼­ ¿Àµğ¿À ÄÄÆ÷³ÍÆ®¸¦ ±×·¡µå ÇØ¼­ ¿¬°áÇß¾î.
-    //ÇÑ ¿ÀºêÁ§Æ®¿¡ ¿©·¯ »ç¿îµå¸¦ ³ÖÀ»·Á¸é [SerializeField] private¸¦ ½á¼­ µå·¡±×ÇØ¼­ ¿¬°á ½ÃÄÑÁÖÀÚ!
-
-    [Header("Walk»ç¿îµå")]//»ç¿îµå °ü·Ã º¯¼ö, Çì´õ·Î ÀÎ½ºÆåÅÍ¿¡ Àß º¸ÀÌ°Ô ÇÏÀÚ!
+    [Header("Walk ì‚¬ìš´ë“œ")]
     [SerializeField] private AudioSource walkingaudioSource;
     [SerializeField] private AudioClip walkSound;
-    //¼Ò¸®¸¦ ´õ ºü¸£°Ô Àç»ıÇÏ°í ½ÍÀ¸¸é AudioSource ÄÄÆ÷³ÍÆ®ÀÇ Pitch ¼Ó¼ºÀ» Á¶ÀıÇÏ¸é µÅ.
-    //AudioSource ÄÄÆ÷³ÍÆ®¿¡¼­ Play On AwakeÀÌ¶õ?
-    //ÄÑ´Â °æ¿ì: °ÔÀÓ ½ÃÀÛ ½Ã(¿ÀºêÁ§Æ®°¡ »ı¼º/È°¼ºÈ­µÉ ¶§) ÀÚµ¿À¸·Î ¹è°æ À½¾ÇÃ³·³ ¼Ò¸®¸¦ Àç»ıÇÏ°í ½ÍÀ» ¶§ »ç¿ëÇØ.
-    //²ô´Â °æ¿ì: Æ¯Á¤ ÀÌº¥Æ®(¿¹: ÇÃ·¹ÀÌ¾î°¡ °È±â ½ÃÀÛÇÏ°Å³ª, ¸ó½ºÅÍ°¡ Á×°Å³ª, °ø°İÇÒ ¶§)¿¡ ¸ÂÃç¼­ ¼Ò¸®¸¦ Àç»ıÇÏ°í ½ÍÀ» ¶§ »ç¿ëÇØ.
-    //³» Ä³¸¯ÅÍÀÇ °æ¿ì, isMoving »óÅÂ¿¡ µû¶ó °È±â ¼Ò¸®¸¦ Àç»ı/Á¤ÁöÇÏ´Â ·ÎÁ÷À» ÄÚµå·Î Á÷Á¢ ±¸ÇöÇß±â ¶§¹®¿¡,
-    //Play On Awake°¡ ÄÑÁ® ÀÖ¾îµµ ½ÃÀÛ ½Ã ¼Ò¸®°¡ µé¸®Áö ¾Ê´Â °Å¾ß.³× ÄÚµå°¡ ¸ÕÀú "¾È ¿òÁ÷ÀÌ°í ÀÖÀ¸´Ï ¼Ò¸®¸¦ Àç»ıÇÏÁö ¸¶"¶ó°í ¸í·ÉÇÏ±â ¶§¹®.
 
-    //ÄÄÆ÷³ÍÆ® ÂüÁ¶
+
+    [HideInInspector] public int CurrentScore = 0;//í”Œë ˆì´ì–´ì˜ í˜„ì¬ ì ìˆ˜(ì´ˆê¸°ê°’ 0)
+
+    //ë‚´ë¶€ë³€ìˆ˜
+    private PlayerHealth playerHealth;
+    private GameOverManager gameOverManager;
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerHealth = GetComponent<PlayerHealth>();
-        gameOverManager = FindObjectOfType<GameOverManager>();
-
-        if (walkingaudioSource == null) 
-            Debug.LogError("Player: AudioSource ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î! ÀÎ½ºÆåÅÍ Á¦´ë·Î È®ÀÎ Çß¾î ¾ÈÇß¾î?!");
-        if (animator == null) 
-            Debug.LogError("Start: Animator ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î! ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¿¡ Animator ÄÄÆ÷³ÍÆ®¸¦ È®ÀÎÇØ!"); 
-        if (playerHealth == null) 
-            Debug.LogError("Start: PlayerHealth ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î! ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¿¡ PlayerHealth ÄÄÆ÷³ÍÆ®¸¦ È®ÀÎÇØ!");
-        if (gameOverManager == null) 
-            Debug.LogError("Player ½ºÅ©¸³Æ®¿¡¼­ GameOverManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
-        //== nullÀº ±× ÄÄÆ÷³ÍÆ®³ª ¿ÀºêÁ§Æ®°¡ null»óÅÂ. Áï ¾ø°Å³ª ºñ¾îÀÖ´Â »óÅÂÀÏ¶§ ³ª¿Ã µğ¹ö±× ¿¡·¯
-        //!=Àº ¹İ´ë·Î null»óÅÂ°¡ ¾Æ´Ñ »óÅÂ
-        if (ScoreTextUI != null) 
-            ScoreTextUI.text = "Score: " + CurrentScore.ToString();
-        //°ÔÀÓ ½ÃÀÛ ½Ã ScoreText UI¿¡ ÃÊ±â Á¡¼ö Ç¥½Ã
-        //currentScore intÇü º¯¼ö¶ó¼­ ToStringÀÌ ¾ø¾îµµ ÄÄÆÄÀÏ·¯°¡ ÀÚµ¿À¸·Î ¹®ÀÚ¿­·Î º¯È¯.
-        //ÇÏÁö¸¸ ToString()À» »ç¿ëÇÏ´Â °ÍÀº ÄÚµåÀÇ ¸íÈ®¼º,¾ÈÁ¤¼º,¹Ì·¡¿¡ ´õ º¹ÀâÇÑ Çü½Ä ÁöÁ¤ÀÌ ÇÊ¿äÇÒ ¶§¸¦ ´ëºñÇÑ ÁÁÀº ½À°üÀÌ¾ß
+        gameOverManager = FindAnyObjectByType<GameOverManager>();
         
+        if (walkingaudioSource == null)
+            Debug.LogError("Player: AudioSource ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! ì¸ìŠ¤í™í„° ì œëŒ€ë¡œ í™•ì¸ í–ˆì–´ ì•ˆí–ˆì–´?!");
+        if (animator == null)
+            Debug.LogError("Start: Animator ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ì— Animator ì»´í¬ë„ŒíŠ¸ë¥¼ í™•ì¸í•´!");
+        if (playerHealth == null)
+            Debug.LogError("Start: PlayerHealth ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ì— PlayerHealth ì»´í¬ë„ŒíŠ¸ë¥¼ í™•ì¸í•´!");
+        if (gameOverManager == null)
+            Debug.LogError("Player ìŠ¤í¬ë¦½íŠ¸ì—ì„œ GameOverManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!");
+
+        if (ScoreTextUI != null)//!=ì€ ë°˜ëŒ€ë¡œ nullìƒíƒœê°€ ì•„ë‹Œ ìƒíƒœ
+            ScoreTextUI.text = "Score: " + CurrentScore.ToString();
+        //currentScore intí˜• ë³€ìˆ˜ë¼ì„œ ToStringì´ ì—†ì–´ë„ ì»´íŒŒì¼ëŸ¬ê°€ ìë™ìœ¼ë¡œ ë¬¸ìì—´ë¡œ ë³€í™˜.
+        //í•˜ì§€ë§Œ ToString()ì„ ì‚¬ìš©í•˜ëŠ” ê²ƒì€ ì½”ë“œì˜ ëª…í™•ì„±,ì•ˆì •ì„±,ë¯¸ë˜ì— ë” ë³µì¡í•œ í˜•ì‹ ì§€ì •ì´ í•„ìš”í•  ë•Œë¥¼ ëŒ€ë¹„í•œ ì¢‹ì€ ìŠµê´€ì´ì•¼
     }
-    void FixedUpdate() //¹°¸®¿¬»ê¶§´Â FixedUpdate.½Ã°£¿¡ °ü°è¾øÀÌ Á¤È®ÇÏ°í ÀÏ°üµÈ °á°ú°¡ ÇÊ¿äÇÑ ¹°¸® ½Ã¹Ä·¹ÀÌ¼Ç.
-    {//¹°¸®¿¬»ê¶§´Â ÀÌ ÇÔ¼ö¿¡!!   
-       
-        if (IsDead)//»ç¸Á »óÅÂ¸é ¿òÁ÷ÀÌÁö ¾Ê°ÔÇÏ±â
+    void FixedUpdate()//ë¬¼ë¦¬ì—°ì‚°ì€ (ì´ë™ ë“±) FixedUpdate.
+    {
+        if (IsDead)//í”Œë ˆì–´ê°€ ì£½ìœ¼ë©´ ëª¨ë“  í–‰ë™ì„ ì¤‘ì§€í•˜ê³  ì‚¬ë§ ëª¨ì…˜ í–‰ë™
         {
-            rb.velocity = Vector2.zero;
-            return;
+            rb.linearVelocity = Vector2.zero;//ë¬¼ë¦¬ ì†ë„ 0ìœ¼ë¡œ ì„¤ì •
+            return;                          //ì´ë™ ì—°ì‚° ì°¨ë‹¨
         }
+        rb.linearVelocity = movement * MoveSpeed;//ì‚´ì•„ìˆëŠ” ê²½ìš° ì •ìƒì ì¸ ë¬¼ë¦¬ ì´ë™
 
-        rb.velocity = movement * MoveSpeed;
-        //Rigidbody¸¦ ÀÌ¿ëÇØ ÀÌµ¿, velocity´Â RigidbodyÀÇ ÇöÀç ¼Óµµ¸¦ ³ªÅ¸³¿
-        //¹éÅÍ2ÀÇ movement°ª°ú ³» ÄÉ¸¯ÅÍÀÇ ÀÌµ¿¼Óµµ(Move)¸¦ °è»êÇØ Rigidbody¿¡ Àû¿ë
+        //Rigidbodyë¥¼ ì´ìš©í•´ ì´ë™, velocityëŠ” Rigidbodyì˜ í˜„ì¬ ì†ë„ë¥¼ ë‚˜íƒ€ëƒ„
+        //ë°±í„°2ì˜ movementê°’ê³¼ ë‚´ ì¼€ë¦­í„°ì˜ ì´ë™ì†ë„(Move)ë¥¼ ê³„ì‚°í•´ Rigidbodyì— ì ìš©
     }
 
-    void Update()//ÇÁ·¹ÀÓ´ç ¾÷µ¥ÀÌÆ® ·ÎÁ÷
+    void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        movement = new Vector2(horizontalInput, verticalInput).normalized;//normalized·Î ÀÌµ¿ ¼Óµµ¸¦ ÀÏÁ¤ÇÏ°Ô À¯Áö
+        movement = new Vector2(horizontalInput, verticalInput).normalized;//normalizedë¡œ ì´ë™ ì†ë„ë¥¼ ì¼ì •í•˜ê²Œ ìœ ì§€
 
-        //°È±â »ç¿îµå Àç»ı ·ÎÁ÷ È£Ãâ
-        HandleWalkingSound();
+        HandleWalkingSound();//ì´ë™ì‹œì—” ê±·ê¸° ì‚¬ìš´ë“œ(í•¨ìˆ˜) ì¬ìƒ
 
-        if (IsDead)//Á×¾úÀ¸¸é ¾Æ¹« ÀÔ·Âµµ ¹ŞÁö ¾Ê°í ¿òÁ÷ÀÌÁö ¾ÊÀ½
+        if (IsDead)//ì£½ì—ˆìœ¼ë©´ ì•„ë¬´ ì…ë ¥ë„ ë°›ì§€ ì•Šê³  ì›€ì§ì´ì§€ ì•Šê¸°
         {
             horizontalInput = 0;
             verticalInput = 0;
             movement = Vector2.zero;
-            return;//Á×¾úÀ¸¸é ¿©±â¼­ ÇÔ¼ö Á¾·á
+            return;
         }
 
 
         if (animator != null)
             animator.SetBool("Move", movement.magnitude > 0);
 
-        // ÄÉ¸¯ÅÍ ¹æÇâ ÀüÈ¯(ÁÂ¿ì¹İÀü)
-        //<0 = Horizontal°ªÀÌ 0º¸´Ù ÀÛ´Ù, -1ÀÌ µÆ±â¿¡ ¿ŞÂÊÀ¸·Î ÀÌµ¿
-        //>0 = ¹İ´ë·Î Horizontal°ªÀÌ 0º¸´Ù Å©±â¿¡ ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
+        // ì¼€ë¦­í„° ë°©í–¥ ì „í™˜(ì¢Œìš°ë°˜ì „)
+        //<0 = Horizontalê°’ì´ 0ë³´ë‹¤ ì‘ë‹¤, -1ì´ ëê¸°ì— ì™¼ìª½ìœ¼ë¡œ ì´ë™
+        //>0 = ë°˜ëŒ€ë¡œ Horizontalê°’ì´ 0ë³´ë‹¤ í¬ê¸°ì— ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™
         if (horizontalInput < 0)
-            spriteRenderer.flipX = true;//¿ŞÂÊÀ¸·Î ÀÌµ¿
+            spriteRenderer.flipX = true;
         else if (horizontalInput > 0)
-            spriteRenderer.flipX = false;//¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
+            spriteRenderer.flipX = false;
     }
 
-    public void PlayerDie()//ÇÃ·¹ÀÌ¾î »ç¸Á½Ã È£ÃâµÉ ÇÔ¼ö
+    public void PlayerDie()//í”Œë ˆì´ì–´ ì‚¬ë§ì‹œ
     {
         if (IsDead) 
             return;
 
-        IsDead = true;//»ç¸Á »óÅÂ·Î º¯°æ, ¸Ç À§¿¡ ¼±¾ğ¿¡´Â ¾ÆÁ÷ »ç¸Á ¸ğ¼ÇÀ» ÇÏ¸é ¾ÈµÇ´Ï false·Î
-        Debug.Log("ÇÃ·¹ÀÌ¾î »ç¸Á!");
+        IsDead = true;
+        Debug.Log("í”Œë ˆì´ì–´ ì‚¬ë§!");
 
         if (animator != null)
         {
-            animator.SetTrigger("Die");//AnimatorÀÇ "Die" Æ®¸®°Å ¹ßµ¿
+            animator.SetTrigger("Die");
 
-            float DieTime = 1.5f; //»ç¸Á ÈÄ »ç¶óÁö´Â ½Ã°£
+            float DieTime = 1.5f;//ì‚¬ë§ í›„ ì‚¬ë¼ì§€ëŠ” ì‹œê°„
             Destroy(gameObject, DieTime);
 
-            //1.5ÃÊ µÚ¿¡ CallGameOverManagerÇÔ¼ö¸¦ È£Ãâ, ÇÃ·¹ÀÌ¾î°¡ Á×À¸¸é ¶ã UI
-            Invoke("CallGameOverManager", 1f);
+          
+            Invoke("CallGameOverManager", 1f);//1.5ì´ˆ ë’¤ì— CallGameOverManagerí•¨ìˆ˜ë¥¼ í˜¸ì¶œ, í”Œë ˆì´ì–´ê°€ ì£½ìœ¼ë©´ ëœ° UI
         }
-        //»ç¸Á½Ã¿¡´Â ÀÌµ¿ ÀÔ·Â ¹ŞÁö ¾Ê±â
+        //ì‚¬ë§ì‹œì—ëŠ” ì´ë™ ì…ë ¥ ë°›ì§€ ì•Šê¸°
         horizontalInput = 0;
         verticalInput = 0;
         movement = Vector2.zero;
 
         if (rb != null) 
-            rb.simulated = false;//¹°¸® ½Ã¹Ä·¹ÀÌ¼Ç ÁßÁö  
+            rb.simulated = false;//ë¬¼ë¦¬ ì‹œë®¬ë ˆì´ì…˜ ì¤‘ì§€  
     }
-    private void CallGameOverManager()//ÇÃ·¹ÀÌ¾î°¡ Á×À¸¸é GameOverManager UI È£Ãâ     
-    {//Invoke´Â ¿ÀÁ÷ stringÀ¸·Î µÈ ÇÔ¼ö ÀÌ¸§¸¸ ¹Ş¾Æ¼­ È£ÃâÇÒ ¼ö ÀÖ°Åµç,
-     //PlayerDie() ÇÔ¼ö ¾È¿¡ ÀÖ´Â if¹® ÄÚµå ºí·ÏÀº Invoke°¡ Á÷Á¢ ½ÇÇàÇÒ ¼ö ¾ø´Â Çü½ÄÀÌ¾ß,
-     //±×·¡¼­ if¹®À» CallGameOverManager¶ó´Â ÇÔ¼ö ¾È¿¡ ³Ö°í, Invoke´Â ±× ÇÔ¼ö ÀÌ¸§,
-     //("CallGameOverManager")À» È£ÃâÇÏ°Ô ¸¸µç °ÅÁö, ÀÌ·¸°Ô ÇÏ¸é InvokeÀÇ ±ÔÄ¢µµ ÁöÅ°¸é¼­ ³×°¡ ¿øÇÏ´Â ±â´ÉÀ» ±¸ÇöÇÒ ¼ö ÀÖ¾î.
-     //CallGameOverManager ÇÔ¼ö´Â Invoke¸¦ À§ÇØ ¸¸µé¾îÁø 'ÀÛÀº µµ¿ì¹Ì ÇÔ¼ö' ¶ó°í º¸¸é µÅ.
+    private void CallGameOverManager()//í”Œë ˆì´ì–´ê°€ ì£½ìœ¼ë©´ GameOverManager UI í˜¸ì¶œ
+    {
         if (gameOverManager != null) 
-            gameOverManager.OnGameOver();//gameOverManager ½ºÅ©¸³Æ®ÀÇ OnGameOverÇÔ¼ö È£Ãâ
-        
+            gameOverManager.OnGameOver();//gameOverManager ìŠ¤í¬ë¦½íŠ¸ì˜ OnGameOverí•¨ìˆ˜ í˜¸ì¶œ
     }   
 
-    public Vector3 GetCenterPosition()//¸ó½ºÅÍµéÀÌ ÇÃ·¹ÀÌ¾îÀÇ 'Áß¾Ó'ÀÌ¶ó°í ÀÎ½ÄÇÏ°í ÃßÀû/°ø°İÇÒ À§Ä¡
-    {                                 //Enemy ½ºÅ©¸³Æ®¿¡¼­ ÀÌ ÇÔ¼ö¸¦ ÂüÁ¶
+    public Vector3 GetCenterPosition()//ëª¬ìŠ¤í„°ë“¤ì´ í”Œë ˆì´ì–´ì˜ 'ì¤‘ì•™'ì´ë¼ê³  ì¸ì‹í•˜ê³  ì¶”ì /ê³µê²©í•  ìœ„ì¹˜, Enemy ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì´ í•¨ìˆ˜ë¥¼ ì°¸ì¡°
+    {                             
         if (targetCollider != null)
         {
-            return targetCollider.bounds.center;//TrueÀÏ¶§, ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¿¡ Collider2D ÄÄÆ÷³ÍÆ®°¡ ºÙ¾î ÀÖÀ» ¶§.
+            return targetCollider.bounds.center;//Trueì¼ë•Œ, í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ì— Collider2D ì»´í¬ë„ŒíŠ¸ê°€ ë¶™ì–´ ìˆì„ ë•Œ.
         }
-        return transform.position;//falseÀÏ¶§, Collider2D ÄÄÆ÷³ÍÆ®°¡ ºÙ¾î ÀÖÁö ¾ÊÀ» ¶§
+        return transform.position;//falseì¼ë•Œ, Collider2D ì»´í¬ë„ŒíŠ¸ê°€ ë¶™ì–´ ìˆì§€ ì•Šì„ ë•Œ
     }
 
-    void HandleWalkingSound()
+    void HandleWalkingSound()//ì´ë™ì‹œ ê±·ê¸° ì‚¬ìš´ë“œ í•¨ìˆ˜
     {
-        //Ä³¸¯ÅÍ°¡ ¿òÁ÷ÀÌ´ÂÁö È®ÀÎ
+        //ìºë¦­í„°ê°€ ì›€ì§ì´ëŠ”ì§€ í™•ì¸
         bool isMoving = (horizontalInput != 0 || verticalInput != 0);
 
         if(isMoving)
         {
-            //¼Ò¸®°¡ Àç»ı ÁßÀÌ ¾Æ´Ò ¶§¸¸ Àç»ı
-            //¿Àµğ¿À ÄÄÆ÷³ÍÆ®¿Í ¼Ò¸® ÆÄÀÏÀÌ ¸ğµÎ ¿¬°áµÇ¾î ÀÖ°í, ÇöÀç °È±â ¼Ò¸®°¡ Àç»ı ÁßÀÌ ¾Æ´Ï¶ó¸é, ¼Ò¸®¸¦ Àç»ıÇØ! ¶ó´Â ÀÇ¹Ì¾ß.
             if (walkingaudioSource != null && walkSound != null && !walkingaudioSource.isPlaying)
             {
                 walkingaudioSource.clip = walkSound;
-                walkingaudioSource.loop = true;//¹İº¹ Àç»ı
-                walkingaudioSource.Play();//À§ÀÇ »óÅÂ·Î »ç¿îµå ÇÃ·¹ÀÌ ½ÃÀÛ!
-            }                             //true »óÅÂÀÏ¶§ °è¼Ó ¼Ò¸®°¡ µé¸®´Â°Å¾ß!
+                walkingaudioSource.loop = true;//ë°˜ë³µì¬ìƒ
+                walkingaudioSource.Play();//ìœ„ì˜ ìƒíƒœë¡œ ì‚¬ìš´ë“œ í”Œë ˆì´ ì‹œì‘, true ìƒíƒœì¼ë•Œ ê³„ì† ì†Œë¦¬ê°€ ë“¤ë¦¬ëŠ”ê±°ì•¼
+            }
         }
-        else
+        else//ì›€ì§ì´ì§€ ì•Šì„ ë•Œ ì†Œë¦¬ ë©ˆì¶¤
         {
-            //¿òÁ÷ÀÌÁö ¾ÊÀ» ¶§ ¼Ò¸® ¸ØÃã
             if (walkingaudioSource != null && walkingaudioSource.isPlaying) 
                 walkingaudioSource.Stop();
         }
     }
 
-    public void AddScore(int amount)//Á¡¼ö¸¦ Ãß°¡ÇÏ´Â ÇÔ¼ö
+    public void AddScore(int amount)//ì ìˆ˜ë¥¼ ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜
     {
-        CurrentScore += amount;//Àü´Ş¹ŞÀº amount(Á¡¼ö)¸¸Å­ Á¡¼ö¸¦ ´õÇØÁÜ
-        Debug.Log("ÇöÀç Á¡¼ö: " + CurrentScore);
+        CurrentScore += amount;//ì „ë‹¬ë°›ì€ amount(ì ìˆ˜)ë§Œí¼ ì ìˆ˜ë¥¼ ë”í•´ì¤Œ
+        Debug.Log("í˜„ì¬ ì ìˆ˜: " + CurrentScore);
 
-        //UI ÅØ½ºÆ®°¡ ¿¬°áµÇ¾î ÀÖ´ÂÁö È®ÀÎ
         if (ScoreTextUI != null) 
             ScoreTextUI.text = "Score: " + CurrentScore.ToString();
-                                 //ToString()Àº int °ªÀ» ¹®ÀÚ¿­·Î ¹Ù²ãÁÖ´Â ÇÔ¼ö¾ß
+                               
     }
-    public void ResetScore()//Á¡¼ö¸¦ ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
+    public void ResetScore()//ì ìˆ˜ë¥¼ ì´ˆê¸°í™”í•˜ëŠ” í•¨ìˆ˜
     {
         CurrentScore = 0;
-        //ÀÎ°ÔÀÓ Á¡¼ö UIµµ ÃÊ±âÈ­ÇÏ°í ½Í´Ù¸é ÀÌ ÁÙµµ Ãß°¡
         if (ScoreTextUI != null) 
             ScoreTextUI.text = "Score: 0";
     }

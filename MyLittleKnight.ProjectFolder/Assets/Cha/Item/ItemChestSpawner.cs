@@ -1,108 +1,108 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;//TilemapÀ» »ç¿ëÇÏ·Á¸é ÀÌ using ¹®ÀÌ ÇÊ¿ä
+using UnityEngine.Tilemaps;//Tilemapì„ ì‚¬ìš©í•˜ë ¤ë©´ ì´ using ë¬¸ì´ í•„ìš”
 
 public class ItemChestSpawner : MonoBehaviour
 {
-    [Header("¿¬°áÇÒ ¿ÀºêÁ§Æ®, ·¹ÀÌ¾î º¯¼ö")]
-    // ==ÀÎ½ºÆåÅÍ¿¡ ÇÒ´çÇÒ º¯¼öµé==
-    public GameObject ItemChestPrefab;//ÀÎ½ºÆåÅÍ¿¡¼­ ½ºÆùÇÒ ¾ÆÀÌÅÛ »óÀÚ ÇÁ¸®ÆÕÀ» ÇÒ´ç
-    public Tilemap TargetTilemap;//¾ÆÀÌÅÛ »óÀÚ¸¦ ½ºÆùÇÒ Å¸ÀÏ¸ÊÀ» ÇÒ´ç
-    public LayerMask SpawnableLayer;//¾ÆÀÌÅÛ »óÀÚ°¡ ½ºÆùµÉ ¼ö ÀÖ´Â ¿µ¿ª (¹Ù´Ú µî)ÀÇ ·¹ÀÌ¾î ¸¶½ºÅ©
+    [Header("ì—°ê²°í•  ì˜¤ë¸Œì íŠ¸, ë ˆì´ì–´ ë³€ìˆ˜")]
+    // ==ì¸ìŠ¤í™í„°ì— í• ë‹¹í•  ë³€ìˆ˜ë“¤==
+    public GameObject ItemChestPrefab;//ì¸ìŠ¤í™í„°ì—ì„œ ìŠ¤í°í•  ì•„ì´í…œ ìƒì í”„ë¦¬íŒ¹ì„ í• ë‹¹
+    public Tilemap TargetTilemap;//ì•„ì´í…œ ìƒìë¥¼ ìŠ¤í°í•  íƒ€ì¼ë§µì„ í• ë‹¹
+    public LayerMask SpawnableLayer;//ì•„ì´í…œ ìƒìê°€ ìŠ¤í°ë  ìˆ˜ ìˆëŠ” ì˜ì—­ (ë°”ë‹¥ ë“±)ì˜ ë ˆì´ì–´ ë§ˆìŠ¤í¬
 
-    [Header("¾ÆÀÌÅÛ »óÀÚÀÇ ½ºÆù ½Ã°£")]
-    public float ItemChestSpawnTime = 30f;//¾ÆÀÌÅÛ »óÀÚ°¡ ½ºÆùµÇ´Â ÁÖ±â (ÃÊ)
+    [Header("ì•„ì´í…œ ìƒìì˜ ìŠ¤í° ì‹œê°„")]
+    public float ItemChestSpawnTime = 30f;//ì•„ì´í…œ ìƒìê°€ ìŠ¤í°ë˜ëŠ” ì£¼ê¸° (ì´ˆ)
 
-    [Header("»ç¿îµå º¯¼ö")]
-    //»ı¼º ½Ã µé¸± »ç¿îµå º¯¼ö
+    [Header("ì‚¬ìš´ë“œ ë³€ìˆ˜")]
+    //ìƒì„± ì‹œ ë“¤ë¦´ ì‚¬ìš´ë“œ ë³€ìˆ˜
     public AudioSource AudioSource;
     public AudioClip SpawnSound;
 
-    // == ³»ºÎ¿¡¼­ »ç¿ëÇÒ º¯¼öµé ==
-    private float spawnTimer;//½ºÆù ÁÖ±â °è»ê¿ë Å¸ÀÌ¸Ó
-    private TextAlimManager textalimManager;//TextAlimManager ½ºÅ©¸³Æ®¸¦ ÂüÁ¶ÇÒ º¯¼ö
+    // == ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤ ==
+    private float spawnTimer;//ìŠ¤í° ì£¼ê¸° ê³„ì‚°ìš© íƒ€ì´ë¨¸
+    private TextAlimManager textalimManager;//TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¸ì¡°í•  ë³€ìˆ˜
     void Start()
     {
-        spawnTimer = ItemChestSpawnTime;//½ÇÇà ÈÄ ¹Ù·Î ½ºÆù µÇµµ·Ï ÃÊ±âÈ­
+        spawnTimer = ItemChestSpawnTime;//ì‹¤í–‰ í›„ ë°”ë¡œ ìŠ¤í° ë˜ë„ë¡ ì´ˆê¸°í™”
 
-        //!= nullÀº "nullÀÌ ¾Æ´Ò ¶§" Áï, "¹«¾ğ°¡°¡ Á¸ÀçÇÒ ¶§"¸¦ ÀÇ¹ÌÇÏ°í,
-        //== nullÀº "nullÀÏ ¶§" Áï, "¾Æ¹«°Íµµ ¾ø°Å³ª ºñ¾îÀÖÀ» ¶§"¸¦ ÀÇ¹ÌÇØ.
+        //!= nullì€ "nullì´ ì•„ë‹ ë•Œ" ì¦‰, "ë¬´ì–¸ê°€ê°€ ì¡´ì¬í•  ë•Œ"ë¥¼ ì˜ë¯¸í•˜ê³ ,
+        //== nullì€ "nullì¼ ë•Œ" ì¦‰, "ì•„ë¬´ê²ƒë„ ì—†ê±°ë‚˜ ë¹„ì–´ìˆì„ ë•Œ"ë¥¼ ì˜ë¯¸í•´.
 
-        //ItemBoxPrefabÀÌ ÇÒ´çµÇ¾î ÀÖ´ÂÁö È®ÀÎ (¿¡·¯ ¹æÁö)
+        //ItemBoxPrefabì´ í• ë‹¹ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸ (ì—ëŸ¬ ë°©ì§€)
         if (ItemChestPrefab == null)
-            Debug.LogError("ItemBoxSpawner: ItemBoxPrefabÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");
+            Debug.LogError("ItemBoxSpawner: ItemBoxPrefabì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");
 
-        //½ÃÀÛ ½Ã TextAlimManager ½ºÅ©¸³Æ®¸¦ Ã£¾Æ¼­ ÇÒ´ç
-        textalimManager = FindObjectOfType<TextAlimManager>();
+        //ì‹œì‘ ì‹œ TextAlimManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì•„ì„œ í• ë‹¹
+        textalimManager = FindFirstObjectByType<TextAlimManager>();
         if (textalimManager == null)
-            Debug.LogWarning("ItemChestSpawner: TextAlimManager½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø¾î!. »óÀÚ ½ºÆù ¾Ë¸²ÀÌ Ç¥½ÃµÇÁö ¾Ê¾Æ!.");
+            Debug.LogWarning("ItemChestSpawner: TextAlimManagerìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!. ìƒì ìŠ¤í° ì•Œë¦¼ì´ í‘œì‹œë˜ì§€ ì•Šì•„!.");
     }
 
     void Update()
     {
-        spawnTimer -= Time.deltaTime;//³²Àº ½Ã°£ °¨¼Ò
+        spawnTimer -= Time.deltaTime;//ë‚¨ì€ ì‹œê°„ ê°ì†Œ
 
-        if (spawnTimer <= 0f)//Å¸ÀÌ¸Ó°¡ 0ÀÌÇÏ°¡ µÇ¸é ½ºÆù
+        if (spawnTimer <= 0f)//íƒ€ì´ë¨¸ê°€ 0ì´í•˜ê°€ ë˜ë©´ ìŠ¤í°
         {
-            SpawnItemChest();//¾ÆÀÌÅÛ »óÀÚ »ı¼º ÇÔ¼ö È£Ãâ
-            spawnTimer = ItemChestSpawnTime;//´ÙÀ½ ½ºÆùÀ» À§ÇØ Å¸ÀÌ¸Ó ÃÊ±âÈ­
+            SpawnItemChest();//ì•„ì´í…œ ìƒì ìƒì„± í•¨ìˆ˜ í˜¸ì¶œ
+            spawnTimer = ItemChestSpawnTime;//ë‹¤ìŒ ìŠ¤í°ì„ ìœ„í•´ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
         }
 
     }
 
     void SpawnItemChest()
     {
-        //¾ÆÀÌÅÛ »óÀÚ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇ¾î ÀÖ´ÂÁö ´Ù½Ã ÇÑ¹ø È®ÀÎ
+        //ì•„ì´í…œ ìƒì í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì–´ ìˆëŠ”ì§€ ë‹¤ì‹œ í•œë²ˆ í™•ì¸
         if (ItemChestPrefab == null)
         {
-            Debug.LogError("¾ÆÀÌÅÛ »óÀÚ ÇÁ¸®ÆÕÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!.");
+            Debug.LogError("ì•„ì´í…œ ìƒì í”„ë¦¬íŒ¹ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!.");
             return;
         }
 
-        Vector3 spawnPosition = GetValidSpawnPosition();//À¯È¿ÇÑ ½ºÆù À§Ä¡ Ã£±â
-        if(spawnPosition == Vector3.zero)//À¯È¿ÇÑ À§Ä¡¸¦ Ã£Áö ¸øÇßÀ¸¸é
+        Vector3 spawnPosition = GetValidSpawnPosition();//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ ì°¾ê¸°
+        if(spawnPosition == Vector3.zero)//ìœ íš¨í•œ ìœ„ì¹˜ë¥¼ ì°¾ì§€ ëª»í–ˆìœ¼ë©´
         {
-            Debug.LogWarning("¾ÆÀÌÅÛ »óÀÚ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£À» ¼ö ¾ø¾ú¾î!.");
+            Debug.LogWarning("ì•„ì´í…œ ìƒì ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´!.");
             return;
         }
 
         GameObject newItemChest = Instantiate(ItemChestPrefab, spawnPosition, Quaternion.identity);
 
-        if (AudioSource != null && SpawnSound != null)//»ı¼º½Ã µé¸± »ç¿îµå
-            AudioSource.PlayOneShot(SpawnSound);//ÇÑ¹ø¸¸ »ç¿îµå°¡ µé¸®°Ô ¸» ±×´ë·Î OneShot
+        if (AudioSource != null && SpawnSound != null)//ìƒì„±ì‹œ ë“¤ë¦´ ì‚¬ìš´ë“œ
+            AudioSource.PlayOneShot(SpawnSound);//í•œë²ˆë§Œ ì‚¬ìš´ë“œê°€ ë“¤ë¦¬ê²Œ ë§ ê·¸ëŒ€ë¡œ OneShot
 
-        if (textalimManager != null)//TextAlimManager ½ºÅ©¸³Æ®¿¡ ÅØ½ºÆ® ¾Ë¸² Ç¥½Ã
-            textalimManager.ShowNotification("<color=yellow>¾ÆÀÌÅÛ »óÀÚ ¹ß°ß!</color>");
+        if (textalimManager != null)//TextAlimManager ìŠ¤í¬ë¦½íŠ¸ì— í…ìŠ¤íŠ¸ ì•Œë¦¼ í‘œì‹œ
+            textalimManager.ShowNotification("<color=yellow>ì•„ì´í…œ ìƒì ë°œê²¬!</color>");
     }
 
-    Vector3 GetValidSpawnPosition()//À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£´Â °øÅë ÇÔ¼ö (EnemySpawn ½ºÅ©¸³Æ®¿Í µ¿ÀÏ)
+    Vector3 GetValidSpawnPosition()//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ëŠ” ê³µí†µ í•¨ìˆ˜ (EnemySpawn ìŠ¤í¬ë¦½íŠ¸ì™€ ë™ì¼)
     {
-        int maxAttempts = 100;//À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£±â À§ÇÑ ÃÖ´ë ½Ãµµ È½¼ö
+        int maxAttempts = 100;//ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ ì°¾ê¸° ìœ„í•œ ìµœëŒ€ ì‹œë„ íšŸìˆ˜
         for(int i = 0; i < maxAttempts; i++)
         {
             if(TargetTilemap == null)
             {
-                Debug.LogError("TargetTilemapÀÌ ItemBoxSpawner¿¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
-                return Vector3.zero;//À¯È¿ÇÑ À§Ä¡ ¸ø Ã£À¸¸é Vector3.zero ¹İÈ¯
+                Debug.LogError("TargetTilemapì´ ItemBoxSpawnerì— í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
+                return Vector3.zero;//ìœ íš¨í•œ ìœ„ì¹˜ ëª» ì°¾ìœ¼ë©´ Vector3.zero ë°˜í™˜
             }
 
-            BoundsInt bounds = TargetTilemap.cellBounds;//Å¸ÀÏ¸ÊÀÇ À¯È¿ÇÑ ¼¿ ¹üÀ§ °¡Á®¿À±â
+            BoundsInt bounds = TargetTilemap.cellBounds;//íƒ€ì¼ë§µì˜ ìœ íš¨í•œ ì…€ ë²”ìœ„ ê°€ì ¸ì˜¤ê¸°
             int randomX = Random.Range(bounds.xMin, bounds.xMax);
             int randomY = Random.Range(bounds.yMin, bounds.yMax);
-            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);//·£´ı ¼¿ À§Ä¡
+            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);//ëœë¤ ì…€ ìœ„ì¹˜
 
-            if(TargetTilemap.HasTile(randomCell))//¼±ÅÃµÈ ¼¿¿¡ Å¸ÀÏÀÌ ÀÖ´ÂÁö È®ÀÎ
+            if(TargetTilemap.HasTile(randomCell))//ì„ íƒëœ ì…€ì— íƒ€ì¼ì´ ìˆëŠ”ì§€ í™•ì¸
             {
-                Vector3 cellCenterTile = TargetTilemap.GetCellCenterWorld(randomCell);//¼¿ À§Ä¡¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯
+                Vector3 cellCenterTile = TargetTilemap.GetCellCenterWorld(randomCell);//ì…€ ìœ„ì¹˜ë¥¼ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜
 
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterTile, 0.5f, SpawnableLayer);
 
-                if (colliders.Length == 0) return cellCenterTile;//ÁÖº¯¿¡ Äİ¶óÀÌ´õ°¡ ¾ø´Ù¸é À¯È¿ÇÑ À§Ä¡
+                if (colliders.Length == 0) return cellCenterTile;//ì£¼ë³€ì— ì½œë¼ì´ë”ê°€ ì—†ë‹¤ë©´ ìœ íš¨í•œ ìœ„ì¹˜
             }
         }
-        Debug.LogWarning("¾ÆÀÌÅÛ »óÀÚ ½ºÆù: Å¸ÀÏ¸Ê ³»¿¡¼­ À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ 100¹ø ½ÃµµÇßÀ¸³ª Ã£À» ¼ö ¾ø¾ú¾î!.");
-        return Vector3.zero;//100¹ø ½ÃµµÇØµµ ¸ø Ã£À¸¸é Vector3.zero ¹İÈ¯
+        Debug.LogWarning("ì•„ì´í…œ ìƒì ìŠ¤í°: íƒ€ì¼ë§µ ë‚´ì—ì„œ ìœ íš¨í•œ ìŠ¤í° ìœ„ì¹˜ë¥¼ 100ë²ˆ ì‹œë„í–ˆìœ¼ë‚˜ ì°¾ì„ ìˆ˜ ì—†ì—ˆì–´!.");
+        return Vector3.zero;//100ë²ˆ ì‹œë„í•´ë„ ëª» ì°¾ìœ¼ë©´ Vector3.zero ë°˜í™˜
     }
 }
 

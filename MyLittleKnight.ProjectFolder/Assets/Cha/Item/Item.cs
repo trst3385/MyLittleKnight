@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class Item: MonoBehaviour
 {
-    [Header("¾ÆÀÌÅÛ È¹µæ »ç¿îµå")]
-    //[SerializeField] private AudioSource audioSource; ÀÌ°Ç ÀÌÁ¦ ¾È½á!
-    //soundObject¶ó´Â »õ·Î¿î °ÔÀÓ ¿ÀºêÁ§Æ®¸¦ ¸¸µé°í °Å±â¿¡ AudioSource ÄÄÆ÷³ÍÆ®¸¦ µ¿ÀûÀ¸·Î Ãß°¡ÇØ¼­ ¾²±â ¶§¹®¿¡,
-    //AudioSource º¯¼ö°¡ ÇÊ¿ä ¾ø¾îÁ³¾î
+    [Header("ì•„ì´í…œ íšë“ ì‚¬ìš´ë“œ")]
+    //[SerializeField] private AudioSource audioSource; ì´ê±´ ì´ì œ ì•ˆì¨!
+    //soundObjectë¼ëŠ” ìƒˆë¡œìš´ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ ë§Œë“¤ê³  ê±°ê¸°ì— AudioSource ì»´í¬ë„ŒíŠ¸ë¥¼ ë™ì ìœ¼ë¡œ ì¶”ê°€í•´ì„œ ì“°ê¸° ë•Œë¬¸ì—,
+    //AudioSource ë³€ìˆ˜ê°€ í•„ìš” ì—†ì–´ì¡Œì–´
     [SerializeField] private AudioClip bowSound;
     [SerializeField] private AudioClip swordSound;
     [SerializeField] private AudioClip healSound;
@@ -17,51 +17,51 @@ public class Item: MonoBehaviour
     [SerializeField] private AudioClip shieldSound;
     [SerializeField] private AudioClip weaponChangeCtbSound;
     [SerializeField] private AudioClip weaponChangeCtsSound;
-    public enum ItemType//¾ÆÀÌÅÛ Á¾·ù¸¦ ½±°Ô ±¸ºĞÇÏ±â À§ÇØ ¿­°ÅÇüÀ¸·Î
-    {//enum ¾È¿¡ Á¤ÀÇµÈ °¢ Ç×¸ñµéÀº Á¤¼ö(integer) °ªÀ» °¡Á®. °¡Àå À§¿¡ ÀÖ´Â Ç×¸ñÀº 0, ±× ´ÙÀ½Àº 1,
-     //ÀÌ·± ½ÄÀ¸·Î ÀÚµ¿À¸·Î ¼ıÀÚ°¡ ¸Å°ÜÁöÁö. ¹°·Ğ ³×°¡ Á÷Á¢ ¼ıÀÚ¸¦ ÁöÁ¤ÇØÁÙ ¼öµµ ÀÖ¾î.
+    public enum ItemType//ì•„ì´í…œ ì¢…ë¥˜ë¥¼ ì‰½ê²Œ êµ¬ë¶„í•˜ê¸° ìœ„í•´ ì—´ê±°í˜•ìœ¼ë¡œ
+    {//enum ì•ˆì— ì •ì˜ëœ ê° í•­ëª©ë“¤ì€ ì •ìˆ˜(integer) ê°’ì„ ê°€ì ¸. ê°€ì¥ ìœ„ì— ìˆëŠ” í•­ëª©ì€ 0, ê·¸ ë‹¤ìŒì€ 1,
+     //ì´ëŸ° ì‹ìœ¼ë¡œ ìë™ìœ¼ë¡œ ìˆ«ìê°€ ë§¤ê²¨ì§€ì§€. ë¬¼ë¡  ë„¤ê°€ ì§ì ‘ ìˆ«ìë¥¼ ì§€ì •í•´ì¤„ ìˆ˜ë„ ìˆì–´.
 
-        None,//0 ¾Æ¹«°Íµµ ¾Æ´Ô (±âº»°ª, ½Ç¼ö ¹æÁö¿ë)
-        ArrowPower,//1 È° °ø°İ·Â Áõ°¡
-        SwordPower,//2 °Ë µ¥¹ÌÁö Áõ°¡
-        Heal,//3 Ã¼·Â È¸º¹
-        MoveSpeed,//4 ÀÌµ¿¼Óµµ Áõ°¡
-        ShieldHeal,//5 ¹æ¾î·Â È¸º¹
+        None,//0 ì•„ë¬´ê²ƒë„ ì•„ë‹˜ (ê¸°ë³¸ê°’, ì‹¤ìˆ˜ ë°©ì§€ìš©)
+        ArrowPower,//1 í™œ ê³µê²©ë ¥ ì¦ê°€
+        SwordPower,//2 ê²€ ë°ë¯¸ì§€ ì¦ê°€
+        Heal,//3 ì²´ë ¥ íšŒë³µ
+        MoveSpeed,//4 ì´ë™ì†ë„ ì¦ê°€
+        ShieldHeal,//5 ë°©ì–´ë ¥ íšŒë³µ
 
 
-        ChangeToBow,//È°·Î ¹«±â º¯°æ ¾ÆÀÌÅÛ Ãß°¡ ¿¹½Ã
-        ChangeToSword,//°ËÀ¸·Î ¹«±â º¯°æ ¾ÆÀÌÅÛ Ãß°¡ ¿¹½Ã
+        ChangeToBow,//í™œë¡œ ë¬´ê¸° ë³€ê²½ ì•„ì´í…œ ì¶”ê°€ ì˜ˆì‹œ
+        ChangeToSword,//ê²€ìœ¼ë¡œ ë¬´ê¸° ë³€ê²½ ì•„ì´í…œ ì¶”ê°€ ì˜ˆì‹œ
 
     }
 
-    [Header("¾ÆÀÌÅÛÀÇ Å¸ÀÔ, °¢ È¿°úµé º¯¼ö")]
-    public ItemType itemType;//enumÀÇ ÀÌ¸§À» ItemType ´ë¹®ÀÚ¸¦ Àû¾î¼­ ÂüÁ¶ÇÒ º¯¼öÀÎ itemTypeÀº ¼Ò¹®ÀÚ·Î Çß¾î
-    public float EffectDamage = 1f;//È°,°Ë µ¥¹ÌÁö
-    public float AttackCooldown = 0.2f;//È° ¾ÆÀÌÅÛ È¹µæ ½Ã °ø°İ¼Óµµ Áõ°¡ ¼ö
-    public float Speed = 1f;//ÀÌµ¿ ¼Óµµ
-    public float Healing = 5f;//Ã¼·Â È¸º¹ È¿°ú °ª
-    public float ShieldAmount = 4f;//¹æ¾î·Â È¸º¹ °ª
-    public float DespawnTime = 10f;//¾ÆÀÌÅÛÀÌ »ı¼ºµÈ ÈÄ ÀÚµ¿À¸·Î »ç¶óÁö´Â ½Ã°£ (ÃÊ)
-    private ItemSpawner itemSpawner;//ItemSpawner ½ºÅ©¸³Æ® ÂüÁ¶
+    [Header("ì•„ì´í…œì˜ íƒ€ì…, ê° íš¨ê³¼ë“¤ ë³€ìˆ˜")]
+    public ItemType itemType;//enumì˜ ì´ë¦„ì„ ItemType ëŒ€ë¬¸ìë¥¼ ì ì–´ì„œ ì°¸ì¡°í•  ë³€ìˆ˜ì¸ itemTypeì€ ì†Œë¬¸ìë¡œ í–ˆì–´
+    public float EffectDamage = 1f;//í™œ,ê²€ ë°ë¯¸ì§€
+    public float AttackCooldown = 0.2f;//í™œ ì•„ì´í…œ íšë“ ì‹œ ê³µê²©ì†ë„ ì¦ê°€ ìˆ˜
+    public float Speed = 1f;//ì´ë™ ì†ë„
+    public float Healing = 5f;//ì²´ë ¥ íšŒë³µ íš¨ê³¼ ê°’
+    public float ShieldAmount = 4f;//ë°©ì–´ë ¥ íšŒë³µ ê°’
+    public float DespawnTime = 10f;//ì•„ì´í…œì´ ìƒì„±ëœ í›„ ìë™ìœ¼ë¡œ ì‚¬ë¼ì§€ëŠ” ì‹œê°„ (ì´ˆ)
+    private ItemSpawner itemSpawner;//ItemSpawner ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
     private bool isUsed = false;
 
     void Start()
     {
-        //ItemSpawner¸¦ ¾À¿¡¼­ Ã£¾Æ¼­ ÇÒ´ç
-        itemSpawner = FindObjectOfType<ItemSpawner>();
+        //ItemSpawnerë¥¼ ì”¬ì—ì„œ ì°¾ì•„ì„œ í• ë‹¹
+        itemSpawner = FindAnyObjectByType<ItemSpawner>();
         if (itemSpawner == null)
-            Debug.LogWarning("ItemSpawner¸¦ ¾À¿¡¼­ Ã£À» ¼ö ¾ø¾î! ¾ÆÀÌÅÛ Ä«¿îÆ®°¡ ¾÷µ¥ÀÌÆ®µÇÁö ¾ÊÀ» °Å¾ß.");
+            Debug.LogWarning("ItemSpawnerë¥¼ ì”¬ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ì–´! ì•„ì´í…œ ì¹´ìš´íŠ¸ê°€ ì—…ë°ì´íŠ¸ë˜ì§€ ì•Šì„ ê±°ì•¼.");
 
-        //ÀÏÁ¤ ½Ã°£ ÈÄ¿¡ ¾ÆÀÌÅÛÀÌ »ç¶óÁöµµ·Ï
+        //ì¼ì • ì‹œê°„ í›„ì— ì•„ì´í…œì´ ì‚¬ë¼ì§€ë„ë¡
         Destroy(gameObject, DespawnTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)//¾î¶² Äİ¶óÀÌ´õ"(other)¿Í "Á¢ÃËÀÌ ¹ß»ıÇßÀ» ¶§
-    {   //ÀÌ ÇÔ¼ö´Â ÀÌ ¾ÆÀÌÅÛÀÇ Collider2D (Is Trigger°¡ Ã¼Å©µÈ)°¡ ´Ù¸¥ Collider2D¿Í ´ê¾ÒÀ» ¶§ È£Ãâ.
+    private void OnTriggerEnter2D(Collider2D other)//ì–´ë–¤ ì½œë¼ì´ë”"(other)ì™€ "ì ‘ì´‰ì´ ë°œìƒí–ˆì„ ë•Œ
+    {   //ì´ í•¨ìˆ˜ëŠ” ì´ ì•„ì´í…œì˜ Collider2D (Is Triggerê°€ ì²´í¬ëœ)ê°€ ë‹¤ë¥¸ Collider2Dì™€ ë‹¿ì•˜ì„ ë•Œ í˜¸ì¶œ.
 
         if (isUsed) return;
 
-        //´êÀº ¿ÀºêÁ§Æ®°¡ "Player" ÅÂ±×¸¦ °¡Áö°í ÀÖ´ÂÁö È®ÀÎ
+        //ë‹¿ì€ ì˜¤ë¸Œì íŠ¸ê°€ "Player" íƒœê·¸ë¥¼ ê°€ì§€ê³  ìˆëŠ”ì§€ í™•ì¸
         if (!other.CompareTag("Player")) return;
         
         isUsed = true;
@@ -71,19 +71,19 @@ public class Item: MonoBehaviour
         PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
         PlayerShield playerShield = other.GetComponent<PlayerShield>();
 
-        //¼Â Áß¿¡ ÇÏ³ª¶óµµ À¯È¿ÇÏ¸é ¾ÆÀÌÅÛ »ç¿ë ½Ãµµ
+        //ì…‹ ì¤‘ì— í•˜ë‚˜ë¼ë„ ìœ íš¨í•˜ë©´ ì•„ì´í…œ ì‚¬ìš© ì‹œë„
         if(playerStatsEffects != null || attackController != null || playerHealth != null )
             UseItem(playerStatsEffects, attackController, playerHealth, playerShield);
         else
-            Debug.LogWarning("¾ÆÀÌÅÛÀ» È¹µæÇßÁö¸¸ ÇÃ·¹ÀÌ¾î¿¡°Ô ÇÊ¿äÇÑ ÄÄÆ÷³ÍÆ®(PlayerStatsEffects, AttackController, PlayerHealth)°¡ ¾ø¾î!");
+            Debug.LogWarning("ì•„ì´í…œì„ íšë“í–ˆì§€ë§Œ í”Œë ˆì´ì–´ì—ê²Œ í•„ìš”í•œ ì»´í¬ë„ŒíŠ¸(PlayerStatsEffects, AttackController, PlayerHealth)ê°€ ì—†ì–´!");
 
 
 
-        if (itemSpawner != null)//ItemSpawner ½ºÅ©¸³Æ®¿¡°Ô ¾Ë¸®´Â ÄÚµå
+        if (itemSpawner != null)//ItemSpawner ìŠ¤í¬ë¦½íŠ¸ì—ê²Œ ì•Œë¦¬ëŠ” ì½”ë“œ
             itemSpawner.ItemDestroyed();
 
 
-        //UseItem()¿¡¼­ ¾ÆÀÌÅÛ Å¸ÀÔ¿¡ µû¶ó »ç¿îµå Å¬¸³À» °áÁ¤ÇÏ°í, ¿©±â¼­ Àç»ı.
+        //UseItem()ì—ì„œ ì•„ì´í…œ íƒ€ì…ì— ë”°ë¼ ì‚¬ìš´ë“œ í´ë¦½ì„ ê²°ì •í•˜ê³ , ì—¬ê¸°ì„œ ì¬ìƒ.
         AudioClip soundToPlay = null;
         switch (itemType)
         {
@@ -95,62 +95,62 @@ public class Item: MonoBehaviour
             case ItemType.ChangeToBow: soundToPlay = weaponChangeCtbSound; break; 
             case ItemType.ChangeToSword: soundToPlay = weaponChangeCtsSound; break;
         }
-        if (soundToPlay != null)//¾ÆÀÌÅÛ ¿ÀºêÁ§Æ®°¡ »ç¶óÁö´õ¶óµµ »ç¿îµå´Â µé¸®°Ô
+        if (soundToPlay != null)//ì•„ì´í…œ ì˜¤ë¸Œì íŠ¸ê°€ ì‚¬ë¼ì§€ë”ë¼ë„ ì‚¬ìš´ë“œëŠ” ë“¤ë¦¬ê²Œ
         {        
-            GameObject soundObject = new GameObject("OneShotAudio");//ÄÚµå°¡ ½ÇÇàµÉ ¶§¸¶´Ù »ı¼ºµÇ´Â ¿ÀºêÁ§Æ®¾ß,
-                                                                    //ÄÚµå ¾È¿¡¼­ ¸¸µé¾îÁø ¿ÀºêÁ§Æ®Áö
-            //ÀÌ ÄÚµå°¡ ½ÇÇàµÇ¸é ¾À¿¡ "OneShotAudio"¶ó´Â ÀÌ¸§ÀÇ ºó ¿ÀºêÁ§Æ®°¡ ÇÏ³ª ¸¸µé¾îÁ®.
-            //ÀÌ ¿ÀºêÁ§Æ®´Â ¼Ò¸®¸¦ Àç»ıÇÏ´Â ¿ªÇÒ¸¸ ÇÏ°í, ¼Ò¸® Àç»ıÀÌ ³¡³ª¸é ÀÚµ¿À¸·Î »ç¶óÁ®.
+            GameObject soundObject = new GameObject("OneShotAudio");//ì½”ë“œê°€ ì‹¤í–‰ë  ë•Œë§ˆë‹¤ ìƒì„±ë˜ëŠ” ì˜¤ë¸Œì íŠ¸ì•¼,
+                                                                    //ì½”ë“œ ì•ˆì—ì„œ ë§Œë“¤ì–´ì§„ ì˜¤ë¸Œì íŠ¸ì§€
+            //ì´ ì½”ë“œê°€ ì‹¤í–‰ë˜ë©´ ì”¬ì— "OneShotAudio"ë¼ëŠ” ì´ë¦„ì˜ ë¹ˆ ì˜¤ë¸Œì íŠ¸ê°€ í•˜ë‚˜ ë§Œë“¤ì–´ì ¸.
+            //ì´ ì˜¤ë¸Œì íŠ¸ëŠ” ì†Œë¦¬ë¥¼ ì¬ìƒí•˜ëŠ” ì—­í• ë§Œ í•˜ê³ , ì†Œë¦¬ ì¬ìƒì´ ëë‚˜ë©´ ìë™ìœ¼ë¡œ ì‚¬ë¼ì ¸.
 
-            soundObject.transform.position = transform.position;//soundObjectÀÇ À§Ä¡¸¦ ¾ÆÀÌÅÛÀÌ ÀÖ´ø À§Ä¡(transform.position)¿Í °°°Ô ¼³Á¤ÇØ.
-                                                                //ÀÌ·¸°Ô ÇÏ¸é ¼Ò¸®°¡ ¾ÆÀÌÅÛÀÌ ÀÖ´ø °÷¿¡¼­ ³ª´Â °ÍÃ³·³ µé·Á.
-            AudioSource tempAudioSource = soundObject.AddComponent<AudioSource>();//soundObject¿¡ AudioSource ÄÄÆ÷³ÍÆ®¸¦ Ãß°¡
-            tempAudioSource.clip = soundToPlay;//»õ·Î ¸¸µç AudioSource ÄÄÆ÷³ÍÆ®¿¡ Àç»ıÇÒ »ç¿îµå ÆÄÀÏ(soundToPlay)À» ÇÒ´çÇØ.
-            tempAudioSource.volume = 1f;//¼Ò¸®ÀÇ º¼·ıÀ» ÃÖ´ë·Î ¼³Á¤. ÀÌ·¸°Ô ÇÏ¸é º¼·ıÀÌ ÀÏÁ¤ÇÏ°Ô À¯ÁöµÅ.
-            tempAudioSource.spatialBlend = 0;//spatialBlendÀÇ 0ÀÌ 2D »ç¿îµå, 1ÀÌ 3D »ç¿îµå
-            //2D »ç¿îµå´Â Ä«¸Ş¶ó¿ÍÀÇ °Å¸®¿¡ »ó°ü¾øÀÌ Ç×»ó °°Àº Å©±â·Î µé¸®±â ¶§¹®¿¡, ¾ÆÀÌÅÛÀ» ¸ÔÀ» ¶§¸¶´Ù ¼Ò¸® Å©±â°¡ ´Ş¶óÁö´Â ¹®Á¦¸¦ ÇØ°á
+            soundObject.transform.position = transform.position;//soundObjectì˜ ìœ„ì¹˜ë¥¼ ì•„ì´í…œì´ ìˆë˜ ìœ„ì¹˜(transform.position)ì™€ ê°™ê²Œ ì„¤ì •í•´.
+                                                                //ì´ë ‡ê²Œ í•˜ë©´ ì†Œë¦¬ê°€ ì•„ì´í…œì´ ìˆë˜ ê³³ì—ì„œ ë‚˜ëŠ” ê²ƒì²˜ëŸ¼ ë“¤ë ¤.
+            AudioSource tempAudioSource = soundObject.AddComponent<AudioSource>();//soundObjectì— AudioSource ì»´í¬ë„ŒíŠ¸ë¥¼ ì¶”ê°€
+            tempAudioSource.clip = soundToPlay;//ìƒˆë¡œ ë§Œë“  AudioSource ì»´í¬ë„ŒíŠ¸ì— ì¬ìƒí•  ì‚¬ìš´ë“œ íŒŒì¼(soundToPlay)ì„ í• ë‹¹í•´.
+            tempAudioSource.volume = 1f;//ì†Œë¦¬ì˜ ë³¼ë¥¨ì„ ìµœëŒ€ë¡œ ì„¤ì •. ì´ë ‡ê²Œ í•˜ë©´ ë³¼ë¥¨ì´ ì¼ì •í•˜ê²Œ ìœ ì§€ë¼.
+            tempAudioSource.spatialBlend = 0;//spatialBlendì˜ 0ì´ 2D ì‚¬ìš´ë“œ, 1ì´ 3D ì‚¬ìš´ë“œ
+            //2D ì‚¬ìš´ë“œëŠ” ì¹´ë©”ë¼ì™€ì˜ ê±°ë¦¬ì— ìƒê´€ì—†ì´ í•­ìƒ ê°™ì€ í¬ê¸°ë¡œ ë“¤ë¦¬ê¸° ë•Œë¬¸ì—, ì•„ì´í…œì„ ë¨¹ì„ ë•Œë§ˆë‹¤ ì†Œë¦¬ í¬ê¸°ê°€ ë‹¬ë¼ì§€ëŠ” ë¬¸ì œë¥¼ í•´ê²°
             tempAudioSource.Play();
             
-            //¼Ò¸® Àç»ıÀÌ ³¡³­ µÚ¿¡ ÀÚµ¿À¸·Î ÆÄ±«µÇµµ·Ï
-            //¼Ò¸®°¡ Àç»ıµÇ´Â ½Ã°£¸¸Å­ ±â´Ù·È´Ù°¡, ¼Ò¸® Àç»ıÀÌ ³¡³ª¸é soundObject¸¦ ÀÚµ¿À¸·Î ÆÄ±«
+            //ì†Œë¦¬ ì¬ìƒì´ ëë‚œ ë’¤ì— ìë™ìœ¼ë¡œ íŒŒê´´ë˜ë„ë¡
+            //ì†Œë¦¬ê°€ ì¬ìƒë˜ëŠ” ì‹œê°„ë§Œí¼ ê¸°ë‹¤ë ¸ë‹¤ê°€, ì†Œë¦¬ ì¬ìƒì´ ëë‚˜ë©´ soundObjectë¥¼ ìë™ìœ¼ë¡œ íŒŒê´´
             Destroy(soundObject, soundToPlay.length);
         }
-        //¾ÆÀÌÅÛÀº ÇÑ¹ø¸¸ ¸Ô°í »ç¶óÁ®¾ßÇØ, ÀÌ°É Áö¿ì¸é ¾ÆÀÌÅÛÀ» ¸Ô¾îµµ »ç¶óÁöÁö ¾Ê¾Æ.
+        //ì•„ì´í…œì€ í•œë²ˆë§Œ ë¨¹ê³  ì‚¬ë¼ì ¸ì•¼í•´, ì´ê±¸ ì§€ìš°ë©´ ì•„ì´í…œì„ ë¨¹ì–´ë„ ì‚¬ë¼ì§€ì§€ ì•Šì•„.
         Destroy(gameObject);     
     }
     
     void UseItem(PlayerStatsEffects statsEffects, AttackController attackController, PlayerHealth playerHealth, PlayerShield playerShield)
-    //½ÇÁ¦ ¾ÆÀÌÅÛ È¿°ú¸¦ Àû¿ëÇÏ´Â ÇÔ¼ö. itemType¿¡ µû¶ó ´Ù¸¥ È¿°ú¸¦ Áà.
+    //ì‹¤ì œ ì•„ì´í…œ íš¨ê³¼ë¥¼ ì ìš©í•˜ëŠ” í•¨ìˆ˜. itemTypeì— ë”°ë¼ ë‹¤ë¥¸ íš¨ê³¼ë¥¼ ì¤˜.
     {
-        switch(itemType)//itemType(Inspector¿¡¼­ ¼³Á¤ÇÑ °ª)¿¡ µû¶ó ºĞ±âÇÑ´Ù.
+        switch(itemType)//itemType(Inspectorì—ì„œ ì„¤ì •í•œ ê°’)ì— ë”°ë¼ ë¶„ê¸°í•œë‹¤.
         {
             case ItemType.None:
-                Debug.LogWarning("¾ÆÀÌÅÛ Å¸ÀÔÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù! Inspector¸¦ È®ÀÎÇÏ¼¼¿µ!");
+                Debug.LogWarning("ì•„ì´í…œ íƒ€ì…ì´ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤! Inspectorë¥¼ í™•ì¸í•˜ì„¸ì˜!");
                 break;
 
-            case ItemType.ArrowPower://È° µ¥¹ÌÁö Áõ°¡
+            case ItemType.ArrowPower://í™œ ë°ë¯¸ì§€ ì¦ê°€
                 if(statsEffects != null)
                     statsEffects.ArrowDamageUp(EffectDamage, AttackCooldown);
                 break;
 
-            case ItemType.SwordPower://°Ë µ¥¹ÌÁö Áõ°¡
+            case ItemType.SwordPower://ê²€ ë°ë¯¸ì§€ ì¦ê°€
                 if (statsEffects != null)
                     statsEffects.SwordDamageUp(EffectDamage);
                 break;
 
-            case ItemType.Heal://Èú¸µ
+            case ItemType.Heal://íë§
                 if (statsEffects != null)
                     statsEffects.Heal(Healing);
                 break;
 
-            case ItemType.ShieldHeal://¹æ¾î·Â È¸º¹
+            case ItemType.ShieldHeal://ë°©ì–´ë ¥ íšŒë³µ
                 if(statsEffects != null)
-                    playerShield.HealShield(ShieldAmount);//PlayerShieldÀÇ HealShield ÇÔ¼ö È£Ãâ
+                    playerShield.HealShield(ShieldAmount);//PlayerShieldì˜ HealShield í•¨ìˆ˜ í˜¸ì¶œ
                 break;
 
-            case ItemType.MoveSpeed://ÀÌ¼ÓÁõ°¡
+            case ItemType.MoveSpeed://ì´ì†ì¦ê°€
                 if (statsEffects != null)
-                    statsEffects.MoveSpeedUp(Speed);//player ´ë½Å statsEffects »ç¿ë, useThis ´ë½Å effectAmount »ç¿ë
+                    statsEffects.MoveSpeedUp(Speed);//player ëŒ€ì‹  statsEffects ì‚¬ìš©, useThis ëŒ€ì‹  effectAmount ì‚¬ìš©
                 break;
         }
     }
