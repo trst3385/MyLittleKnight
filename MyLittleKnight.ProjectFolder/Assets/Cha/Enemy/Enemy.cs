@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
@@ -71,7 +71,7 @@ public class Enemy : MonoBehaviour
     {
         if (spriteRenderer == null)//SpriteRenderer가 없으면 진행 불가
         {
-            Debug.LogError($"Enemy: {gameObject.name}�� SpriteRenderer 컴포넌트가 없어! 스탯 설정에 실패했어!");
+            Debug.LogError($"Enemy: {gameObject.name}에 SpriteRenderer 컴포넌트가 없어! 스탯 설정에 실패했어!");
             return;
         }
                                                           
@@ -114,13 +114,15 @@ public class Enemy : MonoBehaviour
         }       
         spriteRenderer.color = selectedStats.SpriteColor;
     }
-    
-    void Start()
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+    }
+    void Start()
+    {
         //"Player" 태그를 가진 오브젝트로 이동(Transform을 할당)
         GameObject playerGameObject = GameObject.FindWithTag("Player");
         if(playerGameObject != null)
