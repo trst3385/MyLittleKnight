@@ -447,3 +447,18 @@ FindObjectOfType의 새로운 대체. FindFirstObjectByType<T>()나 FindAnyObjec
 
 
 
+10/28
+121번째 헌혈
+SwordWeapon 스크립트의 깨진 한글 주석 복구, CanAttack 함수 간략화
+Enemy 스크립트에 Awake() 함수 추가
+
+- SwordWeapon 스크립트에도 유니티 업데이트 후로 한글로 된 주석이 깨져서 다시 주석을 추가했어, 충분히 알고 있는것들은 가독성을 위해 삭제도 했고.
+- CanAttack()함수를 간략화해 public bool CanAttack() => Time.time >= lastSwordSkillTime + SwordSkillCooldown;로 한 줄로만 실행되게 수정했어.
+**//쿨타임이 끝났는지 여부를 반환하는 간결한 메서드(표현식 본문 메서드)**
+
+
+- Enemy 스크립트의 Start()함수에 있던 GetComponent <t>들을 Awake 함수를 만들어 이곳에 추가했어.
+- Awake가 Start보다 먼저 실행되잖아. 그래서 시작할때 가장 먼저 준비해야 하는 GetComponent들을 최우선으로 먼저 작동하게 해서 if (SpriteRenderer == null)의 Debug.LogError를 방지하게 했어.
+
+**내일은 Enemy 스크립트의 몬스터가 공격할때 주는 데미지, 플레이어가 몬스터에게 닿았을때 받는 데미지 함수를 통합하자. 지금은 두개는 거의 같은 로직이라 가독성, 스크립트 크기의 문제가 있으니까**
+
