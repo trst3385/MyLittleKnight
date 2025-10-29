@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
+using Unity.Android.Gradle;
 using Unity.Properties;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -171,54 +172,21 @@ public class Enemy : MonoBehaviour
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
     }
 
-    public void Attack()//몬스터가 플레이어에게 닿으면 공격
-    {
-        //Attack 애니메이션 이벤트가 호출될 때, 플레이어와의 거리를 다시 확인
-        float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
-
-        if (distanceToPlayer <= currentStopDistance + 1.5f)//1.5f는 몬스터 멈춤 지점 외 추가 공격 범위. 콜라이더 밖 거리에서도 데미지 가능
-        { 
-            if (playerScript == null || playerScript.IsDead)//플레이어의 스크립트가 없거나 플레이어가 죽었으면
-            {   
-                Debug.Log("플레이어가 없거나 사망하여 데미지를 줄 수 없어!");
-                return;
-            }
-
-            PlayerShield playerShield = playerScript.GetComponent<PlayerShield>();
-            if (playerShield != null)//플레이어에게 방어력이 있다면, 방어력에 먼저 데미지 적용
-            {
-                playerShield.TakeShieldDamage(currentAttackDamage);
-                Debug.Log("몬스터가 플레이어의 방어력에 " + currentAttackDamage + " 데미지를 줬어!");
-            }
-            else//방어력이 없으면 체력에 데미지 적용
-            {   
-                PlayerHealth playerhealth = playerScript.GetComponent<PlayerHealth>();
-                if (playerhealth != null)
-                {
-                    playerhealth.TakeDamage(currentAttackDamage);
-                    Debug.Log("플레이어가 " + currentAttackDamage + " 데미지를 받았다! 현재 체력: " + playerhealth.CurrentHealth);
-                }
-                else Debug.LogError("플레이어에게 PlayerHealth 스크립트가 없어!");
-            }
-        }
-        else Debug.Log("공격 범위 밖이라 데미지를 줄 수 없어!");    
-    }
-
-    void ApplyTouchDamage()//플레이어가 몬스터에게 닿으면 받은 데미지 함수
-    {
-        if (playerScript == null || playerScript.IsDead)
+    void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
+    {   //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
+        if (playerScript == null || playerScript.IsDead)//플레이어 생존/연결 체크
         {
-            Debug.Log("플레이어가 없거나 사망해서 데미지를 줄 수 없어!");
+            Debug.Log("플레이어가 없거나 사망하여 데미지를 줄 수 없어!");
             return;
         }
 
-        PlayerShield playerShield = playerScript.GetComponent<PlayerShield>();
-        if (playerShield != null)
+        PlayerShield playerShield = playerScript.GetComponent<PlayerShield>();//플레이어 방어력 (PlayerShield) 컴포넌트 확인
+        if (playerShield != null)//플레이어에게 방어력이 있다면, 방어력에 먼저 데미지 적용
         {
             playerShield.TakeShieldDamage(currentAttackDamage);
             Debug.Log("몬스터가 플레이어의 방어력에 " + currentAttackDamage + " 데미지를 줬어!");
         }
-        else
+        else//방어력이 없으면 체력(PlayerHealth) 컴포넌트 확인 후 데미지 적용
         {
             PlayerHealth playerhealth = playerScript.GetComponent<PlayerHealth>();
             if (playerhealth != null)
@@ -230,6 +198,23 @@ public class Enemy : MonoBehaviour
         }
     }
 
+
+    public void Attack()//몬스터가 플레이어에게 공격
+    {
+        //이 함수는 호출되면 다시 한번 플레이어와의 거리(+ 1.5f의 추가 공격 범위)를 체크한 후, DealDamageToPlayer()를 호출
+        //Attack 애니메이션 이벤트가 호출될 때, 플레이어와의 거리를 다시 확인
+        float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
+
+        if (distanceToPlayer <= currentStopDistance + 1.5f)//1.5f는 몬스터 멈춤 지점 외 추가 공격 범위. 콜라이더 밖 거리에서도 데미지 가능
+            DealDamageToPlayer();//통합 함수 호출
+        else Debug.Log("공격 범위 밖이라 데미지를 줄 수 없어!");
+
+    }
+
+    void ApplyTouchDamage()//플레이어가 몬스터에게 닿으면 받은 데미지 
+    {
+        DealDamageToPlayer();//통합 함수 호출
+    }
 
     //플레이어가 몬스터의 탐지/공격 범위 안에 들어왔을 때 행동을 결정하는 핵심 함수 (AI 분기점)
     private void ProcessMovementAndAttack(bool isInDetectionRange, bool isInStopDistance, bool canAttack, Vector3 playerCenterPosition)
@@ -248,9 +233,9 @@ public class Enemy : MonoBehaviour
             //쿨타임 체크 및 공격 애니메이션 미활성화 상태 확인
             if (canAttack && !animator.GetBool("Attack"))
             {
-                
-                ApplyTouchDamage();//닿았을 때 데미지를 주는 함수 호출
+                ApplyTouchDamage();//닿는 데미지 로직, 닿는 데미지가 일반 공격 쿨타임과 공유
                 lastAttackTime = Time.time;//쿨타임 시작 시간 기록
+
             }
 
             if (!animator.GetBool("Attack"))//닿았을때 데미지와 별개로아직 공격 애니메이션이 시작되지 않았다면 시작              
