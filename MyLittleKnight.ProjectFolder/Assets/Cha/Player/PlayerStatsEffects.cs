@@ -1,52 +1,52 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-//PlayerStatsEffects ½ºÅ©¸³Æ®?  ÇÃ·¹ÀÌ¾îÀÇ ´É·ÂÄ¡ °ü·Ã ·ÎÁ÷À» ÇÑµ¥ ¸ğ¾Æ °ü¸®ÇÏ´Â ¿ªÇÒÀ» ÇØ.
-//¾ÆÀÌÅÛ È¹µæ ½Ã ÇÃ·¹ÀÌ¾îÀÇ °ø°İ·Â, ÀÌµ¿ ¼Óµµ, Ã¼·Â µîÀ» º¯°æÇÏ°í, ±× º¯°æ »çÇ×À» UI¿¡ ¹İ¿µÇÏ´Â ¸ğµç ÀÏÀ» ´ã´çÇÏ´Â ¿ªÇÒÀÌ¾ß.
+//PlayerStatsEffects ìŠ¤í¬ë¦½íŠ¸?  í”Œë ˆì´ì–´ì˜ ëŠ¥ë ¥ì¹˜ ê´€ë ¨ ë¡œì§ì„ í•œë° ëª¨ì•„ ê´€ë¦¬í•˜ëŠ” ì—­í• ì„ í•´.
+//ì•„ì´í…œ íšë“ ì‹œ í”Œë ˆì´ì–´ì˜ ê³µê²©ë ¥, ì´ë™ ì†ë„, ì²´ë ¥ ë“±ì„ ë³€ê²½í•˜ê³ , ê·¸ ë³€ê²½ ì‚¬í•­ì„ UIì— ë°˜ì˜í•˜ëŠ” ëª¨ë“  ì¼ì„ ë‹´ë‹¹í•˜ëŠ” ì—­í• ì´ì•¼.
 
-//Áß¾Ó ÁıÁß °ü¸®: Item ½ºÅ©¸³Æ®¿¡¼­ Á÷Á¢ PlayerAttackÀÌ³ª PlayerHealth ½ºÅ©¸³Æ®¿¡ Á¢±ÙÇÏ´Â ´ë½Å,
-//PlayerStatsEffects ½ºÅ©¸³Æ®ÀÇ ÇÔ¼ö¸¦ È£ÃâÇØ¼­ ¸ğµç ´É·ÂÄ¡ °ü·Ã ·ÎÁ÷À» Ã³¸®ÇØ.
+//ì¤‘ì•™ ì§‘ì¤‘ ê´€ë¦¬: Item ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì§ì ‘ PlayerAttackì´ë‚˜ PlayerHealth ìŠ¤í¬ë¦½íŠ¸ì— ì ‘ê·¼í•˜ëŠ” ëŒ€ì‹ ,
+//PlayerStatsEffects ìŠ¤í¬ë¦½íŠ¸ì˜ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•´ì„œ ëª¨ë“  ëŠ¥ë ¥ì¹˜ ê´€ë ¨ ë¡œì§ì„ ì²˜ë¦¬í•´.
 
-//À¯Áöº¸¼ö ¹× È®Àå¼º: »õ·Î¿î ´É·ÂÄ¡ ¾ÆÀÌÅÛÀÌ Ãß°¡µÇ°Å³ª UI°¡ ¹Ù²î´õ¶óµµ,
-//PlayerStatsEffects ½ºÅ©¸³Æ®¸¸ ¼öÁ¤ÇÏ¸é µÇ±â ¶§¹®¿¡ ÄÚµå°¡ ÈÎ¾À ±ò²ûÇÏ°í °ü¸®°¡ ½¬¿öÁ®.
+//ìœ ì§€ë³´ìˆ˜ ë° í™•ì¥ì„±: ìƒˆë¡œìš´ ëŠ¥ë ¥ì¹˜ ì•„ì´í…œì´ ì¶”ê°€ë˜ê±°ë‚˜ UIê°€ ë°”ë€Œë”ë¼ë„,
+//PlayerStatsEffects ìŠ¤í¬ë¦½íŠ¸ë§Œ ìˆ˜ì •í•˜ë©´ ë˜ê¸° ë•Œë¬¸ì— ì½”ë“œê°€ í›¨ì”¬ ê¹”ë”í•˜ê³  ê´€ë¦¬ê°€ ì‰¬ì›Œì ¸.
 
-//´ÜÀÏ Ã¥ÀÓ ¿øÄ¢: ÀÌ ½ºÅ©¸³Æ®°¡ ´É·ÂÄ¡ °ü¸®¶ó´Â ÇÑ °¡Áö Ã¥ÀÓ¸¸ Áö±â ¶§¹®¿¡,
-//´Ù¸¥ ½ºÅ©¸³Æ®(¿¹: Player, PlayerAttack)´Â ÀÚ±â º»¿¬ÀÇ ¿ªÇÒ(ÀÌµ¿, °ø°İ)¿¡¸¸ ÁıÁßÇÒ ¼ö ÀÖ°Ô µÅ.
+//ë‹¨ì¼ ì±…ì„ ì›ì¹™: ì´ ìŠ¤í¬ë¦½íŠ¸ê°€ ëŠ¥ë ¥ì¹˜ ê´€ë¦¬ë¼ëŠ” í•œ ê°€ì§€ ì±…ì„ë§Œ ì§€ê¸° ë•Œë¬¸ì—,
+//ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸(ì˜ˆ: Player, PlayerAttack)ëŠ” ìê¸° ë³¸ì—°ì˜ ì—­í• (ì´ë™, ê³µê²©)ì—ë§Œ ì§‘ì¤‘í•  ìˆ˜ ìˆê²Œ ë¼.
 
 
 ///<summary>
-///ÇÃ·¹ÀÌ¾îÀÇ ´É·ÂÄ¡ °­È­ ¹× UI ¾÷µ¥ÀÌÆ®¸¦ °ü¸®ÇÏ´Â ½ºÅ©¸³Æ®¾ß.
+///í”Œë ˆì´ì–´ì˜ ëŠ¥ë ¥ì¹˜ ê°•í™” ë° UI ì—…ë°ì´íŠ¸ë¥¼ ê´€ë¦¬í•˜ëŠ” ìŠ¤í¬ë¦½íŠ¸ì•¼.
 ///</summary> 
-//ÀÌ·¸°Ô Áß°£¿¡ PlayerStatsEffects ½ºÅ©¸³Æ®¸¦ µÎ¸é, Item ½ºÅ©¸³Æ®´Â "³ª´Â ÀÌ·± ¾ÆÀÌÅÛÀÌ¾ß"¶ó°í¸¸ ¾Ë·ÁÁÖ°í,
-//½ÇÁ¦·Î ´É·ÂÄ¡¸¦ ¹Ù²Ù´Â º¹ÀâÇÑ ÀÏÀº PlayerStatsEffects°¡ ´ã´çÇÏ°Ô µÇ´Ï ÄÚµå°¡ ÈÎ¾À ±ò²ûÇØÁö´Â °ÅÁö. ///ÁÖ¼®ÀÌ ÀÌ·± ¿ëµµ¾ß
+//ì´ë ‡ê²Œ ì¤‘ê°„ì— PlayerStatsEffects ìŠ¤í¬ë¦½íŠ¸ë¥¼ ë‘ë©´, Item ìŠ¤í¬ë¦½íŠ¸ëŠ” "ë‚˜ëŠ” ì´ëŸ° ì•„ì´í…œì´ì•¼"ë¼ê³ ë§Œ ì•Œë ¤ì£¼ê³ ,
+//ì‹¤ì œë¡œ ëŠ¥ë ¥ì¹˜ë¥¼ ë°”ê¾¸ëŠ” ë³µì¡í•œ ì¼ì€ PlayerStatsEffectsê°€ ë‹´ë‹¹í•˜ê²Œ ë˜ë‹ˆ ì½”ë“œê°€ í›¨ì”¬ ê¹”ë”í•´ì§€ëŠ” ê±°ì§€. ///ì£¼ì„ì´ ì´ëŸ° ìš©ë„ì•¼
 
 
 public class PlayerStatsEffects : MonoBehaviour
 {
-    [Header("ÇØ´ç ÅØ½ºÆ® UI ¿¬°á")]
-    //UI ÅØ½ºÆ® ¿ÀºêÁ§Æ® ÂüÁ¶ º¯¼ö(ÀÎ½ºÆåÅÍ ¿¬°áÇØ)
+    [Header("í•´ë‹¹ í…ìŠ¤íŠ¸ UI ì—°ê²°")]
+    //UI í…ìŠ¤íŠ¸ ì˜¤ë¸Œì íŠ¸ ì°¸ì¡° ë³€ìˆ˜(ì¸ìŠ¤í™í„° ì—°ê²°í•´)
     public TextMeshProUGUI ArrowLevelText;
     public TextMeshProUGUI SwordLevelText;
     public TextMeshProUGUI MoveSpeedLevelText;
     public TextMeshProUGUI ArrowSpeedText;
 
-    [Header("ÃÖ´ëÄ¡ ·¹º§ °ü·Ã º¯¼ö")]
-    public int MaxLevel = 10;//¸ğµç ÀÌ¼Ó,È°,°Ë ·¹º§¿¡ Àû¿ëÇÒ ÃÖ´ëÄ¡
+    [Header("ìµœëŒ€ì¹˜ ë ˆë²¨ ê´€ë ¨ ë³€ìˆ˜")]
+    public int MaxLevel = 10;//ëª¨ë“  ì´ì†,í™œ,ê²€ ë ˆë²¨ì— ì ìš©í•  ìµœëŒ€ì¹˜
 
 
-    //È°°ú °ËÀÇ °­È­ È½¼ö¸¦ ÀúÀåÇÒ º¯¼ö
-    //[HideInInspector]¸¦ ½áµµ µÇÁö¸¸ ÀÌ º¯¼ö¸¦ Á÷Á¢ ¸¸Áú ÀÏÀÌ ¾øÀ¸´Ï privateÀ¸·Î Çß¾î. ¶Ç ÀÌ º¯¼ö¸¦ ¿ÜºÎ¿¡¼­µµ ¾²Áö ¾ÊÀ¸´Ï±î
+    //í™œê³¼ ê²€ì˜ ê°•í™” íšŸìˆ˜ë¥¼ ì €ì¥í•  ë³€ìˆ˜
+    //[HideInInspector]ë¥¼ ì¨ë„ ë˜ì§€ë§Œ ì´ ë³€ìˆ˜ë¥¼ ì§ì ‘ ë§Œì§ˆ ì¼ì´ ì—†ìœ¼ë‹ˆ privateìœ¼ë¡œ í–ˆì–´. ë˜ ì´ ë³€ìˆ˜ë¥¼ ì™¸ë¶€ì—ì„œë„ ì“°ì§€ ì•Šìœ¼ë‹ˆê¹Œ
     private int currentArrowLevel = 0;
     private int currentSwordLevel = 0;
     private int currentMoveSpeedLevel = 0;
 
-    private Player player;//Player ½ºÅ©¸³Æ® ÂüÁ¶ (ÀÌµ¿ ¼Óµµ Áõ°¡¸¦ À§ÇØ)
-    private PlayerHealth playerHealth;//PlayerHealth ½ºÅ©¸³Æ® ÂüÁ¶ (Ã¼·Â È¸º¹À» À§ÇØ)
-    private BowWeapon bowWeapon;//PlayerAttack ½ºÅ©¸³Æ® ÂüÁ¶ (°ø°İ·Â Áõ°¡ Àû¿ëÀ» À§ÇØ)
-    private PlayerShield playerShield;//PlayerShield ½ºÅ©¸³Æ® ÂüÁ¶ (¹æ¾î·Â È¸º¹À» À§ÇØ)
-    private SwordWeapon swordWeapon;//SwordWeapon ½ºÅ©¸³Æ® ÂüÁ¶
+    private Player player;//Player ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (ì´ë™ ì†ë„ ì¦ê°€ë¥¼ ìœ„í•´)
+    private PlayerHealth playerHealth;//PlayerHealth ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (ì²´ë ¥ íšŒë³µì„ ìœ„í•´)
+    private BowWeapon bowWeapon;//PlayerAttack ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (ê³µê²©ë ¥ ì¦ê°€ ì ìš©ì„ ìœ„í•´)
+    private PlayerShield playerShield;//PlayerShield ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (ë°©ì–´ë ¥ íšŒë³µì„ ìœ„í•´)
+    private SwordWeapon swordWeapon;//SwordWeapon ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
     void Start()
     {
@@ -56,77 +56,77 @@ public class PlayerStatsEffects : MonoBehaviour
         playerShield = GetComponent<PlayerShield>();
         swordWeapon = GetComponent<SwordWeapon>();
 
-        if (player == null) Debug.LogWarning("PlayerStatsEffects: Player ½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
-        if (playerHealth == null) Debug.LogWarning("PlayerStatsEffects: PlayerHealth ½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
-        if (bowWeapon == null) Debug.LogWarning("PlayerStatsEffects: PlayerAttack ½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
-        if (playerShield == null) Debug.LogWarning("PlayerStatsEffects: PlayerShield ½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+        if (player == null) Debug.LogWarning("PlayerStatsEffects: Player ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
+        if (playerHealth == null) Debug.LogWarning("PlayerStatsEffects: PlayerHealth ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
+        if (bowWeapon == null) Debug.LogWarning("PlayerStatsEffects: PlayerAttack ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
+        if (playerShield == null) Debug.LogWarning("PlayerStatsEffects: PlayerShield ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
 
-        //°ÔÀÓ ½ÃÀÛ ½Ã UI ÅØ½ºÆ® ÃÊ±âÈ­
+        //ê²Œì„ ì‹œì‘ ì‹œ UI í…ìŠ¤íŠ¸ ì´ˆê¸°í™”
         UpdateWeaponLevelUI();
     }
 
 
-    //¾ÆÀÌÅÛ È¿°ú ÇÔ¼öµé
+    //ì•„ì´í…œ íš¨ê³¼ í•¨ìˆ˜ë“¤
     public void ArrowDamageUp(float ItemCSdamage, float coolDown)
     {
-        if (currentArrowLevel < MaxLevel)//ÇöÀç ·¹º§ÀÌ MaxLevelº¸´Ù ÀÛÀ» ¶§¸¸ ½ÇÇà
+        if (currentArrowLevel < MaxLevel)//í˜„ì¬ ë ˆë²¨ì´ MaxLevelë³´ë‹¤ ì‘ì„ ë•Œë§Œ ì‹¤í–‰
         {
             if(bowWeapon != null)
             {
-                bowWeapon.ArrowDamage += ItemCSdamage;//PlayerAttack ½ºÅ©¸³Æ®ÀÇ È° °ø°İ·Â Áõ°¡
-                bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);//PlayerAttack ½ºÅ©¸³Æ®ÀÇ °ø°İ¼Óµµ Áõ°¡
-                currentArrowLevel++;//È° °­È­ ¼ıÀÚ Áõ°¡
-                UpdateWeaponLevelUI();//UI ¾÷µ¥ÀÌÆ®
-                Debug.Log("PlayerStatsEffects: È­»ì °ø°İ·ÂÀÌ " + ItemCSdamage + " Áõ°¡! ÇöÀç °ø°İ·Â: " + bowWeapon.ArrowDamage);
+                bowWeapon.ArrowDamage += ItemCSdamage;//PlayerAttack ìŠ¤í¬ë¦½íŠ¸ì˜ í™œ ê³µê²©ë ¥ ì¦ê°€
+                bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);//PlayerAttack ìŠ¤í¬ë¦½íŠ¸ì˜ ê³µê²©ì†ë„ ì¦ê°€
+                currentArrowLevel++;//í™œ ê°•í™” ìˆ«ì ì¦ê°€
+                UpdateWeaponLevelUI();//UI ì—…ë°ì´íŠ¸
+                Debug.Log("PlayerStatsEffects: í™”ì‚´ ê³µê²©ë ¥ì´ " + ItemCSdamage + " ì¦ê°€! í˜„ì¬ ê³µê²©ë ¥: " + bowWeapon.ArrowDamage);
             }
         }
-        else//ÃÖ´ë ·¹º§¿¡ µµ´ŞÇßÀ» ¶§ÀÇ ¸Ş½ÃÁö
-            Debug.Log("PlayerStatsEffects: È­»ì ·¹º§ÀÌ ÀÌ¹Ì ÃÖ´ëÄ¡¾ß!");
+        else//ìµœëŒ€ ë ˆë²¨ì— ë„ë‹¬í–ˆì„ ë•Œì˜ ë©”ì‹œì§€
+            Debug.Log("PlayerStatsEffects: í™”ì‚´ ë ˆë²¨ì´ ì´ë¯¸ ìµœëŒ€ì¹˜ì•¼!");
     }
 
     public void SwordDamageUp(float ItemCSdamage)
     {
-        if (currentSwordLevel < MaxLevel)//ÇöÀç ·¹º§ÀÌ MaxLevelº¸´Ù ÀÛÀ» ¶§¸¸ ½ÇÇà
+        if (currentSwordLevel < MaxLevel)//í˜„ì¬ ë ˆë²¨ì´ MaxLevelë³´ë‹¤ ì‘ì„ ë•Œë§Œ ì‹¤í–‰
         {
             if(bowWeapon != null)
             {
-                swordWeapon.SwordDamage += ItemCSdamage;//SwordWeaponÀÇ °Ë °ø°İ·Â Áõ°¡
-                swordWeapon.SwordEnergyDamage += ItemCSdamage;//SwordWeaponÀÇ °Ë±â °ø°İ·Â Áõ°¡
-                currentSwordLevel++;//°Ë °­È­ ¼ıÀÚ Áõ°¡
-                UpdateWeaponLevelUI();//UI ¾÷µ¥ÀÌÆ®
-                Debug.Log("PlayerStatsEffects: °Ë °ø°İ·ÂÀÌ " + ItemCSdamage + " Áõ°¡Çß´Ù! ÇöÀç °ø°İ·Â: " + swordWeapon.SwordDamage);
-                Debug.Log("PlayerStatsEffects: °Ë±â ¹ß»çÃ¼ °ø°İ·ÂÀÌ " + ItemCSdamage + " Áõ°¡Çß´Ù! ÇöÀç °ø°İ·Â: " + swordWeapon.SwordEnergyDamage);
+                swordWeapon.SwordDamage += ItemCSdamage;//SwordWeaponì˜ ê²€ ê³µê²©ë ¥ ì¦ê°€
+                swordWeapon.SwordEnergyDamage += ItemCSdamage;//SwordWeaponì˜ ê²€ê¸° ê³µê²©ë ¥ ì¦ê°€
+                currentSwordLevel++;//ê²€ ê°•í™” ìˆ«ì ì¦ê°€
+                UpdateWeaponLevelUI();//UI ì—…ë°ì´íŠ¸
+                Debug.Log("PlayerStatsEffects: ê²€ ê³µê²©ë ¥ì´ " + ItemCSdamage + " ì¦ê°€í–ˆë‹¤! í˜„ì¬ ê³µê²©ë ¥: " + swordWeapon.SwordDamage);
+                Debug.Log("PlayerStatsEffects: ê²€ê¸° ë°œì‚¬ì²´ ê³µê²©ë ¥ì´ " + ItemCSdamage + " ì¦ê°€í–ˆë‹¤! í˜„ì¬ ê³µê²©ë ¥: " + swordWeapon.SwordEnergyDamage);
             }
         }
-        else//ÃÖ´ë ·¹º§¿¡ µµ´ŞÇßÀ» ¶§ÀÇ ¸Ş½ÃÁö
-            Debug.Log("PlayerStatsEffects: °Ë ·¹º§ÀÌ ÀÌ¹Ì ÃÖ´ëÄ¡¾ß!");
+        else//ìµœëŒ€ ë ˆë²¨ì— ë„ë‹¬í–ˆì„ ë•Œì˜ ë©”ì‹œì§€
+            Debug.Log("PlayerStatsEffects: ê²€ ë ˆë²¨ì´ ì´ë¯¸ ìµœëŒ€ì¹˜ì•¼!");
     
     }
     public void MoveSpeedUp(float amount)
     {
-        if (currentMoveSpeedLevel < MaxLevel)//ÇöÀç ·¹º§ÀÌ MaxLevelº¸´Ù ÀÛÀ» ¶§¸¸ ½ÇÇà
+        if (currentMoveSpeedLevel < MaxLevel)//í˜„ì¬ ë ˆë²¨ì´ MaxLevelë³´ë‹¤ ì‘ì„ ë•Œë§Œ ì‹¤í–‰
         {
             if(player != null)
             {
-                player.MoveSpeed += amount;//Player ½ºÅ©¸³Æ®ÀÇ ÀÌµ¿ ¼Óµµ Áõ°¡
-                currentMoveSpeedLevel++;//ÀÌµ¿ ¼Óµµ È½¼ö Áõ°¡
-                UpdateWeaponLevelUI();//UI ¾÷µ¥ÀÌÆ®
-                                      //ÄÚµå´Â Ç×»ó À§¿¡¼­ ¾Æ·¡ ¼ø¼­·Î ½ÇÇàµÇ´Ï±î ¼ø¼­¸¦ Àß ÁöÄÑ¾ßÇØ!
-                                      //À§ÀÇ currentMoveSpeedLevel++¶û UpdateWeaponLevelUI()ÀÇ ¼ø¼­°¡ ¸¸¾à ¼­·Î ´Ş¶óÁ³À¸¸é
-                                      //°á±¹ UI´Â currentMoveSpeedLevelÀÌ 0ÀÏ ¶§ ÀÌ¹Ì ¾÷µ¥ÀÌÆ®¸¦ ¸¶ÃÆ±â ¶§¹®¿¡,
-                                      //³ªÁß¿¡ currentMoveSpeedLevelÀÌ 1·Î ¹Ù²î´õ¶óµµ UI¿¡´Â ¹İ¿µµÇÁö ¾Ê´Â °Å¾ß.
-                Debug.Log("PlayerStatsEffects: ÀÌµ¿ ¼Óµµ°¡ " + amount + " Áõ°¡Çß´Ù! ÇöÀç ¼Óµµ: " + player.MoveSpeed);
+                player.MoveSpeed += amount;//Player ìŠ¤í¬ë¦½íŠ¸ì˜ ì´ë™ ì†ë„ ì¦ê°€
+                currentMoveSpeedLevel++;//ì´ë™ ì†ë„ íšŸìˆ˜ ì¦ê°€
+                UpdateWeaponLevelUI();//UI ì—…ë°ì´íŠ¸
+                                      //ì½”ë“œëŠ” í•­ìƒ ìœ„ì—ì„œ ì•„ë˜ ìˆœì„œë¡œ ì‹¤í–‰ë˜ë‹ˆê¹Œ ìˆœì„œë¥¼ ì˜ ì§€ì¼œì•¼í•´!
+                                      //ìœ„ì˜ currentMoveSpeedLevel++ë‘ UpdateWeaponLevelUI()ì˜ ìˆœì„œê°€ ë§Œì•½ ì„œë¡œ ë‹¬ë¼ì¡Œìœ¼ë©´
+                                      //ê²°êµ­ UIëŠ” currentMoveSpeedLevelì´ 0ì¼ ë•Œ ì´ë¯¸ ì—…ë°ì´íŠ¸ë¥¼ ë§ˆì³¤ê¸° ë•Œë¬¸ì—,
+                                      //ë‚˜ì¤‘ì— currentMoveSpeedLevelì´ 1ë¡œ ë°”ë€Œë”ë¼ë„ UIì—ëŠ” ë°˜ì˜ë˜ì§€ ì•ŠëŠ” ê±°ì•¼.
+                Debug.Log("PlayerStatsEffects: ì´ë™ ì†ë„ê°€ " + amount + " ì¦ê°€í–ˆë‹¤! í˜„ì¬ ì†ë„: " + player.MoveSpeed);
             }
         }
-        else// ÃÖ´ë ·¹º§¿¡ µµ´ŞÇÏ¸é °æ°í ¸Ş½ÃÁö Ãâ·Â
-            Debug.Log("PlayerStatsEffects: ÀÌµ¿¼Óµµ ·¹º§ÀÌ ÀÌ¹Ì ÃÖ´ëÄ¡¾ß!");
+        else// ìµœëŒ€ ë ˆë²¨ì— ë„ë‹¬í•˜ë©´ ê²½ê³  ë©”ì‹œì§€ ì¶œë ¥
+            Debug.Log("PlayerStatsEffects: ì´ë™ì†ë„ ë ˆë²¨ì´ ì´ë¯¸ ìµœëŒ€ì¹˜ì•¼!");
     }
     public void Heal(float amount)
     {
         if (playerHealth != null)
         {
-            playerHealth.Heal(amount);//PlayerHealth ½ºÅ©¸³Æ®ÀÇ Heal ÇÔ¼ö¸¦ È£Ãâ!
-            Debug.Log("PlayerStatsEffects: Ã¼·ÂÀÌ " + amount + " È¸º¹µÇ¾ú´Ù! ÇöÀç Ã¼·Â: " + playerHealth.CurrentHealth);
+            playerHealth.Heal(amount);//PlayerHealth ìŠ¤í¬ë¦½íŠ¸ì˜ Heal í•¨ìˆ˜ë¥¼ í˜¸ì¶œ!
+            Debug.Log("PlayerStatsEffects: ì²´ë ¥ì´ " + amount + " íšŒë³µë˜ì—ˆë‹¤! í˜„ì¬ ì²´ë ¥: " + playerHealth.CurrentHealth);
         }
     }
 
@@ -134,62 +134,46 @@ public class PlayerStatsEffects : MonoBehaviour
     {
         if (playerShield != null)
         {
-            playerShield.HealShield(amount);//PlayerShield ½ºÅ©¸³Æ®ÀÇ HealShield ÇÔ¼ö È£Ãâ
-            Debug.Log("PlayerStatsEffects: ¹æ¾î·ÂÀÌ " + amount + " È¸º¹µÇ¾ú´Ù! ÇöÀç ¹æ¾î·Â: " + playerShield.CurrentShield);
+            playerShield.HealShield(amount);//PlayerShield ìŠ¤í¬ë¦½íŠ¸ì˜ HealShield í•¨ìˆ˜ í˜¸ì¶œ
+            Debug.Log("PlayerStatsEffects: ë°©ì–´ë ¥ì´ " + amount + " íšŒë³µë˜ì—ˆë‹¤! í˜„ì¬ ë°©ì–´ë ¥: " + playerShield.CurrentShield);
         }
     }
 
-    void UpdateWeaponLevelUI()//¹«±â °­È­ È½¼ö UI¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    void UpdateWeaponLevelUI()//ë¬´ê¸° ê°•í™” íšŸìˆ˜ UIë¥¼ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     {
-        //if¹®ÀÇ != nullÀÌ¶õ? º¯¼ö°¡ ¾Æ¹«°Íµµ ÂüÁ¶ÇÏ°í ÀÖÁö ¾ÊÀ» ¶§(null)°¡ ¾Æ´Ò ¶§ Áï,
-        //¹º°¡ Á¦´ë·Î ¿¬°áµÇ¾î ÀÖÀ» ¶§ ¶ó´Â ÀÇ¹Ì¾ß.
-
-        //if¹® ¾È¿¡ ? ÀÌ¶û : ´Â ¹»±î? ÀÌ°Ç »ïÇ× ¿¬»êÀÚ(Ternary Operator) ¶ó°í ÇØ.
-        //³»°¡ if¹®À» Âª°Ô ÇÒ·Á°í ÇÑ ÁÙ¸¸ ÀÖÀ¸¸é Áß°ıÈ£ {}¸¦ ¾È¾²Àİ¾Æ. »ïÇ× ¿¬»êÀÚµµ »ç¿ëÇÏ¸é if-else¹®À» ÇÑ ÁÙ·Î ¹Ù²Ü ¼ö ÀÖ¾î.
-        //? ÂüÀÏ ¶§ ½ÇÇàÇÒ ÄÚµå
-        //: °ÅÁşÀÏ ¶§ ½ÇÇàÇÒ ÄÚµå;
-
-        //ÇÑ ÁÙÀÌ¶ó »ïÇ× ¿¬»êÀÚ¸¦ ¾²´Â°Ô ÁÁ¾Æ. if¹®Àº {}¸¦ ½á¾ß °¡µ¶¼ºµµ ÁÁ°í ±× ¾È¿¡ ¿©·¯ ÄÚµå¸¦ ³ÖÀ» ¼ö ÀÖÀ¸´Ï±î.
-
-        //ÀÏ¹İ if¹®ÀÌ¾úÀ¸¸é ÀÌ·± ½ÄÀÌ¾ß. 
-        //if (currentArrowLevel >= MaxLevel)
-        //    ArrowLevelText.text = "B Level: Max";
-        //else
-        //    ArrowLevelText.text = $"B Level: {currentArrowLevel}";
-
-        if (ArrowLevelText != null)//È° °ø°İÀÌ °­È­ µÆ´Ù°í ArrowLevelText UI¿¡ º¸³»
+        if (ArrowLevelText != null)//í™œ ê³µê²©ì´ ê°•í™” ëë‹¤ê³  ArrowLevelText UIì— ë³´ë‚´
         {
-            ArrowLevelText.text = (currentArrowLevel >= MaxLevel)//°­È­ ¼ıÀÚ°¡ MaxLevelº¸´Ù ³·À¸¸é
+            ArrowLevelText.text = (currentArrowLevel >= MaxLevel)//ê°•í™” ìˆ«ìê°€ MaxLevelë³´ë‹¤ ë‚®ìœ¼ë©´
             ? "B Level: Max"
-            : $"B Level: {currentArrowLevel}";//MaxLevel°ú °°´Ù¸é  
+            : $"B Level: {currentArrowLevel}";//MaxLevelê³¼ ê°™ë‹¤ë©´  
         }
-        else Debug.LogWarning("PlayerStatsEffects: ArrowLevelText UI°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");
+        else Debug.LogWarning("PlayerStatsEffects: ArrowLevelText UIê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");
 
-        if (ArrowSpeedText != null)//È° °ø°İ ¼Óµµ UI ¾÷µ¥ÀÌÆ®
+        if (ArrowSpeedText != null)//í™œ ê³µê²© ì†ë„ UI ì—…ë°ì´íŠ¸
         {
             ArrowSpeedText.text = (currentArrowLevel >= 5)
             ? "SPD: Max"
             : $"SPD: {currentArrowLevel}";
 
-            if (currentArrowLevel >= 5) Debug.Log("ÃÖ°í ¼Óµµ!");//Debug.Log´Â µû·Î if¹®À»...
+            if (currentArrowLevel >= 5) Debug.Log("ìµœê³  ì†ë„!");//Debug.LogëŠ” ë”°ë¡œ ifë¬¸ì„...
         }
 
-        if (SwordLevelText != null)//°Ë °ø°İÀÌ °­È­µÆ´Ù°í SwordLevelText UI¿¡ º¸³» 
+        if (SwordLevelText != null)//ê²€ ê³µê²©ì´ ê°•í™”ëë‹¤ê³  SwordLevelText UIì— ë³´ë‚´ 
         {
             SwordLevelText.text = (currentSwordLevel >= MaxLevel)
             ? "S Level: Max"
             : $"S Level: {currentSwordLevel}";
         }
-        else Debug.LogWarning("PlayerStatsEffects: SwordLevelText UI°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");
+        else Debug.LogWarning("PlayerStatsEffects: SwordLevelText UIê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");
         
 
-        if(MoveSpeedLevelText != null)//ÀÌµ¿¼Óµµ°¡ °­È­µÆ´Ù°í MoveSpeedLevelText UI¿¡ º¸³»
+        if(MoveSpeedLevelText != null)//ì´ë™ì†ë„ê°€ ê°•í™”ëë‹¤ê³  MoveSpeedLevelText UIì— ë³´ë‚´
         {
             MoveSpeedLevelText.text = (currentMoveSpeedLevel >= MaxLevel)
             ? "M Level: Max"
             : $"M Level: {currentMoveSpeedLevel}";
         }
-        else Debug.LogWarning("PlayerStatsEffects: MoveSpeedLevelText UI°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");      
+        else Debug.LogWarning("PlayerStatsEffects: MoveSpeedLevelText UIê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");      
     }
 }
 
