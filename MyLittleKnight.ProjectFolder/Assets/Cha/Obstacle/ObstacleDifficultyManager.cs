@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-using UnityEngine.UIElements;
-#if UNITY_EDITOR//UnityEditor 네임스페이스를 사용하고 있는 스크립트가 빌드에 포함될 때 발생해.
-using static UnityEditor.ShaderData;
-#endif//UnityEditor는 에디터에서만 작동하는 기능이라, 실제 게임 빌드에는 포함되면 안 되거든.
-//#if UNITY_EDITOR 사용해 해당 코드를 다음과 같이 전처리기 지시문으로 감싸줘.
 using TMPro;//TextMeshPro UI랑 같이 써야 하니까 추가하자구!
 
 public class ObstacleDifficultyManager : MonoBehaviour
@@ -20,15 +12,18 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float MaxBoltSpeed = 20f;//최대 발사체 속도
     public float SpeedIncreaseRate = 0.5f;//속도 증가량. 발사체의 속도가 한 번 빨라질 때마다 몇씩 증가할지 정하는 값
     public float SpeedIncreaseInterval = 20f;//속도 증가 간격. n 초마다 발사체의 속도를 한 단계씩 올릴지 정하는 시간 간격.
+   
+    [Header("발사체 데미지 조절")]
+    public int InitialDamage = 5;//초기 발사체 데미지
+    public int DamageIncrease = 2;//데미지 증가량. 발사체의 데미지가 한 번 강해질 때마다 몇씩 증가할지 정하는 값
+    public float DamageIncreaseInterval = 20f;//데미지 증가 간격. 몇 초마다 발사체의 데미지를 한 단계씩 올릴지 정하는 시간 간격. 20초로 설정했으니, 20초마다 damageIncrease만큼 데미지가 증가하겠지.
+
     [Header("발사체 생성 주기 조절")]
     public float InitialSpawnInterval = 3f;//초기 생성 주기. 게임이 시작될 때 발사체가 생성되는 기본 시간 간격.
     public float MinSpawnInterval = 1f;//최대 생성 주기. 난이도가 계속 올라가도 이 시간보다 더 짧아지지는 않아. 최대 생성되는 시간 간격.
     public float IntervalDecreaseRate = 0.5f;//주기 감소량. 발사체 생성 주기가 한 번 줄어들 때마다 몇 초씩 줄일지 정하는 값이야.
     public float IntervalDecreaseInterval = 20f;//주기 감소 간격. 몇 초마다 생성 주기를 한 단계씩 줄일지 정하는 시간 간격. 10초로 설정했으니, 10초마다 intervalDecreaseRate만큼 생성 주기가 짧아지겠지.
-    [Header("발사체 데미지 조절")]
-    public int InitialDamage = 5;//초기 발사체 데미지
-    public int DamageIncrease = 2;//데미지 증가량. 발사체의 데미지가 한 번 강해질 때마다 몇씩 증가할지 정하는 값
-    public float DamageIncreaseInterval = 20f;//데미지 증가 간격. 몇 초마다 발사체의 데미지를 한 단계씩 올릴지 정하는 시간 간격. 20초로 설정했으니, 20초마다 damageIncrease만큼 데미지가 증가하겠지.
+
     [Header("UI 알림")]
     public TextMeshProUGUI ObstacleLevelText;//UI 텍스트를 담을 변수
 
@@ -45,7 +40,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
     // 어디서든 이 스크립트에 접근할 수 있게 해주는 '싱글톤' 패턴
     public static ObstacleDifficultyManager Instance { get; private set; }
 
-    void Awake()//Start함수보다 먼저 실행
+    void Awake()
     {//함수 안에 있는 if문은 딱 한 가지 목적을 위해 존재해. 이 스크립트를 가진 오브젝트가 게임에 딱 하나만 존재하도록 보장하는 것
         if (Instance != null && Instance != this)//만약 이미 '유일한 인스턴스'가 존재하고, 그게 지금 나 자신이 아니라면
             Destroy(gameObject);//이 코드가 "중복되는 오브젝트를 파괴하는 역할"을 해.
@@ -66,6 +61,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
         //게임 시작 시 UI 텍스트에 초기 레벨을 표시
         UpdateLevelText();
+        Debug.Log($"장애물 시스템 초기화 완료! 현재 레벨: {currentLevel}");
     }
 
     void Update()
@@ -125,7 +121,6 @@ public class ObstacleDifficultyManager : MonoBehaviour
         if (ObstacleLevelText != null)
         {
             ObstacleLevelText.text = $"장애물 Lv.{currentLevel}";
-            Debug.Log($"발사체 장애물이 강화됐어!");
         }
     }
 
