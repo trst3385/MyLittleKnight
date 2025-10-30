@@ -488,7 +488,6 @@ BowWeapon 쿨타임 로직 명확화 및 주석 추가
 10/30
 PlayerShield 스크립트 개선 및 안정성 강화
 PlayerHealth, SwordEnergy 스크립트의 인스펙터에서 보여지는 주석 수정
-SwordEnergy 스크립트의 불필요한 로직 삭제
 ObstacleDifficultyManager 스크립트 로직 및 코드 정리
 
 - PlayerShield 스크립트의 Awake() 함수 내부에 playerHealth 참조가 누락되었을 경우를 대비한 Null 참조 방지 안전장치를 추가.
@@ -500,15 +499,20 @@ ObstacleDifficultyManager 스크립트 로직 및 코드 정리
 
 
 - PlayerHealth, SwordEnergy 스크립트 내부의 주석은 다시 수정했지만 인스펙터에선 아직 한글이 깨져 있었어.
-- 인코딩 문제(EUC-KR → UTF-8) 를 확인하고, /Visual Studio)의 '인코딩하여 저장' 기능을 사용하여 문제를 완전히 해결했어. (파일 자체의 깨짐이 아닌, 인코딩 읽기 문제였음을 확인)
+- 인코딩 문제(EUC-KR → UTF-8) 를 확인하고, Visual Studio의 '인코딩하여 저장' 기능을 사용하여 문제를 완전히 해결했어. (파일 자체의 깨짐이 아닌, 인코딩 읽기 문제였음을 확인)
 
 
+- ObstacleDifficultyManager 스크립트의 Start() 함수에서 난이도가 실제 증가되지 않았는데 "강화됨" 로그가 출력되는 문제를 발견하고 수정.
+- Start() 함수 내 Debug.Log 메시지를 "시스템 초기화 완료"로 수정하여 실제 난이도 증가 시점(Update() 함수)의 로그와 분리. 
+- 실제로 시작하자마자 강화되는게 아닌 시작하자마자 이 강화됐을때 떠야할 디버그 로그가 뜬거 뿐이야.
+- UpdateLevelText() 함수에서 불필요한 Debug.Log를 삭제해, 해당 함수가 오직 UI 텍스트 업데이트 역할만 수행하도록 로직을 수정.
+- 스크립트 상단의 불필요한 using 네임스페이스(System.IO, System.Threading 등) 및 사용하지 않는 전처리기(UNITY_EDITOR)를 정리하여 코드를 깔끔하게 최적화했어.
 
-DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+**DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
 UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
-ObstacleDifficultyManager:Awake () (at Assets/Cha/Obstacle/ObstacleDifficultyManager.cs:50)
+ObstacleDifficultyManager:Awake () (at Assets/Cha/Obstacle/ObstacleDifficultyManager.cs:50)**
 
-DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+**DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
 UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
-EnemyDifficulty:Awake () (at Assets/Cha/Enemy/EnemyDifficulty.cs:76)
-
+EnemyDifficulty:Awake () (at Assets/Cha/Enemy/EnemyDifficulty.cs:76)**
+**내일은 게임이 시작되면 뜨는 이 문제를 해결해보자**
