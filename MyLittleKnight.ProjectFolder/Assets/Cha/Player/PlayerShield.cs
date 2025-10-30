@@ -1,83 +1,78 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;//UI »ç¿ëÀ» À§ÇØ Ãß°¡
+using UnityEngine.UI;//UI ì‚¬ìš©ì„ ìœ„í•´ ì¶”ê°€
 
 public class PlayerShield : MonoBehaviour
 {
-    [Header("¹æ¾î·Â °ü·Ã º¯¼ö")]
-    public float MaxShield = 20f;//ÃÖ´ë ¹æ¾î·Â(ÀÎ½ºÆåÅÍ·Î º¯°æ °¡´É)
-    public float CurrentShield;//ÇöÀç ¹æ¾î·Â
-    public Slider ShieldBar;//¹æ¾î·Â UI ½½¶óÀÌ´õ
+    [Header("ë°©ì–´ë ¥ ê´€ë ¨ ë³€ìˆ˜")]
+    public float MaxShield = 20f;//ìµœëŒ€ ë°©ì–´ë ¥(ì¸ìŠ¤í™í„°ë¡œ ë³€ê²½ ê°€ëŠ¥)
+    public float CurrentShield;//í˜„ì¬ ë°©ì–´ë ¥
+    public Slider ShieldBar;//ë°©ì–´ë ¥ UI ìŠ¬ë¼ì´ë”
 
-    [Header("½ºÅ©¸³Æ® ÂüÁ¶")]
-    [SerializeField] private PlayerHealth playerHealth;//PlayerHealth ½ºÅ©¸³Æ® ÂüÁ¶
-    //[SerializeField]´Â private º¯¼ö¸¦ À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ¿¡ º¸ÀÌ°Ô ¸¸µé¾îÁÖ´Â ±â´ÉÀ» ÇØ.
-    //¿ø·¡ private º¯¼ö´Â ÀÎ½ºÆåÅÍ¿¡ º¸ÀÌÁö ¾ÊÀİ¾Æ? ÇÏÁö¸¸ °¡²ûÀº ¿ÜºÎ¿¡¼­´Â Á¢±Ù ¸øÇÏ°Ô ÇÏ¸é¼­, ÀÎ½ºÆåÅÍ¿¡¼­¸¸ °ªÀ» ¹Ù²Ù°í ½ÍÀ» ¶§°¡ ÀÖÁö.
-    //[SerializeField]¸¦ º¯¼ö À§¿¡ ºÙ¿©ÁÖ¸é º¯¼ö´Â ¿©ÀüÈ÷ privateÀÌÁö¸¸ ÀÎ½ºÆåÅÍ¿¡´Â ³ªÅ¸³ª
-    //Áö±İ ÀÌ°Ç UI¸¦ µå·¡±×ÇØ¼­³ª Á÷Á¢ ³Ö¾î¼­ 
+    [Header("ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°")]
+    [SerializeField] private PlayerHealth playerHealth;//]SerializeField]ëŠ” private ë³€ìˆ˜ë„ ì¸ìŠ¤í™í„°ì— ë…¸ì¶œë˜ê²Œ í•˜ëŠ”ê±°ì•¼
 
-    void Start()
-    {
-
-    }
-
-    //Awake()
-    //½ºÅ©¸³Æ®°¡ ·ÎµåµÉ ¶§ ¹Ù·Î ÇÑ ¹ø ½ÇÇàµÅ.
-    //°ÔÀÓ ¿ÀºêÁ§Æ®°¡ ºñÈ°¼ºÈ­ »óÅÂ¶óµµ È£ÃâµÅ.
-    //ÁÖ·Î ÀÚ½ÅÀÇ ÃÊ±âÈ­¿¡ »ç¿ëµÅ.´Ù¸¥ ½ºÅ©¸³Æ®°¡ ·ÎµåµÇ¾ú´ÂÁö º¸ÀåµÇÁö ¾Ê¾Æ¼­ ´Ù¸¥ ½ºÅ©¸³Æ®¸¦ ÂüÁ¶ÇÏ·Á ÇÒ ¶§ ¹®Á¦°¡ »ı±æ ¼ö ÀÖÁö.
+    // Awake()
+    // Start()ë³´ë‹¤ ë¨¼ì €, ìŠ¤í¬ë¦½íŠ¸ê°€ ë¡œë“œë  ë•Œ í•œ ë²ˆ ì‹¤í–‰ë¼.
+    // ì£¼ë¡œ ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°(GetComponent)ë‚˜ ì´ˆê¸° ìƒíƒœ ì„¤ì •ì„ ì—¬ê¸°ì— ì ëŠ” ê²Œ ì¼ë°˜ì ì´ì•¼.
 
     //Start()
-    //Ã¹ ¹øÂ° ÇÁ·¹ÀÓÀÌ ¾÷µ¥ÀÌÆ®µÇ±â Á÷Àü¿¡ ÇÑ ¹ø ½ÇÇàµÅ.
-    //Awake()°¡ ½ÇÇàµÈ ÀÌÈÄ¿¡ È£ÃâµÅ.
-    //¸ğµç ½ºÅ©¸³Æ®ÀÇ Awake() °¡ ÀÌ¹Ì È£ÃâµÈ »óÅÂ¶ó, ´Ù¸¥ ½ºÅ©¸³Æ®¸¦ ÂüÁ¶ÇÒ ¶§ ¾ÈÀüÇØ.
+    //ì²« ë²ˆì§¸ í”„ë ˆì„ì´ ì—…ë°ì´íŠ¸ë˜ê¸° ì§ì „ì— í•œ ë²ˆ ì‹¤í–‰ë¼.
+    //Awake()ê°€ ì‹¤í–‰ëœ ì´í›„ì— í˜¸ì¶œë¼.
+    //ëª¨ë“  ìŠ¤í¬ë¦½íŠ¸ì˜ Awake() ê°€ ì´ë¯¸ í˜¸ì¶œëœ ìƒíƒœë¼, ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¸ì¡°í•  ë•Œ ì•ˆì „í•´.
 
-    //PlayerShield ½ºÅ©¸³Æ®¿¡¼­ PlayerHealth ½ºÅ©¸³Æ®¸¦ ÂüÁ¶ÇÏ·Á ÇÒ ¶§, Start() ÇÔ¼ö¸¦ »ç¿ëÇÏ¸é,
-    //PlayerHealth ½ºÅ©¸³Æ®°¡ ÀÌ¹Ì ·ÎµåµÈ »óÅÂ°¡ º¸ÀåµÇ´Ï ¿¡·¯ ¹ß»ı È®·üÀÌ ÈÎ¾À ÁÙ¾îµé¾î. ¾ÆÁÖ ÁÁÀº ½À°üÀÌ¾ß!
-
-
+    //enabledëŠ” ìš°ë¦¬ê°€ ë”°ë¡œ ì„ ì–¸í•˜ì§€ ì•Šì•˜ëŠ”ë°ë„ ì‚¬ìš©í•  ìˆ˜ ìˆëŠ”, ìœ ë‹ˆí‹°ì˜ MonoBehaviour í´ë˜ìŠ¤ê°€ ê¸°ë³¸ìœ¼ë¡œ ê°€ì§€ê³  ìˆëŠ” ë‚´ì¥ ë³€ìˆ˜
     void Awake()
     {
-        if (playerHealth == null)            
-        CurrentShield = 0;//½ÃÀÛ ½Ã ¹æ¾î·Â 0À¸·Î ÃÊ±âÈ­
+        CurrentShield = 0;//ì‹œì‘ ì‹œ ë°©ì–´ë ¥ 0ìœ¼ë¡œ ì´ˆê¸°í™”
+
+        if (playerHealth == null)//ë“œë˜ê·¸ì•¤ ë“œë¡­ìœ¼ë¡œ ì—°ê²°ëœ playerHealth ìŠ¤í¬ë¦½íŠ¸
+        {
+            Debug.LogWarning("PlayerShield: playerHealth ìŠ¤í¬ë¦½íŠ¸ê°€ ì¸ìŠ¤í™í„°ì— ì—°ê²°ë˜ì§€ ì•Šì•˜ì–´!");
+            //enabled = false; : MonoBehaviourê°€ ê¸°ë³¸ìœ¼ë¡œ ê°€ì§€ê³  ìˆëŠ” ë‚´ì¥ ë³€ìˆ˜ì•¼
+            //ìŠ¤í¬ë¦½íŠ¸ë¥¼ ê°•ì œë¡œ 'ë¹„í™œì„±í™”(ì •ì§€)' ì‹œì¼œì„œ
+            //ì´í›„ Update()ë‚˜ ë‹¤ë¥¸ í•¨ìˆ˜ì—ì„œ NullReferenceException ì—ëŸ¬ê°€ ë‚˜ëŠ” ê²ƒì„ ë§‰ì•„ì¤˜
+            enabled = false;
+            return;//ì—¬ê¸°ì„œ í•¨ìˆ˜ë¥¼ ëë‚´ì„œ, ë°‘ì˜ UpdateShieldUI()ê°€ í˜¸ì¶œë˜ì§€ ì•Šê²Œ í•¨
+        }    
         UpdateShieldUI();
     }
 
-    public void TakeShieldDamage(float damage)//ÇÇÇØ¸¦ ¹Ş¾Æ ¹æ¾î·Â °¨¼Ò¸¦ ¿äÃ»ÇÒ ¶§
+    public void TakeShieldDamage(float damage)//í”¼í•´ë¥¼ ë°›ì•„ ë°©ì–´ë ¥ ê°ì†Œë¥¼ ìš”ì²­í•  ë•Œ
     {
-        if(CurrentShield > 0)//¹æ¾î·ÂÀÌ 0 ÀÌ»óÀÌ¸é ÇÇÇØ´Â ¹æ¾î·ÂÀ» °¨¼Ò
+        if(CurrentShield > 0)//ë°©ì–´ë ¥ì´ 0 ì´ìƒì´ë©´ í”¼í•´ëŠ” ë°©ì–´ë ¥ì„ ê°ì†Œ
         {
             CurrentShield -= damage;
-            if(CurrentShield < 0)//¹æ¾î·ÂÀÌ 0ÀÌÇÏ¸é
+            if(CurrentShield < 0)//ë°©ì–´ë ¥ì´ 0ì´í•˜ë©´
             {
-                float remainingDamage = -CurrentShield;//³²Àº µ¥¹ÌÁö °è»ê
-                CurrentShield = 0;//¹æ¾î·Â 0À¸·Î ¼³Á¤
-                playerHealth.TakeDamage(remainingDamage);//³²Àº µ¥¹ÌÁö´Â Ã¼·Â¿¡ Àû¿ë
-                Debug.Log("¹æ¾î·Â 0! ³²Àº µ¥¹ÌÁö " + remainingDamage + "°¡ Ã¼·Â¿¡ Àû¿ëµÅ!");
+                float remainingDamage = -CurrentShield;//ë‚¨ì€ ë°ë¯¸ì§€ ê³„ì‚°
+                CurrentShield = 0;//ë°©ì–´ë ¥ 0ìœ¼ë¡œ ì„¤ì •
+                playerHealth.TakeDamage(remainingDamage);//ë‚¨ì€ ë°ë¯¸ì§€ëŠ” ì²´ë ¥ì— ì ìš©
+                Debug.Log("ë°©ì–´ë ¥ 0! ë‚¨ì€ ë°ë¯¸ì§€ " + remainingDamage + "ê°€ ì²´ë ¥ì— ì ìš©ë¼!");
             }
-            else Debug.Log("¹æ¾î·Â " + damage + " °¨¼Ò! ÇöÀç ¹æ¾î·Â: " + CurrentShield);                
+            else Debug.Log("ë°©ì–´ë ¥ " + damage + " ê°ì†Œ! í˜„ì¬ ë°©ì–´ë ¥: " + CurrentShield);                
         }
-        else//¹æ¾î·ÂÀÌ ÀÌ¹Ì 0ÀÌ¸é ¹Ù·Î Ã¼·Â¿¡ µ¥¹ÌÁö Àû¿ë
+        else//ë°©ì–´ë ¥ì´ ì´ë¯¸ 0ì´ë©´ ë°”ë¡œ ì²´ë ¥ì— ë°ë¯¸ì§€ ì ìš©
         {
             playerHealth.TakeDamage(damage);
-            Debug.Log("Ã¼·Â " + damage + " °¨¼Ò!");
+            Debug.Log("ì²´ë ¥ " + damage + " ê°ì†Œ!");
         }
         UpdateShieldUI();
     }
 
-    
-    public void HealShield(float amount)//¾ÆÀÌÅÛ µîÀ¸·Î ¹æ¾î·Â È¸º¹ ½Ã È£Ãâ
+    public void HealShield(float amount)//ì•„ì´í…œ ë“±ìœ¼ë¡œ ë°©ì–´ë ¥ íšŒë³µ ì‹œ í˜¸ì¶œ
     {
-        CurrentShield = Mathf.Min(CurrentShield + amount, MaxShield); // ÃÖ´ë ¹æ¾î·Â ÃÊ°ú ¹æÁö
+        CurrentShield = Mathf.Min(CurrentShield + amount, MaxShield); // ìµœëŒ€ ë°©ì–´ë ¥ ì´ˆê³¼ ë°©ì§€
         UpdateShieldUI();
     }
 
-    void UpdateShieldUI()//¹æ¾î·Â UI ¾÷µ¥ÀÌÆ®
+    void UpdateShieldUI()//ë°©ì–´ë ¥ UI ì—…ë°ì´íŠ¸
     {
-        if(ShieldBar != null)//shieldBar º¯¼ö¿¡ ½½¶óÀÌ´õ UI°¡ ¿¬°áµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+        if(ShieldBar != null)//shieldBar ë³€ìˆ˜ì— ìŠ¬ë¼ì´ë” UIê°€ ì—°ê²°ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸
         {
-            ShieldBar.maxValue = MaxShield;//½½¶óÀÌ´õÀÇ ÃÖ´ë °ªÀ» ÇöÀç ¸ó½ºÅÍÀÇ ÃÖ´ë ¹æ¾î·ÂÀ¸·Î ¼³Á¤
-            ShieldBar.value = CurrentShield;//½½¶óÀÌ´õÀÇ ÇöÀç °ªÀ» ÇöÀç ¹æ¾î·ÂÀ¸·Î ¼³Á¤
+            ShieldBar.maxValue = MaxShield;//ìŠ¬ë¼ì´ë”ì˜ ìµœëŒ€ ê°’ì„ í”Œë ˆì´ì–´ì˜ ìµœëŒ€ ë°©ì–´ë ¥ìœ¼ë¡œ ì„¤ì •
+            ShieldBar.value = CurrentShield;//ìŠ¬ë¼ì´ë”ì˜ í˜„ì¬ ê°’ì„ í˜„ì¬ ë°©ì–´ë ¥ìœ¼ë¡œ ì„¤ì •
         }
 
     }
