@@ -483,3 +483,32 @@ BowWeapon 쿨타임 로직 명확화 및 주석 추가
 - BowWeapon 스크립트도 한글이 깨져서 다시 주석을 적었어.
 - Git의 History에서 유니티 업데이트 전의 스크립가 있어서 다행이 이걸 보고 다시 주석을 수정해줬지.
 
+
+
+10/30
+PlayerShield 스크립트 개선 및 안정성 강화
+PlayerHealth, SwordEnergy 스크립트의 인스펙터에서 보여지는 주석 수정
+SwordEnergy 스크립트의 불필요한 로직 삭제
+ObstacleDifficultyManager 스크립트 로직 및 코드 정리
+
+- PlayerShield 스크립트의 Awake() 함수 내부에 playerHealth 참조가 누락되었을 경우를 대비한 Null 참조 방지 안전장치를 추가.
+   1. 안전장치 발동 시 enabled = false를 통해 스크립트 작동을 강제로 중지하고 에러를 출력하도록 로직을 확정
+   2. enabled란? MonoBehaviour 클래스에 정의된 불리언(Boolean) 타입의 속성이야. 값은 true 또는 false 둘 중 하나를 가질 수 있어,
+  해당 스크립트의 "활성/비활성" 상태를 결정해서, 유니티가 이 스크립트의 메인 함수들(Update, FixedUpdate, LateUpdate, OnGUI, 코루틴 등)을 실행할지 말지를 제어해
+**중요: Awake()와 Start() 함수는 enabled가 false여도 무조건 한 번 실행돼. 이 함수들은 스크립트를 초기화하는 역할이기 때문이지.**
+- 사용하지 않는 Start() 함수 삭제.
+
+
+- PlayerHealth, SwordEnergy 스크립트 내부의 주석은 다시 수정했지만 인스펙터에선 아직 한글이 깨져 있었어.
+- 인코딩 문제(EUC-KR → UTF-8) 를 확인하고, /Visual Studio)의 '인코딩하여 저장' 기능을 사용하여 문제를 완전히 해결했어. (파일 자체의 깨짐이 아닌, 인코딩 읽기 문제였음을 확인)
+
+
+
+DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
+ObstacleDifficultyManager:Awake () (at Assets/Cha/Obstacle/ObstacleDifficultyManager.cs:50)
+
+DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
+EnemyDifficulty:Awake () (at Assets/Cha/Enemy/EnemyDifficulty.cs:76)
+

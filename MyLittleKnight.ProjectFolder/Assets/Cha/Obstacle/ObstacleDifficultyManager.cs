@@ -71,9 +71,6 @@ public class ObstacleDifficultyManager : MonoBehaviour
         timeSinceLastIntervalDecrease += Time.deltaTime;
         timeSinceLastDamageIncrease += Time.deltaTime;
 
-        //if문은 특정 조건이 충족될 때만 안에 있는 코드를 실행하게 하는거잖아?
-        //n초가 지났다면 이 조건은 '참(true)' 이 돼.
-
         //속도 증가
         if (timeSinceLastSpeedIncrease >= SpeedIncreaseInterval)
         {
