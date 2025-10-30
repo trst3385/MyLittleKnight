@@ -1,61 +1,61 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;//UI¸¦ »ç¿ëÇÒ·Á¸é ÀÌ ³×ÀÓ½ºÆäÀÌ½º Ãß°¡
+using UnityEngine.UI;//UIë¥¼ ì‚¬ìš©í• ë ¤ë©´ ì´ ë„¤ì„ìŠ¤í˜ì´ìŠ¤ ì¶”ê°€
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("ÇÃ·¹ÀÌ¾î Ã¼·Â °ü·Ã")]
-    public float MaxHealth = 20f;//ÃÖ´ë Ã¼·Â(Á¶Àı°¡´É)
-    public float CurrentHealth;//ÇöÀç Ã¼·Â
-    public Slider healthSlider;//ÀÎ½ºÆåÅÍ¿¡¼­ ÀÌ ½½¶óÀÌ´õ ¿¬°á
+    [Header("í”Œë ˆì´ì–´ ì²´ë ¥ ê´€ë ¨")]
+    public float MaxHealth = 20f;//ìµœëŒ€ ì²´ë ¥(ì¡°ì ˆê°€ëŠ¥)
+    public float CurrentHealth;//í˜„ì¬ ì²´ë ¥
+    public Slider healthSlider;//ì¸ìŠ¤í™í„°ì—ì„œ ì´ ìŠ¬ë¼ì´ë” ì—°ê²°
 
-    [Header("½ºÅ©¸³Æ® ÂüÁ¶")]
-    [SerializeField] private Player playerScript;//ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ® ÂüÁ¶
+    [Header("ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°")]
+    [SerializeField] private Player playerScript;//í”Œë ˆì´ì–´ ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
 
-    void Awake()//Awake()´Â Start()º¸´Ù ¸ÕÀú È£ÃâµÇ¸ç, ÇØ´ç °ÔÀÓ ¿ÀºêÁ§Æ®°¡ È°¼ºÈ­µÉ ¶§ ¹«Á¶°ÇÀûÀ¸·Î ¸ÕÀú ½ÇÇàµÊ.
+    void Awake()//Awake()ëŠ” Start()ë³´ë‹¤ ë¨¼ì € í˜¸ì¶œë˜ë©°, í•´ë‹¹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ê°€ í™œì„±í™”ë  ë•Œ ë¬´ì¡°ê±´ì ìœ¼ë¡œ ë¨¼ì € ì‹¤í–‰ë¨.
     {
 
-        CurrentHealth = MaxHealth;//°ÔÀÓ ½ÃÀÛ ½Ã ÇöÀç Ã¼·ÂÀ» ÃÖ´ë Ã¼·ÂÀ¸·Î ¼³Á¤(Á¶Àı°¡´É)
+        CurrentHealth = MaxHealth;//ê²Œì„ ì‹œì‘ ì‹œ í˜„ì¬ ì²´ë ¥ì„ ìµœëŒ€ ì²´ë ¥ìœ¼ë¡œ ì„¤ì •(ì¡°ì ˆê°€ëŠ¥)
 
-        //½½¶óÀÌ´õÀÇ ÃÖ´ë °ª ¼³Á¤
+        //ìŠ¬ë¼ì´ë”ì˜ ìµœëŒ€ ê°’ ì„¤ì •
         if (healthSlider != null)
         {
             healthSlider.maxValue = MaxHealth;
             UpdateHealthUI();
         }
     }
-    public void TakeDamage( float damageAmount)//Ã¼·ÂÀÌ º¯°æµÉ¶§¸¶´Ù È£ÃâÇÒ ÇÔ¼ö
+    public void TakeDamage( float damageAmount)//ì²´ë ¥ì´ ë³€ê²½ë ë•Œë§ˆë‹¤ í˜¸ì¶œí•  í•¨ìˆ˜
     {
-        if(playerScript != null && playerScript.IsDead) return; //Player ½ºÅ©¸³Æ®ÀÇ isDead È®ÀÎ
+        if(playerScript != null && playerScript.IsDead) return; //Player ìŠ¤í¬ë¦½íŠ¸ì˜ isDead í™•ì¸
 
-        //ÀÌ¹Ì Á×Àº »óÅÂ¶ó¸é ´õ ÀÌ»ó µ¥¹ÌÁö ¹Ş°Å³ª »ç¸Á Ã³¸®ÇÏÁö ¾ÊÀ½
-        //DieÇÔ¼ö°¡ ¹ßµ¿µÇ¸é isDead°¡ true »óÅÂ°¡ µÈ´Ù.
+        //ì´ë¯¸ ì£½ì€ ìƒíƒœë¼ë©´ ë” ì´ìƒ ë°ë¯¸ì§€ ë°›ê±°ë‚˜ ì‚¬ë§ ì²˜ë¦¬í•˜ì§€ ì•ŠìŒ
+        //Dieí•¨ìˆ˜ê°€ ë°œë™ë˜ë©´ isDeadê°€ true ìƒíƒœê°€ ëœë‹¤.
 
-        CurrentHealth -= damageAmount; //Ã¼·Â °¨¼Ò 
+        CurrentHealth -= damageAmount; //ì²´ë ¥ ê°ì†Œ 
 
-        //Ã¼·ÂÀÌ 0º¸´Ù ÀÛ¾ÆÁöÁö ¾Êµµ·Ï (ÃÖ¼Ò 0)
+        //ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ì•„ì§€ì§€ ì•Šë„ë¡ (ìµœì†Œ 0)
         CurrentHealth = Mathf.Max(CurrentHealth, 0);
 
-        UpdateHealthUI(); //Ã¼·Â¹Ù UI ¾÷µ¥ÀÌÆ®
+        UpdateHealthUI(); //ì²´ë ¥ë°” UI ì—…ë°ì´íŠ¸
 
-        if(CurrentHealth <= 0) //Ã¼·ÂÀÌ 0 ÀÌÇÏ°í ¾ÆÁ÷ Á×Àº »óÅÂ°¡ ¾Æ´Ò ¶§¸¸ »ç¸Á Ã³¸®
+        if(CurrentHealth <= 0) //ì²´ë ¥ì´ 0 ì´í•˜ê³  ì•„ì§ ì£½ì€ ìƒíƒœê°€ ì•„ë‹ ë•Œë§Œ ì‚¬ë§ ì²˜ë¦¬
         {
-            if(playerScript != null) playerScript.PlayerDie();//Player½ºÅ©¸³Æ®ÀÇ PlayerDieÇÔ¼ö È£Ãâ         
-            else Debug.LogError("PlayerHealth: PlayerScript ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            if(playerScript != null) playerScript.PlayerDie();//PlayerìŠ¤í¬ë¦½íŠ¸ì˜ PlayerDieí•¨ìˆ˜ í˜¸ì¶œ         
+            else Debug.LogError("PlayerHealth: PlayerScript ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
     }
-    public void Heal( float healAmount)//Ã¼·Â È¸º¹ ÇÔ¼ö
+    public void Heal( float healAmount)//ì²´ë ¥ íšŒë³µ í•¨ìˆ˜
     {
-        if (playerScript != null && playerScript.IsDead) return; //Player ½ºÅ©¸³Æ®ÀÇ isDead È®ÀÎ
+        if (playerScript != null && playerScript.IsDead) return; //Player ìŠ¤í¬ë¦½íŠ¸ì˜ isDead í™•ì¸
 
         CurrentHealth += healAmount;
         CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
         UpdateHealthUI();
     }
     
-    void UpdateHealthUI()//Ã¼·Â¹Ù UI¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    void UpdateHealthUI()//ì²´ë ¥ë°” UIë¥¼ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     {
         if (healthSlider != null) healthSlider.value = CurrentHealth;  
     }
