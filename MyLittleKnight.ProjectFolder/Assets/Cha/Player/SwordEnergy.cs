@@ -1,44 +1,44 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SwordEnergy : MonoBehaviour
 {
-    [Header("°Ë±â ¹ß»çÃ¼ Áö¼Ó½Ã°£")]
-    public float DestroyTime = 5f;//¹ß»çÃ¼°¡ »ç¶óÁú ½Ã°£
+    [Header("ê²€ê¸° ë°œì‚¬ì²´ ì§€ì†ì‹œê°„")]
+    public float DestroyTime = 5f;//ë°œì‚¬ì²´ê°€ ì‚¬ë¼ì§ˆ ì‹œê°„
 
-    [HideInInspector]public float damage;//¿ÜºÎ¿¡¼­ µ¥¹ÌÁö¸¦ ¹Ş¾Æ¼­ ÀúÀåÇÒ º¯¼ö
-    //HideInInspector´Â public º¯¼ö¸¦ ÀÎ½ºÆåÅÍ¿¡ ¼û±æ ¼ö ÀÖ¾î!
+    [HideInInspector]public float damage;//ì™¸ë¶€ì—ì„œ ë°ë¯¸ì§€ë¥¼ ë°›ì•„ì„œ ì €ì¥í•  ë³€ìˆ˜
+    //HideInInspectorëŠ” public ë³€ìˆ˜ë¥¼ ì¸ìŠ¤í™í„°ì— ìˆ¨ê¸¸ ìˆ˜ ìˆì–´!
 
     void Start()
     {
-        //nÃÊ µÚ¿¡ ¹ß»çÃ¼ ¿ÀºêÁ§Æ®¸¦ ½º½º·Î ÆÄ±«
+        //nì´ˆ ë’¤ì— ë°œì‚¬ì²´ ì˜¤ë¸Œì íŠ¸ë¥¼ ìŠ¤ìŠ¤ë¡œ íŒŒê´´
         Destroy(gameObject, DestroyTime);
     }
 
-    public void SetDamage(float amount)//PlayerAttack ½ºÅ©¸³Æ®·ÎºÎÅÍ µ¥¹ÌÁö °ªÀ» ¹Ş¾Æ¿À´Â ÇÔ¼ö
-    {                                  //PlayerAttack ½ºÅ©¸³Æ®¿¡¼­ swordenergy.SetDamage(totalDamage); ÄÚµå¸¦ È£ÃâÇÏ¸é,
-        damage = amount;               //totalDamage °ª(ex: 5)ÀÌ amount¶ó´Â º¯¼ö¿¡ ´ã°Ü¼­ SwordEnergy ½ºÅ©¸³Æ®ÀÇ SetDamage ÇÔ¼ö·Î Àü´ŞµÅ.
-                                       //±×·¸°Ô Àü´Ş¹ŞÀº 5¶ó´Â °ªÀ» damage º¯¼ö¿¡ ÀúÀåÇÏ°Ô µÇ´Â °ÅÁö.    
+    public void SetDamage(float amount)//PlayerAttack ìŠ¤í¬ë¦½íŠ¸ë¡œë¶€í„° ë°ë¯¸ì§€ ê°’ì„ ë°›ì•„ì˜¤ëŠ” í•¨ìˆ˜
+    {                                  //PlayerAttack ìŠ¤í¬ë¦½íŠ¸ì—ì„œ swordenergy.SetDamage(totalDamage); ì½”ë“œë¥¼ í˜¸ì¶œí•˜ë©´,
+        damage = amount;               //totalDamage ê°’(ex: 5)ì´ amountë¼ëŠ” ë³€ìˆ˜ì— ë‹´ê²¨ì„œ SwordEnergy ìŠ¤í¬ë¦½íŠ¸ì˜ SetDamage í•¨ìˆ˜ë¡œ ì „ë‹¬ë¼.
+                                       //ê·¸ë ‡ê²Œ ì „ë‹¬ë°›ì€ 5ë¼ëŠ” ê°’ì„ damage ë³€ìˆ˜ì— ì €ì¥í•˜ê²Œ ë˜ëŠ” ê±°ì§€.    
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)//Äİ¶óÀÌ´õ¿Í Ãæµ¹ÇßÀ» ¶§ ½ÇÇàµÇ´Â ÇÔ¼ö
-    {//Äİ¶óÀÌ´õÀÇ Is Trigger°¡ ÄÑÁ® ÀÖ¾î¾ßÇÑ´Ù±¸!
+    private void OnTriggerEnter2D(Collider2D other)//ì½œë¼ì´ë”ì™€ ì¶©ëŒí–ˆì„ ë•Œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜
+    {//ì½œë¼ì´ë”ì˜ Is Triggerê°€ ì¼œì ¸ ìˆì–´ì•¼í•œë‹¤êµ¬!
 
-        //ºÎµúÈù ¿ÀºêÁ§Æ®ÀÇ ÅÂ±×°¡ EnemyÀÎÁö È®ÀÎÇÏ±â
+        //ë¶€ë”ªíŒ ì˜¤ë¸Œì íŠ¸ì˜ íƒœê·¸ê°€ Enemyì¸ì§€ í™•ì¸í•˜ê¸°
         if (other.CompareTag("Enemy"))
         {
-            //EnemyHealth ½ºÅ©¸³Æ®¸¦ Ã£¾Æ¼­ ¸ó½ºÅÍ¿¡°Ô µ¥¹ÌÁö Ãß±â
+            //EnemyHealth ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì•„ì„œ ëª¬ìŠ¤í„°ì—ê²Œ ë°ë¯¸ì§€ ì¶”ê¸°
             EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(damage);
-                Debug.Log(other.name + "¿¡°Ô °Ë±â ¹ß»çÃ¼ µ¥¹ÌÁö ºÎ¿©!");
+                Debug.Log(other.name + "ì—ê²Œ ê²€ê¸° ë°œì‚¬ì²´ ë°ë¯¸ì§€ ë¶€ì—¬!");
             }
-            ////Ãæµ¹ ÈÄ ¹ß»çÃ¼´Â ¹Ù·Î ÆÄ±«
-            //Destroy(gameObject);//»èÁ¦ È¤Àº ÁÖ¼®À¸·Î ´Ş¾Æ. ÀÌ°É Áö¿ì´Ï ÀÌÁ¦ °Ë±â ¹ß»çÃ¼´Â ¸ó½ºÅÍ¸¦ °üÅëÇÒ°Å¾ß,
-                                  //¿ø·¡´Â Enemy ÅÂ±×¸¦ °¡Áø ¸ó½ºÅÍ¿Í ´êÀ¸¸é »ç¶óÁö°Ô Destroy(gameObject); ÇßÀİ¾Æ.
+            ////ì¶©ëŒ í›„ ë°œì‚¬ì²´ëŠ” ë°”ë¡œ íŒŒê´´
+            //Destroy(gameObject);//ì‚­ì œ í˜¹ì€ ì£¼ì„ìœ¼ë¡œ ë‹¬ì•„. ì´ê±¸ ì§€ìš°ë‹ˆ ì´ì œ ê²€ê¸° ë°œì‚¬ì²´ëŠ” ëª¬ìŠ¤í„°ë¥¼ ê´€í†µí• ê±°ì•¼,
+                                  //ì›ë˜ëŠ” Enemy íƒœê·¸ë¥¼ ê°€ì§„ ëª¬ìŠ¤í„°ì™€ ë‹¿ìœ¼ë©´ ì‚¬ë¼ì§€ê²Œ Destroy(gameObject); í–ˆì–ì•„.
         }
 
     }
