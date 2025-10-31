@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;//TextMeshPro UI랑 같이 써야 하니까 추가하자구!
+using UnityEngine;
 
 public class ObstacleDifficultyManager : MonoBehaviour
 {
@@ -28,13 +28,13 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public TextMeshProUGUI ObstacleLevelText;//UI 텍스트를 담을 변수
 
     //--- 내부에서 사용할 변수들, 현재의 변수 상태들을 담을 변수들 ---
-    private float timeSinceLastSpeedIncrease = 0f;
-    private float timeSinceLastIntervalDecrease = 0f;
-    private float timeSinceLastDamageIncrease = 0f;
-    private float currentBoltSpeed;
-    private float currentSpawnInterval;
-    private int currentDamage;
-    private int currentLevel = 0;//현재 난이도 레벨을 저장할 변수
+    private float timeSinceLastSpeedIncrease = 0f;//마지막으로 발사체 속도를 올린 후 경과 시간 (Interval과 비교용)
+    private float timeSinceLastIntervalDecrease = 0f;//마지막으로 생성 주기를 줄인 후 경과 시간(Interval과 비교용
+    private float timeSinceLastDamageIncrease = 0f;//마지막으로 데미지를 올린 후 경과 시간 (Interval과 비교용)
+    private float currentBoltSpeed;//현재 게임에 적용되고 있는 발사체의 속도 (Start에서 초기화 후 Update에서 누적 증가
+    private float currentSpawnInterval;//현재 게임에 적용되고 있는 발사체의 생성 주기(Start에서 초기화 후 Update에서 누적 감소)
+    private int currentDamage;//현재 게임에 적용되고 있는 발사체의 데미지 (Start에서 초기화 후 Update에서 누적 증가)
+    private int currentLevel = 0;//현재 난이도 레벨을 저장할 변수(난이도 강화 시점마다 1씩 증가)
 
 
     // 어디서든 이 스크립트에 접근할 수 있게 해주는 '싱글톤' 패턴
@@ -61,9 +61,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
         //게임 시작 시 UI 텍스트에 초기 레벨을 표시
         UpdateLevelText();
-        Debug.Log($"장애물 시스템 초기화 완료! 현재 레벨: {currentLevel}");
     }
-
+    
     void Update()
     {
         //시간이 지남에 따라 난이도 조절
@@ -85,10 +84,6 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
             //만약 if문이 아닌 Update 함수에 적으면...레벨이 n초마다 오르는 게 아니라, 매 프레임마다 계속해서 올라가게 될 거야,
             //Update 함수는 게임이 실행되는 내내 매 프레임마다 호출되는 함수니까. 그래서 if문 안에 적는거야
-
-            //currentLevel 변수는 Update 함수 안에 있는 변수가 아니라 ObstacleDifficultyManager라는 클래스 전체에 속해 있는 변수잖아,
-            //그래서 이 클래스 안에 있는 어떤 함수든 이 currentLevel 변수에 자유롭게 접근하고 값을 바꿀 수 있어.
-
             //1. currentLevel++; 이 코드가 실행되면, ObstacleDifficultyManager 스크립트 안에 있는 currentLevel 변수의 값이 1 증가해서 저장돼.
             //2. 그다음 줄에 있는 UpdateLevelText(); 함수가 호출돼.
             //3. UpdateLevelText() 함수 안의 코드가 실행되는데, 이때 {currentLevel} 부분을 만나면,
@@ -112,29 +107,25 @@ public class ObstacleDifficultyManager : MonoBehaviour
         }    
     }
 
-    
+    public float GetCurrentBoltSpeed()
+    {
+        return currentBoltSpeed;
+    }
+    public float GetCurrentSpawnInterval()
+    {
+        return currentSpawnInterval;
+    }
+    public int GetCurrentDamage()
+    {
+        return currentDamage;
+    }
+
     private void UpdateLevelText()//UI 텍스트를 업데이트 함수
     {
         if (ObstacleLevelText != null)
         {
             ObstacleLevelText.text = $"장애물 Lv.{currentLevel}";
         }
-    }
-
-    //다른 스크립트에서 현재 값을 가져갈 수 있는 함수들
-    public float GetCurrentBoltSpeed()
-    {
-        return currentBoltSpeed;
-    }
-
-    public float GetCurrentSpawnInterval()
-    {
-        return currentSpawnInterval;
-    }
-
-    public int GetCurrentDamage()
-    {
-        return currentDamage;
     }
 }
 
