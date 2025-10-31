@@ -1,50 +1,50 @@
-using System.Collections;//ÄÚ·çÆ¾À» »ç¿ëÇÏ±â À§ÇØ ÇÊ¿ä
+ï»¿using System.Collections;//ì½”ë£¨í‹´ì„ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
 //08.03
-//ObstacleDifficultyManager ½ºÅ©¸³Æ®¸¦ ¸¸µé¾úÀ¸´Ï ObstacleSpawner ½ºÅ©¸³Æ®´Â ÀÌÁ¦ ³­ÀÌµµ¸¦ Á÷Á¢ Á¶ÀıÇÏÁö ¾Ê°í,
-//ObstacleDifficultyManager ½ºÅ©¸³Æ®¿¡°Ô ÇöÀç ½ºÆù ÁÖ±â, ¼Óµµ, µ¥¹ÌÁö °ªÀ» ¹Ş¾Æ¿Í¼­ »ç¿ëÇÏ°Ô µÉ °Å¾ß.
-// Àå¾Ö¹° »ı¼º ÁÖ±â ¾÷µ¥ÀÌÆ®
+//ObstacleDifficultyManager ìŠ¤í¬ë¦½íŠ¸ë¥¼ ë§Œë“¤ì—ˆìœ¼ë‹ˆ ObstacleSpawner ìŠ¤í¬ë¦½íŠ¸ëŠ” ì´ì œ ë‚œì´ë„ë¥¼ ì§ì ‘ ì¡°ì ˆí•˜ì§€ ì•Šê³ ,
+//ObstacleDifficultyManager ìŠ¤í¬ë¦½íŠ¸ì—ê²Œ í˜„ì¬ ìŠ¤í° ì£¼ê¸°, ì†ë„, ë°ë¯¸ì§€ ê°’ì„ ë°›ì•„ì™€ì„œ ì‚¬ìš©í•˜ê²Œ ë  ê±°ì•¼.
+// ì¥ì• ë¬¼ ìƒì„± ì£¼ê¸° ì—…ë°ì´íŠ¸
 public class ObstacleSpawner : MonoBehaviour
 {
-    [Header("¹ß»çÃ¼ ÇÁ¸®ÆÕ, Äİ¶óÀÌ´õ ¿¬°á")]
-    public GameObject ObstacleBoltPrefab;//¹ß»çÃ¼ ÇÁ¸®ÆÕ ÂüÁ¶
-    public BoxCollider2D SpawnAreaCollider;//»ı¼ºÇÒ Å¸ÀÏ¸Ê °¡ÀåÀÚ¸®¿¡ Äİ¶óÀÌ´õ¸¦ »ı¼ºÇØ ÀÌ°÷À» ±âÁØÀ¸·Î ¹ß»çÃ¼ »ı¼º
+    [Header("ë°œì‚¬ì²´ í”„ë¦¬íŒ¹, ì½œë¼ì´ë” ì—°ê²°")]
+    public GameObject ObstacleBoltPrefab;//ë°œì‚¬ì²´ í”„ë¦¬íŒ¹ ì°¸ì¡°
+    public BoxCollider2D SpawnAreaCollider;//ìƒì„±í•  íƒ€ì¼ë§µ ê°€ì¥ìë¦¬ì— ì½œë¼ì´ë”ë¥¼ ìƒì„±í•´ ì´ê³³ì„ ê¸°ì¤€ìœ¼ë¡œ ë°œì‚¬ì²´ ìƒì„±
 
     void Start()
     {
-        //°ÔÀÓ ½ÃÀÛ ÈÄ, ObstacleDifficultyManager ½ºÅ©¸³Æ®¿¡¼­ ¼³Á¤ÇÑ ½Ã°£ °£°İÀ¸·Î
-        //"SpawnObstacle" ÇÔ¼ö¸¦ ¹İº¹ÇØ¼­ È£ÃâÇØ.
-        //InvokeRepeating ÇÔ¼ö´Â ÀÎ¼ö¸¦ 3°³¸¸ »ç¿ëÇØ¾ßÇØ!
-        //Ã¹ ¹øÂ° GetCurrentSpawnInterval()Àº ÃÖÃÊ ½ÇÇà Áö¿¬ ½Ã°£,
-        //µÎ ¹øÂ° GetCurrentSpawnInterval()Àº ¹İº¹ °£°İÀÌ¾ß.
-        //InvokeRepeating ÇÔ¼ö´Â Æ¯Á¤ ÇÔ¼ö¸¦ ÀÏÁ¤ÇÑ ½Ã°£ °£°İÀ¸·Î ¹İº¹ÇØ¼­ ½ÇÇàÇÏ´Â ±â´ÉÀÌ¾ß.
-        //°ÔÀÓ ½ÃÀÛ ÈÄ 3ÃÊ µÚ¿¡ "SpawnObstacle" ÇÔ¼ö¸¦ Ã³À½ ½ÇÇàÇÏ°í,
-        //±× ÀÌÈÄ¿¡´Â ObstacleDifficultyManager¿¡¼­ ¼³Á¤ÇÑ °£°İÀ¸·Î ¹İº¹ÇØ.
+        //ê²Œì„ ì‹œì‘ í›„, ObstacleDifficultyManager ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì„¤ì •í•œ ì‹œê°„ ê°„ê²©ìœ¼ë¡œ
+        //"SpawnObstacle" í•¨ìˆ˜ë¥¼ ë°˜ë³µí•´ì„œ í˜¸ì¶œí•´.
+        //InvokeRepeating í•¨ìˆ˜ëŠ” ì¸ìˆ˜ë¥¼ 3ê°œë§Œ ì‚¬ìš©í•´ì•¼í•´!
+        //ì²« ë²ˆì§¸ GetCurrentSpawnInterval()ì€ ìµœì´ˆ ì‹¤í–‰ ì§€ì—° ì‹œê°„,
+        //ë‘ ë²ˆì§¸ GetCurrentSpawnInterval()ì€ ë°˜ë³µ ê°„ê²©ì´ì•¼.
+        //InvokeRepeating í•¨ìˆ˜ëŠ” íŠ¹ì • í•¨ìˆ˜ë¥¼ ì¼ì •í•œ ì‹œê°„ ê°„ê²©ìœ¼ë¡œ ë°˜ë³µí•´ì„œ ì‹¤í–‰í•˜ëŠ” ê¸°ëŠ¥ì´ì•¼.
+        //ê²Œì„ ì‹œì‘ í›„ 3ì´ˆ ë’¤ì— "SpawnObstacle" í•¨ìˆ˜ë¥¼ ì²˜ìŒ ì‹¤í–‰í•˜ê³ ,
+        //ê·¸ ì´í›„ì—ëŠ” ObstacleDifficultyManagerì—ì„œ ì„¤ì •í•œ ê°„ê²©ìœ¼ë¡œ ë°˜ë³µí•´.
         InvokeRepeating("SpawnObstacle", 3f, ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
     }
 
     private void SpawnObstacle()
     {
-        CancelInvoke("SpawnObstacle");//ÀÌ ÄÚµå´Â SpawnObstacle ÇÔ¼ö¿¡ ´ëÇØ ÇöÀç ½ÇÇà ÁßÀÎ InvokeRepeatingÀ» ¸ÕÀú ¸ØÃß´Â °Å¾ß.
+        CancelInvoke("SpawnObstacle");//ì´ ì½”ë“œëŠ” SpawnObstacle í•¨ìˆ˜ì— ëŒ€í•´ í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ InvokeRepeatingì„ ë¨¼ì € ë©ˆì¶”ëŠ” ê±°ì•¼.
         InvokeRepeating("SpawnObstacle", ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval(), ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
-        //InvokeRepeating(...): ±×¸®°í ³ª¼­, ¹Ù·Î ¾Æ·¡¿¡ ÀÖ´Â ÀÌ ÄÚµå°¡
-        //ObstacleDifficultyManage ½ºÅ©¸³Æ®¿¡¼­ ¹æ±İ °¡Á®¿Â »õ·Î¿î ½Ã°£ °£°İÀ¸·Î InvokeRepeatingÀ» ´Ù½Ã ½ÃÀÛÇÏ´Â °ÅÁö.
+        //InvokeRepeating(...): ê·¸ë¦¬ê³  ë‚˜ì„œ, ë°”ë¡œ ì•„ë˜ì— ìˆëŠ” ì´ ì½”ë“œê°€
+        //ObstacleDifficultyManage ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ë°©ê¸ˆ ê°€ì ¸ì˜¨ ìƒˆë¡œìš´ ì‹œê°„ ê°„ê²©ìœ¼ë¡œ InvokeRepeatingì„ ë‹¤ì‹œ ì‹œì‘í•˜ëŠ” ê±°ì§€.
 
         int spawnSide = Random.Range(0, 2);
 
         Vector2 spawnPosition = Vector2.zero;
         Vector2 moveDirection = Vector2.zero;
 
-        if (spawnSide == 0)//¿ŞÂÊ¿¡¼­ ¿À¸¥ÂÊÀ¸·Î
+        if (spawnSide == 0)//ì™¼ìª½ì—ì„œ ì˜¤ë¥¸ìª½ìœ¼ë¡œ
         {
             spawnPosition = new Vector2(SpawnAreaCollider.bounds.min.x, Random.Range(SpawnAreaCollider.bounds.min.y, SpawnAreaCollider.bounds.max.y));
             moveDirection = Vector2.right;
         }
-        else if (spawnSide == 1)//¿À¸¥ÂÊ¿¡¼­ ¿ŞÂÊÀ¸·Î
+        else if (spawnSide == 1)//ì˜¤ë¥¸ìª½ì—ì„œ ì™¼ìª½ìœ¼ë¡œ
         {
             spawnPosition = new Vector2(SpawnAreaCollider.bounds.max.x, Random.Range(SpawnAreaCollider.bounds.min.y, SpawnAreaCollider.bounds.max.y));
             moveDirection = Vector2.left;
