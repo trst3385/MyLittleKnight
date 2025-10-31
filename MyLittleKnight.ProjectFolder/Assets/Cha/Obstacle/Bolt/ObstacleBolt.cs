@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,56 +6,56 @@ using UnityEngine.UIElements;
 public class ObstacleBolt : MonoBehaviour
 {
     //08.3
-    //moveSpeed³ª damage º¯¼ö´Â ¿©±â¼­³ª ÀÎ½ºÆåÅÍ¿¡¼­ ¼öÁ¤ÇÑ´Ù°í ¹Ù²îÁö ¾Ê¾Æ.
-    //ObstacleSpawner ½ºÅ©¸³Æ®°¡ ObstacleBolt¿¡°Ô "¾ß, ³Ê ¼Óµµ¶û µ¥¹ÌÁö ÀÌ °ªÀ¸·Î ÇØ!" ¶ó°í ¸í·ÉÀ» ³»¸®·Á¸é,
-    //ObstacleBolt¿¡ ±× °ªÀ» ¹ŞÀ» ¼ö ÀÖ´Â **'°ø°£'**ÀÌ ÀÖ¾î¾ß ÇÏ±â ¶§¹®ÀÌ¾ß.
-    //±×·¡¼­ ObstacleBolt ½ºÅ©¸³Æ®ÀÇ moveSpeed¿Í damage º¯¼ö´Â °ªÀ» ¹Ş´Â Åë·Î·Î¼­ ¹İµå½Ã ÇÊ¿äÇÏ´Ï±î ±×´ë·Î µÎ´Â °Ô ¸Â¾Æ. 
-    //°ªÀº ´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ ´Ù·çÁö¸¸ ±âº»°ªÀ» ³Ö¾îµÎ¸é ³ªÁß¿¡ ÇÁ¸®ÆÕ Å×½ºÆ®¸¦ À§ÇØ ³²°Ü´Â µÖ!
+    //moveSpeedë‚˜ damage ë³€ìˆ˜ëŠ” ì—¬ê¸°ì„œë‚˜ ì¸ìŠ¤í™í„°ì—ì„œ ìˆ˜ì •í•œë‹¤ê³  ë°”ë€Œì§€ ì•Šì•„.
+    //ObstacleSpawner ìŠ¤í¬ë¦½íŠ¸ê°€ ObstacleBoltì—ê²Œ "ì•¼, ë„ˆ ì†ë„ë‘ ë°ë¯¸ì§€ ì´ ê°’ìœ¼ë¡œ í•´!" ë¼ê³  ëª…ë ¹ì„ ë‚´ë¦¬ë ¤ë©´,
+    //ObstacleBoltì— ê·¸ ê°’ì„ ë°›ì„ ìˆ˜ ìˆëŠ” **'ê³µê°„'**ì´ ìˆì–´ì•¼ í•˜ê¸° ë•Œë¬¸ì´ì•¼.
+    //ê·¸ë˜ì„œ ObstacleBolt ìŠ¤í¬ë¦½íŠ¸ì˜ moveSpeedì™€ damage ë³€ìˆ˜ëŠ” ê°’ì„ ë°›ëŠ” í†µë¡œë¡œì„œ ë°˜ë“œì‹œ í•„ìš”í•˜ë‹ˆê¹Œ ê·¸ëŒ€ë¡œ ë‘ëŠ” ê²Œ ë§ì•„. 
+    //ê°’ì€ ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ë‹¤ë£¨ì§€ë§Œ ê¸°ë³¸ê°’ì„ ë„£ì–´ë‘ë©´ ë‚˜ì¤‘ì— í”„ë¦¬íŒ¹ í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ ë‚¨ê²¨ëŠ” ë‘¬!
 
-    [Header("Àå¾Ö¹° °ü·Ã º¯¼ö")]
-    public float MoveSpeed = 5f;//¹ß»çÃ¼ ÀÌµ¿¼Óµµ º¯¼ö
-    public int Damage = 5;//¹ß»çÃ¼ÀÇ °ø°İ·Â
-    public float DestroyTime = 10f;//¹ß»çÃ¼°¡ »ç¶óÁö´Â ½Ã°£ º¯¼ö
-    [HideInInspector] public Vector2 MoveDirection;//¹ß»çÃ¼ÀÇ ¹æÇâÀ» ÀúÀåÇÒ º¯¼ö
-    //[HideInInspector]´Â public º¯¼ö¸¦ ÀÎ½ºÆåÅÍ¿¡ ¾Èº¸ÀÌ°Ô ÇÏ´Â ±â´ÉÀÌ¾ß!!!
+    [Header("ì¥ì• ë¬¼ ê´€ë ¨ ë³€ìˆ˜")]
+    public float MoveSpeed = 5f;//ë°œì‚¬ì²´ ì´ë™ì†ë„ ë³€ìˆ˜
+    public int Damage = 5;//ë°œì‚¬ì²´ì˜ ê³µê²©ë ¥
+    public float DestroyTime = 10f;//ë°œì‚¬ì²´ê°€ ì‚¬ë¼ì§€ëŠ” ì‹œê°„ ë³€ìˆ˜
+    [HideInInspector] public Vector2 MoveDirection;//ë°œì‚¬ì²´ì˜ ë°©í–¥ì„ ì €ì¥í•  ë³€ìˆ˜
+    //[HideInInspector]ëŠ” public ë³€ìˆ˜ë¥¼ ì¸ìŠ¤í™í„°ì— ì•ˆë³´ì´ê²Œ í•˜ëŠ” ê¸°ëŠ¥ì´ì•¼!!!
 
 
     void Start()
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (MoveDirection.x < 0)//¿ŞÂÊÀ¸·Î °¥ ¶§
-            //¿ŞÂÊÀ¸·Î °¥ ¶§´Â ½ºÇÁ¶óÀÌÆ®¸¦ µÚÁıÁö ¾Ê¾Æ
+        if (MoveDirection.x < 0)//ì™¼ìª½ìœ¼ë¡œ ê°ˆ ë•Œ
+            //ì™¼ìª½ìœ¼ë¡œ ê°ˆ ë•ŒëŠ” ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ë’¤ì§‘ì§€ ì•Šì•„
             spriteRenderer.flipX = false;
-        else if (MoveDirection.x > 0)//¿À¸¥ÂÊÀ¸·Î °¥ ¶§
-            spriteRenderer.flipX = true;//¿À¸¥ÂÊÀ¸·Î °¥ ¶§´Â ½ºÇÁ¶óÀÌÆ®¸¦ ÁÂ¿ì ¹İÀü½ÃÄÑ
+        else if (MoveDirection.x > 0)//ì˜¤ë¥¸ìª½ìœ¼ë¡œ ê°ˆ ë•Œ
+            spriteRenderer.flipX = true;//ì˜¤ë¥¸ìª½ìœ¼ë¡œ ê°ˆ ë•ŒëŠ” ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ì¢Œìš° ë°˜ì „ì‹œì¼œ
 
-        Destroy(gameObject, DestroyTime);//¼±¾ğµÈ destroyTime º¯¼öÀÇ °ª(½Ã°£)¿¡ ¸ÂÃç »ç¶óÁú ¿ÀºêÁ§Æ®°¡ »ç¶óÁú ½Ã°£À» ¼³Á¤
+        Destroy(gameObject, DestroyTime);//ì„ ì–¸ëœ destroyTime ë³€ìˆ˜ì˜ ê°’(ì‹œê°„)ì— ë§ì¶° ì‚¬ë¼ì§ˆ ì˜¤ë¸Œì íŠ¸ê°€ ì‚¬ë¼ì§ˆ ì‹œê°„ì„ ì„¤ì •
     }
 
 
-    void FixedUpdate()//¹ß»çÃ¼´Â ¹°¸®ÀûÀÎ ¿òÁ÷ÀÓÀÌ¹Ç·Î FixedUpdate¸¦ »ç¿ëÇÏ´Â°Ô ÁÁ¾Æ
+    void FixedUpdate()//ë°œì‚¬ì²´ëŠ” ë¬¼ë¦¬ì ì¸ ì›€ì§ì„ì´ë¯€ë¡œ FixedUpdateë¥¼ ì‚¬ìš©í•˜ëŠ”ê²Œ ì¢‹ì•„
     {
-        //ÇöÀç À§Ä¡¸¦ °è¼ÓÇØ¼­ ÀÌµ¿ ¹æÇâ°ú ¼Óµµ¿¡ µû¶ó ¾÷µ¥ÀÌÆ®
-        //Kinematic Rigidbody¸¦ »ç¿ëÇÏ¹Ç·Î Á÷Á¢ transform.positionÀ» Á¶ÀıÇØ
+        //í˜„ì¬ ìœ„ì¹˜ë¥¼ ê³„ì†í•´ì„œ ì´ë™ ë°©í–¥ê³¼ ì†ë„ì— ë”°ë¼ ì—…ë°ì´íŠ¸
+        //Kinematic Rigidbodyë¥¼ ì‚¬ìš©í•˜ë¯€ë¡œ ì§ì ‘ transform.positionì„ ì¡°ì ˆí•´
         transform.Translate(MoveDirection * MoveSpeed * Time.fixedDeltaTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)//Is Trigger°¡ Ã¼Å©µÈ Äİ¶óÀÌ´õ¿Í Ãæµ¹ÇßÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
-    {                                              //ÀÌ ÇÔ¼ö´Â Is Trigger°¡ Ã¼Å©µÈ Äİ¶óÀÌ´õ³¢¸® Ãæµ¹ÇßÀ» ¶§ È£ÃâµÅ.
-        if (other.CompareTag("Player"))//Ãæµ¹ÇÑ »ó´ë¹æÀÇ ÅÂ±×°¡ "Player"ÀÎÁö È®ÀÎ
+    private void OnTriggerEnter2D(Collider2D other)//Is Triggerê°€ ì²´í¬ëœ ì½œë¼ì´ë”ì™€ ì¶©ëŒí–ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
+    {                                              //ì´ í•¨ìˆ˜ëŠ” Is Triggerê°€ ì²´í¬ëœ ì½œë¼ì´ë”ë¼ë¦¬ ì¶©ëŒí–ˆì„ ë•Œ í˜¸ì¶œë¼.
+        if (other.CompareTag("Player"))//ì¶©ëŒí•œ ìƒëŒ€ë°©ì˜ íƒœê·¸ê°€ "Player"ì¸ì§€ í™•ì¸
         {
             PlayerShield playerShield = other.GetComponent<PlayerShield>();
             if (playerShield != null)
-                //PlayerShield ½ºÅ©¸³Æ®ÀÇ µ¥¹ÌÁö ÇÔ¼ö¸¦ È£ÃâÇØ¼­ ¹æ¾î·ÂÀ» ¸ÕÀú ±ğ¾Æ.
+                //PlayerShield ìŠ¤í¬ë¦½íŠ¸ì˜ ë°ë¯¸ì§€ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•´ì„œ ë°©ì–´ë ¥ì„ ë¨¼ì € ê¹ì•„.
                 playerShield.TakeShieldDamage(Damage);
 
 
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            //ÇÃ·¹ÀÌ¾îÀÇ PlayerHealth ½ºÅ©¸³Æ®¸¦ °¡Á®¿Í¼­ µ¥¹ÌÁö¸¦ ÀÔÈ÷°Ô ÇØ
-            if (playerHealth != null)//!= nullÀº null »óÅÂ°¡ ¾Æ´Ò¶§ Áï, ½ºÅ©¸³Æ®¶û Á¦´ë·Î ¿¬°áµÆÀ»¶§ ½ÇÇàµÇ´Â°Å¾ß
+            //í”Œë ˆì´ì–´ì˜ PlayerHealth ìŠ¤í¬ë¦½íŠ¸ë¥¼ ê°€ì ¸ì™€ì„œ ë°ë¯¸ì§€ë¥¼ ì…íˆê²Œ í•´
+            if (playerHealth != null)//!= nullì€ null ìƒíƒœê°€ ì•„ë‹ë•Œ ì¦‰, ìŠ¤í¬ë¦½íŠ¸ë‘ ì œëŒ€ë¡œ ì—°ê²°ëì„ë•Œ ì‹¤í–‰ë˜ëŠ”ê±°ì•¼
                 playerHealth.TakeDamage(Damage);
 
-            //µ¥¹ÌÁö¸¦ ÁØ ÈÄ ¹ß»çÃ¼´Â ÆÄ±«
+            //ë°ë¯¸ì§€ë¥¼ ì¤€ í›„ ë°œì‚¬ì²´ëŠ” íŒŒê´´
             Destroy(gameObject);
         }
 
