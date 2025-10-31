@@ -516,3 +516,40 @@ ObstacleDifficultyManager:Awake () (at Assets/Cha/Obstacle/ObstacleDifficultyMan
 UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
 EnemyDifficulty:Awake () (at Assets/Cha/Enemy/EnemyDifficulty.cs:76)**
 **내일은 게임이 시작되면 뜨는 이 문제를 해결해보자**
+
+
+
+10/31
+ObstacleDifficultyManager 스크립트의 Start() 함수의  `Debug.Log($"장애물 시스템 초기화 완료! 현재 레벨: {currentLevel}");` 삭제, 
+ObstacleDifficultyManager 스크립트 내부 변수들 설명 주석 추가
+ObstacleBolt, EnemyDifficulty 스크립트의 인스펙터에는 여전히 한글 주석이 깨져있서 복구(어제 했던 방식)
+함수 등 참조된 스크립트 찾기 (모든 참조 찾기 shift + F12)
+어제 유니티 에디터 오류 확인
+
+- ObstacleDifficultyManager 스크립트의 Start()함수에 디버그 로그로 장애물이 초기화 됐다고 알려주는 로그가 있었지만 사용할 이유가 없어서 삭제했어, 화면에 장애물 발사체가 강화됐나 안됐나 20초마다 알려주는 UI가 있으니까.
+
+- 내부에서 사용할 변수인 timeSinceLastSpeedIncrease = 0f, timeSinceLastIntervalDecrease = 0f;, timeSinceLastDamageIncrease = 0f, currentBoltSpeed, currentSpawnInterval, currentDamage, currentLevel = 0;,
+  에 설명 주석을 추가했어.
+
+
+- ObstacleBolt, EnemyDifficulty 스크립트의 깨진 한글 주석을 다시 수정. **인코딩 문제(EUC-KR → UTF-8) 를 확인하고, Visual Studio의 '인코딩하여 저장' 기능을 사용하여 문제를 완전히 해결**
+
+
+- 함수, 메서드등 이걸 참조, 호출하는 스크립트를 찾을려면 그 함수 이름을 클릭 ->모든 참조 찾기 shift + F12 - 클릭하면 하단에 이걸 사용하는 스크립트를 알 수 있어.
+
+
+- 어제 하려고 했던 DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+  UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
+  ObstacleDifficultyManager:Awake () (at Assets/Cha/Obstacle/ObstacleDifficultyManager.cs:50)
+
+  DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+  UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)
+  EnemyDifficulty:Awake () (at Assets/Cha/Enemy/EnemyDifficulty.cs:76).
+- 이 오류는 ObstacleDifficultyManager, EnemyDifficulty 스크립트가 있는 오브젝트의 위치 때문에 생긴 문제야.
+- 두 스크립트의 Awake()에 DontDestroyOnLoad() 가 있어. DontDestroyOnLoad() 함수는 씬이 바뀌어도 파괴되지 않게 해주는 아주 유용한 기능인데, 이 기능을 사용하려면 딱 한 가지 규칙을 지켜야 해,
+  DontDestroyOnLoad가 호출되는 gameObject는 반드시 Hierarchy에서 최상위 오브젝트(Root GameObject)여야 해.
+- 그래서 두 스크립트가 다른 오브젝트의 자식으로 들어가 있는 상태에서 DontDestroyOnLoad(gameObject)를 호출했기 때문에 유니티가 경고를 띄운 거야.
+- 지금은 Spawner,Manager 최상위 오브젝트안에 각 스크립들이 자기만의 오브젝트 공간에 들어있어.
+- 하지만 지금은 싱글톤 패턴을 사용했고 `Spawner,Manager` 오브젝트 안에 넣으면 몬스터가 스폰되지 않는 문제가 생겼어. 결국 싱글톤을 수정하는게 아닌 이상 한 오브젝트에 스크립트를 다 넣을 수 없어,
+  이건 나중에 굳이 싱글톤을 쓸 필요가 없는 스크립트를 찾아서 수정해야 할거같아.
+
