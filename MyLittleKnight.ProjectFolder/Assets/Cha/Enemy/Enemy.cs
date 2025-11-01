@@ -67,7 +67,7 @@ public class Enemy : MonoBehaviour
     private bool isDead = false;//사망 변수(기본값 false)
     private bool isKnockedBack = false;//넉백 중인지 여부를 나타내는 플래그
 
-
+    
     public void SetEnmeyStats()//몬스터 시작 시 능력치와 외형을 설정하는 함수
     {
         if (spriteRenderer == null)//SpriteRenderer가 없으면 진행 불가
@@ -251,7 +251,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    
+
     public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
     {
         if (isDead) return;//죽은 몬스터는 넉백되지 않음
