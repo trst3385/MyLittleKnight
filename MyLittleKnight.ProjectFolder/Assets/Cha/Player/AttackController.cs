@@ -1,24 +1,24 @@
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ¸é Ãß°¡
+ï»¿using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ë©´ ì¶”ê°€
 using UnityEngine;
-using UnityEngine.UI;//UI »ç¿ëÀ» À§ÇØ Ãß°¡
+using UnityEngine.UI;//UI ì‚¬ìš©ì„ ìœ„í•´ ì¶”ê°€
 
 
 
 public class AttackController : MonoBehaviour
 {
-    //¿ÜºÎÂüÁ¶ (ÀÎ½ºÆåÅÍ¿¡¼­ ¿¬°á)
-    [Header("½ºÅ©¸³Æ®, ÄÄÆ÷³ÍÆ® ÂüÁ¶")]
-    public Player Player;//Player½ºÅ©¸³Æ® ÂüÁ¶
-    public Animator Animator;//Player¿ÀºêÁ§Æ®ÀÇ Animator ÂüÁ¶
-    public SpriteRenderer SpriteRenderer;//player¿ÀºêÁ§Æ®ÀÇ SpriteRendererÂüÁ¶
+    //ì™¸ë¶€ì°¸ì¡° (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+    [Header("ìŠ¤í¬ë¦½íŠ¸, ì»´í¬ë„ŒíŠ¸ ì°¸ì¡°")]
+    public Player Player;//PlayerìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
+    public Animator Animator;//Playerì˜¤ë¸Œì íŠ¸ì˜ Animator ì°¸ì¡°
+    public SpriteRenderer SpriteRenderer;//playerì˜¤ë¸Œì íŠ¸ì˜ SpriteRendererì°¸ì¡°
     public BowWeapon bowWeapon;
     public SwordWeapon swordWeapon;
 
-    //°øÅë °ø°İ º¯¼ö
-    private WeaponType CurrentWeaponType = WeaponType.Bow;//ÇöÀç ÀåÂø ¹«±â Å¸ÀÔ (ÀÎ½ºÆåÅÍ ¼³Á¤)
-    private bool isAttacking = false;//ÇöÀç °ø°İ ÁßÀÎÁö È®ÀÎÇÏ´Â º¯¼ö
-                                     //º¯¼ö°¡ Ã³À½ ¸¸µé¾îÁú ¶§ÀÇ ÃÊ±â°ªÀ» false·Î Á¤ÇØÁÖ´Â °Å¾ß,
-                                     //°ÔÀÓÀÌ ½ÃÀÛÇÏ°Å³ª Ä³¸¯ÅÍ°¡ »ı¼ºµÉ ¶§ "ÇöÀç °ø°İ ÁßÀÌ ¾Æ´Ô" »óÅÂ·Î ½ÃÀÛÇÏ°Ú´Ù´Â ÀÇ¹ÌÁö.
+    //ê³µí†µ ê³µê²© ë³€ìˆ˜
+    private WeaponType CurrentWeaponType = WeaponType.Bow;//í˜„ì¬ ì¥ì°© ë¬´ê¸° íƒ€ì… (ì¸ìŠ¤í™í„° ì„¤ì •)
+    private bool isAttacking = false;//í˜„ì¬ ê³µê²© ì¤‘ì¸ì§€ í™•ì¸í•˜ëŠ” ë³€ìˆ˜
+                                     //ë³€ìˆ˜ê°€ ì²˜ìŒ ë§Œë“¤ì–´ì§ˆ ë•Œì˜ ì´ˆê¸°ê°’ì„ falseë¡œ ì •í•´ì£¼ëŠ” ê±°ì•¼,
+                                     //ê²Œì„ì´ ì‹œì‘í•˜ê±°ë‚˜ ìºë¦­í„°ê°€ ìƒì„±ë  ë•Œ "í˜„ì¬ ê³µê²© ì¤‘ì´ ì•„ë‹˜" ìƒíƒœë¡œ ì‹œì‘í•˜ê² ë‹¤ëŠ” ì˜ë¯¸ì§€.
 
    
     void Start()
@@ -27,33 +27,33 @@ public class AttackController : MonoBehaviour
         Animator = GetComponent<Animator>();
         SpriteRenderer = GetComponent<SpriteRenderer>();
          
-        //ÂüÁ¶°¡ Á¦´ë·Î µÇ¾ú´ÂÁö È®ÀÎÇÏ´Â Debug.LogError
+        //ì°¸ì¡°ê°€ ì œëŒ€ë¡œ ë˜ì—ˆëŠ”ì§€ í™•ì¸í•˜ëŠ” Debug.LogError
         if (Player == null) 
-            Debug.LogError("PlayerAttack: Player ½ºÅ©¸³Æ®¸¦ Ã£À» ¼ö ¾ø¾î! Player ¿ÀºêÁ§Æ®¿¡ Player ½ºÅ©¸³Æ®°¡ ÀÖ´ÂÁö È®ÀÎÇØ!");
+            Debug.LogError("PlayerAttack: Player ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! Player ì˜¤ë¸Œì íŠ¸ì— Player ìŠ¤í¬ë¦½íŠ¸ê°€ ìˆëŠ”ì§€ í™•ì¸í•´!");
         if (Animator == null) 
-            Debug.LogError("PlayerAttack: Animator ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î! Player ¿ÀºêÁ§Æ®¿¡ Animator ÄÄÆ÷³ÍÆ®°¡ ÀÖ´ÂÁö È®ÀÎÇØ!");
+            Debug.LogError("PlayerAttack: Animator ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! Player ì˜¤ë¸Œì íŠ¸ì— Animator ì»´í¬ë„ŒíŠ¸ê°€ ìˆëŠ”ì§€ í™•ì¸í•´!");
         if (SpriteRenderer == null) 
-            Debug.LogError("PlayerAttack: SpriteRenderer ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î! Player ¿ÀºêÁ§Æ®¿¡ SpriteRenderer ÄÄÆ÷³ÍÆ®°¡ ÀÖ´ÂÁö È®ÀÎÇØ!");
+            Debug.LogError("PlayerAttack: SpriteRenderer ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´! Player ì˜¤ë¸Œì íŠ¸ì— SpriteRenderer ì»´í¬ë„ŒíŠ¸ê°€ ìˆëŠ”ì§€ í™•ì¸í•´!");
     }
     
     void Update()
     {
-        //ÇÃ·¹ÀÌ¾î°¡ Á×¾úÀ¸¸é °ø°İ ÀÔ·Â ¹ŞÁö ¾ÊÀ½
+        //í”Œë ˆì´ì–´ê°€ ì£½ì—ˆìœ¼ë©´ ê³µê²© ì…ë ¥ ë°›ì§€ ì•ŠìŒ
         if (Player != null && Player.IsDead) return;
 
-        AttackInput();//°ø°İ ÀÔ·Â Ã³¸® ÇÔ¼ö È£Ãâ        
+        AttackInput();//ê³µê²© ì…ë ¥ ì²˜ë¦¬ í•¨ìˆ˜ í˜¸ì¶œ        
     }
 
-    void AttackInput()//°¢ °ø°İ ÀÔ·Â Ã³¸® ÇÔ¼ö
+    void AttackInput()//ê° ê³µê²© ì…ë ¥ ì²˜ë¦¬ í•¨ìˆ˜
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)//È° °ø°İÀº ½ºÆäÀÌ½º ¹Ù
+        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)//í™œ ê³µê²©ì€ ìŠ¤í˜ì´ìŠ¤ ë°”
         {
             if (CurrentWeaponType == WeaponType.Bow)
             {
-                //È° °ø°İ ÄğÅ¸ÀÓ Ã¼Å©¸¦ BowWeapon¿¡ À§ÀÓ
+                //í™œ ê³µê²© ì¿¨íƒ€ì„ ì²´í¬ë¥¼ BowWeaponì— ìœ„ì„
                 if (bowWeapon != null && bowWeapon.CanAttack())
                 {
-                    weaponAnimator(WeaponType.Bow);//È° ¾Ö´Ï¸ŞÀÌ¼Ç È£Ãâ
+                    weaponAnimator(WeaponType.Bow);//í™œ ì• ë‹ˆë©”ì´ì…˜ í˜¸ì¶œ
                     isAttacking = true;
                 }
             }               
@@ -63,37 +63,35 @@ public class AttackController : MonoBehaviour
         {
             if (swordWeapon != null && swordWeapon.CanAttack())
             {
-                weaponAnimator(WeaponType.Sword);//°Ë ¾Ö´Ï¸ŞÀÌ¼Ç È£Ãâ
+                weaponAnimator(WeaponType.Sword);//ê²€ ì• ë‹ˆë©”ì´ì…˜ í˜¸ì¶œ
                 isAttacking = true;
             }
         }
     }
 
-    void weaponAnimator(WeaponType weaponType)//¹«±â Å¸ÀÔ¿¡ µû¶ó ¾Ö´Ï¸ŞÀÌ¼Ç ¹ßµ¿ ÇÔ¼ö
+    void weaponAnimator(WeaponType weaponType)//ë¬´ê¸° íƒ€ì…ì— ë”°ë¼ ì• ë‹ˆë©”ì´ì…˜ ë°œë™ í•¨ìˆ˜
     {
         if (Animator == null)
         {
-            Debug.Log("weaponAnimator: Animator°¡ nullÀÌ¾ß!. °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ¹ßµ¿ ¸øÇØ!");
+            Debug.Log("weaponAnimator: Animatorê°€ nullì´ì•¼!. ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ë°œë™ ëª»í•´!");
             return;
         }
 
         switch (weaponType)
         {
-            case WeaponType.Bow://ÇöÀç ¹«±â°¡ È°ÀÌ¸é
+            case WeaponType.Bow://í˜„ì¬ ë¬´ê¸°ê°€ í™œì´ë©´
                 Animator.SetTrigger("Attack(Bow)");                           
                 break;
-            case WeaponType.Sword://ÇöÀç ¹«±â°¡ °ËÀÌ¸é
+            case WeaponType.Sword://í˜„ì¬ ë¬´ê¸°ê°€ ê²€ì´ë©´
                 Animator.SetTrigger("Attack(Sword)");
                 break;
         }
     }
     
-    public void OnAttackEnd()//°Ë °ø°İ°ú È° °ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³µÀ» ¶§ isAttackingÀ» false·Î µÇµ¹¸± ÇÔ¼ö
+    public void OnAttackEnd()//ê²€ ê³µê²©ê³¼ í™œ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚¬ì„ ë•Œ isAttackingì„ falseë¡œ ë˜ëŒë¦´ í•¨ìˆ˜
     {                        
-        isAttacking = false;//¼±¾ğ°ú °°ÀÌ ÀÌ°Íµµ false. °ÔÀÓ ÇÃ·¹ÀÌ µµÁß¿¡ °ø°İÀÌ ³¡³µÀ» ¶§ÀÇ »óÅÂ¸¦ false·Î ¹Ù²ãÁÖ´Â ¿ªÇÒÀ» ÇØ.
-                            //½ÃÀÛ: °ÔÀÓÀÌ ½ÃÀÛµÇ¸é isAttackingÀº false ¾ß.
-        Debug.Log("OnAttackEnd() ÇÔ¼ö°¡ È£ÃâµÇ¾ú¾î!");
-        
+        isAttacking = false;//ì„ ì–¸ê³¼ ê°™ì´ ì´ê²ƒë„ false. ê²Œì„ í”Œë ˆì´ ë„ì¤‘ì— ê³µê²©ì´ ëë‚¬ì„ ë•Œì˜ ìƒíƒœë¥¼ falseë¡œ ë°”ê¿”ì£¼ëŠ” ì—­í• ì„ í•´.
+                            //ì‹œì‘: ê²Œì„ì´ ì‹œì‘ë˜ë©´ isAttackingì€ false ì•¼.        
     }
 }
 
