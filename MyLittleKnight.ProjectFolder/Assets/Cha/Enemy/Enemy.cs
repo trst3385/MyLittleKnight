@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
-using Unity.Android.Gradle;
-using Unity.Properties;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
