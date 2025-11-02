@@ -116,7 +116,6 @@ public class EnemyDifficulty : MonoBehaviour
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, InitialNormalSpawnCount + (currentDifficultyLevel * SpawnCountIncreasePerLevel));
-            Debug.Log($"Normal 몬스터 동시 스폰 개수 증가! 현재 개수: {currentNormalSpawnCount}마리");
             if (enemySpawn != null)
                 enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
 
