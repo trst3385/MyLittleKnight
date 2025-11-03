@@ -9,6 +9,10 @@ using static EnemyDifficulty;//Enemy 스크립트에서 EnemyDifficulty 클래�
 
 public class Enemy : MonoBehaviour
 {
+    //[Serializable]의 역할:
+    //유니티 엔진에게 이 클래스(EnemyStats)가 MonoBehaviour를 상속받지 않은 '일반 C# 클래스'임에도 불구하고,
+    //인스펙터 창에 필드들을 표시하고, 그 데이터를 씬 또는 프리팹 파일에 영구적으로 저장(직렬화)할 수 있도록
+    //유니티 엔진에게 공식적으로 허가하는 태그. (이 태그가 없으면 인스펙터에 나타나지 않음)
     [Serializable]
     public class EnemyStats
     {
@@ -28,9 +32,10 @@ public class Enemy : MonoBehaviour
     public EnemyType enemyType = EnemyType.Normal;//인스펙터에서 설정할 몬스터 기본 타입
 
     [Header("몬스터 타입별 스텟")]
-    public EnemyStats NormalStats = new EnemyStats();
-    public EnemyStats StrongStats = new EnemyStats();
+    public EnemyStats NormalStats = new EnemyStats();//EnemyStats 클래스를 인스턴스화하여 데이터를 담을 수 있는 'Normal' 타입의 몬스터 스탯을 만들어
+    public EnemyStats StrongStats = new EnemyStats();//Strong과 Elite도 동일.
     public EnemyStats EliteStats = new EnemyStats();
+
 
     [Header("EnemySpawner 연결")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조
@@ -74,7 +79,7 @@ public class Enemy : MonoBehaviour
             return;
         }
                                                           
-        EnemyStats selectedStats;//현재 타입에 맞는 능력치 세트를 저장할 변수�
+        EnemyStats selectedStats;//현재 타입에 맞는 능력치 세트를 저장할 변수
         switch (enemyType)
         {
             case EnemyType.Normal:
