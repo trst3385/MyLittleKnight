@@ -55,7 +55,7 @@ Enemy 스크립트의 [Serializable] 에 대한 설명 주석 추가
 
 
 
-11/3
+11/4
 Enemy 스크립트의 스탯 시스템의 '데이터 직렬화' 메커니즘 완벽 이해 (배경: Enemy스크립트의 [Serializable] 클래스와 switch 분기 로직에 대한 근본적인 이해 부족 해결)
 
 - [Serializable]의 역할 재정립
