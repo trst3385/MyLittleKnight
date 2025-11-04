@@ -52,3 +52,32 @@ Enemy 스크립트의 [Serializable] 에 대한 설명 주석 추가
    3. 높은 재사용성: EnemyStats라는 스탯 템플릿(설계도) 을 단 한 번만 정의하고, 이 템플릿을 NormalStats, StrongStats라는 여러 인스턴스로 만들어서 재사용함으로써 코드의 중복을 제거하고 확장성을 확보할 수 있어
 
 **결론 (Serializable의 가치): Serializable은 데이터와 코드를 분리하는 유니티의 핵심 원칙이자, 협업 환경에서 기획자와 개발자 모두의 생산성을 극대화하는 가장 기초적인 설계 도구야**
+
+
+
+11/3
+Enemy 스크립트의 스탯 시스템의 '데이터 직렬화' 메커니즘 완벽 이해 (배경: Enemy스크립트의 [Serializable] 클래스와 switch 분기 로직에 대한 근본적인 이해 부족 해결)
+
+- [Serializable]의 역할 재정립
+   1. EnemyStats와 같은 MonoBehaviour를 상속받지 않은 일반 C# 클래스를 유니티 인스펙터에 노출시키고 **프리팹 파일에 영구적으로 저장(직렬화)**하기 위한 필수 태그임을 확인. (데이터 영속성 확보)
+   2. 비유하면 MonoBehaviour의 하청업체 역할을 수행하며, Enemy 클래스에 포함되어야만 저장 권한을 얻어
+
+- 데이터 설정 흐름 파악
+   1. Editor 단계: [Serializable] 덕분에 NormalStats, StrongStats, EliteStats 에 수정한 값이 프리팹에 저장돼
+   2. Runtime 단계 (핵심!): Start()에서 호출되는 SetEnmeyStats() 함수가 실행됨
+   3. 세부 프로세스 (SetEnmeyStats 내부 로직):
+      3-1. 타입 선택: switch(enemyType)를 통해 인스펙터에서 설정된 타입에 맞는 스탯 덩어리(NormalStats 등)를 selectedStats에 할당 (데이터 선택) 
+      3-2. 난이도 및 최종 적용: EnemyDifficulty.Instance를 통해 난이도 보정을 거친 후, 그 결과값을 currentMoveSpeed, currentAttackDamage 등 실제 게임 로직에서 사용될 내부 변수에 최종적으로 담는다 (데이터 가공 및 할당)
+
+- switch 문의 정확한 역할 이해:
+   1. 기능: 인스펙터에서 설정한 EnemyType (Normal, Strong 등) 명찰을 확인하여, 프리팹에 저장된 세 가지 스탯 덩어리(NormalStats, StrongStats, EliteStats) 중 하나를 통째로 선택해서 selectedStats에 할당
+   2. 결론: switch 문은 기획 데이터 중 어떤 것을 쓸지 결정하는 최종 분기점이며, 이후 로직은 selectedStats만 참조하여 코드를 간결하게 유지
+
+
+- 예시) 인스펙터 값 → 게임 적용 6단계 흐름 정리 (인스펙터에서 수정한 값이 게임에 적용되는 과정(데이터 파이프라인)을 명확히 정리)
+   1. 데이터 저장: 인스펙터에서 Normal몬스터의 스탯 값 수정 → [Serializable]을 통해 프리팹 파일에 영구 저장
+   2. 메모리 로드: 게임 시작 시, 유니티가 프리팹 파일을 읽어 NormalStats 변수(메모리)에 수정된 값을 로드
+   3. 함수 호출: 몬스터 오브젝트의 Start() 함수 실행 → SetEnmeyStats() 호출
+   4. 타입 선택: SetEnmeyStats() 안의 switch (enemyType) 문이 실행되어 NormalStats를 selectedStats에 할당
+   5. 난이도 보정: selectedStats의 값을 EnemyDifficulty를 거쳐 난이도 보정 처리
+   6. 최종 적용: 보정된 최종 값이 currentMoveSpeed 등 실제 게임 로직 변수에 할당되어 몬스터 움직임에 반영
