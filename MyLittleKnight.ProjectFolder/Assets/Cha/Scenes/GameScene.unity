@@ -17441,6 +17441,7 @@ MonoBehaviour:
   ScoreTextUI: {fileID: 557225306}
   walkingaudioSource: {fileID: 16655319}
   walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  gameOverManager: {fileID: 1129692587}
   CurrentScore: 0
 --- !u!95 &916864573797405777
 Animator:
