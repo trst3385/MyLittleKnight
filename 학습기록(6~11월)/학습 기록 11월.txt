@@ -103,3 +103,30 @@ Enemy 스크립트의 불필요한 로직 최종 수정
 - 로직 안정성 강화: DealDamageToPlayer()에 최후의 IsDead 체크 추가.
 - 데미지를 적용하는 결정적인 순간에 playerScript.IsDead를 체크해서 플레이어가 죽은 후에도 애니메이션 이벤트로 인해 몬스터의 공격 함수가 실행되는 잠재적 버그를 방지. (방어적 프로그래밍)
 
+
+
+11/6
+Player 스크립트 수정.
+
+- 코드 실행 순서(Awake → Start)를 활용하여 안정성을 확보.
+   1. GetComponent<>()로 찾는 내부 컴포넌트 (rb, animator, playerHealth 등) 및 [SerializeField]로 연결된 외부 참조 (gameOverManager, walkingaudioSource, ScoreTextUI)의 모든 Null 체크를 Awake() 함수로 이동
+   2. Start() 최소화: Start()는 이제 UI 초기값 설정 (ScoreTextUI.text = ...) 등 컴포넌트가 모두 준비된 후에 실행할 최초 동작만 담당하도록 분리
+
+
+- GameOverManager 스크립트 참조 방식 최적화 (캡슐화(private)를 유지하며 인스펙터 연결의 편리성을 사용)
+   1. 변수를 [SerializeField] private GameOverManager gameOverManager; 로 선언하여, public의 불안정성 없이 인스펙터 연결을 허용
+   2. FindAnyObjectByType()을 제거하여 게임 시작 시 성능 부하를 줄임 (씬에 오브젝트가 많아질수록 검색 시간이 선형적으로 늘어나 **프레임 저하**의 가능성이 있어)
+  	
+
+- 플레이어 사망 시 메인 루프 (Update/FixedUpdate) 효율 극대화.
+   1. 목표: 플레이어가 사망(IsDead = true)했을 때 불필요한 연산을 즉시 중단
+   2. Update() 최상단 체크: Update() 함수의 가장 첫 줄에 if (IsDead) return;을 배치시켜 플레이어가 사망 시 입력 처리, 사운드, 애니메이션 로직 전체를 즉시 건너뛰도록 수정했어
+   3. FixedUpdate() 간결화: PlayerDie() 함수에서 rb.simulated = false;를 실행하므로, FixedUpdate()의 중복된 if (IsDead) 블록을 제거하고 순수 이동 로직 한 줄만 남겼어
+
+
+- PlayerDie() 함수 로직 명확화 및 버그 수정
+   1. 플레이어 사망 처리 함수가 자신의 핵심 책임 (상태 변경 및 모든 활동 중단) 에만 집중하도록 정리했어
+   2. 불필요 코드 제거: horizontalInput = 0; 등 Update() 함수에서 이미 처리되는 입력 변수 초기화 코드를 삭제
+   3. 버그 수정: 사망 직후 걷기 사운드가 멈추지 않는 버그를 확인했어. PlayerDie() 함수 내부에 if(walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop(); 로직을 추가해서,
+   사망 즉시 이동 시 사운드를 중단 하도록 조치했어
+
