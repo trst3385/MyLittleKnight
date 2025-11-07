@@ -130,3 +130,30 @@ Player 스크립트 수정.
    3. 버그 수정: 사망 직후 걷기 사운드가 멈추지 않는 버그를 확인했어. PlayerDie() 함수 내부에 if(walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop(); 로직을 추가해서,
    사망 즉시 이동 시 사운드를 중단 하도록 조치했어
 
+
+
+11/7
+닿으면 지속 데미지를 받는 가시밭을 타일맵에 추가
+Debug.Log, Debug.LogWarning, Debug.LogError 차이 
+
+- 가시 프리팹의 크기와 범위가 작아서 5~6개로 복사해 부모 오브젝트 'SPIKE'를 만들어 그 안에 여러개의 가시 프리팹 자식으로 두고 프로젝트 창에 이동시켜서 하나의 프리팹으로 완성.
+   1. 부모 오브젝트에만 BoxCollider2D를 추가하고 통과하기 위해 IsTrigger를 켜고. 이 범위 안에 플레이어가 들어오면 데미지를 입게 하고 범위 밖으로 나가면 도트 데미지를 주게 했어.
+
+- 타일맵에 닿으면 데미지를 받고 벗어나도 n초간 도트데미지를 주는 가시 바닥 추가.
+   1. Spike 스크립트를 생성. OntriggerEnter와 Exit, 코루틴을 사용
+   2. 코투틴 전용 변수 private Coroutine spikeDamageCoroutine; , private Coroutine debuffCoroutine; 선언
+      2-1. 이 두 변수는 코루틴에서만 사용하는 코루틴의 실행과 중지를 제어하는 코루틴 전용 변수야
+      2-2. spikeDamageCoroutine = 타일 위에 있을 때의 데미지 처리 코루틴
+      2-3. debuffCoroutine = 타일을 나간 후의 디버프 처리 코루틴
+
+
+- 각 디버그 (Log, LogWarning, LogError)
+
+- Debug.Log = 특정 함수가 호출되었는지, 루프가 몇 번 실행되었는지 등 코드가 의도대로 잘 작동하고 있음을 확인하는 데 사용해 [게임 흐름 추적, 변수 값 출력]
+- Debug.LogWarning = 게임은 멈추지 않고 계속 실행되지만, 나중에 버그나 성능 저하를 유발할 수 있는 상황을 알려줘. 콘솔에서 노란색 필터로만 따로 걸러서 볼 수 있어, 정리해야 할 코드를 찾기 쉬워. [비정상적인 데이터, 컴포넌트 누락 시]
+- Debug.LogError = 프로그램 실행을 멈추거나 치명적인 문제 (예: NullReferenceException)를 알릴 때 사용. 즉각적인 조치가 필요한 심각한 에러야. [return 바로 전, 심각한 로직 오류]
+**내가 Spike 스크립트의 OnTriggerEnter2D 함수에서 if (playerShield == null) { Debug.LogError(...) }를 사용한 것이 아주 적절해! 치명적인 Null 에러를 미리 방지하고 개발자에게 명확하게 알리는 최고의 방법이야.**
+
+**내일은 ObstacleBolt 스크립트의 GetComponent 등 정리와 또, ObstacleBolt와 Enemy 스크립트 추가 수정 필요. 데미지를 받을때 playerShield 스크립트 내부에 playerHealth로 데미지를 이전 시키는 로직이 있으니까**
+**Spike 스크립트의 로직을 추가해 커밋 메세지를 업데이트 하자**
+
