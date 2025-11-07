@@ -45,6 +45,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Spike
+    uniqueID: 3198001365
+    locked: 0
   - name: Item
     uniqueID: 2425651459
     locked: 0

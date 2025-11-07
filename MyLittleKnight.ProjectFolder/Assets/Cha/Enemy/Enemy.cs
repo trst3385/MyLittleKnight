@@ -189,6 +189,7 @@ public class Enemy : MonoBehaviour
 
     void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
     {   //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
+
         if (playerScript == null || playerScript.IsDead)//플레이어 생존/연결 체크
         {
             Debug.Log("플레이어가 없거나 사망하여 데미지를 줄 수 없어!");
