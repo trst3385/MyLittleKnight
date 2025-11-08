@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ObstacleBolt : MonoBehaviour
+public class ObstacleFireBall : MonoBehaviour
 {
     //08.3
-    //moveSpeed나 damage 변수는 여기서나 인스펙터에서 수정한다고 바뀌지 않아.
-    //ObstacleSpawner 스크립트가 ObstacleBolt에게 "야, 너 속도랑 데미지 이 값으로 해!" 라고 명령을 내리려면,
-    //ObstacleBolt에 그 값을 받을 수 있는 **'공간'**이 있어야 하기 때문이야.
-    //그래서 ObstacleBolt 스크립트의 moveSpeed와 damage 변수는 값을 받는 통로로서 반드시 필요하니까 그대로 두는 게 맞아. 
+    //MoveSpeed나 Damage 변수는 여기서나 인스펙터에서 수정한다고 바뀌지 않아.
+    //ObstacleDifficultyManager 스크립트가 ObstacleFireBall에게 "야, 너 속도랑 데미지 이 값으로 해!" 라고 명령을 내리려면,
+    //ObstacleFireBall애 그 값을 받을 수 있는 **'공간'**이 있어야 하기 때문이야.
+    //그래서 ObstacleFireBall 스크립트의 moveSpeed와 damage 변수는 값을 받는 통로로서 반드시 필요하니까 그대로 두는 게 맞아. 
     //값은 다른 스크립트에서 다루지만 기본값을 넣어두면 나중에 프리팹 테스트를 위해 남겨는 둬!
+    //11/8일. MoveSpeed, Damage는 수정하지 않아도 되니 HideInInspector로 숨겼어
 
-    [Header("장애물 관련 변수")]
-    public float MoveSpeed = 5f;//발사체 이동속도 변수
-    public int Damage = 5;//발사체의 공격력
+    [Header("발사체 관련 변수")]
+    [HideInInspector] public float MoveSpeed = 5f;//발사체 이동속도 변수
+    [HideInInspector] public int Damage = 5;//발사체의 공격력
     public float DestroyTime = 10f;//발사체가 사라지는 시간 변수
     [HideInInspector] public Vector2 MoveDirection;//발사체의 방향을 저장할 변수
     //[HideInInspector]는 public 변수를 인스펙터에 안보이게 하는 기능이야!!!

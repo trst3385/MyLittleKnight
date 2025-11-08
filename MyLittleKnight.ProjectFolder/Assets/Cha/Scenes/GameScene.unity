@@ -847,7 +847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6aa7ed9d6e6784b4699fb92ceaf7ee22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObstacleBoltPrefab: {fileID: 3194892609946803572, guid: 48758bbcfe87f0a4480ed79f67a9770f,
+  ObstacleFireBall: {fileID: 3194892609946803572, guid: 48758bbcfe87f0a4480ed79f67a9770f,
     type: 3}
   SpawnAreaCollider: {fileID: 677321132}
 --- !u!114 &117700934
@@ -862,8 +862,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ed2710395e16240ae97361721dfcab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialBoltSpeed: 5
-  MaxBoltSpeed: 20
+  InitialFireBallSpeed: 6
+  MaxFireBallSpeed: 20
   SpeedIncreaseRate: 0.5
   SpeedIncreaseInterval: 20
   InitialDamage: 5
@@ -873,6 +873,13 @@ MonoBehaviour:
   MinSpawnInterval: 1
   IntervalDecreaseRate: 0.5
   IntervalDecreaseInterval: 20
+  InitialSpikeDamage: 1
+  DamageIncreaseSpike: 0.5
+  MaxSpikeDamage: 10
+  InitialDebuffDuration: 3
+  DurationIncreaseRate: 1
+  MaxDebuffDuration: 10
+  SpikeIncreaseInterval: 20
   ObstacleLevelText: {fileID: 1126028763}
 --- !u!1 &120064585
 GameObject:
