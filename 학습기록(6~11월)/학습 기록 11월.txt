@@ -153,7 +153,30 @@ Debug.Log, Debug.LogWarning, Debug.LogError 차이
 - Debug.LogWarning = 게임은 멈추지 않고 계속 실행되지만, 나중에 버그나 성능 저하를 유발할 수 있는 상황을 알려줘. 콘솔에서 노란색 필터로만 따로 걸러서 볼 수 있어, 정리해야 할 코드를 찾기 쉬워. [비정상적인 데이터, 컴포넌트 누락 시]
 - Debug.LogError = 프로그램 실행을 멈추거나 치명적인 문제 (예: NullReferenceException)를 알릴 때 사용. 즉각적인 조치가 필요한 심각한 에러야. [return 바로 전, 심각한 로직 오류]
 **내가 Spike 스크립트의 OnTriggerEnter2D 함수에서 if (playerShield == null) { Debug.LogError(...) }를 사용한 것이 아주 적절해! 치명적인 Null 에러를 미리 방지하고 개발자에게 명확하게 알리는 최고의 방법이야.**
+**Spike 스크립트의 로직을 추가해 커밋 메세지를 업데이트 하자**
+
+
+
+11/8
+Spike 스크립트의 데미지 등 강화를 ObstacleDifficultyManager 스크립트에 통합
+Obstacle 관련된 스크립트 이름 변경
+
+- Spike 스크립트의 데미지 변수들은 외부에서 받는 역할만 하고 데미지, 디버프 데미지, 20초마다 데미지 강화는 ObstacleDifficultyManager 스크립트에서 관리 하도록 했어.
+   1. ObstacleFireBall 스크립트처럼 이 안에도 FrieBall의 데미지와 속도, 등이 있지만 이 변수들은 ObstacleDifficultyManager 스크립트에서 정한 값을 우선으로 적용하게 해서 ObstacleFireBall 스크립트의 변수는,
+   매니저 스크립트에서 보낸 값을 받는 역할만해
+
+
+- Obstacle, ObstacleSpawner 스크립트, Bolt의 이름을 바꿨어. Spike 스크립트도 ObstacleDifficultyManager 스크립트의 관리를 받으니 매니저 스크립트는 그대로 두고 나머지는 이름을 바꿨어.
+   1. Bolt(발사체 프리팹)=FireBall
+   2. Obstacle=ObstacleFireBall.cs
+   3. ObstacleSpawner=ObstacleFireBallSpawner.cs
+   4. 스크립트 이름을 바꿨으니 다시 서로 연결을 하고 각 함수와 변수 이름도 FireBall에 맞게 변경했어
+- ObstacleFireBallSpawner 스크립트에서 InvokeRepeating 함수 인자로 사용되던 함수 이름 불일치 오류를 수정하여, 발사체 스폰 시스템의 안정성을 확보.
+- ObstacleDifficultyManager 스크립트의 모든 Getter 함수 (GetCurrentSpikeDamage())를 람다식 (=> 구문) 으로 변경하여 코드를 극도로 간결하게 만들고 가독성을 높였어.
+   1. 한줄만 있는 함수라 가독성과 공간을 위해 람다식으로 수정
+   2. 수정 전에는 return이 있는 함수지만 =>이 return을 역할을 해
+   3. 람다식 구문에서 => 기호는 **오른쪽 표현식의 결과를 자동으로 반환(return)한다** 는 의미를 내포하고 있어. 따라서 중괄호({})와 return 키워드를 명시적으로 쓰지 않아도 반환 기능은 그대로 작동해
 
 **내일은 ObstacleBolt 스크립트의 GetComponent 등 정리와 또, ObstacleBolt와 Enemy 스크립트 추가 수정 필요. 데미지를 받을때 playerShield 스크립트 내부에 playerHealth로 데미지를 이전 시키는 로직이 있으니까**
-**Spike 스크립트의 로직을 추가해 커밋 메세지를 업데이트 하자**
+
 
