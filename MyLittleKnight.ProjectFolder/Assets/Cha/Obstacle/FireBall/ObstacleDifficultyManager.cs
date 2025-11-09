@@ -5,7 +5,7 @@ using TMPro;//TextMeshPro UI랑 같이 써야 하니까 추가하자구!
 using UnityEngine;
 
 public class ObstacleDifficultyManager : MonoBehaviour
-{
+{ 
     //--- ObstacleFireBall을 설정할 난이도 변수들 ---
     [Header("발사체 속도 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float InitialFireBallSpeed = 5f;//초기 발사체 속도. 게임이 시작될 때 발사체가 움직이는 기본 속도
@@ -138,7 +138,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float GetCurrentFireBallSpeed() => currentFireballSpeed;//ObstacleFireBallSpawner 스크립트의 SpawnFireBall() 함수가 호출
     public int GetCurrentDamage() => currentFireballDamage;//SpawnFireBall()함수가 호출
     public float GetCurrentSpawnInterval() => currentFireballSpawnInterval;//Start, SpawnFireBall()함수가 호출
-
+    
     //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
     public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립의 ApplySpikeDamage()코루틴이 호출
     public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴이 호출

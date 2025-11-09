@@ -18,7 +18,7 @@ public class ObstacleFireBallSpawner : MonoBehaviour
     {
         InvokeRepeating("SpawnFireBall", 3f, ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
     }
-
+   
     private void SpawnFireBall()
     {
         CancelInvoke("SpawnFireBall");//이 코드는 SpawnFireBall 함수에 대해 현재 실행 중인 InvokeRepeating을 먼저 멈추는 거야.

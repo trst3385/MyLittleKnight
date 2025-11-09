@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
 
 
     [Header("스크립트 연결")]
-    public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조
+    public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
 
 
     [Header("Targeting Offset(플레이어 Y축 중심)")]
@@ -56,8 +56,7 @@ public class Enemy : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     //외부 스크립트(Start에서 초기화)
     private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
-    private PlayerShield playerShield;//플레이어의 방얽 컴포넌트 (캐싱)
-    private PlayerHealth playerHealth;//플레이어의 체력 컴포넌트 (캐싱)
+    private PlayerShield playerShield;//플레이어의 방어력 컴포넌트 (캐싱)
     //런타임 스탯
     private float currentMoveSpeed;//이동속도
     private float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
@@ -91,12 +90,10 @@ public class Enemy : MonoBehaviour
         {
             playerScript = playerGameObject.GetComponent<Player>();
 
-            //캐싱 최적화: 플레이어의 Health와 Shield 컴포넌트를 Start에서 한 번만 찾아서 저장 (캐싱)
+            //PlayerShield 스크립트 내부에서 방어력이 0이면 playerHealth. 플레이어 체력으로 넘겨주기에,
+            //playerHealth 스크립트를 선언할 필요는 없어
             if (playerScript != null)
-            {
                 playerShield = playerGameObject.GetComponent<PlayerShield>();
-                playerHealth = playerGameObject.GetComponent<PlayerHealth>();
-            }
         }
         else
         {
@@ -108,7 +105,7 @@ public class Enemy : MonoBehaviour
 
         lastAttackTime = Time.time - currentAttackCooldown;//시작하자마자 공격가능, 실행되고 쿨타임 기다리지 않고 바로 공격
     }
-
+    
     void FixedUpdate()//FixedUpdate에선 Time.deltaTime보단 Time.fixedDeltaTime(정확한 물리 계산과 일관된 이동 속도를 보장)
     {
         if (isDead)//몬스터 사망시
@@ -186,7 +183,7 @@ public class Enemy : MonoBehaviour
         }
         spriteRenderer.color = selectedStats.SpriteColor;
     }
-
+    
     void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
     {   //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
 
@@ -201,15 +198,7 @@ public class Enemy : MonoBehaviour
             playerShield.TakeShieldDamage(currentAttackDamage);
             Debug.Log("몬스터가 플레이어의 방어력에 " + currentAttackDamage + " 데미지를 줬어!");
         }
-        else//방어력이 없으면 체력(PlayerHealth) 컴포넌트 확인 후 체력에 데미지 적용
-        {
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(currentAttackDamage);
-                Debug.Log("플레이어가 " + currentAttackDamage + " 데미지를 받았다! 현재 체력: " + playerHealth.CurrentHealth);
-            }
-            else Debug.LogError("플레이어에게 PlayerHealth 스크립트가 없어!");
-        }
+        else Debug.LogError("PlayerShield 스크립트가 플레이어 오브젝트에 없어! 방어력 시스템에 연결되지 않았어!");
     }
 
     public void Attack()//몬스터가 플레이어에게 공격

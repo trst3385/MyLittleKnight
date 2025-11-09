@@ -17,9 +17,7 @@ public class ObstacleFireBall : MonoBehaviour
     [HideInInspector] public float MoveSpeed = 5f;//발사체 이동속도 변수
     [HideInInspector] public int Damage = 5;//발사체의 공격력
     public float DestroyTime = 10f;//발사체가 사라지는 시간 변수
-    [HideInInspector] public Vector2 MoveDirection;//발사체의 방향을 저장할 변수
-    //[HideInInspector]는 public 변수를 인스펙터에 안보이게 하는 기능이야!!!
-
+    [HideInInspector] public Vector2 MoveDirection;//발사체의 방향을 저장할 변수    
 
     void Start()
     {
@@ -32,7 +30,7 @@ public class ObstacleFireBall : MonoBehaviour
 
         Destroy(gameObject, DestroyTime);//선언된 destroyTime 변수의 값(시간)에 맞춰 사라질 오브젝트가 사라질 시간을 설정
     }
-
+    
 
     void FixedUpdate()//발사체는 물리적인 움직임이므로 FixedUpdate를 사용하는게 좋아
     {
@@ -46,20 +44,11 @@ public class ObstacleFireBall : MonoBehaviour
         if (other.CompareTag("Player"))//충돌한 상대방의 태그가 "Player"인지 확인
         {
             PlayerShield playerShield = other.GetComponent<PlayerShield>();
-            if (playerShield != null)
-                //PlayerShield 스크립트의 데미지 함수를 호출해서 방어력을 먼저 깎아.
-                playerShield.TakeShieldDamage(Damage);
-
-
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            //플레이어의 PlayerHealth 스크립트를 가져와서 데미지를 입히게 해
-            if (playerHealth != null)//!= null은 null 상태가 아닐때 즉, 스크립트랑 제대로 연결됐을때 실행되는거야
-                playerHealth.TakeDamage(Damage);
-
+            if (playerShield != null)  
+                playerShield.TakeShieldDamage(Damage);////PlayerShield 내부 로직이 쉴드 뚫리면 플레이어의 체력으로 데미지를 넘겨주므로,
+                                                      //이 스크립트는 체력(PlayerHealth)을 신경 쓸 필요가 없음. (책임 분리)
             //데미지를 준 후 발사체는 파괴
             Destroy(gameObject);
         }
-
     }
-
 }

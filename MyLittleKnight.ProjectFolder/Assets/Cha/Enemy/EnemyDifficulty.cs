@@ -63,8 +63,6 @@ public class EnemyDifficulty : MonoBehaviour
     private int currentNormalSpawnCount;//현재 동시 스폰 몬스터 개수를 저장할 변수
    
 
-    
-
     void Awake()
     {
         //게임 시작 시 이 스크립트의 유일한 인스턴스를 설정해.
