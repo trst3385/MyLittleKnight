@@ -10,17 +10,10 @@ public class PlayerShield : MonoBehaviour
     public float CurrentShield;//현재 방어력
     public Slider ShieldBar;//방어력 UI 슬라이더
 
-    [Header("스크립트 참조")]
-    [SerializeField] private PlayerHealth playerHealth;//]SerializeField]는 private 변수도 인스펙터에 노출되게 하는거야
-
-    // Awake()
-    // Start()보다 먼저, 스크립트가 로드될 때 한 번 실행돼.
-    // 주로 다른 스크립트 참조(GetComponent)나 초기 상태 설정을 여기에 적는 게 일반적이야.
-
-    //Start()
-    //첫 번째 프레임이 업데이트되기 직전에 한 번 실행돼.
-    //Awake()가 실행된 이후에 호출돼.
-    //모든 스크립트의 Awake() 가 이미 호출된 상태라, 다른 스크립트를 참조할 때 안전해.
+    [Header("플레이어 체력 스크립트 참조")]
+    [SerializeField] private PlayerHealth playerHealth;
+    //PlayerShield는 씬에 고정된 오브젝트이므로,
+    //지금처럼 선언 변수에 PlayerHealth 스크립트를 인스펙터로 직접 연결하는 것이 가장 좋은 방식이야.
 
     //enabled는 우리가 따로 선언하지 않았는데도 사용할 수 있는, 유니티의 MonoBehaviour 클래스가 기본으로 가지고 있는 내장 변수
     void Awake()
@@ -74,6 +67,5 @@ public class PlayerShield : MonoBehaviour
             ShieldBar.maxValue = MaxShield;//슬라이더의 최대 값을 플레이어의 최대 방어력으로 설정
             ShieldBar.value = CurrentShield;//슬라이더의 현재 값을 현재 방어력으로 설정
         }
-
     }
 }
