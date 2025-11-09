@@ -95,9 +95,14 @@ Enemy 스크립트의 불필요한 로직 최종 수정
    3. 요약: Awake: 나 자신이 준비하는 시간, Start: 모두가 준비를 마칠 때까지 기다렸다가, 다른 오브젝트와 연결하는 시간
 
 
-- ApplyTouchDamage()와 OnAttackFinished() 함수는 내부에 코드가 한줄만 있었어. 그래서 간결하게 =>를 쓰는 '표현식 본문 멤버'로 수정했어
+- ApplyTouchDamage()와 OnAttackFinished() 함수는 내부에 코드가 한줄만 있었어, 
+  이처럼 **반환 값이 없더라도** (void 함수), **단 하나의 표현식(Expression) 또는 문장(Statement)을 실행**할 때 간결하게 **=>를 쓰는 '표현식 본문 멤버(Expression-bodied Member)'**로 수정했어.
    1. void ApplyTouchDamage() => DealDamageToPlayer();//통합 함수 호출
-   2. public void OnAttackFinished() => animator.SetBool("Attack", false);//몬스터의 Animation에서 이 함수를 호출해 공격 종료.
+   2. public void OnAttackFinished() => animator.SetBool("Attack", false);//몬스터의 Animation에서 이 함수를 호출해 공격 종료
+
+- void 함수에 람다식을 적용할 수 있는지에 대해 헷갈릴 수 있는데, C#에서는 두 가지 경우가 가능해.
+   1. 값을 반환하는 경우 (Getter): 무조건 return 역할. (예: public int GetX() => _x;)
+   2. 값을 반환하지 않는 void 함수: **단 하나의 문장(Statement)**만 실행하는 경우 허용돼
 
 
 - 로직 안정성 강화: DealDamageToPlayer()에 최후의 IsDead 체크 추가.
@@ -153,7 +158,6 @@ Debug.Log, Debug.LogWarning, Debug.LogError 차이
 - Debug.LogWarning = 게임은 멈추지 않고 계속 실행되지만, 나중에 버그나 성능 저하를 유발할 수 있는 상황을 알려줘. 콘솔에서 노란색 필터로만 따로 걸러서 볼 수 있어, 정리해야 할 코드를 찾기 쉬워. [비정상적인 데이터, 컴포넌트 누락 시]
 - Debug.LogError = 프로그램 실행을 멈추거나 치명적인 문제 (예: NullReferenceException)를 알릴 때 사용. 즉각적인 조치가 필요한 심각한 에러야. [return 바로 전, 심각한 로직 오류]
 **내가 Spike 스크립트의 OnTriggerEnter2D 함수에서 if (playerShield == null) { Debug.LogError(...) }를 사용한 것이 아주 적절해! 치명적인 Null 에러를 미리 방지하고 개발자에게 명확하게 알리는 최고의 방법이야.**
-**Spike 스크립트의 로직을 추가해 커밋 메세지를 업데이트 하자**
 
 
 
@@ -177,6 +181,19 @@ Obstacle 관련된 스크립트 이름 변경
    2. 수정 전에는 return이 있는 함수지만 =>이 return을 역할을 해
    3. 람다식 구문에서 => 기호는 **오른쪽 표현식의 결과를 자동으로 반환(return)한다** 는 의미를 내포하고 있어. 따라서 중괄호({})와 return 키워드를 명시적으로 쓰지 않아도 반환 기능은 그대로 작동해
 
-**내일은 ObstacleBolt 스크립트의 GetComponent 등 정리와 또, ObstacleBolt와 Enemy 스크립트 추가 수정 필요. 데미지를 받을때 playerShield 스크립트 내부에 playerHealth로 데미지를 이전 시키는 로직이 있으니까**
+**내일은 ObstacleFireBall 스크립트의 GetComponent 등 정리와 또, ObstacleFireBall과 Enemy 스크립트 추가 수정 필요. 데미지를 받을때 playerShield 스크립트 내부에 playerHealth로 데미지를 이전 시키는 로직이 있으니까**
 
+
+
+11/9
+ObstacleFireBall, Enemy, PlayerShield 스크립트의 GetComponent<playerHealth> 삭제 (불필요한 로직), 설명 주석 추가
+
+- 코드 최적화 원칙: 캐싱
+   1. 참조 안정성: 프리팹(Prefab)처럼 동적으로 생성되는 오브젝트는 Awake()/Start() 시점에 코드를 통해 필요한 컴포넌트(예: 플레이어 스크립트)를 찾아 **한 번만 private 변수에 저장(캐싱)**하여 사용한다
+   2. 성능 최적화: Update()나 FixedUpdate() 같은 프레임마다 반복 실행되는 함수 내부에서는 GetComponent()나 GameObject.Find() 같은 고부하 함수를 절대 사용하지 않고, 캐싱된 변수를 재사용하여 CPU 부하를 최소화한다
+   3. 직접 연결 우선: 씬에 항상 존재하는 오브젝트는 [SerializeField] 변수를 통해 인스펙터에서 직접 연결(드래그 앤 드롭)하는 것을 최우선으로 한다
+
+- 다른 스크립트에서도 불필요한 공간이 있으면 정리하고 각 스크립트에 GetComponent, 선언변수를 쓰는 이유를 주석으로 설명했어.
+   1. ObstacleFireBall는 충돌 후 즉시 파괴되는 '단명 오브젝트'이므로 GetComponent로 찾은 주소를 private 변수에 따로 저장(캐싱)할 필요가 없기 때문.
+   2. Enemy처럼 반복 사용되는 오브젝트만 캐싱이 필요해
 
