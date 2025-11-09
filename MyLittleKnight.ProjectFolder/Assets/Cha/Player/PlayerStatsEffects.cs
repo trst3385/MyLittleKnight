@@ -3,18 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-//PlayerStatsEffects 스크립트?  플레이어의 능력치 관련 로직을 한데 모아 관리하는 역할을 해.
-//아이템 획득 시 플레이어의 공격력, 이동 속도, 체력 등을 변경하고, 그 변경 사항을 UI에 반영하는 모든 일을 담당하는 역할이야.
-
-//중앙 집중 관리: Item 스크립트에서 직접 PlayerAttack이나 PlayerHealth 스크립트에 접근하는 대신,
-//PlayerStatsEffects 스크립트의 함수를 호출해서 모든 능력치 관련 로직을 처리해.
-
-//유지보수 및 확장성: 새로운 능력치 아이템이 추가되거나 UI가 바뀌더라도,
-//PlayerStatsEffects 스크립트만 수정하면 되기 때문에 코드가 훨씬 깔끔하고 관리가 쉬워져.
-
-//단일 책임 원칙: 이 스크립트가 능력치 관리라는 한 가지 책임만 지기 때문에,
-//다른 스크립트(예: Player, PlayerAttack)는 자기 본연의 역할(이동, 공격)에만 집중할 수 있게 돼.
-
 
 ///<summary>
 ///플레이어의 능력치 강화 및 UI 업데이트를 관리하는 스크립트야.
