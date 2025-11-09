@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     //외부 스크립트(Start에서 초기화)
     private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
-    private PlayerShield playerShield;//플레이어의 방어력 컴포넌트 (캐싱)
+    private PlayerShield playerShield;//선언(보관함)은 저장 공간이고, Start()의 GetComponent는 그 공간에 값을 넣어주는 역할
     //런타임 스탯
     private float currentMoveSpeed;//이동속도
     private float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
@@ -194,7 +194,7 @@ public class Enemy : MonoBehaviour
         }
 
         if (playerShield != null)//플레이어에게 방어력이 있다면, 방어력에 먼저 데미지 적용
-        {
+        {                        //방어력이 0이면 체력으로 데미지 이전
             playerShield.TakeShieldDamage(currentAttackDamage);
             Debug.Log("몬스터가 플레이어의 방어력에 " + currentAttackDamage + " 데미지를 줬어!");
         }
