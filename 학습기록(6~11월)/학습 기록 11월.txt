@@ -197,3 +197,35 @@ ObstacleFireBall, Enemy, PlayerShield 스크립트의 GetComponent<playerHealth>
    1. ObstacleFireBall는 충돌 후 즉시 파괴되는 '단명 오브젝트'이므로 GetComponent로 찾은 주소를 private 변수에 따로 저장(캐싱)할 필요가 없기 때문.
    2. Enemy처럼 반복 사용되는 오브젝트만 캐싱이 필요해
 
+
+
+11/10
+타일맵 내에 랜덤 위치에 등장하는 SpikeSpawn 스크립트 추가
+장애물 난이도 동적 스케일링 시스템 (스파이크/발사체 동기화) 구현
+
+- 오늘 작업은 게임의 핵심인 `난이도 조절 시스템` 을 유기적으로 만들고, 모든 장애물이 중앙 관리자(ObstacleDifficultyManager 스크립트)의 지시를 따르도록 연결하는 것이었어. 
+  특히, 레벨업 시 발생할 수 있는 동기화 오류를 잡아내는 디버그 로직까지 추가해서 시스템의 안정성을 극대화했어.
+
+- SpikeSpawn 스크립트 추가.
+- 타일맵 상에 가시 함정을 랜덤하게 생성하고 자동으로 사라지게 하는 시스템 구축.
+   1. 타일맵 좌표를 인식하여 플레이어가 예상하기 어려운 위치에 무작위로 가시가 생성되도록 로직을 구현했어
+   2. 생성된 가시가 일정 시간 후에 스스로 파괴되는 자동 소멸 기능을 추가하여 자원 관리를 효율화했지.
+
+- Spike 스크립트(난이도 동기화)
+- 가시의 데미지 및 디버프 지속 시간이 난이도 관리자(ObstacleDifficultyManager)에게 종속되도록 변경.
+   1. 스크립트 내에 하드코딩된 데미지 변수를 완전히 제거했어
+   2. 대신, ObstacleDifficultyManager.Instance.GetCurrentSpikeDamage()를 호출해서 실시간으로 현재 난이도 레벨에 맞는 값을 받아오도록 연결했어. 이로써 난이도 변경 시 UI 재시작 없이도 즉시 가시에 적용돼
+
+- ObstacleDifficultyManager 스크립트(핵심 시스템 완성)
+- 목표: 4가지 개별 강화 항목(발사체 속도, 생성 주기, 데미지, 가시 난이도)을 단일 currentLevel 변수에 동기화하고, 디버깅을 위한 상세 로그를 추가.
+   1. 가시 난이도 관리(20초마다 데미지 증가) 변수 추가: 가시의 데미지 및 디버프 시간 증가를 위한 타이머와 변수(예: timeSinceLastSpikeIncrease, currentSpikeDamage)를 멤버 변수로 완벽히 통합했어
+   2. 중앙 레벨업 로직 구현: if (levelUpJustHappened) 블록 내에서 currentLevel++와 UpdateLevelText() 함수를 호출해 레벨업이 중복되지 않고 깔끔하게 1씩 증가하도록 보장했어 	
+   3. 로컬 플래그(지역변수 플래그. fireballSpeedIncreased, intervalDecreased 등)를 사용하여 이번 프레임에 어떤 개별 강화가 성공했는지 Update()함수 내 각 장애물 난이도 증가 if문에 정확하게 추적했어
+   4. 최종 로그 메시지에서 '완벽 동기화 성공' 메시지와 '부분 동기화 됨' (지연/미발동 항목 명시) 메시지를 구분하여 출력하도록 구현했어. (이 로직은 나중에 성능 분석이나 버그 추적에 매우 중요한 역할을 해)
+      4-1. if (allSucceeded) Debug.Log($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) 완벽 동기화 성공! ({successful})");
+      4-2. else Debug.LogWarning($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) 부분 동기화 됨. ★★★\n[성공 항목]: {successful.Trim()}\n[지연 항목]: {missed.Trim()}");
+
+
+**내일은 ObstacleDifficultyManager스크립트에서 발사체(FireBall)의 강화 시간을 통합하자, 속도, 데미지, 발사주기에 각각 시간 간격이 있어. Spike처럼 하나로 통합하자**
+**또 10일까지 했던 모든 기능 (가시, ObstacleDifficultyManager에 가시 데미지 관리, SpikeSpawn에서 타일맵 내에 가시 생성,파괴)을 포트폴리오에 적고 다시 빌드해서 git에 올리고 포폴에 다운로드 링크도 다시 추가해주자!**
+	
