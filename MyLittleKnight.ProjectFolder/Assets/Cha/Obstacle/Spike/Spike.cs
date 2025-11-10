@@ -5,11 +5,9 @@ public class Spike : MonoBehaviour
 {
     [Header("플레이어의 체력, 방어력 연결")]
     [SerializeField] private PlayerShield playerShield;//플레이어 방어력 스크립트
-    [SerializeField] private PlayerHealth playerHealth;//플레이어 체력 스크립트 
 
-    [Header("가시 데미지, 디버프 시간")]
-    [SerializeField] private float damageInterval = 1f;//데미지 틱 간격 (초)
-    [SerializeField] private float postExitDuration = 3.0f;//바닥을 나간 후 데미지 지속 시간(초)
+    private float damageInterval = 1f;//데미지 틱 간격 (초)
+    private float postExitDuration = 3.0f;//바닥을 나간 후 데미지 지속 시간(초)
 
     //코루틴에서만 사용하는 코루틴의 실행과 중지를 제어하는 '코루틴 전용 변수'
     private Coroutine spikeDamageCoroutine;//타일 위에 있을 때의 데미지 처리 코루틴
@@ -24,11 +22,7 @@ public class Spike : MonoBehaviour
                 Debug.LogError("Spike 스크립트에 PlayerShield 컴포넌트 연결이 누락됐어!", this);
                 return;//함수 종료
             }
-            if (playerHealth == null)
-            {
-                Debug.LogError("Spike 스크립트에 playerHealth 컴포넌트 연결이 누락됐어!", this);
-                return;
-            } 
+           
 
             if (debuffCoroutine != null)//디버프 중이라면 즉시 중지하고 Spike 피해로 전환
             {
@@ -47,7 +41,7 @@ public class Spike : MonoBehaviour
     {
         if (other.CompareTag("Player"))//영역에 닿은 오브젝트의 태그 "Player" 를 확인
         {
-            if(playerShield == null || playerHealth == null) return;//null 체크는 계속 유지
+            if(playerShield == null) return;//null 체크는 계속 유지
             
 
             if(spikeDamageCoroutine != null)//가시 데미지 즉시 중단
@@ -69,7 +63,7 @@ public class Spike : MonoBehaviour
     {
         while (true)//while (true): 무한 반복(플레이어가 벗어날 때까지 계속 데미지를 주기 위함)
         { 
-            if (playerShield == null || playerHealth == null) break;//두 스크립트 중 하나라도 없으면 함수 종료
+            if (playerShield == null) break;//두 스크립트 중 하나라도 없으면 함수 종료
 
             if (ObstacleDifficultyManager.Instance != null)//매 틱마다 ObstacleDifficultyManager에서 현재 데미지 값을 실시간으로 가져옴
             {
@@ -93,7 +87,7 @@ public class Spike : MonoBehaviour
 
         while (timer > 0)//while (timer > 0): 타이머가 0보다 클 때까지만 반복(제한된 횟수만큼 데미지를 주기 위함)
         {
-            if(playerShield == null || playerHealth == null) break;
+            if(playerShield == null) break;
 
             if (ObstacleDifficultyManager.Instance != null)
             {
@@ -109,4 +103,12 @@ public class Spike : MonoBehaviour
         Debug.Log("디버프 데미지 종료!");
         debuffCoroutine = null;
     }
+
+    public void InitializeSpike(float duration)//외부 SpikeManager스크립트에서 호출될 초기화 함수
+    {
+        //지정된 시간(duration) 후에 이 오브젝트(가시)를 파괴
+        Destroy(gameObject, duration);
+    }
 }
+
+

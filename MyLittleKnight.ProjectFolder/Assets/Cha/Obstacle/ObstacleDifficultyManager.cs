@@ -25,15 +25,17 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float IntervalDecreaseInterval = 20f;//주기 감소 간격. 몇 초마다 생성 주기를 한 단계씩 줄일지 정하는 시간 간격. 
 
     [Header("가시 함정 데미지 조절")]
-    public float InitialSpikeDamage = 1f;//초기 밟았을 때 데미지
+    public float InitialSpikeDamage = 2f;//초기 밟았을 때 데미지, 디버프 데미지는 이 값의 50%
     public float DamageIncreaseSpike = 0.5f;//가시 데미지 증가량
     public float MaxSpikeDamage = 10f;//최대 밟았을 때 데미지
 
     [Header("가시 디버프 조절")]
     public float InitialDebuffDuration = 3f;//초기 디버프 지속 시간
-    public float DurationIncreaseRate = 1.0f;//디버프 시간 감소량
+    public float DurationIncreaseRate = 1.0f;//디버프 시간 증가량
     public float MaxDebuffDuration = 10f;//최대 디버프 지속 시간
-    public float SpikeIncreaseInterval = 20f;//가시 난이도 증가 간격 (FireBall과 같은 20초로 통일)
+
+    [Header("가시 난이도 증가 주기")]
+    public float SpikeIncreaseInterval = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
 
 
 
@@ -88,6 +90,14 @@ public class ObstacleDifficultyManager : MonoBehaviour
     
     void Update()
     {
+        bool levelUpJustHappened = false;//레벨업이 발생했는지 확인하는 플래그
+
+        //이번 프레임에 어떤 개별 강화가 성공했는지 추적하는 로컬(지역변수) 플래그
+        bool fireballSpeedIncreased = false;
+        bool intervalDecreased = false;
+        bool fireballDamageIncreased = false;
+        bool spikeIncreased = false;
+
         //시간이 지남에 따라 난이도 조절
         timeSinceLastSpeedIncrease += Time.deltaTime;
         timeSinceLastIntervalDecrease += Time.deltaTime;
@@ -100,11 +110,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
             currentFireballSpeed = Mathf.Min(currentFireballSpeed + SpeedIncreaseRate, MaxFireBallSpeed);
             timeSinceLastSpeedIncrease = 0f;
             Debug.Log($"발사체 속도 증가! 현재 속도: {currentFireballSpeed}");
-
-            //난이도 레벨 증가 및 UI 업데이트는 여기에서 한 번만 호출
-            currentLevel++;     //속도 증가 if문에 넣어도 다른 if문은 전부 같은 시간에 값을 증가 하잖아? 그래서 셋 중 하나에만 넣어야해.
-            UpdateLevelText();  //각 if문 마다 넣으면 각 조건이 참일때마다 레벨1씩을 주니까 레벨 n초마다 레벨 1증가가 아니라 3증가가 되버리지!
-                                //if문들이 동시에 작동해서 레벨이 증가해. 걱정마! 대신 셋의 강화 시간을 똑같이 해놔야해!   
+            levelUpJustHappened = true;//전체 레벨업 플래그 설정
+            fireballSpeedIncreased = true;//개별 강화 성공 플래그 설정
         }
         //FireBall생성 주기 감소
         if (timeSinceLastIntervalDecrease >= IntervalDecreaseInterval)
@@ -112,6 +119,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
             currentFireballSpawnInterval = Mathf.Max(MinSpawnInterval, currentFireballSpawnInterval - IntervalDecreaseRate);
             timeSinceLastIntervalDecrease = 0f;
             Debug.Log($"발사체 생성 주기 감소! 현재 주기: {currentFireballSpawnInterval}");
+            levelUpJustHappened = true;
+            intervalDecreased = true;
         }
         //FireBall데미지 증가
         if (timeSinceLastDamageIncrease >= DamageIncreaseInterval)
@@ -119,6 +128,9 @@ public class ObstacleDifficultyManager : MonoBehaviour
             currentFireballDamage += DamageIncrease;
             timeSinceLastDamageIncrease = 0f;
             Debug.Log($"발사체 데미지 증가! 현재 데미지: {currentFireballDamage}");
+            levelUpJustHappened = true;
+            fireballDamageIncreased = true;
+
         }
 
         //가시 난이도 증가
@@ -131,6 +143,33 @@ public class ObstacleDifficultyManager : MonoBehaviour
             currentDebuffDuration = Mathf.Min(MaxDebuffDuration, currentDebuffDuration + DurationIncreaseRate);
             timeSinceLastSpikeIncrease = 0f;
             Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}");
+            levelUpJustHappened = true;
+            spikeIncreased = true;
+        }
+
+        if (levelUpJustHappened)//모든 강화가 끝난 후, 레벨업 플래그를 확인하여 레벨 증가 UI 업데이트
+        {                       //이 로직은 모든 개별 강화 if문이 끝난 후, 강화가 발생했음을 확인하는 최종 검증 단계
+            currentLevel++;
+            UpdateLevelText();
+            Debug.Log($"★★★ 전체 장애물 레벨업! 현재 레벨: {currentLevel} ★★★★");
+
+            //성공한 항목과 실패한 항목을 구분해서 메시지 작성
+            string successful = "성공: ";
+            string missed = "지연/미발동(오차): ";
+            bool allSucceeded = true;
+
+            // 성공 항목 체크, 띄워쓰기로 가독성도 높이자!
+            if (fireballSpeedIncreased) successful += " [FireBall 속도] "; else { missed += " [FireBall 속도] "; allSucceeded = false; }
+            if (intervalDecreased) successful += " [FireBall 생성 주기] "; else { missed += " [FireBall 생성 주기] "; allSucceeded = false; }
+            if (fireballDamageIncreased) successful += " [FireBall 데미지] "; else { missed += " [FireBall 데미지] "; allSucceeded = false; }
+            if (spikeIncreased) successful += " [가시 함정] "; else { missed += " [가시 함정] "; allSucceeded = false; }
+
+
+            //최종 디버그 로그 출력
+            if (allSucceeded)
+                Debug.Log($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) 완벽 동기화 성공! ({successful})");
+            else//하나라도 놓쳤을 경우 상세 로그 출력 
+                Debug.LogWarning($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) 부분 동기화 됨. ★★★\n[성공 항목]: {successful.Trim()}\n[지연 항목]: {missed.Trim()}");
         }
     }
 
