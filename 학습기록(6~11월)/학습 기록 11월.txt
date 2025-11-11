@@ -228,4 +228,14 @@ ObstacleFireBall, Enemy, PlayerShield 스크립트의 GetComponent<playerHealth>
 
 **내일은 ObstacleDifficultyManager스크립트에서 발사체(FireBall)의 강화 시간을 통합하자, 속도, 데미지, 발사주기에 각각 시간 간격이 있어. Spike처럼 하나로 통합하자**
 **또 10일까지 했던 모든 기능 (가시, ObstacleDifficultyManager에 가시 데미지 관리, SpikeSpawn에서 타일맵 내에 가시 생성,파괴)을 포트폴리오에 적고 다시 빌드해서 git에 올리고 포폴에 다운로드 링크도 다시 추가해주자!**
+
+
+
+11/11
+122회 헌혈
+가시 관련 스크립트 재정리
+
+- ObstacleDifficultyManager 스크립트가 가시의 생성 시간을 관리해.  (동적 난이도 조절을 위해 ObstacleDifficultyManager 스크립트가 중앙 관리형태)
+- SpikeSpawn 스크립트는 이젠 가시가 사라지는 시간만을 담당. (ObstacleDifficultyManager 스크립트의 currentSpikeSpawnInterval 변수를 가져와 다음 가시 스폰 주기를 확인)
+- Spike 스크립트는 ApplyDebuffDamage() 함수에서 디버프의 시간을 timer = postExitDuration; 으로 timer 변수 하나로 난이도 값을 가져와. ( while (timer > 0) {...} )
 	
