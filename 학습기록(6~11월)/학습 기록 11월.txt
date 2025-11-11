@@ -238,4 +238,6 @@ ObstacleFireBall, Enemy, PlayerShield 스크립트의 GetComponent<playerHealth>
 - ObstacleDifficultyManager 스크립트가 가시의 생성 시간을 관리해.  (동적 난이도 조절을 위해 ObstacleDifficultyManager 스크립트가 중앙 관리형태)
 - SpikeSpawn 스크립트는 이젠 가시가 사라지는 시간만을 담당. (ObstacleDifficultyManager 스크립트의 currentSpikeSpawnInterval 변수를 가져와 다음 가시 스폰 주기를 확인)
 - Spike 스크립트는 ApplyDebuffDamage() 함수에서 디버프의 시간을 timer = postExitDuration; 으로 timer 변수 하나로 난이도 값을 가져와. ( while (timer > 0) {...} )
+
+**내일은 포트폴리오에 가시생성과 20초마다 데미지, 스폰 주기 감소 등을 설명하는 글을 적자! 오늘 헌혈도 수고 많았어!**
 	
