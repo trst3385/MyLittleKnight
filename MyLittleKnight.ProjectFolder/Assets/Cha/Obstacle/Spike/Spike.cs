@@ -76,14 +76,15 @@ public class Spike : MonoBehaviour
     }
     IEnumerator ApplyDebuffDamage()//가시함정에서 벗어난 후 남은 시간 동안 데미지를 주는 코루틴
     {
-        // 디버프 지속 시간도 실시간으로 가져와서 타이머를 시작하는 것이 정확해
-        float currentDuration = postExitDuration;
+        //timer 변수 하나로 난이도 값을 가져와 초기화
+        float timer = postExitDuration;//기본값으로 초기화
+
         if (ObstacleDifficultyManager.Instance != null)
         {
-            currentDuration = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
+            timer = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
         }
 
-        float timer = postExitDuration;
+        Debug.Log($"디버프 시작: {timer}초 동안 지속 (난이도 적용)");
 
         while (timer > 0)//while (timer > 0): 타이머가 0보다 클 때까지만 반복(제한된 횟수만큼 데미지를 주기 위함)
         {

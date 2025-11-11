@@ -5,8 +5,10 @@ public class SpikeSpawn : MonoBehaviour
 {
     [Header("스폰 설정")]
     public GameObject SpikePrefab;//가시 프리팹 (인스펙터 연결)
-    public float SpawnInterval = 5f;//가시가 스폰되는 시간(n초마다 등장)
-    public float SpikeDuration = 3f;//가시가 사라지는 시간
+    //public float SpawnInterval = 5f;//가시가 스폰되는 시간, ObstacleDifficultyManager 스크립트가 조절중(currentSpikeSpawnInterval 변수)
+    public float SpikeDuration = 5f;//가시가 사라지는 시간
+    //!참고!가시 생성 주기(Spawn Interval)는 동적 난이도 조절을 위해 ObstacleDifficultyManager가 중앙 관리해
+    //SpikeDuration(가시 수명)만 여기서 관리하며, 생성 주기는 GetCurrentSpikeSpawnInterval() 함수를 통해 가져와.
 
     [Header("타일맵 참조")]
     public Tilemap TargetTilemap;
@@ -18,10 +20,19 @@ public class SpikeSpawn : MonoBehaviour
     {
         if (TargetTilemap == null)//EnemySpawn 스크립트와 동일: 게임 시작 시 Tilemap 참조 필수 확인
         {
-            Debug.LogError("SpikeSpawn: TargetTilemap이 할당되지 않았어!");
+            Debug.LogError("SpikeSpawn: TargetTilemap이 할당되지 않았어! 인스펙터 확인해봐!");
             enabled = false;
+            return;//TargetTilemap이 없으면 즉시 함수 종료
         }
-        spawnTimer = SpawnInterval;
+
+        //초기 스폰 주기를 ObstacleDifficultyManager 스크립트에서 가져옴(currentSpikeSpawnInterval 변수)
+        float initialInterval = 5f; // 기본값
+        if (ObstacleDifficultyManager.Instance != null)
+        {
+            //ObstacleDifficultyManager 스크립트의 초기값으로 덮어쓰기
+            initialInterval = ObstacleDifficultyManager.Instance.GetCurrentSpikeSpawnInterval();
+        }
+        spawnTimer = initialInterval;
     }
 
     void Update()
@@ -31,7 +42,13 @@ public class SpikeSpawn : MonoBehaviour
         if (spawnTimer <= 0f)
         {
             SpawnSpike();
-            spawnTimer = SpawnInterval;
+
+            //다음 스폰 주기는 ObstacleDifficultyManager 스크립트에서 최신값을 받아옴
+            if (ObstacleDifficultyManager.Instance != null)
+            {
+                spawnTimer = ObstacleDifficultyManager.Instance.GetCurrentSpikeSpawnInterval();
+            }
+            else spawnTimer = 5f;//난이도 관리자가 없을 경우를 대비해 기본값 사용  
         }
     }
 

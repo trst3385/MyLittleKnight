@@ -863,23 +863,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ed2710395e16240ae97361721dfcab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FireBallIncreaseInterval: 20
   InitialFireBallSpeed: 6
   MaxFireBallSpeed: 20
   SpeedIncreaseRate: 0.5
-  SpeedIncreaseInterval: 20
   InitialDamage: 5
   DamageIncrease: 2
-  DamageIncreaseInterval: 20
   InitialSpawnInterval: 3
   MinSpawnInterval: 1
   IntervalDecreaseRate: 0.5
-  IntervalDecreaseInterval: 20
   InitialSpikeDamage: 1
   DamageIncreaseSpike: 0.5
   MaxSpikeDamage: 10
   InitialDebuffDuration: 3
   DurationIncreaseRate: 1
   MaxDebuffDuration: 10
+  InitialSpikeSpawnInterval: 5
+  MinSpikeSpawnInterval: 1
+  SpikeIntervalDecreaseRate: 0.5
   SpikeIncreaseInterval: 20
   ObstacleLevelText: {fileID: 1126028763}
 --- !u!114 &117700935
@@ -896,8 +897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpikeSpawn
   SpikePrefab: {fileID: 1454059849261258909, guid: a84c1e1b8b0afd342bcd4418b8216f8b,
     type: 3}
-  SpawnInterval: 5
-  SpikeDuration: 3
+  SpikeDuration: 5
   TargetTilemap: {fileID: 1254152492}
   SpawnableLayer:
     serializedVersion: 2

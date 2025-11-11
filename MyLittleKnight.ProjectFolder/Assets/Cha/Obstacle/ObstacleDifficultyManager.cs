@@ -5,26 +5,27 @@ using TMPro;//TextMeshPro UI랑 같이 써야 하니까 추가하자구!
 using UnityEngine;
 
 public class ObstacleDifficultyManager : MonoBehaviour
-{ 
+{
     //--- ObstacleFireBall을 설정할 난이도 변수들 ---
+    [Header("발사체 난이도 통합 주기")]
+    public float FireBallIncreaseInterval = 20f;//FireBall의 속도, 데미지, 생성 주기가 동시에 강화되는 시간 간격(f초)
+
     [Header("발사체 속도 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float InitialFireBallSpeed = 5f;//초기 발사체 속도. 게임이 시작될 때 발사체가 움직이는 기본 속도
     public float MaxFireBallSpeed = 30f;//최대 발사체 속도
     public float SpeedIncreaseRate = 0.5f;//속도 증가량. 발사체의 속도가 한 번 빨라질 때마다 몇씩 증가할지 정하는 값
-    public float SpeedIncreaseInterval = 20f;//속도 증가 간격. n 초마다 발사체의 속도를 한 단계씩 올릴지 정하는 시간 간격.
-   
+                                          
     [Header("발사체 데미지 조절")]
     public int InitialDamage = 5;//초기 발사체 데미지
     public int DamageIncrease = 2;//데미지 증가량. 발사체의 데미지가 한 번 강해질 때마다 몇씩 증가할지 정하는 값
-    public float DamageIncreaseInterval = 20f;//데미지 증가 간격. 몇 초마다 발사체의 데미지를 한 단계씩 올릴지 정하는 시간 간격. 20초로 설정했으니, 20초마다 damageIncrease만큼 데미지가 증가하겠지.
 
     [Header("발사체 생성 주기 조절")]
     public float InitialSpawnInterval = 3f;//초기 생성 주기. 게임이 시작될 때 발사체가 생성되는 기본 시간 간격.
     public float MinSpawnInterval = 2f;//최대 생성 주기. 난이도가 계속 올라가도 이 시간보다 더 짧아지지는 않아. 최대 생성되는 시간 간격.
     public float IntervalDecreaseRate = 0.5f;//주기 감소량. 발사체 생성 주기가 한 번 줄어들 때마다 몇 초씩 줄일지 정하는 값이야.
-    public float IntervalDecreaseInterval = 20f;//주기 감소 간격. 몇 초마다 생성 주기를 한 단계씩 줄일지 정하는 시간 간격. 
 
-    [Header("가시 함정 데미지 조절")]
+    //--- Spike(가시)를 설정할 난이도 변수들 ---
+    [Header("가시 데미지 조절")]
     public float InitialSpikeDamage = 2f;//초기 밟았을 때 데미지, 디버프 데미지는 이 값의 50%
     public float DamageIncreaseSpike = 0.5f;//가시 데미지 증가량
     public float MaxSpikeDamage = 10f;//최대 밟았을 때 데미지
@@ -33,6 +34,11 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float InitialDebuffDuration = 3f;//초기 디버프 지속 시간
     public float DurationIncreaseRate = 1.0f;//디버프 시간 증가량
     public float MaxDebuffDuration = 10f;//최대 디버프 지속 시간
+
+    [Header("가시 생성 주기 조절")]
+    public float InitialSpikeSpawnInterval = 5f;//초기 가시 생성 주기 (SpikeSpawn 스크립트에서 가져옴)
+    public float MinSpikeSpawnInterval = 1f;//최소 가시 생성 주기
+    public float SpikeIntervalDecreaseRate = 0.5f;//가시 생성 주기 감소량 (0.5초씩 감소)
 
     [Header("가시 난이도 증가 주기")]
     public float SpikeIncreaseInterval = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
@@ -43,11 +49,9 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public TextMeshProUGUI ObstacleLevelText;//UI 텍스트를 담을 변수
 
     //--- 내부에서 사용할 변수들, 현재의 변수 상태들을 담을 변수들 ---
-
+    
     //FireBall 발사체
-    private float timeSinceLastSpeedIncrease = 0f;//마지막으로 발사체 속도를 올린 후 경과 시간 (Interval과 비교용)
-    private float timeSinceLastIntervalDecrease = 0f;//마지막으로 생성 주기를 줄인 후 경과 시간(Interval과 비교용
-    private float timeSinceLastDamageIncrease = 0f;//마지막으로 데미지를 올린 후 경과 시간 (Interval과 비교용)
+    private float timeSinceLastFireBallIncrease = 0f;//마지막으로 발사체 강화를 올린 후 경과 시간(발사체 통합)
     private float currentFireballSpeed;//현재 게임에 적용되고 있는 발사체의 속도 (Start에서 초기화 후 Update에서 누적 증가
     private float currentFireballSpawnInterval;//현재 게임에 적용되고 있는 발사체의 생성 주기(Start에서 초기화 후 Update에서 누적 감소)
     private int currentFireballDamage;//현재 게임에 적용되고 있는 발사체의 데미지 (Start에서 초기화 후 Update에서 누적 증가)
@@ -55,7 +59,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
     private float timeSinceLastSpikeIncrease = 0f;//가시 증가 경과 시간
     private float currentSpikeDamage;//현재 가시 데미지
     private float currentDebuffDuration;//현재 디버프 지속 시간
-    
+    private float currentSpikeSpawnInterval;//현재 가시 생성 주기
+
     private int currentLevel = 0;//현재 난이도 레벨을 저장할 변수(난이도 강화 시점마다 1씩 증가)
 
     // 어디서든 이 스크립트에 접근할 수 있게 해주는 '싱글톤' 패턴
@@ -83,6 +88,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
         //가시 초기화
         currentSpikeDamage = InitialSpikeDamage;
         currentDebuffDuration = InitialDebuffDuration;
+        currentSpikeSpawnInterval = InitialSpikeSpawnInterval;//가시 생성 주기 초기화 추가
 
         //게임 시작 시 UI 텍스트에 초기 레벨을 표시
         UpdateLevelText();
@@ -99,59 +105,55 @@ public class ObstacleDifficultyManager : MonoBehaviour
         bool spikeIncreased = false;
 
         //시간이 지남에 따라 난이도 조절
-        timeSinceLastSpeedIncrease += Time.deltaTime;
-        timeSinceLastIntervalDecrease += Time.deltaTime;
-        timeSinceLastDamageIncrease += Time.deltaTime;
+        timeSinceLastFireBallIncrease += Time.deltaTime;//발사체 통합 타이머 증가
         timeSinceLastSpikeIncrease += Time.deltaTime;//가시함정 증가 시간
 
         //FireBall속도 증가
-        if (timeSinceLastSpeedIncrease >= SpeedIncreaseInterval)
+        if (timeSinceLastFireBallIncrease >= FireBallIncreaseInterval)
         {
-            currentFireballSpeed = Mathf.Min(currentFireballSpeed + SpeedIncreaseRate, MaxFireBallSpeed);
-            timeSinceLastSpeedIncrease = 0f;
+            //발사체 속도 증가
+            currentFireballSpeed = Mathf.Min(currentFireballSpeed + SpeedIncreaseRate, MaxFireBallSpeed);
             Debug.Log($"발사체 속도 증가! 현재 속도: {currentFireballSpeed}");
-            levelUpJustHappened = true;//전체 레벨업 플래그 설정
-            fireballSpeedIncreased = true;//개별 강화 성공 플래그 설정
-        }
-        //FireBall생성 주기 감소
-        if (timeSinceLastIntervalDecrease >= IntervalDecreaseInterval)
-        {
-            currentFireballSpawnInterval = Mathf.Max(MinSpawnInterval, currentFireballSpawnInterval - IntervalDecreaseRate);
-            timeSinceLastIntervalDecrease = 0f;
+            fireballSpeedIncreased = true;
+
+            //생성 주기 감소
+            currentFireballSpawnInterval = Mathf.Max(MinSpawnInterval, currentFireballSpawnInterval - IntervalDecreaseRate);
             Debug.Log($"발사체 생성 주기 감소! 현재 주기: {currentFireballSpawnInterval}");
-            levelUpJustHappened = true;
             intervalDecreased = true;
-        }
-        //FireBall데미지 증가
-        if (timeSinceLastDamageIncrease >= DamageIncreaseInterval)
-        {
-            currentFireballDamage += DamageIncrease;
-            timeSinceLastDamageIncrease = 0f;
+
+            //데미지 증가
+            currentFireballDamage += DamageIncrease;
             Debug.Log($"발사체 데미지 증가! 현재 데미지: {currentFireballDamage}");
-            levelUpJustHappened = true;
             fireballDamageIncreased = true;
 
+            //통합 타이머 초기화 및 레벨업 플래그 설정
+            timeSinceLastFireBallIncrease = 0f;
+            levelUpJustHappened = true;
         }
 
         //가시 난이도 증가
         if (timeSinceLastSpikeIncrease >= SpikeIncreaseInterval)
         {
-            // 데미지 증가(최대값 제한)
+            //데미지 증가(최대값 제한)
             currentSpikeDamage = Mathf.Min(currentSpikeDamage + DamageIncreaseSpike, MaxSpikeDamage);
 
-            // 디버프 지속 시간 감소(최소값 제한)
+            //디버프 지속 시간 감소(최소값 제한)
             currentDebuffDuration = Mathf.Min(MaxDebuffDuration, currentDebuffDuration + DurationIncreaseRate);
-            timeSinceLastSpikeIncrease = 0f;
-            Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}");
+
+            //생성 주기 감소(최소값 제한)
+            currentSpikeSpawnInterval = Mathf.Max(MinSpikeSpawnInterval, currentSpikeSpawnInterval - SpikeIntervalDecreaseRate);
+
+            //로그 통합:모든 변수가 업데이트된 후 한 번에 로그 출력
+            Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}, 생성 주기: {currentSpikeSpawnInterval}");
+            timeSinceLastSpikeIncrease = 0f;  
             levelUpJustHappened = true;
             spikeIncreased = true;
         }
-
+       
         if (levelUpJustHappened)//모든 강화가 끝난 후, 레벨업 플래그를 확인하여 레벨 증가 UI 업데이트
         {                       //이 로직은 모든 개별 강화 if문이 끝난 후, 강화가 발생했음을 확인하는 최종 검증 단계
             currentLevel++;
             UpdateLevelText();
-            Debug.Log($"★★★ 전체 장애물 레벨업! 현재 레벨: {currentLevel} ★★★★");
 
             //성공한 항목과 실패한 항목을 구분해서 메시지 작성
             string successful = "성공: ";
@@ -163,7 +165,6 @@ public class ObstacleDifficultyManager : MonoBehaviour
             if (intervalDecreased) successful += " [FireBall 생성 주기] "; else { missed += " [FireBall 생성 주기] "; allSucceeded = false; }
             if (fireballDamageIncreased) successful += " [FireBall 데미지] "; else { missed += " [FireBall 데미지] "; allSucceeded = false; }
             if (spikeIncreased) successful += " [가시 함정] "; else { missed += " [가시 함정] "; allSucceeded = false; }
-
 
             //최종 디버그 로그 출력
             if (allSucceeded)
@@ -181,6 +182,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
     //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
     public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립의 ApplySpikeDamage()코루틴이 호출
     public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴이 호출
+    public float GetCurrentSpikeSpawnInterval() => currentSpikeSpawnInterval;//SpikeSpawn 스크립트가 호출할 함수
+
 
     private void UpdateLevelText()//UI 텍스트를 업데이트 함수
     {
