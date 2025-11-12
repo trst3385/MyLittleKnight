@@ -5,16 +5,15 @@ public class SpikeSpawn : MonoBehaviour
 {
     [Header("스폰 설정")]
     public GameObject SpikePrefab;//가시 프리팹 (인스펙터 연결)
-    //public float SpawnInterval = 5f;//가시가 스폰되는 시간, ObstacleDifficultyManager 스크립트가 조절중(currentSpikeSpawnInterval 변수)
-    public float SpikeDuration = 5f;//가시가 사라지는 시간
-    //!참고!가시 생성 주기(Spawn Interval)는 동적 난이도 조절을 위해 ObstacleDifficultyManager가 중앙 관리해
-    //SpikeDuration(가시 수명)만 여기서 관리하며, 생성 주기는 GetCurrentSpikeSpawnInterval() 함수를 통해 가져와.
+
+    //!참고! 가시 생성 주기(Spawn Interval)와 수명(Duration) 모두 ObstacleDifficultyManager가 중앙 관리함.
+    //SpikeSpawn 스크립트는 이제 타일맵 내에 가시를 스폰하는 역할만 담당해
 
     [Header("타일맵 참조")]
     public Tilemap TargetTilemap;
     public LayerMask SpawnableLayer;
 
-    private float spawnTimer;
+    private float spawnTimer;//관리자 스크립트의 CurrentSpikeSpawnInterval 변수를 받음
 
     void Start()
     {
@@ -67,7 +66,12 @@ public class SpikeSpawn : MonoBehaviour
             Spike spikeScript = newSpike.GetComponent<Spike>();
             if (spikeScript != null)
             {
-                spikeScript.InitializeSpike(SpikeDuration);
+                float duration = 5f;//가시가 사라지는 시간 기본값 
+                if (ObstacleDifficultyManager.Instance != null)
+                {
+                    duration = ObstacleDifficultyManager.Instance.GetCurrentSpikeDuration();//난이도 매니저의 현재 수명 사용
+                }
+                spikeScript.InitializeSpike(duration);//가시 스크립트에게 수명 전달(시간 후 가시 삭제)
             }
         }
         else Debug.LogWarning("SpikeManager: 유효한 스폰 위치를 찾을 수 없었어!");

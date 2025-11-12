@@ -16,15 +16,22 @@ public class ObstacleFireBallSpawner : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("SpawnFireBall", 3f, ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
+        float interval = 3f;//기본값
+        if (ObstacleDifficultyManager.Instance != null)
+        {
+            interval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
+        }
+
+        //3f 대신 initialInterval 사용 (이 값이 3f로 되어있는 건 Start 함수가 한 번만 실행되기 때문이야)
+        InvokeRepeating("SpawnFireBall", interval, interval);
     }
    
     private void SpawnFireBall()
     {
-        CancelInvoke("SpawnFireBall");//이 코드는 SpawnFireBall 함수에 대해 현재 실행 중인 InvokeRepeating을 먼저 멈추는 거야.
+        CancelInvoke("SpawnFireBall");
+        float newInterval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
         InvokeRepeating("SpawnFireBall", ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval(), ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
-        //InvokeRepeating(...): 그리고 나서, 바로 아래에 있는 이 코드가
-        //ObstacleDifficultyManage 스크립트에서 방금 가져온 새로운 시간 간격으로 InvokeRepeating을 다시 시작하는 거지.
+     
 
         int spawnSide = Random.Range(0, 2);
 
@@ -41,12 +48,8 @@ public class ObstacleFireBallSpawner : MonoBehaviour
             spawnPosition = new Vector2(SpawnAreaCollider.bounds.max.x, Random.Range(SpawnAreaCollider.bounds.min.y, SpawnAreaCollider.bounds.max.y));
             moveDirection = Vector2.left;
         }
-
         GameObject FireBall = Instantiate(ObstacleFireBall, spawnPosition, Quaternion.identity);
         ObstacleFireBall FireBallScript = FireBall.GetComponent<ObstacleFireBall>();
-
-        FireBallScript.MoveSpeed = ObstacleDifficultyManager.Instance.GetCurrentFireBallSpeed();
-        FireBallScript.Damage = ObstacleDifficultyManager.Instance.GetCurrentDamage();
         FireBallScript.MoveDirection = moveDirection;
     }
 }

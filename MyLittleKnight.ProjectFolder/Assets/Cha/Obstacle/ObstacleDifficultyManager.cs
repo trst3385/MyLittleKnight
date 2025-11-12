@@ -7,8 +7,11 @@ using UnityEngine;
 public class ObstacleDifficultyManager : MonoBehaviour
 {
     //--- ObstacleFireBall을 설정할 난이도 변수들 ---
-    [Header("발사체 난이도 통합 주기")]
+    [Header("발사체 난이도 증가 시간")]
     public float FireBallIncreaseInterval = 20f;//FireBall의 속도, 데미지, 생성 주기가 동시에 강화되는 시간 간격(f초)
+
+    [Header("발사체 파괴 시간 조절")]
+    public float FireBallDestroyTime = 10f;//발사체가 사라지는 시간
 
     [Header("발사체 속도 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float InitialFireBallSpeed = 5f;//초기 발사체 속도. 게임이 시작될 때 발사체가 움직이는 기본 속도
@@ -16,7 +19,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float SpeedIncreaseRate = 0.5f;//속도 증가량. 발사체의 속도가 한 번 빨라질 때마다 몇씩 증가할지 정하는 값
                                           
     [Header("발사체 데미지 조절")]
-    public int InitialDamage = 5;//초기 발사체 데미지
+    public int InitialDamage = 3;//초기 발사체 데미지
     public int DamageIncrease = 2;//데미지 증가량. 발사체의 데미지가 한 번 강해질 때마다 몇씩 증가할지 정하는 값
 
     [Header("발사체 생성 주기 조절")]
@@ -25,10 +28,16 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float IntervalDecreaseRate = 0.5f;//주기 감소량. 발사체 생성 주기가 한 번 줄어들 때마다 몇 초씩 줄일지 정하는 값이야.
 
     //--- Spike(가시)를 설정할 난이도 변수들 ---
+    [Header("가시 난이도 증가 시간")]
+    public float SpikeIncreaseInterval = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
+
+    [Header("가시 틱 데미지 간격 조절")]
+    public float SpikeDamageInterval = 1f;//(초)f 마다 가시 데미지를 받기
+
     [Header("가시 데미지 조절")]
     public float InitialSpikeDamage = 2f;//초기 밟았을 때 데미지, 디버프 데미지는 이 값의 50%
     public float DamageIncreaseSpike = 0.5f;//가시 데미지 증가량
-    public float MaxSpikeDamage = 10f;//최대 밟았을 때 데미지
+    public float MaxSpikeDamage = 5f;//최대 밟았을 때 데미지
 
     [Header("가시 디버프 조절")]
     public float InitialDebuffDuration = 3f;//초기 디버프 지속 시간
@@ -40,16 +49,18 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float MinSpikeSpawnInterval = 1f;//최소 가시 생성 주기
     public float SpikeIntervalDecreaseRate = 0.5f;//가시 생성 주기 감소량 (0.5초씩 감소)
 
-    [Header("가시 난이도 증가 주기")]
-    public float SpikeIncreaseInterval = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
-
+    [Header("가시 수명 조절")]
+    public float InitialSpikeDuration = 10f;//초기 가시 수명 (초)
+    public float MaxSpikeDuration = 30f;//최대 가시 수명 (난이도에 따라 늘어날 수 있음)
+    public float DurationIncreasePerLevel = 3f;//난이도 레벨당 수명 증가량
 
 
     [Header("UI 알림")]
     public TextMeshProUGUI ObstacleLevelText;//UI 텍스트를 담을 변수
 
+
     //--- 내부에서 사용할 변수들, 현재의 변수 상태들을 담을 변수들 ---
-    
+   
     //FireBall 발사체
     private float timeSinceLastFireBallIncrease = 0f;//마지막으로 발사체 강화를 올린 후 경과 시간(발사체 통합)
     private float currentFireballSpeed;//현재 게임에 적용되고 있는 발사체의 속도 (Start에서 초기화 후 Update에서 누적 증가
@@ -60,7 +71,9 @@ public class ObstacleDifficultyManager : MonoBehaviour
     private float currentSpikeDamage;//현재 가시 데미지
     private float currentDebuffDuration;//현재 디버프 지속 시간
     private float currentSpikeSpawnInterval;//현재 가시 생성 주기
+    private float currentSpikeDuration;//현재 가시 수명
 
+    //모든 장애물 강화레벨 통합
     private int currentLevel = 0;//현재 난이도 레벨을 저장할 변수(난이도 강화 시점마다 1씩 증가)
 
     // 어디서든 이 스크립트에 접근할 수 있게 해주는 '싱글톤' 패턴
@@ -88,7 +101,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
         //가시 초기화
         currentSpikeDamage = InitialSpikeDamage;
         currentDebuffDuration = InitialDebuffDuration;
-        currentSpikeSpawnInterval = InitialSpikeSpawnInterval;//가시 생성 주기 초기화 추가
+        currentSpikeSpawnInterval = InitialSpikeSpawnInterval;
+        currentSpikeDuration = InitialSpikeDuration;
 
         //게임 시작 시 UI 텍스트에 초기 레벨을 표시
         UpdateLevelText();
@@ -143,6 +157,9 @@ public class ObstacleDifficultyManager : MonoBehaviour
             //생성 주기 감소(최소값 제한)
             currentSpikeSpawnInterval = Mathf.Max(MinSpikeSpawnInterval, currentSpikeSpawnInterval - SpikeIntervalDecreaseRate);
 
+            //가시 수명 증가
+            currentSpikeDuration = Mathf.Min(currentSpikeDuration + DurationIncreasePerLevel, MaxSpikeDuration);
+
             //로그 통합:모든 변수가 업데이트된 후 한 번에 로그 출력
             Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}, 생성 주기: {currentSpikeSpawnInterval}");
             timeSinceLastSpikeIncrease = 0f;  
@@ -160,7 +177,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
             string missed = "지연/미발동(오차): ";
             bool allSucceeded = true;
 
-            // 성공 항목 체크, 띄워쓰기로 가독성도 높이자!
+            //성공 항목 체크, 띄워쓰기로 가독성도 높이자!
             if (fireballSpeedIncreased) successful += " [FireBall 속도] "; else { missed += " [FireBall 속도] "; allSucceeded = false; }
             if (intervalDecreased) successful += " [FireBall 생성 주기] "; else { missed += " [FireBall 생성 주기] "; allSucceeded = false; }
             if (fireballDamageIncreased) successful += " [FireBall 데미지] "; else { missed += " [FireBall 데미지] "; allSucceeded = false; }
@@ -175,15 +192,17 @@ public class ObstacleDifficultyManager : MonoBehaviour
     }
 
     //FireBall, 발사체가 생성될 때, 현재 적용된 속도, 생성 주기, 데미지를 반환
-    public float GetCurrentFireBallSpeed() => currentFireballSpeed;//ObstacleFireBallSpawner 스크립트의 SpawnFireBall() 함수가 호출
-    public int GetCurrentDamage() => currentFireballDamage;//SpawnFireBall()함수가 호출
-    public float GetCurrentSpawnInterval() => currentFireballSpawnInterval;//Start, SpawnFireBall()함수가 호출
-    
-    //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
-    public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립의 ApplySpikeDamage()코루틴이 호출
-    public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴이 호출
-    public float GetCurrentSpikeSpawnInterval() => currentSpikeSpawnInterval;//SpikeSpawn 스크립트가 호출할 함수
+    public float GetCurrentFireBallSpeed() => currentFireballSpeed;
+    public int GetCurrentFireBallDamage() => currentFireballDamage;
+    public float GetCurrentSpawnInterval() => currentFireballSpawnInterval;
+    public float GetFireBallDestroyTime() => FireBallDestroyTime;
 
+    //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
+    public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립트의 ApplySpikeDamage()코루틴이 호출
+    public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴에게 전달
+    public float GetCurrentSpikeSpawnInterval() => currentSpikeSpawnInterval;//SpikeSpawn 스크립트가 호출받을 함수
+    public float GetCurrentSpikeDuration() => currentSpikeDuration;//SpikeSpawn에게 전달
+    public float GetSpikeDamageInterval() => SpikeDamageInterval;//Spike 스크립트로 데미지 틱 간격을 보내
 
     private void UpdateLevelText()//UI 텍스트를 업데이트 함수
     {

@@ -3,23 +3,22 @@ using System.Collections;//코루틴을 사용하기 위해
 
 public class Spike : MonoBehaviour
 {
-    [Header("플레이어의 체력, 방어력 연결")]
-    [SerializeField] private PlayerShield playerShield;//플레이어 방어력 스크립트
-
-    private float damageInterval = 1f;//데미지 틱 간격 (초)
-    private float postExitDuration = 3.0f;//바닥을 나간 후 데미지 지속 시간(초)
+    private PlayerShield playerShield;//플레이어 방어력스크립트 참조
 
     //코루틴에서만 사용하는 코루틴의 실행과 중지를 제어하는 '코루틴 전용 변수'
     private Coroutine spikeDamageCoroutine;//타일 위에 있을 때의 데미지 처리 코루틴
     private Coroutine debuffCoroutine;//타일을 나간 후의 디버프 처리 코루틴
+                                      
 
     void OnTriggerEnter2D(Collider2D other)//플레이어가 가시 함정에 들어왔을 때
     {
         if (other.CompareTag ("Player"))//영역에 닿은 오브젝트의 태그 "Player" 를 확인
         {
+            playerShield = other.GetComponent<PlayerShield> ();
+
             if (playerShield == null)//필수 컴포넌트 연결 누락 시 경고 후 즉시 종료 (방어 로직)
             {
-                Debug.LogError("Spike 스크립트에 PlayerShield 컴포넌트 연결이 누락됐어!", this);
+                Debug.LogError("Spike: 'Player' 태그를 가진 오브젝트에는 PlayerShield 컴포넌트가 없어! 플레이어 오브젝트를 확인해봐!", other.gameObject);
                 return;//함수 종료
             }
            
@@ -52,10 +51,7 @@ public class Spike : MonoBehaviour
             }    
 
             if(debuffCoroutine == null)//벗어나도 받을 도트 데미지(디버프) 시작
-            {
                 debuffCoroutine = StartCoroutine(ApplyDebuffDamage());
-                Debug.Log($"디버프 시작: {postExitDuration}초 동안 지속");
-            }    
         }                
     }
 
@@ -69,37 +65,49 @@ public class Spike : MonoBehaviour
             {
                 float currentDamage = ObstacleDifficultyManager.Instance.GetCurrentSpikeDamage();
                 playerShield.TakeShieldDamage(currentDamage);//쉴드에 먼저 데미지 적용, 방어력이 0이면 체력으로 데미지 이전
-            } 
-            yield return new WaitForSeconds(damageInterval);//핵심: 여기서 실행을 멈추고,                                          
-        }                                                   //damageInterval 초 후에 데미지를 다시 주기 위해 재개함                                        
+
+                float damageTime = ObstacleDifficultyManager.Instance.GetSpikeDamageInterval();
+
+                yield return new WaitForSeconds(damageTime);//난이도 매니저의 틱 간격 사용
+            }                             
+            else
+            {
+                Debug.LogError("ObstacleDifficultyManager가 없어! SpikeDamage 코루틴 중단!", gameObject);
+                break;
+            }
+        }                                                                                         
         spikeDamageCoroutine = null;                        
     }
     IEnumerator ApplyDebuffDamage()//가시함정에서 벗어난 후 남은 시간 동안 데미지를 주는 코루틴
     {
-        //timer 변수 하나로 난이도 값을 가져와 초기화
-        float timer = postExitDuration;//기본값으로 초기화
+        
+        float duration = 0f;//디버프 지속 시간(duration)을 난이도 관리자에게서 직접 가져와서 사용
 
         if (ObstacleDifficultyManager.Instance != null)
         {
-            timer = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
+            duration = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
         }
+        else
+        {
+            Debug.LogError("ObstacleDifficultyManager가 연결되지 않았어! 디버프가 적용되지 않아!", gameObject);
+            yield break;//ObstacleDifficultyManager 스크립트가 없으면 코루틴 즉시 종료
+        }
+        Debug.Log($"디버프 시작: {duration}초 동안 지속 (난이도 적용)");
 
-        Debug.Log($"디버프 시작: {timer}초 동안 지속 (난이도 적용)");
-
-        while (timer > 0)//while (timer > 0): 타이머가 0보다 클 때까지만 반복(제한된 횟수만큼 데미지를 주기 위함)
+        while (duration > 0)//while (duration > 0): duration이 0보다 클 때까지만 반복(제한된 횟수만큼 데미지를 주기 위함)
         {
             if(playerShield == null) break;
 
-            if (ObstacleDifficultyManager.Instance != null)
-            {
-                float currentSpikeDamage = ObstacleDifficultyManager.Instance.GetCurrentSpikeDamage();
-                float currentDebuffDamage = currentSpikeDamage * 0.5f;//디버프 데미지 = 밟았을 때 데미지의 50%
-                playerShield.TakeShieldDamage(currentDebuffDamage);//playerShield 스크립트 내부에 방어력이 0이되면 체력으로 보내는 로직이 있어,
-                                                            //그래서 PlayerHealth를 직접 선언 안해도 돼
-            }
-            yield return new WaitForSeconds(damageInterval);//여기서 실행을 멈추고 damageInterval 초 후에,
-                                                            //재개되어 타이머를 줄이고 다음 틱 데미지를 줌
-            timer -= damageInterval;
+            float damageTick = ObstacleDifficultyManager.Instance.GetSpikeDamageInterval();//난이도 매니저의 틱 간격 사용
+
+            float currentSpikeDamage = ObstacleDifficultyManager.Instance.GetCurrentSpikeDamage();
+            float currentDebuffDamage = currentSpikeDamage * 0.5f;//디버프 데미지 = 밟았을 때 데미지의 50%
+            playerShield.TakeShieldDamage(currentDebuffDamage);//playerShield 스크립트 내부에 방어력이 0이되면 체력으로 보내는 로직이 있어,
+                                                               //그래서 PlayerHealth를 직접 선언 안해도 돼
+
+            yield return new WaitForSeconds(damageTick);//여기서 실행을 멈추고 damageInterval 초 후에,
+                                                        //재개되어 타이머를 줄이고 다음 틱 데미지를 줌
+            duration -= damageTick;
         }
         Debug.Log("디버프 데미지 종료!");
         debuffCoroutine = null;
