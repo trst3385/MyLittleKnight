@@ -240,4 +240,25 @@ ObstacleFireBall, Enemy, PlayerShield 스크립트의 GetComponent<playerHealth>
 - Spike 스크립트는 ApplyDebuffDamage() 함수에서 디버프의 시간을 timer = postExitDuration; 으로 timer 변수 하나로 난이도 값을 가져와. ( while (timer > 0) {...} )
 
 **내일은 포트폴리오에 가시생성과 20초마다 데미지, 스폰 주기 감소 등을 설명하는 글을 적자! 오늘 헌혈도 수고 많았어!**
-	
+
+
+
+11/12
+장애물 난이도(ObstacleDifficultyManager스크립트)의 중앙 관리 시스템 통합 및 스크립트 책임 분리
+git, 포트폴리오의 유뷰트 시연 영상 업데이트
+
+- 이제 ObstacleDifficultyManager 스크립트는 가시와 FireBall의 데미지, 생성 시간, 발사속도 등을 전부 관리하게 해서 말 그대로 `관리자`의 역할을 하게 될거야.
+
+- ObstacleFireBall 스크립트는 이제 발사체의 생성 위치에 따라 좌우 모습 변경, 플레이어에게 닿았을때 파괴(Destroy(gameObject);)와 플레이어에게 줄 데미지를 관리자의 GetCurrentFireBallDamage 함수를 받아서 적용.
+- ObstacleFireBallSpawner 스크립트는 맵 좌우 끝에서 랜덤 위치에 생성 후 발사만을 담당, 관리자의 GetCurrentSpawnInterval 함수를 받아 생성 주기를 확인.
+
+- Spike 스크립트는 OnTriggerEnter, Exit로 플레이어가 가시를 밟으면 GetCurrentSpikeDamage함수를 받아 데미지 적용, GetSpikeDamageInterval 함수도 받아 데미지를 받는 시간도 적용
+   1. 가시를 벗어나면 Exit에서 GetSpikeDamageInterval()를 받아 디버프 데미지를 받는 시간, GetCurrentDebuffDamage()를받아 디퍼브 데미지를 받아
+
+- SpikeSpawn 스크립는 이제 가시가 타일맵 내 랜덤한 위치에서 스폰되게 하고 관리자 스크립트에서 정한 가시의 등장, 사라지는 시간을 받아.
+   1. GetCurrentSpikeSpawnInterval() 받아 생성 시간을 받아
+   2. GetCurrentSpikeDuration()를 받아 가시가 사라지는 시간을 받아	
+
+
+- 나무, 가시 등이 추가 됐으니 빌드 후 폴더를 압축 후 git에 올리고 다운로드 링크를 포트폴리오에 업데이트했어.
+- 시연 영상도 새로운 오브젝트를 보여주기 위해 다시 영상을 찍고 유뷰트에 올린 다음(일부공개) 링크 주소를 Git의 README와 포트폴리오에 다시 올렸어.
