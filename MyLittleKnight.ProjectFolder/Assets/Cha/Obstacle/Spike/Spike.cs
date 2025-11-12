@@ -98,7 +98,7 @@ public class Spike : MonoBehaviour
 
             float damageTick = ObstacleDifficultyManager.Instance.GetSpikeDamageInterval();//틱 간격 가져오기
 
-            float currentDebuffDamage = ObstacleDifficultyManager.Instance.GetCurrentDebuffDamageValue();
+            float currentDebuffDamage = ObstacleDifficultyManager.Instance.GetCurrentDebuffDamage();
 
             playerShield.TakeShieldDamage(currentDebuffDamage);//playerShield 스크립트 내부에 방어력이 0이되면 체력으로 보내는 로직이 있어,
                                                                //그래서 PlayerHealth를 직접 선언 안해도 돼

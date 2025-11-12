@@ -209,12 +209,12 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
     //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
     public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립트의 ApplySpikeDamage()코루틴이 호출
-    public float GetCurrentDebuffDamageValue() => currentDebuffDamageValue;//Spike 스크립트의 ApplyDebuffDamage()으로 전달
+    public float GetCurrentDebuffDamage() => currentDebuffDamageValue;//Spike 스크립트의 ApplyDebuffDamage()으로 전달
     public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴에게 전달
     public float GetCurrentSpikeSpawnInterval() => currentSpikeSpawnInterval;//SpikeSpawn 스크립트가 호출받을 함수
     public float GetCurrentSpikeDuration() => currentSpikeDuration;//SpikeSpawn에게 전달
     public float GetSpikeDamageInterval() => SpikeDamageInterval;//Spike 스크립트로 데미지 틱 간격을 보내
-
+    
     private void UpdateLevelText()//UI 텍스트를 업데이트 함수
     {
         if (ObstacleLevelText != null)
