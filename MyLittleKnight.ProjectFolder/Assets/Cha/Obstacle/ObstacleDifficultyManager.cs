@@ -44,6 +44,11 @@ public class ObstacleDifficultyManager : MonoBehaviour
     public float DurationIncreaseRate = 1.0f;//디버프 시간 증가량
     public float MaxDebuffDuration = 10f;//최대 디버프 지속 시간
 
+    [Header("가시 디버프 데미지 조절")]
+    public float InitialDebuffDamage = 1f;//디버프 데미지 값
+    public float DebuffDamageIncrease = 0.5f;//디버프 데미지 증가량
+    public float MaxDebuffDamage = 5f;//최대 디버프 데미지
+
     [Header("가시 생성 주기 조절")]
     public float InitialSpikeSpawnInterval = 5f;//초기 가시 생성 주기 (SpikeSpawn 스크립트에서 가져옴)
     public float MinSpikeSpawnInterval = 1f;//최소 가시 생성 주기
@@ -69,6 +74,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
     //가시함정
     private float timeSinceLastSpikeIncrease = 0f;//가시 증가 경과 시간
     private float currentSpikeDamage;//현재 가시 데미지
+    private float currentDebuffDamageValue;//현재 디버프 데미지
     private float currentDebuffDuration;//현재 디버프 지속 시간
     private float currentSpikeSpawnInterval;//현재 가시 생성 주기
     private float currentSpikeDuration;//현재 가시 수명
@@ -103,6 +109,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
         currentDebuffDuration = InitialDebuffDuration;
         currentSpikeSpawnInterval = InitialSpikeSpawnInterval;
         currentSpikeDuration = InitialSpikeDuration;
+        currentDebuffDamageValue = InitialDebuffDamage;
 
         //게임 시작 시 UI 텍스트에 초기 레벨을 표시
         UpdateLevelText();
@@ -151,6 +158,9 @@ public class ObstacleDifficultyManager : MonoBehaviour
             //데미지 증가(최대값 제한)
             currentSpikeDamage = Mathf.Min(currentSpikeDamage + DamageIncreaseSpike, MaxSpikeDamage);
 
+            //디버프 데미지 증가(최대값 제한)
+            currentDebuffDamageValue = Mathf.Min(currentDebuffDamageValue + DebuffDamageIncrease, MaxDebuffDamage);
+
             //디버프 지속 시간 감소(최소값 제한)
             currentDebuffDuration = Mathf.Min(MaxDebuffDuration, currentDebuffDuration + DurationIncreaseRate);
 
@@ -161,7 +171,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
             currentSpikeDuration = Mathf.Min(currentSpikeDuration + DurationIncreasePerLevel, MaxSpikeDuration);
 
             //로그 통합:모든 변수가 업데이트된 후 한 번에 로그 출력
-            Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}, 생성 주기: {currentSpikeSpawnInterval}");
+            Debug.Log($"가시 난이도 증가! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}, 디버프 데미지: {currentDebuffDamageValue}");
             timeSinceLastSpikeIncrease = 0f;  
             levelUpJustHappened = true;
             spikeIncreased = true;
@@ -199,6 +209,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
     //가시, 실시간으로 가시의 데미지, 디버프 데미지를 반환
     public float GetCurrentSpikeDamage() => currentSpikeDamage;//Spike 스크립트의 ApplySpikeDamage()코루틴이 호출
+    public float GetCurrentDebuffDamageValue() => currentDebuffDamageValue;//Spike 스크립트의 ApplyDebuffDamage()으로 전달
     public float GetCurrentDebuffDuration() => currentDebuffDuration;//ApplyDebuffDamage()코루틴에게 전달
     public float GetCurrentSpikeSpawnInterval() => currentSpikeSpawnInterval;//SpikeSpawn 스크립트가 호출받을 함수
     public float GetCurrentSpikeDuration() => currentSpikeDuration;//SpikeSpawn에게 전달

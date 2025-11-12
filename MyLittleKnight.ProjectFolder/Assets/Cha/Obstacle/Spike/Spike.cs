@@ -84,9 +84,7 @@ public class Spike : MonoBehaviour
         float duration = 0f;//디버프 지속 시간(duration)을 난이도 관리자에게서 직접 가져와서 사용
 
         if (ObstacleDifficultyManager.Instance != null)
-        {
             duration = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
-        }
         else
         {
             Debug.LogError("ObstacleDifficultyManager가 연결되지 않았어! 디버프가 적용되지 않아!", gameObject);
@@ -98,10 +96,10 @@ public class Spike : MonoBehaviour
         {
             if(playerShield == null) break;
 
-            float damageTick = ObstacleDifficultyManager.Instance.GetSpikeDamageInterval();//난이도 매니저의 틱 간격 사용
+            float damageTick = ObstacleDifficultyManager.Instance.GetSpikeDamageInterval();//틱 간격 가져오기
 
-            float currentSpikeDamage = ObstacleDifficultyManager.Instance.GetCurrentSpikeDamage();
-            float currentDebuffDamage = currentSpikeDamage * 0.5f;//디버프 데미지 = 밟았을 때 데미지의 50%
+            float currentDebuffDamage = ObstacleDifficultyManager.Instance.GetCurrentDebuffDamageValue();
+
             playerShield.TakeShieldDamage(currentDebuffDamage);//playerShield 스크립트 내부에 방어력이 0이되면 체력으로 보내는 로직이 있어,
                                                                //그래서 PlayerHealth를 직접 선언 안해도 돼
 
