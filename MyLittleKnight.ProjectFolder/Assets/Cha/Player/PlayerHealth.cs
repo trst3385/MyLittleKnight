@@ -7,8 +7,8 @@ public class PlayerHealth : MonoBehaviour
 {
     [Header("플레이어 체력 관련")]
     public float MaxHealth = 20f;//최대 체력(조절가능)
-    public float CurrentHealth;//현재 체력
     public Slider healthSlider;//인스펙터에서 이 슬라이더 연결
+    [HideInInspector]public float CurrentHealth;//현재 체력
 
     [Header("스크립트 참조")]
     [SerializeField] private Player playerScript;//플레이어 스크립트 참조
