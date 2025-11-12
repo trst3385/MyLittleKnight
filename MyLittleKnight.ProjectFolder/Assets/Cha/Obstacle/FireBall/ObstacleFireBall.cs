@@ -34,7 +34,7 @@ public class ObstacleFireBall : MonoBehaviour
         else
         {
             Debug.LogError("ObstacleDifficultyManager가 연결되지 않았어! 발사체가 파괴되지 않아!", gameObject);
-            Destroy(gameObject, 10f); // 비상시 기본값으로 10초 후에 파괴 (최소한의 안정성)
+            Destroy(gameObject, 10f);//비상시 기본값으로 10초 후에 파괴 (최소한의 안정성)
         }
     }
     

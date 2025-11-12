@@ -7,7 +7,7 @@ using UnityEngine;
 //08.03
 //ObstacleDifficultyManager 스크립트를 만들었으니 ObstacleSpawner 스크립트는 이제 난이도를 직접 조절하지 않고,
 //ObstacleDifficultyManager 스크립트에게 현재 스폰 주기, 속도, 데미지 값을 받아와서 사용하게 될 거야.
-// 장애물 생성 주기 업데이트
+//장애물 생성 주기 업데이트
 public class ObstacleFireBallSpawner : MonoBehaviour
 {
     [Header("발사체 프리팹, 콜라이더 연결")]
@@ -16,16 +16,18 @@ public class ObstacleFireBallSpawner : MonoBehaviour
 
     void Start()
     {
-        float interval = 3f;//기본값
+        float interval = 3f;//기본값, 만약 ObstacleDifficultyManager이 null 상태. 즉 연결이 안됐을때 최소한의 기능.
+                            //3초 간격 생성 을 보장하는 안전 장치(Fallback) 역할
         if (ObstacleDifficultyManager.Instance != null)
         {
             interval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
-        }
-
-        //3f 대신 initialInterval 사용 (이 값이 3f로 되어있는 건 Start 함수가 한 번만 실행되기 때문이야)
+        } 
         InvokeRepeating("SpawnFireBall", interval, interval);
+        //interval이 두개인 이유?
+        //첫 발사까지 걸리는 시간과 이후 발사가 반복되는 간격을 모두,
+        //ObstacleDifficultyManager가 결정한 interval 값으로 사용하기 위해
     }
-   
+
     private void SpawnFireBall()
     {
         CancelInvoke("SpawnFireBall");
