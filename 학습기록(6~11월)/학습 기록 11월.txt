@@ -271,6 +271,7 @@ ObstacleDifficultyManager 스크립트 [Header]의 변수 이름 변경
 - [Header]에 포함된 각종 변수들의 이름을 변경했어.
 - FireBall과 Spike의 모든 [Header] 난이도 변수를 직관적인 이름으로 변경했어. (Base Name, ...Up, ...Down, ...Time)에 따라 리팩토링 완료. (예: FireBallSpawnTime, SpikeDamageTickTime, SpikeLifeTimeUp 등)
 - Initial, DecreaseRate, Duration보다 직관적이고 바로 알 수 있게 만들었지. (Header의 이름 덕에 이 변수의 역할이 뭔지 알 수 있지만 더더욱 바로 알 수 있고 직관적일 필요가 있었어)
+**가시 난이도 증가 변수명 오타 (SpikeILevelUpTime → SpikeLevelUpTime) 수정 완료**
 
 - 선언 변수의 이름을 바꾸면 다른 함수 등에 있는 변수의 이름도 선언 변수의 이름과 같아야 하잖아. 
    1. 변수 오른쪽 클릭 - 이름바꾸기(Ctrl+R) - 이름변경 - 이렇게 하면 다른 같은 변수들도 이름이 수정돼
