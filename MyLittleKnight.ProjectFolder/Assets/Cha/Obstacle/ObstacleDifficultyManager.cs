@@ -29,11 +29,11 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
     //--- Spike(가시)를 설정할 난이도 변수들 ---
     [Header("가시 난이도 증가 시간")]
-    public float SpikeILevelUpTime = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
+    public float SpikeLevelUpTime = 20f;//가시 난이도 증가 간격 (데미지와 디버프 시간을 동시에 조절)
 
     [Header("가시 틱 데미지 간격 조절")]
     public float SpikeDamageTickTime = 1f;//(초)f 마다 가시 데미지를 받기
-    
+
     [Header("가시 데미지 조절")]
     public float SpikeDamage = 2f;//초기 밟았을 때 데미지, 디버프 데미지는 이 값의 50%
     public float SpikeDamageUp = 0.5f;//가시 데미지 증가량
@@ -155,7 +155,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
         }
 
         //가시 난이도 증가
-        if (timeSinceLastSpikeIncrease >= SpikeILevelUpTime)
+        if (timeSinceLastSpikeIncrease >= SpikeLevelUpTime)
         {
             //데미지 증가(최대값 제한)
             currentSpikeDamage = Mathf.Min(currentSpikeDamage + SpikeDamageUp, MaxSpikeDamage);
