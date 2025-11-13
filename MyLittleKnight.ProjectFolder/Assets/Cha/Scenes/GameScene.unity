@@ -863,30 +863,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ed2710395e16240ae97361721dfcab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FireBallIncreaseInterval: 20
+  FireBallLevelUpTime: 20
   FireBallDestroyTime: 10
-  InitialFireBallSpeed: 6
+  FireBallDamage: 3
+  FireBallDamageUp: 2
+  FireBallSpeed: 5
   MaxFireBallSpeed: 20
-  SpeedIncreaseRate: 0.5
-  InitialDamage: 3
-  DamageIncrease: 2
-  InitialSpawnInterval: 3
+  FireBallSpeedUp: 0.5
+  FireBallSpawnInterval: 3
   MinSpawnInterval: 1
-  IntervalDecreaseRate: 0.5
-  SpikeIncreaseInterval: 20
-  SpikeDamageInterval: 1
-  InitialSpikeDamage: 2
-  DamageIncreaseSpike: 0.5
+  IntervalDecreaseAmount: 0.5
+  SpikeILevelUpTime: 20
+  SpikeDamageTickTime: 1
+  SpikeDamage: 2
+  SpikeDamageUp: 0.5
   MaxSpikeDamage: 5
-  InitialDebuffDuration: 3
-  DurationIncreaseRate: 1
-  MaxDebuffDuration: 10
-  InitialSpikeSpawnInterval: 5
-  MinSpikeSpawnInterval: 1
-  SpikeIntervalDecreaseRate: 0.5
-  InitialSpikeDuration: 10
-  MaxSpikeDuration: 30
-  DurationIncreasePerLevel: 3
+  DebuffDamage: 1
+  DebuffDamageUp: 0.5
+  MaxDebuffDamage: 5
+  SpikeDebuffTime: 3
+  SpikeDebuffTimeUP: 1
+  MaxDebuffTime: 10
+  SpikeSpawnInterval: 5
+  MinSpikeSpawnTime: 2
+  SpikeSpawnTimeDown: 0.5
+  SpikeLifeTime: 10
+  MaxSpikeLifeTime: 30
+  SpikeLifeTimeUp: 3
   ObstacleLevelText: {fileID: 1126028763}
 --- !u!114 &117700935
 MonoBehaviour:
