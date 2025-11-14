@@ -278,3 +278,28 @@ ObstacleDifficultyManager 스크립트 [Header]의 변수 이름 변경
    2. 알고 있었지만 하나하나 보고 수정할려는 버릇 때문에 사용하지 못했나봐 ;ㅅ;
 
 
+
+11/14
+EnemyDifficulty 스크립트 로직 통일 및 변수 정리
+EnemySpawn 스크립트 정리
+
+- EnemyDifficulty 스크립트에서 난이도 강화 로직을 프로젝트 전체의 원칙에 맞게 통일하고 불필요한 요소를 제거했어.
+- 타이머 방식 통일: 몬스터 스탯 강화 타이머를 총 경과 시간 방식(gameTimer)에서 타이머 리셋 방식(timeSinceLastLevelUp)으로 변경하여 ObstacleDifficultyManager 스크립트와 로직을 통일했어
+   1. gameTimer 변수 삭제
+   2. timeSinceLastLevelUp 변수 도입 및 20초마다 리셋 로직 적용
+- 난이도 강화 주기 통합: Normal 몬스터의 스폰 주기 감소 로직 (10초마다 0.1초 감소)을 완전히 삭제했어.
+   1. 관련 변수 3개 삭제: NormalSpawnTimeDown, SpawnTimeDecreaseTime, timeSinceLastDecrease
+   2. 고정값 변수 정리: 더 이상 사용되지 않는 MinNormalSpawnTime 변수를 삭제했어
+   3. 결과: 이제 몬스터 난이도는 20초마다 스탯과 동시 스폰 개수가 1씩 증가하는 단일 규칙을 갖게 되었어
+
+- 변수명 규칙 확인: [SerializeField] private 변수는 인스펙터에 보여지니까 Pascal Case를 사용하는 것이 유니티 환경에서 가독성을 높이는 실용적인 방법인걸 재확인하고 적용했어.
+   
+
+- EnemyDifficulty 스크립트에서 스폰 주기를 업데이트할 필요가 없어짐에 따라 불필요해진 변수와 함수를 EnemySpawn 스크립트에서도 제거하여 깔끔하게 정리했어.
+   1. 함수 제거: 스폰 주기가 더 이상 변하지 않으므로, 외부에서 스폰 주기를 설정할 때 사용하던 함수 SetNormalSpawnTime(float newTime)을 삭제했어
+   2. 주석 수정: private float normalSpawnTime 변수의 주석을 '계속 변할 거야'에서 '고정값' 으로 수정하여 현재 로직을 정확하게 반영했어
+   3. 결과: EnemySpawn 스크립트는 오직 스폰 주기(고정)와 스폰 개수(20초마다 증가)라는 두 가지 정보를 받아 스폰 로직을 실행하는 역할만 맡게 되었지
+ 
+
+
+
