@@ -25,25 +25,22 @@ public class EnemyDifficulty : MonoBehaviour
         MoveSpeed
     }
 
+    //[SerializeField]가 붙은 private라서 인스펙터에 보이니 헤더의 변수는 Pascal Case로 적용했어
     //인스펙터에서 설정할 변수들
-    [Header("Normal 몬스터 스폰 주기 조절")]
-    public float InitialNormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
-    public float MinNormalSpawnTime = 1f;//스폰 주기가 아무리 빨라져도 이 값 이하로는 안 내려감 (예: 1초)
-    public float SpawnTimeDecreaseRate = 0.1f;//몇 초마다 스폰 주기를 얼마나 줄일지 (예: 0.1초씩 줄어듦)
-    public float DecreaseInterval = 10f;//스폰 주기가 줄어드는 시간 간격 변수 (예: 10초마다 한 번씩)
-    //n초 마다 몬스터의 스폰 시간이 spawnTimeDecreaseRate의 n초 만큼 줄어든다.
-    
+    [Header("Normal 몬스터 스폰 초기 스폰 시간")]
+    public float NormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
+
     [Header("Normal 몬스터 동시 스폰 개수 조절")]
-    public int InitialNormalSpawnCount = 1;//게임 시작 시 Normal 몬스터 동시 스폰 개수
-    public int SpawnCountIncreasePerLevel = 1;//난이도 레벨마다 동시 스폰 개수 증가량
+    public int NormalSpawnCount = 1;//게임 시작 시 Normal 몬스터 동시 스폰 개수
+    public int NormalSpawnCountUp = 1;//난이도 레벨마다 동시 스폰 개수 증가량
     public int MaxNormalSpawnCount = 5;//동시 스폰 개수 최대치 (너무 많아지는 것 방지)
 
     //몬스터 스탯 난이도 조절 변수들
     [Header("몬스터 스탯 난이도 조절")]
-    [SerializeField] private float statInterval = 20f;//몬스터 스탯이 강해지는 시간 간격 (초)
-    [SerializeField] private float atkIncrease = 0.2f;//난이도 레벨마다 몬스터 공격력 증가 비율 (20% = 0.2) -> 20%씩
-    [SerializeField] private float hpIncrease = 0.2f;//난이도 레벨마다 몬스터 체력 증가 비율 (20% = 0.2) -> 20%씩
-    [SerializeField] private float speedIncrease = 0.1f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
+    [SerializeField] private float StatLevelUpTime = 20f;//몬스터 스탯이 강해지는 시간 간격 (초)
+    [SerializeField] private float AtkIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 공격력 증가 비율 (20% = 0.2) -> 20%씩
+    [SerializeField] private float HPIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 체력 증가 비율 (20% = 0.2) -> 20%씩
+    [SerializeField] private float SpeedIncreaseRatio = 0.1f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
 
     
     [Header("UI, 오브젝트 연결")]
@@ -51,17 +48,16 @@ public class EnemyDifficulty : MonoBehaviour
     [SerializeField] private TextMeshProUGUI enemyLevelText;
     [SerializeField] private TextAlimManager textalimManager;
     [SerializeField] private EnemySpawn enemySpawn;
-
+    
 
     public static EnemyDifficulty Instance { get; private set; }
 
     //내부에서 사용할 변수들
-    private float gameTimer = 0f;//게임 시작 후 총 경과 시간
+    private float timeSinceLastLevelUp = 0f;//게임 시작 후 총 경과 시간(타이머 리셋 방식)
     private int currentDifficultyLevel = 0;//현재 몬스터 스탯 난이도 레벨
-    private float currentNormalSpawnTime;//현재 Normal 몬스터가 스폰되는 실제 주기 (이 값이 계속 변할 거야)
-    private float timeSinceLastDecrease;//마지막으로 스폰 주기를 줄인 후 지난 시간
+    private float currentNormalSpawnTime;//현재 Normal 몬스터가 스폰되는 실제 주기 (게임 시작 시 고정값)
     private int currentNormalSpawnCount;//현재 동시 스폰 몬스터 개수를 저장할 변수
-   
+                                              
 
     void Awake()
     {
@@ -76,10 +72,9 @@ public class EnemyDifficulty : MonoBehaviour
     }
     void Start()
     {
-        currentNormalSpawnTime = InitialNormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
-        currentNormalSpawnCount = InitialNormalSpawnCount;//시작 시 동시 스폰 개수 초기화
-        timeSinceLastDecrease = 0f;//시간 초기화
-        gameTimer = 0f;//게임 타이머 초기화
+        currentNormalSpawnTime = NormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
+        currentNormalSpawnCount = NormalSpawnCount;//시작 시 동시 스폰 개수 초기화
+        timeSinceLastLevelUp = 0f;//게임 타이머 초기화
         currentDifficultyLevel = 0;//난이도 레벨 초기화
         UpdateMonsterLevelText();
          
@@ -87,8 +82,6 @@ public class EnemyDifficulty : MonoBehaviour
         //EnemySpawn 인스턴스 찾아서 저장
         if (enemySpawn == null)
             Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
-
-
         if (textalimManager == null)
             Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
 
@@ -99,45 +92,28 @@ public class EnemyDifficulty : MonoBehaviour
     void Update()
     {
         //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
-        gameTimer += Time.deltaTime;
-        if(gameTimer >= (currentDifficultyLevel + 1) * statInterval)
+        timeSinceLastLevelUp += Time.deltaTime;
+        if(timeSinceLastLevelUp >= StatLevelUpTime)
         {
             currentDifficultyLevel++;
-            Debug.Log($"몬스터 스탯 난이도 레벨 증가! 현재 레벨: {currentDifficultyLevel}, 총 경과 시간: {gameTimer:F2}s");
-            //F2는 C# 문자열 포맷팅에서 부동소수점(Float) 숫자를 소수점 둘째 자리까지 표시하라는 의미
-            //gameTimer 값이 123.45678f 라고 예시) F0이면 123, F1이면 123.5, F2이면 123.46
+            Debug.Log($"몬스터 스탯 난이도 레벨 증가! 현재 레벨: {currentDifficultyLevel}");
 
 
             UpdateMonsterLevelText();//몬스터 레벨이 증가한 직후, EnemyDifficultyLevelText UI를 업데이트할 함수를 호출해
 
 
-
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
-            currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, InitialNormalSpawnCount + (currentDifficultyLevel * SpawnCountIncreasePerLevel));
+            currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, NormalSpawnCount + (currentDifficultyLevel * NormalSpawnCountUp));
             if (enemySpawn != null)
                 enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
-
 
             if (notificationText != null)//EnemyDifficultyStatsText UI로 전달
             {
                 notificationText.text = $"<color=red>몬스터가 더 강해졌습니다! (레벨 {currentDifficultyLevel})</color>";
                 Invoke("ClearNotification", 3f);
             }
-        }
-        //시간이 흐름에 따라 스폰 주기를 줄이는 로직
-        timeSinceLastDecrease += Time.deltaTime;//마지막 감소 후 시간을 계속 더해.
-
-        if (timeSinceLastDecrease >= DecreaseInterval)//설정한 감소 간격이 지났으면
-        {
-            //currentNormalSpawnTime을 감소시키되, minNormalSpawnTime 이하로는 내려가지 않게 해
-            currentNormalSpawnTime = Mathf.Max(MinNormalSpawnTime, currentNormalSpawnTime - SpawnTimeDecreaseRate);
-            timeSinceLastDecrease = 0f;//시간 초기화 (다음 감소 간격을 위해)
-            Debug.Log($"Normal 몬스터 스폰 주기 감소! 현재 주기: {currentNormalSpawnTime}s");
-
-            if (enemySpawn != null)//EnemySpawn에게 새로운 스폰 주기를 알려줘!
-                enemySpawn.SetNormalSpawnTime(currentNormalSpawnTime);
-                //EnemySpawn 스크립트의 SetNormalSpawnTime() 함수
-        }
+            timeSinceLastLevelUp = 0f;//타이머 리셋
+        } 
     }
 
     private void UpdateMonsterLevelText()//EnemyDifficultyLevelText UI로 보낼 함수
@@ -163,13 +139,13 @@ public class EnemyDifficulty : MonoBehaviour
         switch (statType)
         {
             case StatType.AttackDamage:
-                increaseRatio = atkIncrease;
+                increaseRatio = AtkIncreaseRatio;
                 break;
             case StatType.Health:
-                increaseRatio = hpIncrease;
+                increaseRatio = HPIncreaseRatio;
                 break;
             case StatType.MoveSpeed:
-                increaseRatio = speedIncrease;
+                increaseRatio = SpeedIncreaseRatio;
                 break;
             default:
                 Debug.LogWarning($"EnemyDifficulty: 알 수 없는 스탯 타입 요청됨 - {statType}");

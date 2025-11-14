@@ -7,14 +7,14 @@ using UnityEngine.Tilemaps;//Tilemap 관련 기능을 사용하기 위해
 
 public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하는 것이 C#의 표준 코딩 컨벤션이야.
 {   //이렇게 통일하면 코드가 훨씬 깔끔하고 다른 개발자들이 봤을 때도 이해하기 쉬워져.
-
+    
     [Header("스크립트, 오브젝트 연결")]
     //인스펙터에 할당할 변수들
     public GameObject[] EnemyPrefabs;//인스펙터에서 스폰할 몬스터 프리팹을 할당 (0번 인덱스에 Normal 몬스터)
     public Tilemap TargetTilemap;//몬스터를 스폰할 타일맵을 할당 (플레이 가능한 영역)
     public LayerMask SpawnableLayer;//몬스터가 스폰될 수 있는 영역 (바닥, 벽 등)의 레이어 마스크
     public Player PlayerScript;//플레이어 스크립트 참조
-
+    
 
     [Header("Strong 몬스터 스폰 설정:몇명을 잡아야 스폰,몇번째 프리팹의 몬스터를")]//Inspector에서 시각적으로 구분
     public int NormalKillsForStrongEnemy = 3;//강한 몬스터 스폰을 위해 잡아야 할 Normal 몬스터 수
@@ -33,8 +33,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     private float currentEnemyCount;//현재 생성된 몬스터 수를 담을 변수
     private int normalEnemyKilledSinceLastStrong = 0;//마지막 강한 몬스터 스폰 후 잡은 Normal 몬스터 수
     private TextAlimManager textalimManager;//TextAlimManager 스크립트를 참조할 변수 추가
-
-    private float normalSpawnTime;//EnemyDifficulty 스크립트에서 받아올 현재 Normal 몬스터 스폰 주기 변수
+    private float normalSpawnTime;//Normal 몬스터의 스폰 주기 (EnemyDifficulty에서 가져온 고정값)
     private int normalSpawnCount = 1;//EnemyDifficulty 스크립트에서 받아올 동시 스폰 개수
 
     void Start()
@@ -57,8 +56,8 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         //Elite 몬스터 프리팹 인덱스 유효성 검사
         if (EliteEnemyPrefabIndex >= EnemyPrefabs.Length || EliteEnemyPrefabIndex < 0)
             Debug.LogWarning("Elite Enemy Prefab Index가 EnemyPrefabs 배열 범위를 벗어났어! 엘리트 몬스터 스폰이 안될 수 있어!");
-
         
+
         //시작 시 TextAlimManager 스크립트를 찾아서 할당
         textalimManager = FindFirstObjectByType<TextAlimManager>();
         if (textalimManager == null)
@@ -105,13 +104,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             //08.23 여기 if문은 중괄호를 없애지 않았어. if밑에는 for문이 있어. 그래서 더 밑의 spawnTimer = normalSpawnTime가
             //if문의 영향을 받지 않아서야. 괄호가 없으면 if밑에 있는 하나만 작동하고 더 밑에 있는건 if문과 연결되지 않아서야
         }
-    }
-    public void SetNormalSpawnTime(float newTime)
-    {
-        normalSpawnTime = newTime;
-        Debug.Log($"EnemySpawn: Normal 몬스터 스폰 주기 업데이트됨: {normalSpawnTime}s");
-    }
-    
+    }   
     public void SetNormalSpawnCount(int newCount)//동시 스폰 개수를 받음 함수
     {
         normalSpawnCount = newCount;
