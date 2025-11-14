@@ -870,10 +870,10 @@ MonoBehaviour:
   FireBallSpeed: 5
   MaxFireBallSpeed: 20
   FireBallSpeedUp: 0.5
-  FireBallSpawnInterval: 3
-  MinSpawnInterval: 1
-  IntervalDecreaseAmount: 0.5
-  SpikeILevelUpTime: 20
+  FireBallSpawnTime: 3
+  MinSpawnTime: 2
+  FireBallSpawnTimeDown: 0.5
+  SpikeLevelUpTime: 20
   SpikeDamageTickTime: 1
   SpikeDamage: 2
   SpikeDamageUp: 0.5
@@ -884,7 +884,7 @@ MonoBehaviour:
   SpikeDebuffTime: 3
   SpikeDebuffTimeUP: 1
   MaxDebuffTime: 10
-  SpikeSpawnInterval: 5
+  SpikeSpawnTime: 5
   MinSpikeSpawnTime: 2
   SpikeSpawnTimeDown: 0.5
   SpikeLifeTime: 10
@@ -16866,7 +16866,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1957392424
 Transform:
   m_ObjectHideFlags: 0
