@@ -309,6 +309,8 @@ EnemySpawn 스크립트 정리
 - 실루엣 전용 오브젝트 생성: 원본 Player 오브젝트를 복사하여 Sill_Player 오브젝트를 생성
 - 컴포넌트 제거 (핵심 안정화): Sill_Player에서 Rigidbody 2D, 콜라이더, 모든 로직 스크립트(Player Health, Attack Controller 등), Audio Source를 제거하여 복사본이 '시각적 역할'만 하도록 분리했어
 - Sil_Player의 Sprite Renderer에 머트리얼을 생성 후 추가, 색상을 검은색으로 변경하고, Layer를 실루엣 전용 레이어로 지정.
+- [핵심 렌더링 설정] 실루엣 효과가 활성화될 영역을 지정하기 위해 나무 오브젝트에 Sprite Mask 컴포넌트를 추가하여 실루엣 효과가 나타나도록 설정.
+- Player의 Sprit Renderer의 Mask Interaction을 'Visible Outside Mask', Sil_Player는 반대로 'Visible Inside Mask' 로 지정.
 - Sil_Player 스크립트 생성: 
    1. 변수: 원본의 Transform, Animator, SpriteRenderer를 받아올 변수 선언
    2. 동기화: LateUpdate() 함수 내에서 원본의 위치, Animator의 Move 상태, SpriteRenderer의 flipX(방향)를 복사하는 로직 구현
