@@ -23,8 +23,11 @@ public class Player : MonoBehaviour
     private float verticalInput;
     private Vector2 movement;
 
-    [Header("사망 관련 변수")]
-    public bool IsDead = false;
+    [HideInInspector]public bool IsDead = false;//인스펙터 사용하지 않으니 숨김
+
+    [Header("실루엣 연결")]
+    //씬에 있는 Sill_Player 복사본 오브젝트를 인스펙터에 연결
+    [SerializeField] private Sil_Player silplayer;
 
 
     [Header("히트박스,몬스터가 쫒을 콜라이더")]
@@ -61,8 +64,8 @@ public class Player : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null) Debug.LogError("SpriteRenderer 컴포넌트를 찾을수 없어! 다시 확인해봐!");
-
-        playerHealth = GetComponent<PlayerHealth>();//PlayerHealth 스크립트는 플레이어 오브젝트에 있으니 내부 컴포넌트야
+        
+        playerHealth = GetComponent<PlayerHealth>();
         if (playerHealth == null) Debug.LogError("PlayerHealth 컴포넌트를 찾을 수 없어! 플레이어 오브젝트에 PlayerHealth 컴포넌트를 확인해!");
 
         if (walkingaudioSource == null) Debug.LogError("AudioSource 컴포넌트를 찾을 수 없어! 인스펙터 제대로 확인 했어 안했어?!");
@@ -72,8 +75,11 @@ public class Player : MonoBehaviour
 
 
     void Start()//외부 스크립트, 오브젝트는 Start에
-    {     
-        if (ScoreTextUI != null)//점수 초기화는 "플레이어가 플레이할 준비가 되었을 때" 실행되는 것이 논리적으로 맞아
+    {
+        if (silplayer == null)
+            Debug.LogWarning("Player: [실루엣 연결 누락!] sillplayer 변수가 인스펙터에 연결되지 않았어! 실루엣 기능이 작동하지 않을 거야!");
+
+        if (ScoreTextUI != null)
             ScoreTextUI.text = "Score: " + CurrentScore.ToString();
         //currentScore int형 변수라서 ToString이 없어도 컴파일러가 자동으로 문자열로 변환.
         //하지만 ToString()을 사용하는 것은 코드의 명확성,안정성,미래에 더 복잡한 형식 지정이 필요할 때를 대비한 좋은 습관이야
@@ -130,10 +136,12 @@ public class Player : MonoBehaviour
             float DieTime = 1.5f;//사망 후 사라지는 시간
             Destroy(gameObject, DieTime);
 
-          
             Invoke("CallGameOverManager", 1f);//1.5초 뒤에 CallGameOverManager함수를 호출, 플레이어가 죽으면 뜰 UI
         }
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
+
+        if (silplayer != null)
+            silplayer.SilPlayerDie();//실루엣 복사본에게 사망 애니메이션 시작을 명령
     }
 
     
@@ -184,7 +192,7 @@ public class Player : MonoBehaviour
     public void ResetScore()//점수를 초기화하는 함수
     {
         CurrentScore = 0;
-        if (ScoreTextUI != null) 
+        if (ScoreTextUI != null)
             ScoreTextUI.text = "Score: 0";
     }
 }

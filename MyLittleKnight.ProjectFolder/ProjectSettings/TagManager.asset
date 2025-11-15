@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - ItemChest
   - Tree
+  - Player_Sil
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Player
   - Boundary
   - Monster
-  - 
+  - Silhouette
   - 
   - 
   - 
