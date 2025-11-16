@@ -330,9 +330,50 @@ EnemySpawn 스크립트 정리
    3. 안정성 강화: Player 스크립트의 Start() 함수에 해당 변수가 Null일 경우 경고 메시지를 출력하는 디버그 로직을 추가하여 향후 연결 누락 오류를 방지
       3-1. Start 함수에 Null일때의 경고 메세지 추가. if (silplayer == null) Debug.LogWarning("Player: [실루엣 연결 누락!] sillplayer 변수가 인스펙터에 연결되지 않았어! 실루엣 기능이 작동하지 않을 거야!");
 
-**이로써 11/2일에 적었던 문제를 드디어 해결했어. 단순히 Sorting Layer가 아닌 Sprite Mask와 나무에 가려질때 플레이어의 모습을 위한 추가 오브젝트가 필요했던거였어! 정말 수고 했어!! /'ㅂ'/**
+**이로써 11/2일에 적었던 문제를 드디어 해결했어. 단순히 Sorting Layer가 아닌 Sprite Mask와 나무에 가려질때 플레이어의 모습을 위한 추가 오브젝트가 필요했던거였어! 정말 수고 했어!!**
 **내일은 공격 모션도 추가하자. 지금은 Idle, Move, Die만 실루엣에 적용된 상태니까, 물론 모션만 따라하는거지 실제로 공격이 나가서는 안되고!**
 **내일은 다시 빌드해서 git에 추가하자**
+
+
+
+11/16
+플레이어 공격 모션 동기화 및 실루엣 시스템 완전 구현 (활, 검 공격 모션 추가)
+
+- 어제 구현한 기본 모션(Idle, Move, Die)에 이어, 나머지 공격 모션(활, 검)까지 실루엣 오브젝트에 동기화하여 플레이어의 모든 애니메이션 상태를 나무 뒤에서도 완벽하게 보여주는 시스템을 완성했어!
+
+- Sil_Player 스크립트에 활 (SilPlayerBowAttack),검 (SilPlayerSwordAttack) 공격 명령을 받을 일회성  함수 추가.
+- Player 스크립트에 AttackController와 Sil_Player 스크립트를 연결하는 중개 함수 SilhouetteBowAttack(), SilhouetteSwordAttack() 추가.
+- AttackController 스크립트에 공격 입력 시 Player 스크립트의 중개 함수를 호출하도록 로직을 수정하여, 원본 공격과 실루엣 동기화를 동시에 실행.
+
+
+- 실루엣 공격 동기화 명령 흐름도
+- AttackController(명령 시작)역할: 플레이어의 의도를 감지하고 공격 실행을 결정하는 주체.
+   1. Update() 함수에서 Input.GetKeyDown(KeyCode.Space) (활 공격) 또는 KeyCode.Q (검 공격) 감지
+   2. 쿨타임 체크 통과 (bowWeapon.CanAttack())
+   3. weaponAnimator(WeaponType) 함수 호출
+   4. 원본 애니메이션 실행: Animator.SetTrigger("Attack(Bow)");
+   5. 실루엣 명령 전달: 자신이 알고 있는 Player 스크립트에게 "실루엣 공격 동기화 해달라구!"라고 명령을 위임
+**if (Player != null) Player.SilhouetteBowAttack();**
+
+- Player (명령의 중개자/총괄 관리)역할: AttackController와 Sil_Player 사이를 연결해 주는 통로 (낮은 결합도 유지) 역할. 실루엣 관련 모든 책임을 총괄
+   1. AttackController로부터 SilhouetteBowAttack() 함수를 호출받아
+   2. 자신이 이미 참조하고 있는 Sil_Player 객체가 존재하는지 안전하게 확인해
+   3. 확인 후, Sil_Player에게 최종 명령을 전달
+**if (silplayer != null) silplayer.SilPlayerBowAttack();//최종 명령을 Sil_Player에게 전달**
+
+- Sil_Player (명령의 최종 실행)역할: 명령을 받아 실루엣의 애니메이션을 실제로 실행.
+   1. Player 스크립트로부터 SilPlayerBowAttack() 함수를 호출받아
+   2. LateUpdate()의 위치/이동 상태 동기화와 별개로, 일회성 애니메이션 트리거를 실행(LateUpdate는 위치,방향,이동만 담당)
+**silplayerAnimator.SetTrigger("Attack(Bow)");// 실루엣 애니메이션 재생**
+
+
+- 설계 원칙?
+   1. 구조 분리 (LateUpdate vs. Public 함수): 지속적인 상태(Move, 위치)는 **LateUpdate()**로 동기화하고, 일회성 명령(공격, 사망)은 Public 함수로 명확하게 분리하여 애니메이션 충돌이나 버벅거림(Jittering) 없이 부드러운 작동을 보장
+   2. 낮은 결합도 유지: AttackController 스크립트가 Sil_Player 스크립트를 직접 참조하지 않고 Player 스크립트를 **중개자**로 사용함으로써, 
+   스크립트 간의 의존성을 낮추고(낮은 결합도) 향후 실루엣 시스템 변경 시에도 다른 스크립트의 수정 없이 안정적으로 유지보수할 수 있는 구조를 확립했어
+
+**내일은 이 나무 뒤에 가려질때의 실루엣 구현에 대해 포트폴리오에 적어보자! (나무오브젝트의 Sprite Mask, 플레이어 복사본 오브젝트의 실루엣 역할로 분리 등등)
+
 
 
 
