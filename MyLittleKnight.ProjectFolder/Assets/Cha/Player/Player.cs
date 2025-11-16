@@ -201,7 +201,7 @@ public class Player : MonoBehaviour
         if (silplayer != null)
             silplayer.SilPlayerBowAttack();
     }
-    public void SyncSilhouetteSwordAttack()//Sil_Player 스크립트의 SilPlayerSwordAttack함수에게 검공격 모션을 한다고 전달
+    public void SilhouetteSwordAttack()//Sil_Player 스크립트의 SilPlayerSwordAttack함수에게 검공격 모션을 한다고 전달
     {
         if (silplayer != null)
             silplayer.SilPlayerSwordAttack();
