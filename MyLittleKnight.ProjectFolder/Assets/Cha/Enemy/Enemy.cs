@@ -213,7 +213,11 @@ public class Enemy : MonoBehaviour
 
     }
 
-    //플레이어가 몬스터에게 닿으면 받은 데미지, 코드를 엄청 간결하게 만들어주는 표현식 본문 멤버
+    //<접촉 데미지 실행 경로>
+    //몬스터가 플레이어에게 붙어있는 상태에서 (StopDistance 이내)
+    //AttackCooldown마다 주기적으로 데미지를 적용하는 함수.
+    //이 함수는 DealDamageToPlayer()를 호출하여 데미지를 최종적으로 적용하는 전달자 역할 수행.
+    //(주로 ProcessMovementAndAttack AI 로직에서 호출됨)
     void ApplyTouchDamage() => DealDamageToPlayer();//통합 함수 호출
   
 

@@ -36,10 +36,9 @@ public class Sil_Player : MonoBehaviour
         }
     }
 
-    void LateUpdate() //LateUpdate를 사용하는 이유:
-    {                 //원본 플레이어 스크립트의 모든 이동(FixedUpdate) 및 애니메이션(Update) 로직이 
-                      //완료된 후, 가장 마지막에 정확한 최종 위치를 복사하여
-                      //화면 떨림(Jittering) 없이 부드러운 동기화를 보장하기 위해서 사용해
+    void LateUpdate() //원본 플레이어 스크립트의 모든 이동(FixedUpdate) 및 애니메이션(Update) 로직이 
+    {                 //완료된 후, 가장 마지막에 정확한 최종 위치를 복사하여
+                      //화면 떨림 없이 부드러운 동기화를 보장하기 위해서 사용해
                       //**다른 오브젝트의 최종 상태에 종속되는 시각적 효과를 구현할 때 성능 저하 없이 최고의 부드러움을 보장하는 방법**
         if (!enabled) return;
 
@@ -51,8 +50,23 @@ public class Sil_Player : MonoBehaviour
         silplayerAnimator.SetBool("Move", isMoving);
 
         //방향 동기화 (좌우 반전)
-        // 원본 Player 스크립트의 로직이 SpriteRenderer.flipX를 제어하고 있어.
+        //원본 Player 스크립트의 로직이 SpriteRenderer.flipX를 제어하고 있어.
         silhouetteRenderer.flipX = playerRenderer.flipX;
+    }
+
+    public void SilPlayerBowAttack()//활 공격 모션 동기화
+    {
+        if (!enabled) return;//스크립트 비활성화(에러) 상태라면 공격 동기화 무시
+
+        if (silplayerAnimator != null)
+            silplayerAnimator.SetTrigger("Attack(Bow)");
+    }
+    public void SilPlayerSwordAttack()//검 공격 모션 동기화(활 공격과 동일한 방식으로 추가)
+    {
+        if (!enabled) return;
+
+        if (silplayerAnimator != null)
+            silplayerAnimator.SetTrigger("Attack(Sword)");
     }
 
     public void SilPlayerDie()//Player 스크립트의 PlayerDie()함수에서 호출
@@ -66,4 +80,5 @@ public class Sil_Player : MonoBehaviour
             Destroy(gameObject, 1.5f);
         }
     }
+
 }

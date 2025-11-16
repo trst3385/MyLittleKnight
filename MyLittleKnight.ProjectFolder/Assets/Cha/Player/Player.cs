@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
         if (gameOverManager == null) Debug.LogError("Player 스크립트에서 GameOverManager를 찾을 수 없어!");
         if (ScoreTextUI == null) Debug.LogError("ScoreTextUI가 인스펙터에 연결되지 않았어!");
     }
-
+    
 
     void Start()//외부 스크립트, 오브젝트는 Start에
     {
@@ -194,5 +194,16 @@ public class Player : MonoBehaviour
         CurrentScore = 0;
         if (ScoreTextUI != null)
             ScoreTextUI.text = "Score: 0";
+    }
+
+    public void SilhouetteBowAttack()//Sil_Player 스크립트의 SilPlayerBowAttack함수에게 활공격 모션을 한다고 전달
+    {
+        if (silplayer != null)
+            silplayer.SilPlayerBowAttack();
+    }
+    public void SyncSilhouetteSwordAttack()//Sil_Player 스크립트의 SilPlayerSwordAttack함수에게 검공격 모션을 한다고 전달
+    {
+        if (silplayer != null)
+            silplayer.SilPlayerSwordAttack();
     }
 }
