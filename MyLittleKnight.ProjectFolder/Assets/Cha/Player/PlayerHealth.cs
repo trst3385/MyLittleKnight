@@ -28,19 +28,19 @@ public class PlayerHealth : MonoBehaviour
     }
     public void TakeDamage( float damageAmount)//체력이 변경될때마다 호출할 함수
     {
-        if(playerScript != null && playerScript.IsDead) return; //Player 스크립트의 isDead 확인
+        if(playerScript != null && playerScript.IsDead) return;//Player 스크립트의 isDead 확인
 
         //이미 죽은 상태라면 더 이상 데미지 받거나 사망 처리하지 않음
         //Die함수가 발동되면 isDead가 true 상태가 된다.
 
-        CurrentHealth -= damageAmount; //체력 감소 
+        CurrentHealth -= damageAmount;//체력 감소 
 
         //체력이 0보다 작아지지 않도록 (최소 0)
         CurrentHealth = Mathf.Max(CurrentHealth, 0);
 
-        UpdateHealthUI(); //체력바 UI 업데이트
+        UpdateHealthUI();//체력바 UI 업데이트
 
-        if(CurrentHealth <= 0) //체력이 0 이하고 아직 죽은 상태가 아닐 때만 사망 처리
+        if(CurrentHealth <= 0)//체력이 0 이하고 아직 죽은 상태가 아닐 때만 사망 처리
         {
             if(playerScript != null) playerScript.PlayerDie();//Player스크립트의 PlayerDie함수 호출         
             else Debug.LogError("PlayerHealth: PlayerScript 컴포넌트를 찾을 수 없습니다.");
@@ -48,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
     }
     public void Heal( float healAmount)//체력 회복 함수
     {
-        if (playerScript != null && playerScript.IsDead) return; //Player 스크립트의 isDead 확인
+        if (playerScript != null && playerScript.IsDead) return;//Player 스크립트의 isDead 확인
 
         CurrentHealth += healAmount;
         CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);

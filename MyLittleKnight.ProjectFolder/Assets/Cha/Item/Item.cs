@@ -48,8 +48,7 @@ public class Item: MonoBehaviour
     {
         //ItemSpawner를 씬에서 찾아서 할당
         itemSpawner = FindAnyObjectByType<ItemSpawner>();
-        if (itemSpawner == null)
-            Debug.LogWarning("ItemSpawner를 씬에서 찾을 수 없어! 아이템 카운트가 업데이트되지 않을 거야.");
+        if (itemSpawner == null) Debug.LogWarning("ItemSpawner를 씬에서 찾을 수 없어! 아이템 카운트가 업데이트되지 않을 거야!");
 
         //일정 시간 후에 아이템이 사라지도록
         Destroy(gameObject, DespawnTime);
@@ -77,9 +76,7 @@ public class Item: MonoBehaviour
             Debug.LogWarning("아이템을 획득했지만 플레이어에게 필요한 컴포넌트(PlayerStatsEffects, AttackController, PlayerHealth)가 없어!");
 
 
-
-        if (itemSpawner != null)//ItemSpawner 스크립트에게 알리는 코드
-            itemSpawner.ItemDestroyed();
+        if (itemSpawner != null) itemSpawner.ItemDestroyed();//ItemSpawner 스크립트에게 알리는 코드
 
 
         //UseItem()에서 아이템 타입에 따라 사운드 클립을 결정하고, 여기서 재생.

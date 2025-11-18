@@ -20,11 +20,9 @@ public class ObstacleFireBall : MonoBehaviour
     void Start()
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (MoveDirection.x < 0)//왼쪽으로 갈 때
-            //왼쪽으로 갈 때는 스프라이트를 뒤집지 않아
-            spriteRenderer.flipX = false;
-        else if (MoveDirection.x > 0)//오른쪽으로 갈 때
-            spriteRenderer.flipX = true;//오른쪽으로 갈 때는 스프라이트를 좌우 반전시켜
+        if (MoveDirection.x < 0) spriteRenderer.flipX = false;//왼쪽으로 갈 때, 왼쪽으로 갈 때는 스프라이트를 뒤집지 않아
+        else if (MoveDirection.x > 0) spriteRenderer.flipX = true;//오른쪽으로 갈 때, 오른쪽으로 갈 때는 스프라이트를 좌우 반전시켜
+        
 
         if (ObstacleDifficultyManager.Instance != null)
         {
@@ -64,11 +62,9 @@ public class ObstacleFireBall : MonoBehaviour
                 {
                     currentDamage = ObstacleDifficultyManager.Instance.GetCurrentFireBallDamage();
                 }
-
                 playerShield.TakeShieldDamage(currentDamage);
             }
-            //데미지를 준 후 발사체는 파괴
-            Destroy(gameObject);
+            Destroy(gameObject);//데미지를 준 후 발사체는 파괴
         }
     }
 }

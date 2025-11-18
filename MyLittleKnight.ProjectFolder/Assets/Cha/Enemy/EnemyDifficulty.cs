@@ -80,13 +80,10 @@ public class EnemyDifficulty : MonoBehaviour
          
 
         //EnemySpawn 인스턴스 찾아서 저장
-        if (enemySpawn == null)
-            Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
-        if (textalimManager == null)
-            Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
+        if (enemySpawn == null) Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
+        if (textalimManager == null) Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
 
-        if (notificationText != null)//게임 시작 시 UI 텍스트를 비움
-            notificationText.text = "";
+        if (notificationText != null) notificationText.text = "";//게임 시작 시 UI 텍스트를 비움
     }
     
     void Update()
@@ -118,16 +115,14 @@ public class EnemyDifficulty : MonoBehaviour
 
     private void UpdateMonsterLevelText()//EnemyDifficultyLevelText UI로 보낼 함수
     {                                    //notificationText UI랑 다르게 Lv.0 ~ 1 ~ 2 증가하게 할거야
-        if (enemyLevelText != null)
-            enemyLevelText.text = $"몬스터 Lv.{currentDifficultyLevel}";
+        if (enemyLevelText != null) enemyLevelText.text = $"몬스터 Lv.{currentDifficultyLevel}";
     }
 
 
     private void ClearNotification()//이 함수는 notificationText UI 알림을 화면에서 지워주는 역할
     {                               //이 함수는 보통 Invoke("ClearNotification", 3f);처럼 일정 시간 뒤에 자동으로 호출되도록 해서,
                                     //"몬스터가 강해졌습니다!" 같은 알림이 3초 후에 사라지게 만드는 용도로 쓰여.
-        if (notificationText != null)
-            notificationText.text = "";
+        if (notificationText != null) notificationText.text = "";
     }
 
 

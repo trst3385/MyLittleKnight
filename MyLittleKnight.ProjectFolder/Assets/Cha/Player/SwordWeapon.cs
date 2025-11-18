@@ -42,8 +42,7 @@ public class SwordWeapon : MonoBehaviour
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (SpriteRenderer == null)
-            Debug.LogError("SwordWeapon: SpriteRenderer 컴포넌트를 찾을 수 없어!");
+        if (SpriteRenderer == null) Debug.LogError("SwordWeapon: SpriteRenderer 컴포넌트를 찾을 수 없어!");
     }
 
     void Update()
@@ -56,8 +55,7 @@ public class SwordWeapon : MonoBehaviour
     {                        //SwordPoint의 BoxCollider2D를 사용하여 OverlapBox로 충돌 감지
 
         //검 공격시 사운드 재생
-        if (swordAudioSource != null && swordAttackSound != null)
-            swordAudioSource.PlayOneShot(swordAttackSound);
+        if (swordAudioSource != null && swordAttackSound != null) swordAudioSource.PlayOneShot(swordAttackSound);
         //PlayOneShot은 이름 그대로 현재 재생 중인 다른 소리를 끊지 않고, 새로운 소리를 한 번만 재생하는 함수야
 
         if (SwordAttackCollider == null)//swordAttackCollider가 null상태와 같다면? 반대는 !=
@@ -102,17 +100,16 @@ public class SwordWeapon : MonoBehaviour
                     {
                         //플레이어 위치에서 몬스터 위치로 향하는 방향 벡터 계산
                         Vector2 knockbackDirection = hitCollider.transform.position - transform.position;//플레이어 -> 몬스터 방향 벡터
-                        if (knockbackDirection.x > 0)
-                            knockbackDirection = Vector2.right;//몬스터가 플레이어 오른쪽에 있으니 오른쪽으로 넉백
+                        if (knockbackDirection.x > 0) knockbackDirection = Vector2.right;//몬스터가 플레이어 오른쪽에 있으니 오른쪽으로 넉백
                         else knockbackDirection = Vector2.left;//몬스터가 플레이어 왼쪽에 있으니 왼쪽으로 넉백
 
                         enemyScript.TakeKnockback(knockbackDirection, KnockbackForce, KnockbackDuration);
                     }
-                    else
-                        Debug.LogWarning(hitCollider.name + "에는 Enemy 스크립트가 없어서 넉백을 적용할 수 없어!");              
+                    else Debug.LogWarning(hitCollider.name + "에는 Enemy 스크립트가 없어서 넉백을 적용할 수 없어!");
+                                
                 }
-                else
-                    Debug.LogWarning(hitCollider.name + "플레이어의 EnemyHealth 스크립트가 없어!");
+                else Debug.LogWarning(hitCollider.name + "플레이어의 EnemyHealth 스크립트가 없어!");
+
             }
         }
         LaunchSwordEnergy();//검 에너지 발사
@@ -147,8 +144,8 @@ public class SwordWeapon : MonoBehaviour
 
         //SwordEnergyInstance 오브젝트에서 Rigidbody2D 컴포넌트를 가져와
         Rigidbody2D rb = SwordEnergyInstance.GetComponent<Rigidbody2D>();
-        if (rb != null)//있다면 (null 체크), Rigidbody2D의 속도를 직접 설정해 움직이게 만듦
-            rb.linearVelocity = launchDirection * SwordEnergySpeed;    
+        if (rb != null) rb.linearVelocity = launchDirection * SwordEnergySpeed;
+        //있다면 (null 체크), Rigidbody2D의 속도를 직접 설정해 움직이게 만듦
     }
 
 

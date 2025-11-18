@@ -42,16 +42,13 @@ public class Spike : MonoBehaviour
         {
             if(playerShield == null) return;//null 체크는 계속 유지
             
-
             if(spikeDamageCoroutine != null)//가시 데미지 즉시 중단
             {
                 StopCoroutine(spikeDamageCoroutine);
                 spikeDamageCoroutine = null;
                 Debug.Log("가시 함정 벗어났어. 즉시 피해 중단");
             }    
-
-            if(debuffCoroutine == null)//벗어나도 받을 도트 데미지(디버프) 시작
-                debuffCoroutine = StartCoroutine(ApplyDebuffDamage());
+            if(debuffCoroutine == null) debuffCoroutine = StartCoroutine(ApplyDebuffDamage());//벗어나도 받을 도트 데미지(디버프) 시작
         }                
     }
 
@@ -83,8 +80,7 @@ public class Spike : MonoBehaviour
         
         float duration = 0f;//디버프 지속 시간(duration)을 난이도 관리자에게서 직접 가져와서 사용
 
-        if (ObstacleDifficultyManager.Instance != null)
-            duration = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
+        if (ObstacleDifficultyManager.Instance != null) duration = ObstacleDifficultyManager.Instance.GetCurrentDebuffDuration();
         else
         {
             Debug.LogError("ObstacleDifficultyManager가 연결되지 않았어! 디버프가 적용되지 않아!", gameObject);

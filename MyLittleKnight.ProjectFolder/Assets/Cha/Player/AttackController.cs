@@ -92,10 +92,9 @@ public class AttackController : MonoBehaviour
         }
     }
     
-    public void OnAttackEnd()//검 공격과 활 공격 애니메이션이 끝났을 때 isAttacking을 false로 되돌릴 함수
-    {                        
-        isAttacking = false;//선언과 같이 이것도 false. 게임 플레이 도중에 공격이 끝났을 때의 상태를 false로 바꿔주는 역할을 해.                         //시작: 게임이 시작되면 isAttacking은 false 야.        
-    }
+    public void OnAttackEnd() => isAttacking = false;//검 공격과 활 공격 애니메이션이 끝났을 때 isAttacking을 false로 되돌릴 함수
+    //선언과 같이 이것도 false. 게임 플레이 도중에 공격이 끝났을 때의 상태를 false로 바꿔주는 역할을 해.                              
+    //시작: 게임이 시작되면 isAttacking은 false 야.
 }
 
 

@@ -68,8 +68,7 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log("PlayerStatsEffects: 화살 공격력이 " + ItemCSdamage + " 증가! 현재 공격력: " + bowWeapon.ArrowDamage);
             }
         }
-        else//최대 레벨에 도달했을 때의 메시지
-            Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");
+        else Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 메시지
     }
 
     public void SwordDamageUp(float ItemCSdamage)
@@ -86,9 +85,7 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log("PlayerStatsEffects: 검기 발사체 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordEnergyDamage);
             }
         }
-        else//최대 레벨에 도달했을 때의 메시지
-            Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");
-    
+        else Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 로그
     }
     public void MoveSpeedUp(float amount)
     {
@@ -106,8 +103,7 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log("PlayerStatsEffects: 이동 속도가 " + amount + " 증가했다! 현재 속도: " + player.MoveSpeed);
             }
         }
-        else// 최대 레벨에 도달하면 경고 메시지 출력
-            Debug.Log("PlayerStatsEffects: 이동속도 레벨이 이미 최대치야!");
+        else Debug.Log("PlayerStatsEffects: 이동속도 레벨이 이미 최대치야!");// 최대 레벨에 도달하면 경고 메시지 출력
     }
     public void Heal(float amount)
     {
@@ -127,6 +123,8 @@ public class PlayerStatsEffects : MonoBehaviour
         }
     }
 
+    //?와 :는 C# 언어의 삼항 연산자, 간단한 if-else 구문을 한 줄로 간결하게 표현할 수 있어
+    //?은 참(if문의 내용), :은 거짓(else 내용)
     void UpdateWeaponLevelUI()//무기 강화 횟수 UI를 업데이트하는 함수
     {
         if (ArrowLevelText != null)//활 공격이 강화 됐다고 ArrowLevelText UI에 보내

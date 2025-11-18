@@ -83,11 +83,10 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         if (playerGameObject != null)
         {
             PlayerScript = playerGameObject.GetComponent<Player>();
-            if (PlayerScript == null)
-                Debug.LogError("EnemySpawn: Player 오브젝트에 Player 스크립트가 없습니다!");
+            if (PlayerScript == null) Debug.LogError("EnemySpawn: Player 오브젝트에 Player 스크립트가 없어!");
         }
-        else
-            Debug.LogWarning("EnemySpawn: 'Player' 태그를 가진 오브젝트를 찾을 수 없어!");
+        else Debug.LogWarning("EnemySpawn: 'Player' 태그를 가진 오브젝트를 찾을 수 없어!");
+       
     }
 
     void Update()
@@ -135,8 +134,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);//InstantiateAndSetupEnemy함수 호출
         
         //TextAlimManager 스크립트에 텍스트 알림 표시
-        if (textalimManager != null)
-            textalimManager.ShowNotification("몬스터 스폰!");
+        if (textalimManager != null) textalimManager.ShowNotification("몬스터 스폰!");
     }
 
     void SpawnStrongEnemy()//Strong 몬스터를 호출하는 함수
@@ -166,9 +164,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         normalEnemyKilledSinceLastStrong = 0;
 
         //TextAlimManager 스크립트에 텍스트 알림 표시
-        if (textalimManager != null)
-            textalimManager.ShowNotification("<color=red>강한 몬스터 등장!</color>");
-
+        if (textalimManager != null) textalimManager.ShowNotification("<color=red>강한 몬스터 등장!</color>");
     }
 
     void SpawnEliteEnemy()//Elite 몬스터를 호출하는 함수
@@ -194,8 +190,8 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);
 
-        if (textalimManager != null)//TextAlimManager 스크립트에 텍스트 알림 표시
-            textalimManager.ShowNotification("<color=purple>엘리트 몬스터 등장!</color>");//색깔 변경
+        //TextAlimManager 스크립트에 텍스트 알림 표시
+        if (textalimManager != null) textalimManager.ShowNotification("<color=purple>엘리트 몬스터 등장!</color>");//색깔 변경
     }
 
 
@@ -217,8 +213,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             newEnemyScript.enemyType = type;
             newEnemyScript.SetEnmeyStats();
         }
-        else//몬스터 프리팹에 Enemy 스크립트가 없다면            
-            Debug.LogWarning("생성된 몬스터에 Enemy 스크립트가 없어!");
+        else Debug.LogWarning("생성된 몬스터에 Enemy 스크립트가 없어!");//몬스터 프리팹에 Enemy 스크립트가 없다면         
 
 
         newEnemy.name = prefab.name + "_" + currentEnemyCount;
@@ -263,13 +258,9 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             Debug.Log("Normal 몬스터 사망! 강한 몬스터 스폰까지 남은 킬 수: " + (NormalKillsForStrongEnemy - normalEnemyKilledSinceLastStrong) + "마리.");
 
             //Strong 몬스터 스폰 조건 충족 시
-            if (normalEnemyKilledSinceLastStrong >= NormalKillsForStrongEnemy)
-                SpawnStrongEnemy();//Strong 몬스터 스폰! (따로 스폰됨)
-
+            if (normalEnemyKilledSinceLastStrong >= NormalKillsForStrongEnemy) SpawnStrongEnemy();//Strong 몬스터 스폰! (따로 스폰됨)
         }
-        else//강한 몬스터나 엘리트 몬스터가 죽었을 때 (강한 몬스터 스폰 카운트에 영향 없음)
-            Debug.Log("강한/엘리트 몬스터가 사망했습니다. Normal 몬스터 킬 카운트에는 영향을 주지 않아!");
-
+        else Debug.Log("강한/엘리트 몬스터가 사망했습니다. Normal 몬스터 킬 카운트에는 영향을 주지 않아!");
 
         //Player 스크립트가 연결되어 있고, 플레이어가 살아있을 때만 점수 기반 스폰 체크
         if (PlayerScript != null && !PlayerScript.IsDead)
