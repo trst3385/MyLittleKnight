@@ -389,5 +389,22 @@ EnemySpawn 스크립트 정리
 
 
 
+11/18
+스크립트의 if문 간결화
+
+- if문의 내용 중 한 줄로 표현할 수 있는 if문은 한줄로 로직을 수정했어.
+- Debug나 if문의 내용, else문, 주석 중에 코드가 긴 것들은 그대로 유지했어.
+
+if (...) .....;
+Debug.Log("...");                      X
+else
+Debug.Log("...");
+
+if (...) ... Debug.Log("...); 
+else ... Debug.Log("...);              O
+
+
+
+
 
 
