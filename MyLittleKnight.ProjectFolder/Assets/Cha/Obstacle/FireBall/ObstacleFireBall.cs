@@ -41,10 +41,8 @@ public class ObstacleFireBall : MonoBehaviour
     {
         //MoveSpeed를 난이도 매니저에서 가져오기
         float currentSpeed = 5f; // Fallback 기본값
-        if (ObstacleDifficultyManager.Instance != null)
-        {
-            currentSpeed = ObstacleDifficultyManager.Instance.GetCurrentFireBallSpeed();
-        }
+        if (ObstacleDifficultyManager.Instance != null) currentSpeed = ObstacleDifficultyManager.Instance.GetCurrentFireBallSpeed();
+  
         //현재 위치를 계속해서 이동 방향과 속도에 따라 업데이트
         transform.Translate(MoveDirection * currentSpeed * Time.fixedDeltaTime);
     }
@@ -58,10 +56,9 @@ public class ObstacleFireBall : MonoBehaviour
             {
                 //Damage를 난이도 매니저에서 가져오기
                 int currentDamage = 5;//기본값
-                if (ObstacleDifficultyManager.Instance != null)
-                {
+                if (ObstacleDifficultyManager.Instance != null) 
                     currentDamage = ObstacleDifficultyManager.Instance.GetCurrentFireBallDamage();
-                }
+
                 playerShield.TakeShieldDamage(currentDamage);
             }
             Destroy(gameObject);//데미지를 준 후 발사체는 파괴

@@ -79,8 +79,7 @@ public class Player : MonoBehaviour
         if (silplayer == null)
             Debug.LogWarning("Player: [실루엣 연결 누락!] sillplayer 변수가 인스펙터에 연결되지 않았어! 실루엣 기능이 작동하지 않을 거야!");
 
-        if (ScoreTextUI != null)
-            ScoreTextUI.text = "Score: " + CurrentScore.ToString();
+        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();
         //currentScore int형 변수라서 ToString이 없어도 컴파일러가 자동으로 문자열로 변환.
         //하지만 ToString()을 사용하는 것은 코드의 명확성,안정성,미래에 더 복잡한 형식 지정이 필요할 때를 대비한 좋은 습관이야
     }
@@ -106,28 +105,23 @@ public class Player : MonoBehaviour
         HandleWalkingSound();//이동시엔 걷기 사운드(함수) 재생
 
 
-        if (animator != null)
-            animator.SetBool("Move", movement.magnitude > 0);
+        if (animator != null) animator.SetBool("Move", movement.magnitude > 0);
 
         // 케릭터 방향 전환(좌우반전)
         //<0 = Horizontal값이 0보다 작다, -1이 됐기에 왼쪽으로 이동
         //>0 = 반대로 Horizontal값이 0보다 크기에 오른쪽으로 이동
-        if (horizontalInput < 0)
-            spriteRenderer.flipX = true;
-        else if (horizontalInput > 0)
-            spriteRenderer.flipX = false;
+        if (horizontalInput < 0) spriteRenderer.flipX = true;
+        else if (horizontalInput > 0) spriteRenderer.flipX = false;
     }
 
     public void PlayerDie()//플레이어 사망시
     {
-        if (IsDead) 
-            return;
+        if (IsDead) return;
 
         IsDead = true;//죽으면 IsDead 실행
         Debug.Log("플레이어 사망!");
 
-        if(walkingaudioSource != null && walkingaudioSource.isPlaying)
-            walkingaudioSource.Stop();//걷기 사운드를 즉시 중지
+        if(walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();//걷기 사운드를 즉시 중지
 
         if (animator != null)
         {
@@ -140,8 +134,7 @@ public class Player : MonoBehaviour
         }
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
 
-        if (silplayer != null)
-            silplayer.SilPlayerDie();//실루엣 복사본에게 사망 애니메이션 시작을 명령
+        if (silplayer != null) silplayer.SilPlayerDie();//실루엣 복사본에게 사망 애니메이션 시작을 명령
     }
 
     
@@ -152,10 +145,8 @@ public class Player : MonoBehaviour
 
     public Vector3 GetCenterPosition()//몬스터들이 플레이어의 '중앙'이라고 인식하고 추적/공격할 위치, Enemy 스크립트에서 이 함수를 참조
     {                             
-        if (targetCollider != null)
-        {
-            return targetCollider.bounds.center;//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때.
-        }
+        if (targetCollider != null) return targetCollider.bounds.center;//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때
+
         return transform.position;//false일때, Collider2D 컴포넌트가 붙어 있지 않을 때
     }
 
@@ -175,8 +166,7 @@ public class Player : MonoBehaviour
         }
         else//움직이지 않을 때 소리 멈춤
         {
-            if (walkingaudioSource != null && walkingaudioSource.isPlaying) 
-                walkingaudioSource.Stop();
+            if (walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();
         }
     }
 
@@ -185,25 +175,20 @@ public class Player : MonoBehaviour
         CurrentScore += amount;//전달받은 amount(점수)만큼 점수를 더해줌
         Debug.Log("현재 점수: " + CurrentScore);
 
-        if (ScoreTextUI != null) 
-            ScoreTextUI.text = "Score: " + CurrentScore.ToString();
-                               
+        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();                             
     }
     public void ResetScore()//점수를 초기화하는 함수
     {
         CurrentScore = 0;
-        if (ScoreTextUI != null)
-            ScoreTextUI.text = "Score: 0";
+        if (ScoreTextUI != null) ScoreTextUI.text = "Score: 0";
     }
 
     public void SilhouetteBowAttack()//Sil_Player 스크립트의 SilPlayerBowAttack함수에게 활공격 모션을 한다고 전달
     {
-        if (silplayer != null)
-            silplayer.SilPlayerBowAttack();
+        if (silplayer != null) silplayer.SilPlayerBowAttack();
     }
     public void SilhouetteSwordAttack()//Sil_Player 스크립트의 SilPlayerSwordAttack함수에게 검공격 모션을 한다고 전달
     {
-        if (silplayer != null)
-            silplayer.SilPlayerSwordAttack();
+        if (silplayer != null) silplayer.SilPlayerSwordAttack();
     }
 }

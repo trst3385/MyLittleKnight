@@ -19,9 +19,8 @@ public class ObstacleFireBallSpawner : MonoBehaviour
         float interval = 3f;//기본값, 만약 ObstacleDifficultyManager이 null 상태. 즉 연결이 안됐을때 최소한의 기능.
                             //3초 간격 생성 을 보장하는 안전 장치(Fallback) 역할
         if (ObstacleDifficultyManager.Instance != null)
-        {
             interval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
-        } 
+
         InvokeRepeating("SpawnFireBall", interval, interval);
         //interval이 두개인 이유?
         //첫 발사까지 걸리는 시간과 이후 발사가 반복되는 간격을 모두,

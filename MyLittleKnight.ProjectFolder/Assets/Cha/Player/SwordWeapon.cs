@@ -41,14 +41,12 @@ public class SwordWeapon : MonoBehaviour
     void Awake()
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
-
         if (SpriteRenderer == null) Debug.LogError("SwordWeapon: SpriteRenderer 컴포넌트를 찾을 수 없어!");
     }
 
     void Update()
     {
-        //Update 함수가 매 프레임마다 호출되고 있는지 확인
-        UpdateSwordSkillUI();
+        UpdateSwordSkillUI();//검 UI Update 함수가 매 프레임마다 호출되고 있는지 확인
     }
 
     public void SwordAttack()//검 공격 함수(애니메이션 이벤트로 호출될 함수)
