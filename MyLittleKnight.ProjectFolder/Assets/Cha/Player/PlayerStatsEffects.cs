@@ -36,7 +36,7 @@ public class PlayerStatsEffects : MonoBehaviour
     private PlayerShield playerShield;//PlayerShield 스크립트 참조 (방어력 회복을 위해)
     private SwordWeapon swordWeapon;//SwordWeapon 스크립트 참조
 
-    void Start()
+    void Awake()
     {
         player = GetComponent<Player>();
         playerHealth = GetComponent<PlayerHealth>();
@@ -48,9 +48,11 @@ public class PlayerStatsEffects : MonoBehaviour
         if (playerHealth == null) Debug.LogWarning("PlayerStatsEffects: PlayerHealth 스크립트를 찾을 수 없습니다!");
         if (bowWeapon == null) Debug.LogWarning("PlayerStatsEffects: PlayerAttack 스크립트를 찾을 수 없습니다!");
         if (playerShield == null) Debug.LogWarning("PlayerStatsEffects: PlayerShield 스크립트를 찾을 수 없습니다!");
-
-        //게임 시작 시 UI 텍스트 초기화
-        UpdateWeaponLevelUI();
+    }
+    void Start()
+    {
+        UpdateWeaponLevelUI();//게임 시작 시 현재 레벨(0)을 UI 텍스트에 반영 (UI 초기 설정)
+        //UI의 초기 상태(Lv 0)를 설정. 이후 업데이트는 해당 함수(ArrowDamageUp 등)에서 직접 호출해 성능 낭비 방지
     }
 
 
@@ -82,7 +84,7 @@ public class PlayerStatsEffects : MonoBehaviour
                 currentSwordLevel++;//검 강화 숫자 증가
                 UpdateWeaponLevelUI();//UI 업데이트
                 Debug.Log("PlayerStatsEffects: 검 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);
-                Debug.Log("PlayerStatsEffects: 검기 발사체 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordEnergyDamage);
+                Debug.Log("PlayerStatsEffects: 검기 발사체 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordEnergyDamage);            
             }
         }
         else Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 로그

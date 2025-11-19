@@ -133,19 +133,16 @@ public class SwordWeapon : MonoBehaviour
             float totalDamage = SwordEnergyDamage;
             swordenergy.SetDamage(totalDamage);
         }
-
-        if (SpriteRenderer.flipX)//플레이어가 보는 방향에 따라 에너지의 방향 설정
-            //캐릭터가 왼쪽을 보고 있으면 에너지를 180도 회전
-            SwordEnergyInstance.transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
-        else//캐릭터가 오른쪽을 보고 있으면 에너지를 0도(원래 방향)로 설정
-            SwordEnergyInstance.transform.rotation = Quaternion.AngleAxis(0, Vector3.forward);
+        //플레이어가 보는 방향에 따라 에너지의 방향 설정
+        if (SpriteRenderer.flipX) SwordEnergyInstance.transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
+        else SwordEnergyInstance.transform.rotation = Quaternion.AngleAxis(0, Vector3.forward);
+        //캐릭터가 왼쪽을 보고 있으면 에너지를 180도 회전
+        //캐릭터가 오른쪽을 보고 있으면 에너지를 0도(원래 방향)로 설정
 
         //SwordEnergyInstance 오브젝트에서 Rigidbody2D 컴포넌트를 가져와
         Rigidbody2D rb = SwordEnergyInstance.GetComponent<Rigidbody2D>();
         if (rb != null) rb.linearVelocity = launchDirection * SwordEnergySpeed;
-        //있다면 (null 체크), Rigidbody2D의 속도를 직접 설정해 움직이게 만듦
     }
-
 
     //쿨타임이 끝났는지 여부를 반환하는 간결한 메서드(표현식 본문 메서드)
     public bool CanAttack() => Time.time >= lastSwordSkillTime + SwordSkillCooldown;

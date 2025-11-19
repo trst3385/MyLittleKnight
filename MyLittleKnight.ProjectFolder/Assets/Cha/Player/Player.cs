@@ -76,12 +76,11 @@ public class Player : MonoBehaviour
 
     void Start()//외부 스크립트, 오브젝트는 Start에
     {
-        if (silplayer == null)
+        if (silplayer == null)//실루엣 스크립트가 연결되지 않으면
             Debug.LogWarning("Player: [실루엣 연결 누락!] sillplayer 변수가 인스펙터에 연결되지 않았어! 실루엣 기능이 작동하지 않을 거야!");
 
-        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();
-        //currentScore int형 변수라서 ToString이 없어도 컴파일러가 자동으로 문자열로 변환.
-        //하지만 ToString()을 사용하는 것은 코드의 명확성,안정성,미래에 더 복잡한 형식 지정이 필요할 때를 대비한 좋은 습관이야
+        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore;
+        //게임 시작 시 ScoreTextUI에 플레이어의 초기 점수(0)를 표시하여 UI를 초기화
     }
 
 

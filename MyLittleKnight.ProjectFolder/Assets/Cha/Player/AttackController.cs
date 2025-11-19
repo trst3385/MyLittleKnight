@@ -87,14 +87,14 @@ public class AttackController : MonoBehaviour
             case WeaponType.Sword://현재 무기가 검이면
                 Animator.SetTrigger("Attack(Sword)");
                 if (Player != null)
-                    Player.SilhouetteSwordAttack();//검 공격 동기화 호출
+                    Player.SilhouetteSwordAttack();//검 공격 동기화 호출(실루엣)
                 break;
         }
     }
-    
+
     public void OnAttackEnd() => isAttacking = false;//검 공격과 활 공격 애니메이션이 끝났을 때 isAttacking을 false로 되돌릴 함수
     //선언과 같이 이것도 false. 게임 플레이 도중에 공격이 끝났을 때의 상태를 false로 바꿔주는 역할을 해.                              
-    //시작: 게임이 시작되면 isAttacking은 false 야.
+    //애니메이션의 SwordAttack, ShootArrow 이벤트와 겹쳐져 있어
 }
 
 

@@ -39,10 +39,9 @@ public class BowWeapon : MonoBehaviour
     public void ShootArrow()//360도 화살 발사
     {
         if (bowAudioSource != null && bowAttackSound != null) bowAudioSource.PlayOneShot(bowAttackSound);//활 공격 시 사운드 재생
-        //PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
         else Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
+        //PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
 
-      
         if (ArrowPrefab == null)//화살 프리팹이 설정되었는지 안 되었는지
         {
             Debug.LogError("Arrow Prefab이 설정되지 않았어!");

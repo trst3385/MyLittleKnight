@@ -1,39 +1,33 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    [Header("È­»ì  µ¥¹ÌÁö, »ı¼º½Ã°£")]
+    [Header("í™”ì‚´  ë°ë¯¸ì§€, ìƒì„±ì‹œê°„")]
     public float ArrowDamage = 1f;
-    public float LifeTime = 3f;// ()ÃÊ°¡ Áö³ª¸é È­»ìÀÌ »ç¶óÁü, ÀÎ½ºÆåÅÍ¿¡¼­ Á¶Àı
+    public float LifeTime = 3f;//()ì´ˆê°€ ì§€ë‚˜ë©´ í™”ì‚´ì´ ì‚¬ë¼ì§
    
     void Start()
-    {   //È­»ìÀÌ »ı¼ºµÇ°í lifeTime¿¡ ¼³Á¤ÇÑ ½Ã°£ÀÌ Áö³ª¸é È­»ì¿ÀºêÁ§Æ®(gameObject)°¡ »ç¶óÁü(ÆÄ±«)
-        Destroy(gameObject, LifeTime);
-        //+³ª * °°Àº ¿¬»êÀÚ°¡ ¾Æ´Ï¶ó ,¸¦ ¾²´Â ÀÌÀ¯:
-        //+³ª * °°Àº ¿¬»êÀÚ´Â µ¡¼ÀÀÌ³ª °ö¼ÀÀ» ÇÒ ¶§ »ç¿ëÇÏ´Â °Å°í, ÇÔ¼ö¿¡ ÀÎÀÚ¸¦ Àü´ŞÇÒ ¶§´Â ','
-        //½°Ç¥(,)´Â ÇÔ¼ö¿¡¼­ ¿©·¯ °³ÀÇ ÀÎÀÚ(¸Å°³º¯¼ö)¸¦ ±¸ºĞÇÒ ¶§ »ç¿ëÇÏ´Â ±âÈ£.
+    {   
+        Destroy(gameObject, LifeTime);   
     }
     
-    private void OnTriggerEnter2D(Collider2D other)//´Ù¸¥ Collider¿Í Ãæµ¹ ÇßÀ»¶§ È£ÃâµÊ
-    {//È­»ì ¿ÀºêÁ§Æ®´Â Collider2D¿¡ Is Trigger°¡ Ã¼Å©µÇ¾î ÀÖÀ» ¶§ ÀÛµ¿
-
-        //Ãæµ¹ÇÑ ¿ÀºêÁ§Æ® ÅÂ±×°¡ EnemyÀÎÁö È®ÀÎ
+    private void OnTriggerEnter2D(Collider2D other)//ë‹¤ë¥¸ Colliderì™€ ì¶©ëŒ í–ˆì„ë•Œ í˜¸ì¶œ
+    {
+        //ì¶©ëŒí•œ ì˜¤ë¸Œì íŠ¸ íƒœê·¸ê°€ Enemyì¸ì§€ í™•ì¸
         if (other.CompareTag("Enemy"))
         {
-            EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();//EnemyHealth½ºÅ©¸³Æ®¿Í ¿¬°á
+            EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();//EnemyHealthìŠ¤í¬ë¦½íŠ¸ì™€ ì—°ê²°
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(ArrowDamage);
-                Debug.Log($"{other.name}¿¡°Ô {ArrowDamage} µ¥¹ÌÁö¸¦ ÁÖ¾ú´Ù!");
+                Debug.Log($"{other.name}ì—ê²Œ {ArrowDamage} ë°ë¯¸ì§€ë¥¼ ì£¼ì—ˆë‹¤!");
             }
-            Destroy(gameObject);//Àû°ú Ãæµ¹ÇßÀ¸´Ï »ç¶óÁü(ÆÄ±«)
+            Destroy(gameObject);//ì ê³¼ ì¶©ëŒí–ˆìœ¼ë‹ˆ ì‚¬ë¼ì§(íŒŒê´´)
         }
-        else if (other.CompareTag("Ground"))
-        {
-            Destroy(gameObject);//|| other.CompareTag("Obstacle"))//Å¸ÀÏ¸Ê¿¡ Àå¾Ö¹°ÀÌ ÀÖ´Ù¸é
-        }                 
-             
+        else if (other.CompareTag("Ground")) Destroy(gameObject);//í™”ì‚´ì´ íƒ€ì¼ë§µ ê²½ê³„ì„ ì— ë‹¿ìœ¼ë©´ íŒŒê´´
+        //ì½œë¼ì´ë” ë²”ìœ„(íƒ€ì¼ë§µ ë°–) ë°–ìœ¼ë¡œ í™”ì‚´ì´ ë‚˜ê°€ë©´ í™”ì‚´ íŒŒê´´, íƒ€ì¼ë§µ(Tag:Ground) ì•ˆì— ìˆì–´ì„œ OnTriggerEnter2Dì˜ ìƒí™©ì´ ì•„ë‹˜!
+        //íƒ€ì¼ë§µì˜ ì½œë¼ì´ë” ë°– (ê²½ê³„ì„ )ì— í™”ì‚´ì´ ë‹¿ìœ¼ë©´ ê·¸ë•Œ í•¨ìˆ˜ê°€ ì‘ë™í•´ í™”ì‚´ì´ íŒŒê´´
     }
 }
