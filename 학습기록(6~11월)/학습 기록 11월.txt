@@ -439,3 +439,16 @@ else ... Debug.Log("...);              O
 
 
 
+11/20
+몬스터와 아이템 관련 스크립트 전반의 코드 스타일을 통일하고 가독성 및 안정성을 극대화 (중괄호 생략, 단일 표현식 최적화)
+
+- Enemy, Difficulty = 짧은 if문은 그 if문의  한 줄에 위치시켜 가독성, 및 간결화 (디버그 등 긴 코드면 그대로 한칸 밑에 둬서 유지)
+- EnemySpawn = GetValidSpawnPosition() 내 if 문을 한 줄로 정리.
+- EnemyHealth = TakeDamage() 내 널 체크 및 단일 if 문 간결화.
+
+- ItemChest = OpenChest() 함수 내 콜라이더 비활성화 및 스프라이트 교체 로직 간결화.
+- ItemChestSpawner = Start() 및 SpawnItemChest() 내 모든 단일 if 문을 한 줄로 정리.
+- ItemSpawner = 한 줄만 있는 함수인 ItemDestroyed() 함수를 표현식 본문 (=>)으로 최종 간결화.
+
+**스크립트 전반의 코드 통일성이 확보, 단일 명령문에 대한 불필요한 중괄호를 제거하여 코드 라인 수가 줄고 가독성이 높아졌어, 몬스터 및 아이템 스폰/획득 로직의 안정성 유지 확인**
+
