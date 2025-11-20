@@ -1,59 +1,55 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static EnemyDifficulty;
-//EnemyDifficulty ½ºÅ©¸³Æ®¸¦ usingÀ¸·Î È£Ãâ
+//EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ë¥¼ usingìœ¼ë¡œ í˜¸ì¶œ
 
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("¸ó½ºÅÍÀÇ HP")]
-    //±âÁ¸ HP º¯¼ö (ÀÌÁ¦ ±âº»°ª ¿ªÇÒÀ» ÇÔ)
-    [SerializeField] private float baseMaxHP = 5f;//¸ó½ºÅÍÀÇ ±âº» Ã¼·Â (³­ÀÌµµ Àû¿ë Àü)
+    [Header("ëª¬ìŠ¤í„°ì˜ HP")]
+    //ê¸°ì¡´ HP ë³€ìˆ˜ (ì´ì œ ê¸°ë³¸ê°’ ì—­í• ì„ í•¨)
+    [SerializeField] private float baseMaxHP = 5f;//ëª¬ìŠ¤í„°ì˜ ê¸°ë³¸ ì²´ë ¥ (ë‚œì´ë„ ì ìš© ì „)
 
-    [Header("¸ó½ºÅÍÀÇ ¿¡´Ï¸ŞÀÌÅÍ ÄÄÆ÷³ÍÆ® ¿¬°á")]
-    public Animator Animator;//¸ó½ºÅÍÀÇ ¿¡´Ï¸ŞÀÌÅÍ¸¦ ¿¬°áÇÒ º¯¼ö
+    [Header("ëª¬ìŠ¤í„°ì˜ ì—ë‹ˆë©”ì´í„° ì»´í¬ë„ŒíŠ¸ ì—°ê²°")]
+    public Animator Animator;//ëª¬ìŠ¤í„°ì˜ ì—ë‹ˆë©”ì´í„°ë¥¼ ì—°ê²°í•  ë³€ìˆ˜
 
-    private float currentMaxHP;//³­ÀÌµµ Àû¿ë ÈÄÀÇ ÃÖ´ë Ã¼·Â
-    private float currentHP;//ÇöÀç Ã¼·Â
-    private Enemy enemyScript;//Enemy ½ºÅ©¸³Æ® ÂüÁ¶ (EnemyDie È£Ãâ¿ë)
+    private float currentMaxHP;//ë‚œì´ë„ ì ìš© í›„ì˜ ìµœëŒ€ ì²´ë ¥
+    private float currentHP;//í˜„ì¬ ì²´ë ¥
+    private Enemy enemyScript;//Enemy ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (EnemyDie í˜¸ì¶œìš©)
 
 
-    void Awake()//Start()º¸´Ù ¸ÕÀú È£ÃâµÇ¾î¾ß Enemy.cs¿¡¼­ ÂüÁ¶ÇÏ±â Àü Ã¼·Â ÃÊ±âÈ­°¡ µÊ.
+    void Awake()//Start()ë³´ë‹¤ ë¨¼ì € í˜¸ì¶œë˜ì–´ì•¼ Enemy.csì—ì„œ ì°¸ì¡°í•˜ê¸° ì „ ì²´ë ¥ ì´ˆê¸°í™”ê°€ ë¨.
     {
-        enemyScript = GetComponent<Enemy>();//Enemy ½ºÅ©¸³Æ® ÂüÁ¶ (EnemyDie È£Ãâ¿ë)
+        enemyScript = GetComponent<Enemy>();//Enemy ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡° (EnemyDie í˜¸ì¶œìš©)
 
-        if (EnemyDifficulty.Instance != null)//EnemyDifficulty ½ºÅ©¸³Æ®¸¦ ÅëÇØ ÇöÀç ³­ÀÌµµ¿¡ ¸ÂÃç ¸ó½ºÅÍÀÇ ÃÖ´ë Ã¼·ÂÀ» Á¶Á¤
+        if (EnemyDifficulty.Instance != null)//EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ë¥¼ í†µí•´ í˜„ì¬ ë‚œì´ë„ì— ë§ì¶° ëª¬ìŠ¤í„°ì˜ ìµœëŒ€ ì²´ë ¥ì„ ì¡°ì •
             currentMaxHP = EnemyDifficulty.Instance.GetAdjustedMonsterStat(baseMaxHP, StatType.Health);
         else
-        {   //EnemyDifficulty½ºÅ©¸³Æ®°¡ ¾øÀ¸¸é ±âº» Ã¼·Â »ç¿ë
-            Debug.LogWarning("EnemyDifficulty.Instance¸¦ Ã£À» ¼ö ¾ø¾î!. ¸ó½ºÅÍ Ã¼·ÂÀÌ ±âº»°ªÀ¸·Î ¼³Á¤ÇÒ²²!.");
+        {   //EnemyDifficultyìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìœ¼ë©´ ê¸°ë³¸ ì²´ë ¥ ì‚¬ìš©
+            Debug.LogWarning("EnemyDifficulty.Instanceë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!. ëª¬ìŠ¤í„° ì²´ë ¥ì´ ê¸°ë³¸ê°’ìœ¼ë¡œ ì„¤ì •í• ê»˜!.");
             currentMaxHP = baseMaxHP;
         }
-        currentHP = currentMaxHP;//Á¶Á¤µÈ ÃÖ´ë Ã¼·ÂÀ¸·Î ÇöÀç Ã¼·Â ÃÊ±âÈ­
+        currentHP = currentMaxHP;//ì¡°ì •ëœ ìµœëŒ€ ì²´ë ¥ìœ¼ë¡œ í˜„ì¬ ì²´ë ¥ ì´ˆê¸°í™”
     }
 
     public void TakeDamage(float damageAmount)
     {
-        //¹ŞÀº µ¥¹ÌÁö¸¸Å­ ÇöÀç Ã¼·ÂÀ» °¨¼Ò½ÃÅ²´Ù.
+        //ë°›ì€ ë°ë¯¸ì§€ë§Œí¼ í˜„ì¬ ì²´ë ¥ì„ ê°ì†Œì‹œí‚¨ë‹¤.
         currentHP -= damageAmount;
 
-        //ÇöÀç Ã¼·ÂÀÌ 0º¸´Ù ÀÛ°Å³ª °°À¸¸é ¸ó½ºÅÍ°¡ Á×¾ú´ÂÁö È®ÀÎÇÑ´Ù.
-        if (currentHP <= 0)
-        {
-            Die();//¸ó½ºÅÍ°¡ Á×¾úÀ» ¶§ È£ÃâÇÏ´Â ÇÔ¼ö
-        }
+        //í˜„ì¬ ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ê±°ë‚˜ ê°™ìœ¼ë©´ ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆëŠ”ì§€ í™•ì¸í•œë‹¤.
+        if (currentHP <= 0) Die();//ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆì„ ë•Œ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
     }
         
     void Die()
     {
-        //¸ó½ºÅÍ°¡ Á×À¸¸é ¸Ş¼¼Áö Ãâ·Â
-        Debug.Log(gameObject.name + "µûÀÕ!");
+        //ëª¬ìŠ¤í„°ê°€ ì£½ìœ¼ë©´ ë©”ì„¸ì§€ ì¶œë ¥
+        Debug.Log(gameObject.name + "ë”°ì‡!");
 
-        //Enemy ½ºÅ©¸³Æ®ÀÇ EnemyDie ÇÔ¼ö È£Ãâ
-        if (enemyScript != null)
-            enemyScript.EnemyDie();//Enemy½ºÅ©¸³Æ®ÀÇ PlayerDie ÇÔ¼ö È£Ãâ
-        else Debug.LogError("EnemyHealth: Enemy ½ºÅ©¸³Æ® ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î!");
+        //Enemy ìŠ¤í¬ë¦½íŠ¸ì˜ EnemyDie í•¨ìˆ˜ í˜¸ì¶œ
+        if (enemyScript != null) enemyScript.EnemyDie();//EnemyìŠ¤í¬ë¦½íŠ¸ì˜ PlayerDie í•¨ìˆ˜ í˜¸ì¶œ
+        else Debug.LogError("EnemyHealth: Enemy ìŠ¤í¬ë¦½íŠ¸ ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!");
     }
 
 }

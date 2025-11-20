@@ -85,8 +85,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             PlayerScript = playerGameObject.GetComponent<Player>();
             if (PlayerScript == null) Debug.LogError("EnemySpawn: Player 오브젝트에 Player 스크립트가 없어!");
         }
-        else Debug.LogWarning("EnemySpawn: 'Player' 태그를 가진 오브젝트를 찾을 수 없어!");
-       
+        else Debug.LogWarning("EnemySpawn: 'Player' 태그를 가진 오브젝트를 찾을 수 없어!");   
     }
 
     void Update()
@@ -95,10 +94,9 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
         if (spawnTimer <= 0f)//타이머가 0이하가 되면 스폰
         {
-            for (int i = 0; i < normalSpawnCount; i++)//normalSpawnCount 만큼 반복해서 스폰
-            {
-                SpawnNormalEnemy();//일반 몬스터 생성 함수 호출
-            }  
+            //normalSpawnCount 만큼 반복해서 스폰
+            for (int i = 0; i < normalSpawnCount; i++) SpawnNormalEnemy();//일반 몬스터 생성 함수 호출
+
             spawnTimer = normalSpawnTime;//다음 몬스터 스폰을 위해 타이머 초기화
             //08.23 여기 if문은 중괄호를 없애지 않았어. if밑에는 for문이 있어. 그래서 더 밑의 spawnTimer = normalSpawnTime가
             //if문의 영향을 받지 않아서야. 괄호가 없으면 if밑에 있는 하나만 작동하고 더 밑에 있는건 if문과 연결되지 않아서야
@@ -240,8 +238,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             {
                 Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
-                if (colliders.Length == 0)
-                    return cellCenterWorld;//유효한 위치 찾으면 반환
+                if (colliders.Length == 0) return cellCenterWorld;//유효한 위치 찾으면 반환
             }
         }
         return Vector3.zero;//100번 시도해도 못 찾으면 Vector3.zero 반환,void로 된 클래스가 아니니 return사용

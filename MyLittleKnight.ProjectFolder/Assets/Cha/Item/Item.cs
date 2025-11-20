@@ -21,7 +21,7 @@ public class Item: MonoBehaviour
     {//enum 안에 정의된 각 항목들은 정수(integer) 값을 가져. 가장 위에 있는 항목은 0, 그 다음은 1,
      //이런 식으로 자동으로 숫자가 매겨지지. 물론 네가 직접 숫자를 지정해줄 수도 있어.
 
-        None,//0 아무것도 아님 (기본값, 실수 방지용)
+        None,//0 아무것도 아님 (기본값)
         ArrowPower,//1 활 공격력 증가
         SwordPower,//2 검 데미지 증가
         Heal,//3 체력 회복
@@ -42,7 +42,7 @@ public class Item: MonoBehaviour
     public float ShieldAmount = 4f;//방어력 회복 값
     public float DespawnTime = 10f;//아이템이 생성된 후 자동으로 사라지는 시간 (초)
     private ItemSpawner itemSpawner;//ItemSpawner 스크립트 참조
-    private bool isUsed = false;
+    private bool isUsed = false;//아이템을 획득 했는지 결정하는 bool 타입 변수
 
     void Start()
     {
@@ -94,9 +94,9 @@ public class Item: MonoBehaviour
         if (soundToPlay != null)//아이템 오브젝트가 사라지더라도 사운드는 들리게
         {
             GameObject soundObject = new GameObject("OneShotAudio");//코드가 실행될 때마다 생성되는 오브젝트야,
-                                                                    //코드 안에서 만들어진 오브젝트지
-                                                                    //이 코드가 실행되면 씬에 "OneShotAudio"라는 이름의 빈 오브젝트가 하나 만들어져.
-                                                                    //이 오브젝트는 소리를 재생하는 역할만 하고, 소리 재생이 끝나면 자동으로 사라져.
+            //코드 안에서 만들어진 오브젝트지
+            //이 코드가 실행되면 씬에 "OneShotAudio"라는 이름의 빈 오브젝트가 하나 만들어져
+            //이 오브젝트는 소리를 재생하는 역할만 하고, 소리 재생이 끝나면 자동으로 사라져
 
             soundObject.transform.position = transform.position;//soundObject의 위치를 아이템이 있던 위치(transform.position)와 같게 설정해.
                                                                 //이렇게 하면 소리가 아이템이 있던 곳에서 나는 것처럼 들려.
@@ -111,7 +111,7 @@ public class Item: MonoBehaviour
             //소리가 재생되는 시간만큼 기다렸다가, 소리 재생이 끝나면 soundObject를 자동으로 파괴
             Destroy(soundObject, soundToPlay.length);
         }
-        //아이템은 한번만 먹고 사라져야해, 이걸 지우면 아이템을 먹어도 사라지지 않아.
+        //아이템은 한번만 먹고 사라져야해, 이걸 지우면 아이템을 먹어도 사라지지 않아
         Destroy(gameObject);
     }
 
@@ -125,28 +125,23 @@ public class Item: MonoBehaviour
                 break;
 
             case ItemType.ArrowPower://활 데미지 증가
-                if (statsEffects != null)
-                    statsEffects.ArrowDamageUp(EffectDamage, AttackCooldown);
+                if (statsEffects != null) statsEffects.ArrowDamageUp(EffectDamage, AttackCooldown);
                 break;
 
             case ItemType.SwordPower://검 데미지 증가
-                if (statsEffects != null)
-                    statsEffects.SwordDamageUp(EffectDamage);
+                if (statsEffects != null) statsEffects.SwordDamageUp(EffectDamage);
                 break;
 
             case ItemType.Heal://힐링
-                if (statsEffects != null)
-                    statsEffects.Heal(Healing);
+                if (statsEffects != null) statsEffects.Heal(Healing);
                 break;
 
             case ItemType.ShieldHeal://방어력 회복
-                if (statsEffects != null)
-                    playerShield.HealShield(ShieldAmount);//PlayerShield의 HealShield 함수 호출
+                if (statsEffects != null) playerShield.HealShield(ShieldAmount);//PlayerShield의 HealShield 함수 호출
                 break;
 
             case ItemType.MoveSpeed://이속증가
-                if (statsEffects != null)
-                    statsEffects.MoveSpeedUp(Speed);//player 대신 statsEffects 사용, useThis 대신 effectAmount 사용
+                if (statsEffects != null) statsEffects.MoveSpeedUp(Speed);
                 break;
         }
     }

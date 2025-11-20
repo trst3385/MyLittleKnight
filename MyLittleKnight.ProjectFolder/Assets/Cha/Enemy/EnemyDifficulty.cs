@@ -7,9 +7,9 @@ using TMPro;//TextMeshPro를 사용하기 위해 추가
 
 public class EnemyDifficulty : MonoBehaviour
 {
-    //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 속성
+    //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 읽기 전용 속성
     public float CurrentNormalSpawnTime => currentNormalSpawnTime;
-    //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 속성
+    //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 읽기 전용 속성
     public int CurrentNormalSpawnCount => currentNormalSpawnCount;
     /* * => (람다 연산자): '식 본문 멤버(Expression-bodied Member)' 문법으로, 
      * 값을 계산 없이 단순히 반환할 때 get { return ... } 구문을 생략하고 간결하게 처리함.
@@ -62,8 +62,8 @@ public class EnemyDifficulty : MonoBehaviour
     void Awake()
     {
         //게임 시작 시 이 스크립트의 유일한 인스턴스를 설정해.
-        if(Instance != null && Instance != this)
-            Destroy(gameObject);//이미 인스턴스가 있으면 자신을 파괴(중복 방지)
+        if(Instance != null && Instance != this) Destroy(gameObject);//이미 인스턴스가 있으면 자신을 파괴(중복 방지)
+
         else
         {
             Instance = this;//자신이 유일한 인스턴스가 됨
@@ -101,8 +101,7 @@ public class EnemyDifficulty : MonoBehaviour
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, NormalSpawnCount + (currentDifficultyLevel * NormalSpawnCountUp));
-            if (enemySpawn != null)
-                enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
+            if (enemySpawn != null) enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
 
             if (notificationText != null)//EnemyDifficultyStatsText UI로 전달
             {
@@ -117,14 +116,11 @@ public class EnemyDifficulty : MonoBehaviour
     {                                    //notificationText UI랑 다르게 Lv.0 ~ 1 ~ 2 증가하게 할거야
         if (enemyLevelText != null) enemyLevelText.text = $"몬스터 Lv.{currentDifficultyLevel}";
     }
-
-
     private void ClearNotification()//이 함수는 notificationText UI 알림을 화면에서 지워주는 역할
     {                               //이 함수는 보통 Invoke("ClearNotification", 3f);처럼 일정 시간 뒤에 자동으로 호출되도록 해서,
                                     //"몬스터가 강해졌습니다!" 같은 알림이 3초 후에 사라지게 만드는 용도로 쓰여.
         if (notificationText != null) notificationText.text = "";
     }
-
 
 
     public float GetAdjustedMonsterStat(float baseStat, StatType statType)//몬스터 스탯을 현재 난이도에 맞춰 조정하여 반환하는 함수

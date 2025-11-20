@@ -28,15 +28,12 @@ public class ItemSpawner : MonoBehaviour
         //!= null은 "null이 아닐 때" 즉, "무언가가 존재할 때"를 의미하고,
         //== null은 "null일 때" 즉, "아무것도 없거나 비어있을 때"를 의미해.
         spawnTimer = ItemSpawnTime;
-        if (ItemPrefabs == null || ItemPrefabs.Length == 0)
-            Debug.LogError("ItemSpawner: 아이템 프리팹이 할당되지 않았어!");
+        if (ItemPrefabs == null || ItemPrefabs.Length == 0) Debug.LogError("ItemSpawner: 아이템 프리팹이 할당되지 않았어!");
 
-        if (TargetTilemap == null)
-            Debug.LogError("ItemSpawner: 타일맵이 할당되지 않았어!");
+        if (TargetTilemap == null) Debug.LogError("ItemSpawner: 타일맵이 할당되지 않았어!");
 
         textalimManager = FindFirstObjectByType<TextAlimManager>();
-        if (textalimManager == null)
-            Debug.LogError("TextAlimManager 씬에서 찾을 수 없어!");
+        if (textalimManager == null) Debug.LogError("TextAlimManager 씬에서 찾을 수 없어!");
     }
 
     void Update()
@@ -66,9 +63,8 @@ public class ItemSpawner : MonoBehaviour
         Instantiate(itemToSpawn, spawnPosition, Quaternion.identity);
         currentItemCount++;
 
-        // TextAlimManager 스크립트로 알림 보내기, UI에 뜰 텍스트
-        if (textalimManager != null)
-            textalimManager.ShowNotification("<color=yellow>아이템 등장!</color>");
+        //textAlimManager 스크립트로 알림 보내기, UI에 뜰 텍스트
+        if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>아이템 등장!</color>");
     }
 
     Vector3 GetValidSpawnPosition()//아이템의 생성 위치를 정하는 함수, 랜덤으로 세 위치중에서 선택
@@ -94,10 +90,9 @@ public class ItemSpawner : MonoBehaviour
             }
         }
         return Vector3.zero;
-    } 
-
-    public void ItemDestroyed()//아이템을 먹고 사라질때 호출될 함수
-    {   //이건 item 스크립트의 Destroy(gameObject);랑 달라, currentItemCount변수의 값을 1 줄이는거야.
-        currentItemCount--;
     }
+
+    //아이템을 먹고 사라질때 호출될 함수
+    //이건 item 스크립트의 Destroy(gameObject);랑 달라, currentItemCount변수의 값을 1 줄이는거야.
+    public void ItemDestroyed() => currentItemCount--;
 }

@@ -78,8 +78,7 @@ public class Enemy : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (deathAudioSource == null)
-            Debug.LogError("Enemy: AudioSource 컴포넌트를 찾을 수 없어!");
+        if (deathAudioSource == null) Debug.LogError("Enemy: AudioSource 컴포넌트를 찾을 수 없어!");
     }
 
     void Start()//외부 스크립트는 Start에
@@ -92,17 +91,12 @@ public class Enemy : MonoBehaviour
 
             //PlayerShield 스크립트 내부에서 방어력이 0이면 playerHealth. 플레이어 체력으로 넘겨주기에,
             //playerHealth 스크립트를 선언할 필요는 없어
-            if (playerScript != null)
-                playerShield = playerGameObject.GetComponent<PlayerShield>();
+            if (playerScript != null) playerShield = playerGameObject.GetComponent<PlayerShield>();
+              
         }
-        else
-        {
-            playerScript = null;
-            Debug.LogWarning("Enemy: Player 오브젝트를 찾을 수 없어! 'Player' 태그를 확인해!");
-        }
+        else { playerScript = null; Debug.LogWarning("Enemy: Player 오브젝트를 찾을 수 없어! 'Player' 태그를 확인해!"); }
 
         SetEnmeyStats();//몬스터 시작 시 능력치와 외형을 설정하는 함수 호출
-
         lastAttackTime = Time.time - currentAttackCooldown;//시작하자마자 공격가능, 실행되고 쿨타임 기다리지 않고 바로 공격
     }
     
@@ -207,8 +201,8 @@ public class Enemy : MonoBehaviour
         //Attack 애니메이션 이벤트가 호출될 때, 플레이어와의 거리를 다시 확인
         float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
 
-        if (distanceToPlayer <= currentStopDistance + 1.5f)//1.5f는 몬스터 멈춤 지점 외 추가 공격 범위. 콜라이더 밖 거리에서도 데미지 가능
-            DealDamageToPlayer();//통합 함수 호출
+        //1.5f는 몬스터 멈춤 지점 및 추가 공격 범위. 콜라이더 밖 거리에서도 데미지 가능
+        if (distanceToPlayer <= currentStopDistance + 1.5f) DealDamageToPlayer();//통합 함수 호출
         else Debug.Log("공격 범위 밖이라 데미지를 줄 수 없어!");
 
     }
@@ -248,8 +242,7 @@ public class Enemy : MonoBehaviour
         }
         else//플레이어와의 거리가 StopDistance보다 멀 경우
         {
-            if (animator.GetBool("Attack"))// 공격 애니메이션이 켜져 있었다면 끄고 이동
-                animator.SetBool("Attack", false);
+            if (animator.GetBool("Attack")) animator.SetBool("Attack", false);// 공격 애니메이션이 켜져 있었다면 끄고 이동
 
             MoveTowardsPlayer(playerCenterPosition);
         }
@@ -307,9 +300,7 @@ public class Enemy : MonoBehaviour
     private void FlipSprite(float directionX)//몬스터 스프라이트 좌우 반전
     {
         //방향이 0이 아닐 때만 처리 (0일 땐 flipX가 유지됨)
-        if (directionX != 0)
-            spriteRenderer.flipX = directionX < 0;
-            //directionX가 음수일 때 (왼쪽) true, 양수일 때 (오른쪽) false
+        if (directionX != 0) spriteRenderer.flipX = directionX < 0;//directionX가 음수일 때 (왼쪽) true, 양수일 때 (오른쪽) false
     }
 
     private bool HandlePlayerDeath()//플레이어가 죽었을때 몬스터의 행동을 정지
@@ -326,7 +317,7 @@ public class Enemy : MonoBehaviour
                 animator.SetTrigger("Idle");
                 playerWasDead = true;
             }
-            return true;//플레이어가 죽었으니 더 이상 추적/공격 로직을 진행하지 않음
+            return true;//플레이어가 죽었으니 더 이상 추적,공격 로직을 진행하지 않음
         }
         else
         {

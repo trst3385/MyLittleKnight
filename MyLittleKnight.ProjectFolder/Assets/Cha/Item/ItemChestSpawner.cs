@@ -26,12 +26,8 @@ public class ItemChestSpawner : MonoBehaviour
     {
         spawnTimer = ItemChestSpawnTime;//실행 후 바로 스폰 되도록 초기화
 
-        //!= null은 "null이 아닐 때" 즉, "무언가가 존재할 때"를 의미하고,
-        //== null은 "null일 때" 즉, "아무것도 없거나 비어있을 때"를 의미해.
-
         //ItemBoxPrefab이 할당되어 있는지 확인 (에러 방지)
-        if (ItemChestPrefab == null)
-            Debug.LogError("ItemBoxSpawner: ItemBoxPrefab이 할당되지 않았어! 인스펙터를 확인해!");
+        if (ItemChestPrefab == null) Debug.LogError("ItemBoxSpawner: ItemBoxPrefab이 할당되지 않았어! 인스펙터를 확인해!");
 
         //시작 시 TextAlimManager 스크립트를 찾아서 할당
         textalimManager = FindFirstObjectByType<TextAlimManager>();
@@ -69,11 +65,10 @@ public class ItemChestSpawner : MonoBehaviour
 
         GameObject newItemChest = Instantiate(ItemChestPrefab, spawnPosition, Quaternion.identity);
 
-        if (AudioSource != null && SpawnSound != null)//생성시 들릴 사운드
-            AudioSource.PlayOneShot(SpawnSound);//한번만 사운드가 들리게 말 그대로 OneShot
-
-        if (textalimManager != null)//TextAlimManager 스크립트에 텍스트 알림 표시
-            textalimManager.ShowNotification("<color=yellow>아이템 상자 발견!</color>");
+        //생성시 들릴 사운드
+        if (AudioSource != null && SpawnSound != null) AudioSource.PlayOneShot(SpawnSound);//한번만 사운드가 들리게 말 그대로 OneShot
+        //TextAlimManager 스크립트에 텍스트 알림 표시
+        if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>아이템 상자 발견!</color>");
     }
 
     Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 공통 함수 (EnemySpawn 스크립트와 동일)
@@ -91,7 +86,7 @@ public class ItemChestSpawner : MonoBehaviour
             int randomX = Random.Range(bounds.xMin, bounds.xMax);
             int randomY = Random.Range(bounds.yMin, bounds.yMax);
             Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);//랜덤 셀 위치
-
+            
             if(TargetTilemap.HasTile(randomCell))//선택된 셀에 타일이 있는지 확인
             {
                 Vector3 cellCenterTile = TargetTilemap.GetCellCenterWorld(randomCell);//셀 위치를 월드 좌표로 변환

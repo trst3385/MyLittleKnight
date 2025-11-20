@@ -1,71 +1,63 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
-//À¯´ÏÆ¼¿Í C# ±âº» ¶óÀÌºê·¯¸®¿¡µµ RandomÀÌ¶õ ÀÌ¸§ÀÌ ÀÖ¾î ¸ğÈ£¼º¶§¹®¿¡ ¿À·ù°¡ ³²,
-//¾î¶² RandomÀÎÁö ¸íÈ®ÇÏ°Ô ÁöÁ¤ÇÏ±â À§ÇØ Ãß°¡. ´Ù¸¥ ¹æ¹ıÀ¸·Î ¸Ş¼­µå Random ¿·¿¡ UnityEngine.»ç¿ë
+//ìœ ë‹ˆí‹°ì™€ C# ê¸°ë³¸ ë¼ì´ë¸ŒëŸ¬ë¦¬ì—ë„ Randomì´ë€ ì´ë¦„ì´ ìˆì–´ ëª¨í˜¸ì„±ë•Œë¬¸ì— ì˜¤ë¥˜ê°€ ë‚¨,
+//ì–´ë–¤ Randomì¸ì§€ ëª…í™•í•˜ê²Œ ì§€ì •í•˜ê¸° ìœ„í•´ ì¶”ê°€. ë‹¤ë¥¸ ë°©ë²•ìœ¼ë¡œ ë©”ì„œë“œ Random ì˜†ì— UnityEngine.ì‚¬ìš©
 
 public class ItemChest : MonoBehaviour
 {
-    //¿©±â º¯¼ö¿£ [Header("")]¸¦ ¾²Áö¾Ê¾Æ. º¯¼ö°¡ []À» ½á¼­ °¢ º¯¼ö¸¦ µû·Î ±¸º°ÀÌ °¡´ÉÇØ
-    public Sprite OpenChestSprite;//»óÀÚ°¡ ¿­·ÈÀ» ¶§ º¸¿©ÁÙ 'ÀÌ¹ÌÁö ÆÄÀÏ' º¯¼ö
-    public GameObject[] ItemPrefabs;//ÀÌ »óÀÚ¿¡¼­ ³ª¿Ã ¾ÆÀÌÅÛ ÇÁ¸®ÆÕµé. ÀÎ½ºÆåÅÍÀÇ itemPrefabs¿¡ ³Ö¾îµĞ ¾ÆÀÌÅÛ ¿ÀºêÁ§Æ®µéÀÌ¾ß
-    public Transform[] ItemSpawnPoints;//¿©·¯ ½ºÆù Æ÷ÀÎÆ®¸¦ ´ãÀ» ¹è¿­ º¯¼ö
+    //ì—¬ê¸° ë³€ìˆ˜ì—” [Header("")]ë¥¼ ì“°ì§€ì•Šì•„. ë³€ìˆ˜ê°€ []ì„ ì¨ì„œ ê° ë³€ìˆ˜ë¥¼ ë”°ë¡œ êµ¬ë³„ì´ ê°€ëŠ¥í•´
+    public Sprite OpenChestSprite;//ìƒìê°€ ì—´ë ¸ì„ ë•Œ ë³´ì—¬ì¤„ 'ì´ë¯¸ì§€ íŒŒì¼' ë³€ìˆ˜
+    public GameObject[] ItemPrefabs;//ì´ ìƒìì—ì„œ ë‚˜ì˜¬ ì•„ì´í…œ í”„ë¦¬íŒ¹ë“¤. ì¸ìŠ¤í™í„°ì˜ itemPrefabsì— ë„£ì–´ë‘” ì•„ì´í…œ ì˜¤ë¸Œì íŠ¸ë“¤ì´ì•¼
+    public Transform[] ItemSpawnPoints;//ì—¬ëŸ¬ ìŠ¤í° í¬ì¸íŠ¸ë¥¼ ë‹´ì„ ë°°ì—´ ë³€ìˆ˜
     
 
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
-    private bool isOpen = false;//»óÀÚ°¡ ¿­·È´ÂÁö¸¦ ÃßÀûÇÏ´Â º¯¼ö, ÇÃ·¹ÀÌ¾î°¡ ´ê±â Àü¿¡´Â false
+    private bool isOpen = false;//ìƒìê°€ ì—´ë ¸ëŠ”ì§€ë¥¼ ì¶”ì í•˜ëŠ” ë³€ìˆ˜, í”Œë ˆì´ì–´ê°€ ë‹¿ê¸° ì „ì—ëŠ” false
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
 
+        //ìƒìì— ë‹¿ì„ë•Œ ì—´ë¦° ìƒì ì´ë¯¸ì§€ê°€ ì œëŒ€ë¡œ ë“¤ì–´ìˆëŠ”ì§€ í™•ì¸
+        if (OpenChestSprite == null ) Debug.Log("OpenChest ìŠ¤í”„ë¼ì´íŠ¸ê°€ í• ë‹¹ë˜ì§€ ì•ŠìŒ! ì¸ìŠ¤íŒ©í„°ë¥¼ í™•ì¸í•˜ë¼ê³ !");
 
-        //Inspector¿¡ ÇÊ¿äÇÑ public º¯¼öµéÀÌ Á¦´ë·Î ¿¬°áµÇ¾ú´ÂÁö È®ÀÎÇÏ´Â µğ¹ö±× ·Î±×
-        if (OpenChestSprite == null )
-            Debug.Log("OpenChest ½ºÇÁ¶óÀÌÆ®°¡ ÇÒ´çµÇÁö ¾ÊÀ½! ÀÎ½ºÆÑÅÍ¸¦ È®ÀÎÇÏ¶ó°í!");
+        //ì•„ì´í…œ í”„ë¦¬íŒ¹ ë°°ì—´ì´ ë¹„ì–´ìˆëŠ”ì§€ í™•ì¸
+        if (ItemPrefabs == null || ItemPrefabs.Length == 0) Debug.LogWarning
+                ("ItemPrefabs ë°°ì—´ì— ì•„ì´í…œì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ìƒìì—ì„œ ì•„ì´í…œì´ ë‚˜ì˜¤ì§€ ì•Šì•„!.");
 
-        //¾ÆÀÌÅÛ ÇÁ¸®ÆÕ ¹è¿­ÀÌ ºñ¾îÀÖ´ÂÁö È®ÀÎ
-        if (ItemPrefabs == null || ItemPrefabs.Length == 0)
-            Debug.LogWarning("ItemPrefabs ¹è¿­¿¡ ¾ÆÀÌÅÛÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! »óÀÚ¿¡¼­ ¾ÆÀÌÅÛÀÌ ³ª¿ÀÁö ¾Ê¾Æ!.");
-
-        //¾ÆÀÌÅÛ ½ºÆù Æ÷ÀÎÆ®¸¦ µû·Î ÁöÁ¤ÇÏÁö ¾Ê¾ÒÀ¸¸é »óÀÚ ÀÚ½ÅÀÇ À§Ä¡¸¦ »ç¿ë
+        //ì•„ì´í…œ ìŠ¤í° í¬ì¸íŠ¸ë¥¼ ë”°ë¡œ ì§€ì •í•˜ì§€ ì•Šì•˜ìœ¼ë©´ ìƒì ìì‹ ì˜ ìœ„ì¹˜ë¥¼ ì‚¬ìš©
         if (ItemSpawnPoints == null || ItemSpawnPoints.Length == 0 )
-            Debug.Log("ItemChest: ItemSpawnPoints°¡ ÇÒ´çµÇÁö ¾Ê¾Ò°Å³ª ºñ¾îÀÖ¾î! »óÀÚ À§Ä¡¿¡ ½ºÆùÇÒ°Ô!");
-        //&& ³í¸®¿¬»ê = AND ¿¬»êÀº ¸ğµç Á¶°ÇÀÌ true ÀÎ °æ¿ì ÇØ´ç ¿¬»êÀÌ true°¡ µÇ´Â ¿¬»ê.
-        //|| ³í¸®¿¬»ê = OR ¿¬»êÀº ÇÑ Á¶°ÇÀÌ¶óµµ trueÀÌ¸é true¸¦ ¹İÈ¯ÇÏ´Â Á¶°Ç.
-
-
-
+            Debug.Log("ItemChest: ItemSpawnPointsê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ê±°ë‚˜ ë¹„ì–´ìˆì–´! ìƒì ìœ„ì¹˜ì— ìŠ¤í°í• ê²Œ!");
+        //&& ë…¼ë¦¬ì—°ì‚° = AND ì—°ì‚°ì€ ëª¨ë“  ì¡°ê±´ì´ true ì¸ ê²½ìš° í•´ë‹¹ ì—°ì‚°ì´ trueê°€ ë˜ëŠ” ì—°ì‚°.
+        //|| ë…¼ë¦¬ì—°ì‚° = OR ì—°ì‚°ì€ í•œ ì¡°ê±´ì´ë¼ë„ trueì´ë©´ trueë¥¼ ë°˜í™˜í•˜ëŠ” ì¡°ê±´.
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    {   //»óÀÚ°¡ ¾ÆÁ÷ ¿­¸®Áö ¾Ê¾Ò°í, ´êÀº ¿ÀºêÁ§Æ®ÀÇ ÅÂ±×°¡ "Player"ÀÎÁö È®ÀÎ
-        //OnTriggerEnter2D ÇÔ¼ö°¡ ÀÛµ¿ µÉ·Á¸é Box Collider 2D°¡ Is Trigger·Î ÄÑÁ® ÀÖ¾î¾ß ÇØ
-        if (!isOpen && other.CompareTag("Player"))
-            OpenChest();//Á¶°ÇÀ» ¸¸Á·ÇÏ¸é »óÀÚ¸¦ ¿©´Â ÇÔ¼ö È£Ãâ
+    {   //ìƒìê°€ ì•„ì§ ì—´ë¦¬ì§€ ì•Šì•˜ê³ , ë‹¿ì€ ì˜¤ë¸Œì íŠ¸ì˜ íƒœê·¸ê°€ "Player"ì¸ì§€ í™•ì¸
+        //OnTriggerEnter2D í•¨ìˆ˜ê°€ ì‘ë™ ë ë ¤ë©´ Box Collider 2Dê°€ Is Triggerë¡œ ì¼œì ¸ ìˆì–´ì•¼ í•´
+        if (!isOpen && other.CompareTag("Player")) OpenChest();//ì¡°ê±´ì„ ë§Œì¡±í•˜ë©´ ìƒìë¥¼ ì—¬ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
     }
 
     void OpenChest()
     {
-        isOpen = true;//»óÀÚ°¡ ¿­¸° »óÅÂ·Î º¯°æ
+        isOpen = true;//ìƒìê°€ ì—´ë¦° ìƒíƒœë¡œ ë³€ê²½
 
-        //1.OpenChestÇÔ¼ö°¡ ¹ßµ¿µÇ¸é openedChestSprite(¿­¸° »óÀÚ)·Î ±³Ã¼
-        if (OpenChestSprite != null)
-            spriteRenderer.sprite = OpenChestSprite;
+        //1.OpenChestí•¨ìˆ˜ê°€ ë°œë™ë˜ë©´ openedChestSprite(ì—´ë¦° ìƒì)ë¡œ êµì²´
+        if (OpenChestSprite != null) spriteRenderer.sprite = OpenChestSprite;
 
-        //1-2.Äİ¶óÀÌ´õ ºñÈ°¼ºÈ­. ¿­¸° »óÀÚ´Â ´õ ÀÌ»ó ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹(Æ®¸®°Å)ÇÒ ÇÊ¿ä ¾øÀ¸¹Ç·Î Äİ¶óÀÌ´õ ºñÈ°¼ºÈ­
-        if (boxCollider2D != null)
-            boxCollider2D.enabled = false;
+        //1-2.ì½œë¼ì´ë” ë¹„í™œì„±í™”. ì—´ë¦° ìƒìëŠ” ë” ì´ìƒ í”Œë ˆì´ì–´ì™€ ì¶©ëŒ(íŠ¸ë¦¬ê±°)í•  í•„ìš” ì—†ìœ¼ë¯€ë¡œ ì½œë¼ì´ë” ë¹„í™œì„±í™”
+        if (boxCollider2D != null) boxCollider2D.enabled = false;
 
-        //2.¿©·¯ ¾ÆÀÌÅÛ ½ºÆù ÇÔ¼ö È£Ãâ
+        //2.ì—¬ëŸ¬ ì•„ì´í…œ ìŠ¤í° í•¨ìˆ˜ í˜¸ì¶œ
         SpawnItems();
       
-        Destroy(gameObject, 5f);//¾ÆÀÌÅÛ È¹µæ ÈÄ 5ÃÊ ÈÄ ¾ÆÀÌÅÛ»óÀÚ ¿ÀºêÁ§Æ® ÆÄ±«
+        Destroy(gameObject, 5f);//ì•„ì´í…œ íšë“ í›„ 5ì´ˆ í›„ ì•„ì´í…œìƒì ì˜¤ë¸Œì íŠ¸ íŒŒê´´
 
     }
 
@@ -73,50 +65,48 @@ public class ItemChest : MonoBehaviour
     {
         if(ItemPrefabs == null || ItemPrefabs.Length == 0)
         {
-            Debug.LogWarning("ItemChest: ½ºÆùÇÒ ¾ÆÀÌÅÛ ÇÁ¸®ÆÕÀÌ ¾ø¾î!");
+            Debug.LogWarning("ItemChest: ìŠ¤í°í•  ì•„ì´í…œ í”„ë¦¬íŒ¹ì´ ì—†ì–´!");
             return;        
         }
-        //ItemSpawnPoints°¡ ÇÒ´çµÇÁö ¾Ê¾Ò°Å³ª ºñ¾îÀÖÀ¸¸é °æ°í
+        //ItemSpawnPointsê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ê±°ë‚˜ ë¹„ì–´ìˆìœ¼ë©´ ê²½ê³ 
         if (ItemSpawnPoints == null || ItemSpawnPoints.Length == 0)
         {
-            Debug.LogError("ItemChest: ¾ÆÀÌÅÛ ½ºÆù Æ÷ÀÎÆ®°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ¾ÆÀÌÅÛÀ» ½ºÆùÇÒ ¼ö ¾ø¾î!");
+            Debug.LogError("ItemChest: ì•„ì´í…œ ìŠ¤í° í¬ì¸íŠ¸ê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì•„ì´í…œì„ ìŠ¤í°í•  ìˆ˜ ì—†ì–´!");
             return;
         }
 
-        //ItemSpawnPoints ¹è¿­À» º¹»çÇØ¼­ '»ç¿ë °¡´ÉÇÑ' ½ºÆù Æ÷ÀÎÆ® ¸®½ºÆ®¸¦ ¸¸µé¾î,
-        //¸®½ºÆ®´Â ¹è¿­°ú ´Ş¸® ¿ä¼Ò¸¦ ÀÚÀ¯·Ó°Ô Ãß°¡ÇÏ°í Á¦°ÅÇÒ ¼ö ÀÖ¾î¼­,
-        //ÇÑ ¹ø »ç¿ëÇÑ ½ºÆù Æ÷ÀÎÆ®¸¦ ¸®½ºÆ®¿¡¼­ Á¦°ÅÇÏ±â¿¡ Æí¸®ÇØ.
+        //ItemSpawnPoints ë°°ì—´ì„ ë³µì‚¬í•´ì„œ 'ì‚¬ìš© ê°€ëŠ¥í•œ' ìŠ¤í° í¬ì¸íŠ¸ ë¦¬ìŠ¤íŠ¸ë¥¼ ë§Œë“¤ì–´,
+        //ë¦¬ìŠ¤íŠ¸ëŠ” ë°°ì—´ê³¼ ë‹¬ë¦¬ ìš”ì†Œë¥¼ ììœ ë¡­ê²Œ ì¶”ê°€í•˜ê³  ì œê±°í•  ìˆ˜ ìˆì–´ì„œ,
+        //í•œ ë²ˆ ì‚¬ìš©í•œ ìŠ¤í° í¬ì¸íŠ¸ë¥¼ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°í•˜ê¸°ì— í¸ë¦¬í•´.
         List<Transform> availableSpawnPoints = new List<Transform>(ItemSpawnPoints);
 
-        //2°³ ¶Ç´Â 3°³ÀÇ ¾ÆÀÌÅÛÀ» ·£´ıÀ¸·Î ½ºÆù
-        int randomItems = Random.Range(2, 4);//Random.Range(min, max)¿¡¼­ max´Â Æ÷ÇÔµÇÁö ¾Ê¾Æ (2, 3ÀÌ ³ª¿È)
+        //2ê°œ ë˜ëŠ” 3ê°œì˜ ì•„ì´í…œì„ ëœë¤ìœ¼ë¡œ ìŠ¤í°
+        int randomItems = Random.Range(2, 4);//Random.Range(min, max)ì—ì„œ maxëŠ” í¬í•¨ë˜ì§€ ì•Šì•„ (2, 3ì´ ë‚˜ì˜´)
 
-        //½ºÆùÇÒ ¾ÆÀÌÅÛÀÇ °³¼ö°¡ ½ºÆù Æ÷ÀÎÆ® °³¼öº¸´Ù ¸¹À¸¸é ¿À·ù ¹æÁö
-        //½ºÆù Æ÷ÀÎÆ®°¡ 2°³ÀÎµ¥ 3°³¸¦ ½ºÆùÇÏ·Á°í ÇÏ¸é ¹®Á¦°¡ µÇ¹Ç·Î, °³¼ö¸¦ Á¦ÇÑ
-        if (randomItems > availableSpawnPoints.Count)
-            randomItems = availableSpawnPoints.Count;
+        //ìŠ¤í°í•  ì•„ì´í…œì˜ ê°œìˆ˜ê°€ ìŠ¤í° í¬ì¸íŠ¸ ê°œìˆ˜ë³´ë‹¤ ë§ìœ¼ë©´ ì˜¤ë¥˜ ë°©ì§€
+        //ìŠ¤í° í¬ì¸íŠ¸ê°€ 2ê°œì¸ë° 3ê°œë¥¼ ìŠ¤í°í•˜ë ¤ê³  í•˜ë©´ ë¬¸ì œê°€ ë˜ë¯€ë¡œ, ê°œìˆ˜ë¥¼ ì œí•œ
+        if (randomItems > availableSpawnPoints.Count) randomItems = availableSpawnPoints.Count;
 
-        //Random ¿·¿¡UnityEngine. Àû°Å³ª usingÀ¸·Î using Random = UnityEngine.Random; ¼±¾ğÇØ¾ß ¿À·ù¾È¶ä!
-        for (int i = 0; i < randomItems; i++)//·£´ıÀ¸·Î ¾ÆÀÌÅÛ 2~3°³°¡ µîÀå
+        //Random ì˜†ì—UnityEngine. ì ê±°ë‚˜ usingìœ¼ë¡œ using Random = UnityEngine.Random; ì„ ì–¸í•´ì•¼ ì˜¤ë¥˜ì•ˆëœ¸!
+        for (int i = 0; i < randomItems; i++)//ëœë¤ìœ¼ë¡œ ì•„ì´í…œ 2~3ê°œê°€ ë“±ì¥
         {
-            //³²¾ÆÀÖ´Â ½ºÆù Æ÷ÀÎÆ® ¸®½ºÆ®ÀÇ ¹üÀ§ ¾È¿¡¼­ ¹«ÀÛÀ§ ÀÎµ¦½º ¼±ÅÃ,
-            //ÀÌ·¸°Ô ÇÏ¸é ÀÌ¹Ì »ç¿ëµÈ ½ºÆù Æ÷ÀÎÆ®´Â ´Ù½Ã ¼±ÅÃµÇÁö ¾Ê¾Æ.
+            //ë‚¨ì•„ìˆëŠ” ìŠ¤í° í¬ì¸íŠ¸ ë¦¬ìŠ¤íŠ¸ì˜ ë²”ìœ„ ì•ˆì—ì„œ ë¬´ì‘ìœ„ ì¸ë±ìŠ¤ ì„ íƒ,
+            //ì´ë ‡ê²Œ í•˜ë©´ ì´ë¯¸ ì‚¬ìš©ëœ ìŠ¤í° í¬ì¸íŠ¸ëŠ” ë‹¤ì‹œ ì„ íƒë˜ì§€ ì•Šì•„.
             int randomSpawnPointIndex = Random.Range(0, availableSpawnPoints.Count);
             Transform selectedSpawnPoint = availableSpawnPoints[randomSpawnPointIndex];
 
-            //½ºÆùÇÒ ¾ÆÀÌÅÛ Á¾·ù¸¦ itemPrefabs ¹è¿­ÀÇ ±æÀÌ¸¸Å­ ·£´ıÀ¸·Î ¼±ÅÃ
-            //ÀÌ·¸°Ô ÇØ¾ß ¸ğµç Á¾·ùÀÇ ¾ÆÀÌÅÛÀÌ ³ª¿Ã È®·üÀÌ »ı°Ü
+            //ìŠ¤í°í•  ì•„ì´í…œ ì¢…ë¥˜ë¥¼ itemPrefabs ë°°ì—´ì˜ ê¸¸ì´ë§Œí¼ ëœë¤ìœ¼ë¡œ ì„ íƒ
+            //ì´ë ‡ê²Œ í•´ì•¼ ëª¨ë“  ì¢…ë¥˜ì˜ ì•„ì´í…œì´ ë‚˜ì˜¬ í™•ë¥ ì´ ìƒê²¨
             int randomItemIndex = Random.Range(0, ItemPrefabs.Length);
             GameObject itemToSpawn = ItemPrefabs[randomItemIndex];
 
-            //¼±ÅÃµÈ ½ºÆù Æ÷ÀÎÆ® À§Ä¡¿¡ ¾ÆÀÌÅÛ »ı¼º
+            //ì„ íƒëœ ìŠ¤í° í¬ì¸íŠ¸ ìœ„ì¹˜ì— ì•„ì´í…œ ìƒì„±
             Instantiate(itemToSpawn, selectedSpawnPoint.position, Quaternion.identity);
 
-            //¾ÆÀÌÅÛÀ» ½ºÆùÇÑ À§Ä¡´Â ¸®½ºÆ®¿¡¼­ Á¦°ÅÇØ¼­ ´Ù½Ã ¼±ÅÃµÇÁö ¾Ê°Ô ÇÏ±â
+            //ì•„ì´í…œì„ ìŠ¤í°í•œ ìœ„ì¹˜ëŠ” ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°í•´ì„œ ë‹¤ì‹œ ì„ íƒë˜ì§€ ì•Šê²Œ í•˜ê¸°
             availableSpawnPoints.RemoveAt(randomSpawnPointIndex);
         }
-    }
-        
+    }       
 }
 
 
