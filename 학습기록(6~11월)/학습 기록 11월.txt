@@ -452,3 +452,19 @@ else ... Debug.Log("...);              O
 
 **스크립트 전반의 코드 통일성이 확보, 단일 명령문에 대한 불필요한 중괄호를 제거하여 코드 라인 수가 줄고 가독성이 높아졌어, 몬스터 및 아이템 스폰/획득 로직의 안정성 유지 확인**
 
+
+
+11/21
+게임 내 핵심 매니저 스크립트(6종)의 코드 스타일을 간결화하고, 널 체크 및 상태 제어 로직의 안정성을 강화했어. (코드 가독성 향상)
+
+- 코드 스타일 간결화.
+   1. 대부분의 함수에서 단일 명령문 if 블록의 중괄호({})를 제거하고 한 줄로 정리
+   2. GameTimerUI 스크립트의 StopTimer() / ResumeTimer() 함수를 람다식 (=>) 으로 변환하여 코드를 최소화했어
+
+- 흐름 제어 및 안정성 강화.
+   1. OptionsManager 스크립트의 ToggleOptionsPanel() 함수에 가드 절(Guard Clause) 패턴을 적용하여, 카운트다운 중 옵션 활성화를 return;으로 깔끔하게 차단
+   2. GameOverManager 스크립트의 DisplayFinalScore()의 널 체크 로직 if, else if를 중괄호 제거해 코드량을 줄였어
+   3. OptionsManager 스크립트의 시간 재개 로직을 else if (CountdownManager.isCountdownFinished)로 정리하여, 카운트다운 완료 후에만 게임 시간이 재개되도록 안정 장치를 확보
+
+- 싱글톤 로직 확인
+   1. ObstacleDifficultyManager 스크립트의 Awake() 함수 내 싱글톤 및 DontDestroyOnLoad 로직의 필요성을 재확인하여 씬 전환 시 안정성을 보장함, 만약에 있을 중복된 스크립트 오브젝트로 인한 오류를 방지하기 위해
