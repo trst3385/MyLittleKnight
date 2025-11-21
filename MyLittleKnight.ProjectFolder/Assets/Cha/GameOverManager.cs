@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,85 +6,69 @@ using UnityEngine.SceneManagement;
 
 
 public class GameOverManager : MonoBehaviour
-{//ÇÃ·¹ÀÌ¾î°¡ Á×À¸¸é ½ÇÇàµÉ UI ½ºÅ©¸³Æ®.
+{//í”Œë ˆì´ì–´ê°€ ì£½ìœ¼ë©´ ì‹¤í–‰ë  UI ìŠ¤í¬ë¦½íŠ¸.
 
-    [Header("½Ì±ÛÅæ ÀÎ½ºÅÏ½º")]
-    //´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ ½±°Ô Á¢±ÙÇÒ ¼ö ÀÖµµ·Ï½Ì±ÛÅæ ÆĞÅÏÀ» À§ÇÑ ÀÎ½ºÅÏ½º
+    [Header("ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤")]
+    //ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì‰½ê²Œ ì ‘ê·¼í•  ìˆ˜ ìˆë„ë¡ì‹±ê¸€í†¤ íŒ¨í„´ì„ ìœ„í•œ ì¸ìŠ¤í„´ìŠ¤
     public static GameOverManager Instance;
 
-    [Header("GameOverPanel UI ¿¬°á")]
-    public GameObject GameOverPanel;//ÀÎ½ºÆåÅÍ¿¡¼­ °ÔÀÓ ¿À¹ö ÆĞ³ÎÀ» ÇÒ´çÇÒ º¯¼ö
+    [Header("GameOverPanel UI ì—°ê²°")]
+    public GameObject GameOverPanel;//ì¸ìŠ¤í™í„°ì—ì„œ ê²Œì„ ì˜¤ë²„ íŒ¨ë„ì„ í• ë‹¹í•  ë³€ìˆ˜
 
-    [Header("FinalScoreTextUI ¿¬°á")]
-    public TextMeshProUGUI FinalScoreText;//°ÔÀÓ ¿À¹ö ÆĞ³Î¿¡ Ç¥½ÃÇÒ Á¡¼ö ÅØ½ºÆ® (Inspector¿¡¼­ ¿¬°á)
-                                          //GameOverPanel UIÀÇ ÀÚ½Ä¿¡ ÀÖ¾î!
-    [Header("Player ½ºÅ©¸³Æ® ÂüÁ¶")]
-    public Player PlayerScript;//Player½ºÅ©¸³Æ® ÂüÁ¶
+    [Header("FinalScoreTextUI ì—°ê²°")]
+    public TextMeshProUGUI FinalScoreText;//ê²Œì„ ì˜¤ë²„ íŒ¨ë„ì— í‘œì‹œí•  ì ìˆ˜ í…ìŠ¤íŠ¸ (Inspectorì—ì„œ ì—°ê²°)
+                                          //GameOverPanel UIì˜ ìì‹ì— ìˆì–´!
+    [Header("Player ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°")]
+    public Player PlayerScript;//PlayerìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
 
 
-    void Start()//Start ÇÔ¼ö´Â ¿ÀºêÁ§Æ®°¡ È°¼ºÈ­µÉ ¶§ ÇÑ ¹ø ½ÇÇà
+    void Start()//Start í•¨ìˆ˜ëŠ” ì˜¤ë¸Œì íŠ¸ê°€ í™œì„±í™”ë  ë•Œ í•œ ë²ˆ ì‹¤í–‰
     {
-        //°ÔÀÓ ½ÃÀÛ ½Ã °ÔÀÓ ¿À¹ö ÆĞ³ÎÀº ºñÈ°¼ºÈ­, ÄÉ¸¯ÅÍ°¡ Á×¾î¾ß¸¸ »ı¼º
-        if (GameOverPanel != null)
-            GameOverPanel.SetActive(false);
+        //ê²Œì„ ì‹œì‘ ì‹œ ê²Œì„ ì˜¤ë²„ íŒ¨ë„ì€ ë¹„í™œì„±í™”, ì¼€ë¦­í„°ê°€ ì£½ì–´ì•¼ë§Œ ìƒì„±
+        if (GameOverPanel != null) GameOverPanel.SetActive(false);
 
-        //ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®°¡ ÇÒ´çµÇÁö ¾Ê¾Ò´Ù¸é °æ°í ·Î±× Ãâ·Â
-        if (PlayerScript == null)
-            Debug.LogError("GameOverManager¿¡ Player Script°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
+        //í”Œë ˆì´ì–´ ìŠ¤í¬ë¦½íŠ¸ê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ê²½ê³  ë¡œê·¸ ì¶œë ¥
+        if (PlayerScript == null) Debug.LogError("GameOverManagerì— Player Scriptê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
     }
 
-    public void OnGameOver()//°ÔÀÓ ¿À¹ö »óÅÂ°¡ µÇ¸é È£ÃâµÉ ÇÔ¼ö
+    public void OnGameOver()//ê²Œì„ ì˜¤ë²„ ìƒíƒœê°€ ë˜ë©´ í˜¸ì¶œë  í•¨ìˆ˜
     {
-        //°ÔÀÓ ¿À¹ö ÆĞ³Î È°¼ºÈ­ (È­¸é¿¡ º¸ÀÌ°Ô ÇÔ)
+        //ê²Œì„ ì˜¤ë²„ íŒ¨ë„ í™œì„±í™” (í™”ë©´ì— ë³´ì´ê²Œ í•¨)
         if (GameOverPanel != null)
             GameOverPanel.SetActive(true);
-        //SetActive´Â À¯´ÏÆ¼¿¡¼­ °ÔÀÓ ¿ÀºêÁ§Æ®¸¦ È°¼ºÈ­ÇÏ°Å³ª ºñÈ°¼ºÈ­ÇÏ´Â ±â´ÉÀÌ¾ß
-        //true¸¦ ³ÖÀ¸¸é Ã¼Å©¹Ú½º¸¦ ÄÑ¼­ ¿ÀºêÁ§Æ®¸¦ º¸ÀÌ°Ô(È°¼ºÈ­) ÇÏ°í,
-        //false¸¦ ³ÖÀ¸¸é Ã¼Å©¹Ú½º¸¦ ²¨¼­ ¿ÀºêÁ§Æ®¸¦ ¼û±â°Ô(ºñÈ°¼ºÈ­) ÇØ.
+        //SetActiveëŠ” ìœ ë‹ˆí‹°ì—ì„œ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ í™œì„±í™”í•˜ê±°ë‚˜ ë¹„í™œì„±í™”í•˜ëŠ” ê¸°ëŠ¥ì´ì•¼
+        //trueë¥¼ ë„£ìœ¼ë©´ ì²´í¬ë°•ìŠ¤ë¥¼ ì¼œì„œ ì˜¤ë¸Œì íŠ¸ë¥¼ ë³´ì´ê²Œ(í™œì„±í™”) í•˜ê³ ,falseëŠ” ë°˜ëŒ€ë¡œ ìˆ¨ê¸°ê²Œ(ë¹„í™œì„±í™”) í•´
+        //ê´„í˜¸ ì•ˆì— ë“¤ì–´ì˜¤ëŠ” ê°’ì„ ê·¸ëŒ€ë¡œ ë°›ì•„ì„œ ì˜¤ë¸Œì íŠ¸ì˜ ìƒíƒœë¥¼ trueë‚˜ falseë¡œ ë°”ê¿”ì£¼ëŠ” ì—­í• ë§Œ í•´.
 
-        //SetActive() ÇÔ¼ö´Â ¾î¶² bool º¯¼öÀÇ °ªÀ» ÀĞ¾î¼­ ÀÛµ¿ÇÏ´Â °Ô ¾Æ´Ï¶ó,
-        //°ıÈ£ ¾È¿¡ µé¾î¿À´Â °ªÀ» ±×´ë·Î ¹Ş¾Æ¼­ ¿ÀºêÁ§Æ®ÀÇ »óÅÂ¸¦ true³ª false·Î ¹Ù²ãÁÖ´Â ¿ªÇÒ¸¸ ÇØ.
+        //Time.timeScaleì€ ê²Œì„ ë‚´ ì‹œê°„ì˜ íë¦„ ì†ë„ë¥¼ ì¡°ì ˆí•˜ëŠ” ë³€ìˆ˜ì•¼.
+        //Time.timeScale = 1fëŠ” ê²Œì„ì´ ë³´í†µ ì†ë„ë¡œ ëŒì•„ê°€ê³  ìˆëŠ” ìƒíƒœê³ ,
+        //Time.timeScale = 0fëŠ” ê²Œì„ì˜ ì‹œê°„ì´ ì™„ì „íˆ ë©ˆì¶˜ ìƒíƒœë¥¼ ì˜ë¯¸í•´.
 
-
-        //Time.timeScaleÀº °ÔÀÓ ³» ½Ã°£ÀÇ Èå¸§ ¼Óµµ¸¦ Á¶ÀıÇÏ´Â º¯¼ö¾ß.
-        //Time.timeScale = 1f´Â °ÔÀÓÀÌ º¸Åë ¼Óµµ·Î µ¹¾Æ°¡°í ÀÖ´Â »óÅÂ°í,
-        //Time.timeScale = 0f´Â °ÔÀÓÀÇ ½Ã°£ÀÌ ¿ÏÀüÈ÷ ¸ØÃá »óÅÂ¸¦ ÀÇ¹ÌÇØ.
-        //³×°¡ ¾´ Time.timeScale = 0f; ÄÚµå´Â °ÔÀÓÀ» ¿ÏÀüÈ÷ Á¤Áö½ÃÅ°´Â ¿ªÇÒÀ» ÇØ.
-        //°ÔÀÓ ½Ã°£ ¸ØÃß±â
+        //ê²Œì„ ì‹œê°„ ë©ˆì¶”ê¸°
         Time.timeScale = 0f;
-
-        //ÃÖÁ¾ Á¡¼ö¸¦ UI¿¡ Ç¥½Ã
-        DisplayFinalScore();//ÀÌÁ¦ ÀÌ ½ºÅ©¸³Æ® ¾È¿¡ ÀÖ´Â DisplayFinalScore È£Ãâ
+        //ìµœì¢… ì ìˆ˜ë¥¼ UIì— í‘œì‹œ
+        DisplayFinalScore();//ì´ì œ ì´ ìŠ¤í¬ë¦½íŠ¸ ì•ˆì— ìˆëŠ” DisplayFinalScore í˜¸ì¶œ
     } 
 
-    void DisplayFinalScore()//°ÔÀÓ ¿À¹ö ½Ã ÃÖÁ¾ Á¡¼ö¸¦ UI¿¡ Ç¥½ÃÇÏ´Â ÇÔ¼ö
+    void DisplayFinalScore()//ê²Œì„ ì˜¤ë²„ ì‹œ ìµœì¢… ì ìˆ˜ë¥¼ UIì— í‘œì‹œí•˜ëŠ” í•¨ìˆ˜
     {
         if (FinalScoreText != null && PlayerScript != null)
-        {
-            FinalScoreText.text = "ÃÖÁ¾ Á¡¼ö: " + PlayerScript.CurrentScore.ToString();
-        }
+            FinalScoreText.text = "ìµœì¢… ì ìˆ˜: " + PlayerScript.CurrentScore.ToString();
         else if (FinalScoreText == null)
-        {
-            Debug.LogError("FinalScoreText°¡ GameOverManager¿¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î!");
-        }
+            Debug.LogError("FinalScoreTextê°€ GameOverManagerì— í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´!");
         else if (PlayerScript == null)
-        {
-            Debug.LogError("Player Script°¡ GameOverManager¿¡ ÇÒ´çµÇÁö ¾Ê¾Æ Á¡¼ö¸¦ °¡Á®¿Ã ¼ö ¾ø¾î!");
-        }
-        //8.23 if¹®ÀÇ Áß°ıÈ£¸¦ ¾ø¾Ù·Á°í Çß´Âµ¥ À§ÀÇ if¹®Ã³·³ else if¹®ÀÌ µÎ°³°¡ ÀÖ¾î. ±×·¯´Ï °ıÈ£¸¦ ½á¾ßÇØ.
-        //°ıÈ£¾ø´Â if¹®ÀÌ¸é ¹Ù·Î ¹Ø¿¡ ÀÖ´Â °Í 'ÇÏ³ª¸¸' ¿¬°áÀÌ µÇ´Ï±î
+            Debug.LogError("Player Scriptê°€ GameOverManagerì— í• ë‹¹ë˜ì§€ ì•Šì•„ ì ìˆ˜ë¥¼ ê°€ì ¸ì˜¬ ìˆ˜ ì—†ì–´!");
     }
     
 
-    public void RestartGame()//°ÔÀÓ ´Ù½Ã ½ÃÀÛ ÇÔ¼ö
+    public void RestartGame()//ê²Œì„ ë‹¤ì‹œ ì‹œì‘ í•¨ìˆ˜
     {
-        Time.timeScale = 1f;//°ÔÀÓ ½Ã°£ ´Ù½Ã ½ÃÀÛ
+        Time.timeScale = 1f;//ê²Œì„ ì‹œê°„ ë‹¤ì‹œ ì‹œì‘
 
-        //ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®ÀÇ Á¡¼ö ÃÊ±âÈ­ ÇÔ¼ö È£Ãâ
-        if (PlayerScript != null)
-            PlayerScript.ResetScore();
+        //í”Œë ˆì´ì–´ ìŠ¤í¬ë¦½íŠ¸ì˜ ì ìˆ˜ ì´ˆê¸°í™” í•¨ìˆ˜ í˜¸ì¶œ
+        if (PlayerScript != null) PlayerScript.ResetScore();
 
-        //ÇöÀç ¾ÀÀÇ ÀÌ¸§À» °¡Á®¿Í¼­ ´Ù½Ã ·Îµå
+        //í˜„ì¬ ì”¬ì˜ ì´ë¦„ì„ ê°€ì ¸ì™€ì„œ ë‹¤ì‹œ ë¡œë“œ
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

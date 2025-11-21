@@ -1,89 +1,81 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ±â À§ÇØ ÇÊ¿ä
+using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
 
 
 public class CountdownManager : MonoBehaviour
 {
-    //´Ù¸¥ ½ºÅ©¸³Æ®°¡ Ä«¿îÆ®´Ù¿îÀÌ ³¡³µ´ÂÁö ¾Ë ¼ö ÀÖ°Ô ÇÏ´Â º¯¼ö (´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ Á¢±Ù °¡´ÉÇÏµµ·Ï staticÀ¸·Î ¼±¾ğ)
-    //public static º¯¼ö¶ó¼­ ´Ù¸¥ t½ºÅ©¸³Æ®¿¡¼­ ÀÌ º¯¼ö¸¦ ¾µ¶§ public º¯¼ö·Î ÀÌ ½ºÅ©¸³Æ®¸¦ ¿¬°áÇÏÁö ¾Ê¾Æµµ µÅ.
-    //**Å¬·¡½ºÀÌ¸§.º¯¼ö** ·Î Á¢±ÙÀÌ °¡´ÉÇØ!
-    public static bool isCountdownFinished = false;//±âº»°ªÀº false »óÅÂ.
-    //È¤½Ã¶óµµ °ÔÀÓÀ» Àç½ÃÀÛÇÏ°Å³ª ´Ù¸¥ ¾À¿¡¼­ ³Ñ¾î¿Ã ¶§,
-    //ÀÌÀü »óÅÂÀÇ true °ªÀÌ ³²¾Æ ÀÖÀ» ¼ö ÀÖ±â ¶§¹®¿¡, È®½ÇÇÏ°Ô false »óÅÂ·Î ¸¸µé¾îÁÖ´Â °Å¾ß
+    //ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ê°€ ì¹´ìš´íŠ¸ë‹¤ìš´ì´ ëë‚¬ëŠ”ì§€ ì•Œ ìˆ˜ ìˆê²Œ í•˜ëŠ” ë³€ìˆ˜ (ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì ‘ê·¼ ê°€ëŠ¥í•˜ë„ë¡ staticìœ¼ë¡œ ì„ ì–¸)
+    //**í´ë˜ìŠ¤ì´ë¦„.ë³€ìˆ˜** ë¡œ ì ‘ê·¼!
+    public static bool isCountdownFinished = false;//ê¸°ë³¸ê°’ì€ false ìƒíƒœ.
+    //í˜¹ì‹œë¼ë„ ê²Œì„ì„ ì¬ì‹œì‘í•˜ê±°ë‚˜ ë‹¤ë¥¸ ì”¬ì—ì„œ ë„˜ì–´ì˜¬ ë•Œ,
+    //ì´ì „ ìƒíƒœì˜ true ê°’ì´ ë‚¨ì•„ ìˆì„ ìˆ˜ ìˆê¸° ë•Œë¬¸ì—, í™•ì‹¤í•˜ê²Œ false ìƒíƒœë¡œ ë§Œë“¤ì–´ì£¼ëŠ” ê±°ì•¼
 
 
-    [Header("CountdownText UI¿¬°á")]//ÀÎ½ºÆåÅÍ¿¡ ÇÒ´çÇÒ Ä«¿îÆ®´Ù¿î ÅØ½ºÆ®UI ¿ÀºêÁ§Æ®
+    [Header("CountdownText UIì—°ê²°")]//ì¸ìŠ¤í™í„°ì— í• ë‹¹í•  ì¹´ìš´íŠ¸ë‹¤ìš´ í…ìŠ¤íŠ¸UI ì˜¤ë¸Œì íŠ¸
     public TextMeshProUGUI CountdownText;
 
-    [Header("»ç¿îµå ¿¬°á")]//Ä«¿îÆ®´Ù¿î¿¡ ³ª¿Ã »ç¿îµå
+    [Header("ì‚¬ìš´ë“œ ì—°ê²°")]//ì¹´ìš´íŠ¸ë‹¤ìš´ì— ë‚˜ì˜¬ ì‚¬ìš´ë“œ
     public AudioSource countdownAudioSource;
-    public AudioClip[] countdownSounds;//¹è¿­À» ¸¸µå´Â°Å¾ß. AudioClipÀ» ³ÖÀ» countdownSounds º¯¼öµéÀ» ¹è¿­·Î ¿©·¯°³ ¸¸µå´Â°Å¾ß
+    public AudioClip[] countdownSounds;//ë°°ì—´ì„ ë§Œë“œëŠ”ê±°ì•¼. AudioClipì„ ë„£ì„ countdownSounds ë³€ìˆ˜ë“¤ì„ ë°°ì—´ë¡œ ì—¬ëŸ¬ê°œ ë§Œë“œëŠ”ê±°ì•¼
 
     void Start()
     {
-        //°ÔÀÓ ½ÃÀÛ Àü¿¡ ¸ØÃã. Ä«¿îÆ®°¡ ³¡³ª¾ß °ÔÀÓ ½ÃÀÛ
-        //Time.timeScale: °ÔÀÓ ÀüÃ¼ÀÇ ½Ã°£ Èå¸§ ¼Óµµ¸¦ Á¶ÀıÇÕ´Ï´Ù. 0f·Î ¼³Á¤ÇÏ¸é °ÔÀÓÀÌ ÀÏ½ÃÁ¤Áö »óÅÂ
-        //Ä«¿îÆ®°¡ ³¡³ª¸é ½ÃÀÛÇØ¾ß ÇÏ´Ï ¹Ø¿¡´Â 1f;·Î µÑ²¨¾ß
+        //ê²Œì„ ì‹œì‘ ì „ì— ì¼ì‹œì •ì§€. ì¹´ìš´íŠ¸ê°€ ëë‚˜ì•¼ ê²Œì„ ì‹œì‘
+        //Time.timeScale: ê²Œì„ ì „ì²´ì˜ ì‹œê°„ íë¦„ ì†ë„ë¥¼ ì¡°ì ˆ. 0fë¡œ ì„¤ì •í•˜ë©´ ê²Œì„ì´ ì¼ì‹œì •ì§€ ìƒíƒœ
+        //ì¹´ìš´íŠ¸ê°€ ëë‚˜ë©´ ì‹œì‘í•´ì•¼ í•˜ë‹ˆ ë°‘ì—ëŠ” 1f;ë¡œ ë‘˜êº¼ì•¼
         Time.timeScale = 0f;
 
-        isCountdownFinished = false;//È¤½Ã ¸ğ¸¦ »óÈ²À» ´ëºñÇØ ÃÊ±âÈ­
+        isCountdownFinished = false;//í˜¹ì‹œ ëª¨ë¥¼ ìƒí™©ì„ ëŒ€ë¹„í•´ ì´ˆê¸°í™”
         StartCoroutine(CountdownToStart());
     }
 
-    IEnumerator CountdownToStart()//°ÔÀÓ ½ÃÀÛ Ä«¿îÆ®´Ù¿îÀ» Ã³¸®ÇÏ´Â ÄÚ·çÆ¾
+    IEnumerator CountdownToStart()//ê²Œì„ ì‹œì‘ ì¹´ìš´íŠ¸ë‹¤ìš´ì„ ì²˜ë¦¬í•˜ëŠ” ì½”ë£¨í‹´
     {
         isCountdownFinished = false;
-        //false¸¦ µÎ ¹øÀÌ³ª Àû´Â °Ô ºÒÇÊ¿äÇØ º¸ÀÏ ¼öµµ ÀÖÁö¸¸, ¿¹»óÄ¡ ¸øÇÑ ¹ö±×¸¦ ¸·°í ÄÚµåÀÇ Èå¸§À» ´õ ¸íÈ®ÇÏ°Ô º¸¿©ÁÖ´Â ÁÁÀº ½À°üÀÌ¾ß!
-        //Ã¹ ¹øÂ° ¼±¾ğ¿¡¼­ ÃÊ±âÈ­´Â ½ºÅ©¸³Æ®ÀÇ ±âº»°ªÀ» ¼³Á¤ÇÏ´Â °ÍÀÌ°í,
-        //µÎ ¹øÂ° ÄÚ·çÆ¾¿¡¼­ ÃÊ±âÈ­´Â Æ¯Á¤ ±â´É(Ä«¿îÆ®´Ù¿î)ÀÌ ½ÃÀÛµÉ ¶§¸¶´Ù »óÅÂ¸¦ Àç¼³Á¤ÇÏ´Â ¿ªÇÒÀ» ÇØ
+        //falseë¥¼ ë‘ ë²ˆì´ë‚˜ ì ëŠ” ê²Œ ë¶ˆí•„ìš”í•´ ë³´ì¼ ìˆ˜ë„ ìˆì§€ë§Œ, ì˜ˆìƒì¹˜ ëª»í•œ ë²„ê·¸ë¥¼ ë§‰ê³  ì½”ë“œì˜ íë¦„ì„ ë” ëª…í™•í•˜ê²Œ ë³´ì—¬ì£¼ëŠ” ì¢‹ì€ ìŠµê´€ì´ì•¼!
+        //ì²« ë²ˆì§¸ ì„ ì–¸ì—ì„œ ì´ˆê¸°í™”ëŠ” ìŠ¤í¬ë¦½íŠ¸ì˜ ê¸°ë³¸ê°’ì„ ì„¤ì •í•˜ëŠ” ê²ƒì´ê³ ,
+        //ë‘ ë²ˆì§¸ ì½”ë£¨í‹´ì—ì„œ ì´ˆê¸°í™”ëŠ” íŠ¹ì • ê¸°ëŠ¥(ì¹´ìš´íŠ¸ë‹¤ìš´)ì´ ì‹œì‘ë  ë•Œë§ˆë‹¤ ìƒíƒœë¥¼ ì¬ì„¤ì •í•˜ëŠ” ì—­í• ì„ í•´
 
 
-        //ÅØ½ºÆ® ¿ÀºêÁ§Æ®°¡ ºñ¾îÀÖÁö ¾Ê´Ù¸é È°¼ºÈ­
-        if (CountdownText != null)
-            CountdownText.gameObject.SetActive(true);
-            //countdownText.gameObject.SetActive(true): SetActive¶õ?
-            //ÀÌ °ÔÀÓ ¿ÀºêÁ§Æ®¸¦ È°¼ºÈ­(true) ¶Ç´Â ºñÈ°¼ºÈ­(false)ÇÏ¿© È­¸é¿¡ º¸ÀÌ°Å³ª ¼û±â´Â ¿ªÇÒÀÌ¾ß
+        //í…ìŠ¤íŠ¸ ì˜¤ë¸Œì íŠ¸ê°€ ë¹„ì–´ìˆì§€ ì•Šë‹¤ë©´ í™œì„±í™”
+        if (CountdownText != null) CountdownText.gameObject.SetActive(true);
+        //countdownText.gameObject.SetActive(true): SetActiveë€?
+        //ì´ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ í™œì„±í™”(true) ë˜ëŠ” ë¹„í™œì„±í™”(false)í•˜ì—¬ í™”ë©´ì— ë³´ì´ê±°ë‚˜ ìˆ¨ê¸°ëŠ” ì—­í• ì´ì•¼
 
-        //3ÃÊ Ä«¿îÆ®´Ù¿î
+        //3ì´ˆ ì¹´ìš´íŠ¸ë‹¤ìš´
         for (int i = 3; i > 0; i--)
         {
-            //ÅØ½ºÆ®¸¦ 3, 2, 1·Î Ç¥½Ã
+            //í…ìŠ¤íŠ¸ë¥¼ 3, 2, 1ë¡œ í‘œì‹œ
             CountdownText.text = i.ToString();
 
-            //Ä«¿îÆ®´Ù¿î »ç¿îµå Àç»ı
-            //¹è¿­ÀÇ ÀÎµ¦½º¸¦ »ç¿ëÇØ »ç¿îµå ÆÄÀÏ Àç»ı
+            //ì¹´ìš´íŠ¸ë‹¤ìš´ ì‚¬ìš´ë“œ ì¬ìƒ
+            //ë°°ì—´ì˜ ì¸ë±ìŠ¤ë¥¼ ì‚¬ìš©í•´ ì‚¬ìš´ë“œ íŒŒì¼ ì¬ìƒ
             if (countdownAudioSource != null && countdownSounds.Length >= i)
-            {
                 countdownAudioSource.PlayOneShot(countdownSounds[3 - i]);
-            }
 
-            yield return new WaitForSecondsRealtime(1f);//1ÃÊ ´ë±â
-            //WaitForSeconds(): ÀÌ ÇÔ¼ö´Â °ÔÀÓ ½Ã°£(Time.timeScale)¿¡ ¿µÇâÀ» ¹Ş¾Æ. Time.timeScaleÀÌ 0ÀÌ µÇ¸é ÀÌ ÇÔ¼öµµ ¸ØÃç.
-            //WaitForSecondsRealtime(): ÀÌ ÇÔ¼ö´Â ½ÇÁ¦ ½Ã°£À» »ç¿ëÇØ
+            yield return new WaitForSecondsRealtime(1f);//1ì´ˆ ëŒ€ê¸°
+            //WaitForSeconds(): ì´ í•¨ìˆ˜ëŠ” ê²Œì„ ì‹œê°„(Time.timeScale)ì— ì˜í–¥ì„ ë°›ì•„. Time.timeScaleì´ 0ì´ ë˜ë©´ ì´ í•¨ìˆ˜ë„ ë©ˆì¶°.
+            //WaitForSecondsRealtime(): ì´ í•¨ìˆ˜ëŠ” ì‹¤ì œ ì‹œê°„ì„ ì‚¬ìš©í•´
         }
 
-        //¸¶Áö¸· ¸Ş½ÃÁö Ãâ·Â ÈÄ 1ÃÊ ´ë±â
+        //ë§ˆì§€ë§‰ ë©”ì‹œì§€ ì¶œë ¥ í›„ 1ì´ˆ ëŒ€ê¸°
         CountdownText.text = "Start!";
         if (countdownAudioSource != null && countdownSounds.Length > 3)
-        {
-            countdownAudioSource.PlayOneShot(countdownSounds[3]);//4¹øÂ° ¼Ò¸®ÆÄÀÏ Àç»ı
-        }
+            countdownAudioSource.PlayOneShot(countdownSounds[3]);//4ë²ˆì§¸ ì†Œë¦¬íŒŒì¼ ì¬ìƒ
+
 
         yield return new WaitForSecondsRealtime(1f);
-        //WaitForSecondsRealtime·Î ¼öÁ¤ÇØ. ±×·¡¾ß Time.timeScaleÀÌ 0ÀÌ¾îµµ Ä«¿îÆ®´Ù¿îÀÌ ÁøÇàµÅ
+        //WaitForSecondsRealtimeë¡œ ìˆ˜ì •í•´. ê·¸ë˜ì•¼ Time.timeScaleì´ 0ì´ì–´ë„ ì¹´ìš´íŠ¸ë‹¤ìš´ì´ ì§„í–‰ë¼
 
-        //Ä«¿îÆ®´Ù¿î ÅØ½ºÆ® ºñÈ°¼ºÈ­
-        if (CountdownText != null)
-        {
-            CountdownText.gameObject.SetActive(false);
-        }
+        //ì¹´ìš´íŠ¸ë‹¤ìš´ í…ìŠ¤íŠ¸ ë¹„í™œì„±í™”
+        if (CountdownText != null) CountdownText.gameObject.SetActive(false);
 
-        //Ä«¿îÆ®´Ù¿îÀÌ ³¡³µ´Ù´Â °ÍÀ» ¾Ë·ÁÁà
+        //ì¹´ìš´íŠ¸ë‹¤ìš´ì´ ëë‚¬ë‹¤ëŠ” ê²ƒì„ ì•Œë ¤ì¤˜
         isCountdownFinished = true;
 
-        //Ä«¿îÆ®´Ù¿îÀÌ ³¡³ª¸é °ÔÀÓ ½ÃÀÛÇØ, 0f¿¡¼­ 1f·Î ¹Ù²åÀİ¾Æ
+        //ì¹´ìš´íŠ¸ë‹¤ìš´ì´ ëë‚˜ë©´ ê²Œì„ ì‹œì‘í•´, 0fì—ì„œ 1fë¡œ ë°”ê¿¨ì–ì•„
         Time.timeScale = 1f;
     }
 }

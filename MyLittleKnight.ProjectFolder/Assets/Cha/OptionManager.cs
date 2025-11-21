@@ -1,114 +1,77 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ·Á¸é Ãß°¡
+using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ë ¤ë©´ ì¶”ê°€
 
 public class OptionsManager : MonoBehaviour
 {    
-    public GameObject optionsPanel;//¿É¼ÇÃ¢ ÆĞ³Î ¿¬°áÇÒ º¯¼ö
-    public TextMeshProUGUI warningText;//°æ°í ¸Ş½ÃÁö ÅØ½ºÆ® UI ¿¬°áÇÒ º¯¼ö
+    public GameObject optionsPanel;//ì˜µì…˜ì°½ íŒ¨ë„ ì—°ê²°í•  ë³€ìˆ˜
+    public TextMeshProUGUI warningText;//ê²½ê³  ë©”ì‹œì§€ í…ìŠ¤íŠ¸ UI ì—°ê²°í•  ë³€ìˆ˜
 
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.O))//¿É¼Ç ÆĞ³ÎÀÌ ²¨Á®ÀÖÀ» ¶§¸¸ Å°¸¦ ´©¸£¸é ÆĞ³ÎÀ» ÄÑ
-        {
-            ToggleOptionsPanel();
-        }
-        
+        if (Input.GetKeyDown(KeyCode.O)) ToggleOptionsPanel();//ì˜µì…˜ íŒ¨ë„ì´ êº¼ì ¸ìˆì„ ë•Œë§Œ í‚¤ë¥¼ ëˆ„ë¥´ë©´ íŒ¨ë„ì„ ì¼œ
     }
 
-    public void ToggleOptionsPanel()//¿É¼ÇÃ¢°ú È°¼ºÈ­µÉ¶§ °ÔÀÓÀÇ ÀÏ½ÃÁ¤Áö ±â´ÉÀ» ÄÑ°í ²ô´Â ¿ªÇÒ
+    public void ToggleOptionsPanel()//ì˜µì…˜ì°½ê³¼ í™œì„±í™”ë ë•Œ ê²Œì„ì˜ ì¼ì‹œì •ì§€ ê¸°ëŠ¥ì„ ì¼œê³  ë„ëŠ” ì—­í• 
     {
-        //¿É¼Ç ÆĞ³ÎÀÌ ²¨Á® ÀÖ°í, Ä«¿îÆ®´Ù¿îÀÌ ¾ÆÁ÷ ¾È ³¡³µ´Ù¸é
-        //CountdownManager ½ºÅ©¸³Æ®ÀÇ isCountdownFinishedº¯¼ö´Â staticÀÌ¶ó ÀÌ°÷¿¡¼­ public º¯¼ö·Î CountdownManager ½ºÅ©¸³Æ®¸¦,
-        //¿¬°á ÇÏÁö ¾Ê¾Æµµ static º¯¼ö´Ï±î **Å¬·¡½ºÀÌ¸§.º¯¼ö**  ·Î °¡Á®¿Ã ¼ö ÀÖ¾î.
+        //ì¹´ìš´íŠ¸ë‹¤ìš´ ì¤‘ì—ëŠ” ì°¨ë‹¨í•˜ê³  ê²½ê³  ë©”ì‹œì§€ ì¶œë ¥
         if (!optionsPanel.activeSelf && !CountdownManager.isCountdownFinished)
         {
-            if(warningText != null)//°æ°í ¸Ş½ÃÁö¸¦ È°¼ºÈ­
+            if (warningText != null)//ê²½ê³  ë©”ì‹œì§€ë¥¼ í™œì„±í™”
             {
                 warningText.gameObject.SetActive(true);
-                warningText.text = "Ä«¿îÆ® ÁßÀÌ¾ß! Àá½Ã¸¸ ±â´Ù·Á";
-
+                warningText.text = "ì¹´ìš´íŠ¸ ì¤‘ì´ì•¼! ì ì‹œë§Œ ê¸°ë‹¤ë ¤!";
                 StartCoroutine(HideWarningText());
             }
-            return;//¿©±â¼­ ÇÔ¼ö¸¦ ³¡³»¼­ ¿É¼Ç Ã¢ÀÌ ÄÑÁöÁö ¾Ê°Ô ¸·¾Æ
+            return;//ì—¬ê¸°ì„œ í•¨ìˆ˜ë¥¼ ëë‚´ì„œ ì˜µì…˜ ì°½ì´ ì¼œì§€ì§€ ì•Šê²Œ ë§‰ì•„
         }
-        else//À§ÀÇ Á¶°Ç¿¡ ÇØ´çÇÏÁö ¾ÊÀ¸¸é (Á¤»óÀûÀÎ »óÈ²)
-        {
-            //À§ÀÇ Á¶°Ç¿¡ ÇØ´çÇÏÁö ¾ÊÀ¸¸é Á¤»óÀûÀ¸·Î ¿É¼Ç Ã¢À» Åä±ÛÇØ
-            if (warningText != null)
-            {
-                warningText.gameObject.SetActive(false);//¿É¼Ç Ã¢À» ÄÑ°Å³ª ²ø ¶§ °æ°í ¸Ş½ÃÁö´Â ¼û°Ü
-            }
 
-            //ÀÌ µÎ ÁÙÀÇ ÄÚµå´Â ¿É¼Ç ÆĞ³ÎÀ» ÄÑ°Å³ª ²ô´Â ¿ªÇÒÀ» ÇØ, Áö¿ªº¯¼ö isPanelActive°¡ ¿¬°áµÈ ¿É¼ÇÃ¢ UI¸¦ ´ãÀº º¯¼ö¸¦ ¿©±â¼­ »ç¿ëÇØ
-            bool isPanelActive = !optionsPanel.activeSelf;//!´Â ¹İ´ëÀÇ ¿¬»êÀÚ. ¿É¼ÇÃ¢ÀÌ false»óÅÂ¸é isPanelActive´Â true,
-            //ÆĞ³Î È°¼ºÈ­ »óÅÂ È®ÀÎ                       //¹İ´ë·Î ÆĞ³ÎÀÌ È°¼ºÈ­(true) »óÅÂ¶ó¸é isPanelActive´Â false°¡ µÅ
-                                                          //activeSelf´Â °ÔÀÓ ¿ÀºêÁ§Æ®°¡ ÇöÀç È°¼ºÈ­µÇ¾î ÀÖ´ÂÁö¸¦ ¾Ë·ÁÁÖ´Â ¼Ó¼º
-                                                          //ÆĞ³ÎÀÌ ²¨Á®ÀÖ´Ù¸é(activeSelf°¡ false), !false´Â true°¡ µÇ´Ï±î ÆĞ³ÎÀ» ÄÑ°í,
-                                                          //ÆĞ³ÎÀÌ ÄÑÁ®ÀÖ´Ù¸é(activeSelf°¡ true), !true´Â false°¡ µÇ´Ï±î ÆĞ³ÎÀ» ²ô°Ô µÇÁö
-            optionsPanel.SetActive(isPanelActive);//¿ÀºêÁ§Æ®¸¦ ÄÑ°Å³ª ²ô´Â ¿ªÇÒÀ» ÇØ.
-            //ÆĞ³Î È°¼ºÈ­/ºñÈ°¼ºÈ­
-                                                  //isPanelActive º¯¼ö °ªÀ» ÀÎÀÚ·Î ¹Ş¾Æ¼­, ÆĞ³ÎÀÌ ²¨Á® ÀÖÀ¸¸é ÄÑ°í, ÄÑÁ® ÀÖÀ¸¸é ²¨¹ö·Á
-                                                 
-            if (isPanelActive)
-            {
-                Time.timeScale = 0f;//¿É¼ÇÃ¢À» ¿­¸é °ÔÀÓÀ» ÀÏ½ÃÁ¤Áö (½Ã°£ Èå¸§À» 0À¸·Î ¼³Á¤)
-            }
-            else
-            {
-                //¿É¼Ç Ã¢ÀÌ ²¨Áú ¶§, Ä«¿îÆ®´Ù¿îÀÌ ÀÌ¹Ì ³¡³µ´ÂÁö È®ÀÎÇÑ´Ù.
-                if (CountdownManager.isCountdownFinished)
-                {
-                    Time.timeScale = 1f;//Ä«¿îÆ®´Ù¿îÀÌ ³¡³µÀ¸¸é °ÔÀÓÀ» ´Ù½Ã ½ÃÀÛÇÑ´Ù.
-                                        //¸¸¾à Ä«¿îÆ®´Ù¿îÀÌ ¾ÆÁ÷ ³¡³ªÁö ¾Ê¾ÒÀ¸¸é, ¾Æ¹«°Íµµ ÇÏÁö ¾Ê±â
-                                        //±×·¯¸é °ÔÀÓÀº °è¼Ó ¸ØÃçÀÖ´Ù°¡, Ä«¿îÆ®´Ù¿îÀÌ ³¡³ª¸é¼­ Time.timeScaleÀÌ 1ÀÌ µÇ¾î ´Ù½Ã ½ÃÀÛ.
-                }
-            }
-        }    
+        //ê²½ê³  ë©”ì‹œì§€ ìˆ¨ê¸°ê¸° (í† ê¸€ ì „, í˜¹ì‹œ ë‚¨ì•„ìˆì„ ìˆ˜ ìˆëŠ” ê²½ê³ ë¥¼ ì •ë¦¬)
+        if (warningText != null) warningText.gameObject.SetActive(false);
+
+        //íŒ¨ë„ì˜ ë‹¤ìŒ ìƒíƒœë¥¼ ê²°ì •í•˜ê³  í™œì„±í™”/ë¹„í™œì„±í™”
+        bool isPanelActive = !optionsPanel.activeSelf;//ë‹¤ìŒ ìƒíƒœ (true: ì¼¬, false: ë”)
+        optionsPanel.SetActive(isPanelActive);
+
+        //ê²Œì„ ì‹œê°„ ì œì–´. Time.timeScaleë¡œ ê²Œì„ ì‹œê°„ ì •ì§€/ì¬ê°œ
+        if (isPanelActive) Time.timeScale = 0f;
+        else if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//ì˜µì…˜ì°½ ë‹«ê³ , ì¹´ìš´íŠ¸ë‹¤ìš´ ëë‚¬ìœ¼ë©´ ì‹œê°„ ì¬ê°œ
     }
     
-    IEnumerator HideWarningText()//warningText UI °æ°í ¸Ş½ÃÁö¸¦ ¼û±â´Â ÄÚ·çÆ¾
+    IEnumerator HideWarningText()//warningText UI ê²½ê³  ë©”ì‹œì§€ë¥¼ ìˆ¨ê¸°ëŠ” ì½”ë£¨í‹´
     {
-        //warningText UI ¸Ş¼¼Áö°¡ ¶ç¿öÁö¸é nÃÊ µ¿¾È ±â´Ù·Á
+        //warningText UI ë©”ì„¸ì§€ê°€ ë„ì›Œì§€ë©´ nì´ˆ ë™ì•ˆ ê¸°ë‹¤ë ¤
         yield return new WaitForSecondsRealtime(1f);
-
-        //warningText UI ¸Ş½ÃÁö¸¦ ºñÈ°¼ºÈ­
-        if (warningText != null)
-        {
-            warningText.gameObject.SetActive(false);
-        }
+        //warningText UI ë©”ì‹œì§€ë¥¼ ë¹„í™œì„±í™”
+        if (warningText != null) warningText.gameObject.SetActive(false);
     }
 
-    public void RestartGame()//°ÔÀÓ Àç½ÃÀÛ ÇÔ¼ö (Àç½ÃÀÛ ¹öÆ°¿¡ ¿¬°á)
+    public void RestartGame()//ê²Œì„ ì¬ì‹œì‘ í•¨ìˆ˜ (ì¬ì‹œì‘ ë²„íŠ¼ì— ì—°ê²°)
     {
-        //°ÔÀÓÀ» Àç½ÃÀÛÇÒ ¶§´Â ½Ã°£À» ´Ù½Ã Á¤»óÀ¸·Î µ¹·Á³õ¾ßÇØ.
+        //ê²Œì„ì„ ì¬ì‹œì‘í•  ë•ŒëŠ” ì‹œê°„ì„ ë‹¤ì‹œ ì •ìƒìœ¼ë¡œ ëŒë ¤ë†“ì•¼í•´.
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        //LoadScene() Æ¯Á¤ ¾ÀÀ» ºÒ·¯¿À´Â ÇÔ¼ö¾ß. 
-        //GetActiveScene() ÇöÀç È°¼ºÈ­µÇ¾î ÀÖ´Â(ÇÃ·¹ÀÌ ÁßÀÎ) ¾ÀÀ» °¡Á®¿À´Â ÇÔ¼ö¾ß. ÀÌ ÇÔ¼ö´Â ÇöÀç ¾À¿¡ ´ëÇÑ Á¤º¸¸¦ ¹İÈ¯ÇØ.
-        //.name Àº GetActiveScene()À¸·Î °¡Á®¿Â ¾À Á¤º¸ Áß¿¡¼­ ±× ¾ÀÀÇ ÀÌ¸§À» ¹®ÀÚ¿­(string) ÇüÅÂ·Î ²¨³»ÁÖ´Â ¿ªÇÒÀ» ÇØ.
-        //µû¶ó¼­ ÀÌ ÄÚµå´Â "ÇöÀç ¾ÀÀÇ ÀÌ¸§À» °¡Á®¿Í¼­, ±× ÀÌ¸§À¸·Î ¾ÀÀ» ´Ù½Ã ·ÎµåÇØ" ¶ó´Â ¶æÀÌ¾ß.
-
+        //LoadScene() íŠ¹ì • ì”¬ì„ ë¶ˆëŸ¬ì˜¤ëŠ” í•¨ìˆ˜ì•¼. 
+        //GetActiveScene() í˜„ì¬ í™œì„±í™”ë˜ì–´ ìˆëŠ”(í”Œë ˆì´ ì¤‘ì¸) ì”¬ì„ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜ì•¼. ì´ í•¨ìˆ˜ëŠ” í˜„ì¬ ì”¬ì— ëŒ€í•œ ì •ë³´ë¥¼ ë°˜í™˜í•´.
+        //.name ì€ GetActiveScene()ìœ¼ë¡œ ê°€ì ¸ì˜¨ ì”¬ ì •ë³´ ì¤‘ì—ì„œ ê·¸ ì”¬ì˜ ì´ë¦„ì„ ë¬¸ìì—´(string) í˜•íƒœë¡œ êº¼ë‚´ì£¼ëŠ” ì—­í• ì„ í•´.
+        //ë”°ë¼ì„œ ì´ ì½”ë“œëŠ” "í˜„ì¬ ì”¬ì˜ ì´ë¦„ì„ ê°€ì ¸ì™€ì„œ, ê·¸ ì´ë¦„ìœ¼ë¡œ ì”¬ì„ ë‹¤ì‹œ ë¡œë“œí•´" ë¼ëŠ” ëœ»ì´ì•¼.
     }
 
-    public void ExitGame()//Çö °ÔÀÓÀ» ²ô°í ¸ŞÀÎÈ­¸éÀ¸·Î °¡´Â ÇÔ¼ö
+    public void ExitGame()//í˜„ ê²Œì„ì„ ë„ê³  ë©”ì¸í™”ë©´ìœ¼ë¡œ ê°€ëŠ” í•¨ìˆ˜
     {
-        Time.timeScale = 1f;//°ÔÀÓ Àç½ÃÀÛ°ú ¸¶Âù°¡Áö·Î, ¸ŞÀÎÈ­¸éÀ¸·Î µ¹¾Æ°¥ ¶§µµ ½Ã°£À» Á¤»óÀ¸·Î µ¹·Á³õ´Â °Ô ÁÁ¾Æ.
-        //°ÔÀÓÀÌ ÀÏ½ÃÁ¤ÁöµÈ »óÅÂ¿¡¼­ ¾ÀÀ» ÀüÈ¯ÇÏ¸é ¿À·ù°¡ ¹ß»ıÇÒ ¼ö ÀÖÀ¸¹Ç·Î, ¾ÀÀ» ·ÎµåÇÏ±â Àü¿¡ ½Ã°£À» Á¤»óÀ¸·Î µÇµ¹¸®´Â °Å¾ß.
-
-        SceneManager.LoadScene("MainMenuScene");//³» ¸ŞÀÎ¸Ş´º ¾À ÀÌ¸§
-        //MainMenuScene ÀÌ¸§ÀÇ ¾ÀÀ» ·ÎµåÇØ¼­ ´Ù½Ã ¸ŞÀÎÈ­¸é ¾ÀÀ¸·Î µ¹¾Æ°¡°Ô ÇØ.
-        Debug.Log("¸ŞÀÎÈ­¸éÀ¸·Î ÀÌµ¿");
+        Time.timeScale = 1f;//ê²Œì„ ì¬ì‹œì‘ê³¼ ë§ˆì°¬ê°€ì§€ë¡œ, ë©”ì¸í™”ë©´ìœ¼ë¡œ ëŒì•„ê°ˆ ë•Œë„ ì‹œê°„ì„ ì •ìƒìœ¼ë¡œ ëŒë ¤ë†”.
+        SceneManager.LoadScene("MainMenuScene");//MainMenuScene ì´ë¦„ì˜ ì”¬ì„ ë¡œë“œí•´ì„œ ë‹¤ì‹œ ë©”ì¸í™”ë©´ ì”¬ìœ¼ë¡œ ëŒì•„ê°€ê²Œ í•´
+        Debug.Log("ë©”ì¸í™”ë©´ìœ¼ë¡œ ì´ë™");
     }
 
-    public void  QuitGame()//°ÔÀÓÀ» ¿ÏÀüÈ÷ ²ô´Â ÇÔ¼ö
+    public void  QuitGame()//ê²Œì„ì„ ì™„ì „íˆ ë„ëŠ” í•¨ìˆ˜
     {
         Time.timeScale = 1f;
-        Debug.Log("°ÔÀÓ Á¾·á. Àç¹Ô¾ú¾î?");
+        Debug.Log("ê²Œì„ ì¢…ë£Œ. ì¬ë°‹ì—ˆì–´?");
 
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

@@ -1,76 +1,68 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ±â À§ÇØ ÇÊ¿ä
+using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
 
 
 public class GameTimerUI : MonoBehaviour
 {
-    [Header("GameTimer UI ¿¬°á")]
-    [SerializeField] private TextMeshProUGUI gameTimer;//À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ¿¡¼­ UI ÅØ½ºÆ® ÄÄÆ÷³ÍÆ®¸¦ ¿¬°áÇÒ º¯¼ö
+    [Header("GameTimer UI ì—°ê²°")]
+    [SerializeField] private TextMeshProUGUI gameTimer;//ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„°ì—ì„œ UI í…ìŠ¤íŠ¸ ì»´í¬ë„ŒíŠ¸ë¥¼ ì—°ê²°í•  ë³€ìˆ˜
 
-    private float gameStartTime;//°ÔÀÓÀÌ ½ÃÀÛµÈ ½Ã°£
-    private bool timerRunning = true;//Å¸ÀÌ¸Ó°¡ ÀÛµ¿ ÁßÀÎÁö ¿©ºÎ
+    private float gameStartTime;//ê²Œì„ì´ ì‹œì‘ëœ ì‹œê°„
+    private bool timerRunning = true;//íƒ€ì´ë¨¸ê°€ ì‘ë™ ì¤‘ì¸ì§€ ì—¬ë¶€
 
     
     void Awake()
     {
-        //TextMeshProUGUI ÄÄÆ÷³ÍÆ®°¡ ¿¬°áµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+        //ì¸ìŠ¤í™í„°ì— ì—°ê²°ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ê°™ì€ ì˜¤ë¸Œì íŠ¸ì—ì„œ ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°
+        if (gameTimer == null) gameTimer = GetComponent<TextMeshProUGUI>();
+
+        //ê·¸ë˜ë„ ì—†ìœ¼ë©´ ì˜¤ë¥˜ ë¡œê·¸ ì¶œë ¥ í›„ ë¹„í™œì„±í™”
         if (gameTimer == null)
         {
-            gameTimer = GetComponent<TextMeshProUGUI>();
-            if (gameTimer == null)
-            {
-                Debug.LogError("GameTimerUI: TextMeshProUGUI ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø¾î!. ÀÎ½ºÆåÅÍ¿¡ ¿¬°áÇÏ°Å³ª °°Àº ¿ÀºêÁ§Æ®¿¡ Ãß°¡ÇØ!");
-                enabled = false;//½ºÅ©¸³Æ® ºñÈ°¼ºÈ­ÇÏ¿© Ãß°¡ ¿À·ù ¹æÁö
-                return;
-            }
+            Debug.LogError("GameTimerUI: TextMeshProUGUI ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´!");
+            enabled = false;
+            return;
         }
-        gameStartTime = Time.time;//°ÔÀÓ ½ÃÀÛ ½ÃÁ¡ÀÇ ½Ã°£ ±â·Ï
-        UpdateTimerUI(0);//°ÔÀÓ ½ÃÀÛ ½Ã 0ÃÊ·Î Ç¥½Ã
+        gameStartTime = Time.time;//ê²Œì„ ì‹œì‘ ì‹œì ì˜ ì‹œê°„ ê¸°ë¡
+        UpdateTimerUI(0);//ê²Œì„ ì‹œì‘ ì‹œ 0ì´ˆë¡œ í‘œì‹œ
     }
 
     void Update()
     {
-        if (!timerRunning) return;//Å¸ÀÌ¸Ó°¡ ÀÛµ¿ ÁßÀÌ ¾Æ´Ï¸é ¾÷µ¥ÀÌÆ®ÇÏÁö ¾ÊÀ½
+        if (!timerRunning) return;//íƒ€ì´ë¨¸ê°€ ì‘ë™ ì¤‘ì´ ì•„ë‹ˆë©´ ì—…ë°ì´íŠ¸í•˜ì§€ ì•ŠìŒ
 
-        float elapsedTime = Time.time - gameStartTime;//ÇöÀç ½Ã°£¿¡¼­ ½ÃÀÛ ½Ã°£À» »©¼­ °æ°ú ½Ã°£ °è»ê
-        UpdateTimerUI(elapsedTime);//UI ¾÷µ¥ÀÌÆ®
+        float elapsedTime = Time.time - gameStartTime;//í˜„ì¬ ì‹œê°„ì—ì„œ ì‹œì‘ ì‹œê°„ì„ ë¹¼ì„œ ê²½ê³¼ ì‹œê°„ ê³„ì‚°
+        UpdateTimerUI(elapsedTime);//UI ì—…ë°ì´íŠ¸
     }
 
     private void UpdateTimerUI(float time)
     {
-        //Mathf.FloorToInt() ÀÌ ÇÔ¼ö´Â ¼Ò¼öÁ¡ ¾Æ·¡¸¦ ¹ö¸®°í °¡Àå °¡±î¿î Á¤¼ö·Î ³»¸²ÇÏ´Â ¿ªÇÒ
+        //Mathf.FloorToInt() ì´ í•¨ìˆ˜ëŠ” ì†Œìˆ˜ì  ì•„ë˜ë¥¼ ë²„ë¦¬ê³  ê°€ì¥ ê°€ê¹Œìš´ ì •ìˆ˜ë¡œ ë‚´ë¦¼í•˜ëŠ” ì—­í• 
 
-        //time % 3600: ÀüÃ¼ ½Ã°£À» 3600(1½Ã°£)À¸·Î ³ª´« ³ª¸ÓÁö °ªÀ» ±¸ÇØ. ÀÌ·¸°Ô ÇÏ¸é 1½Ã°£ÀÌ ³Ñ´Â ºÎºĞÀº ¹ö¸®°í, ³²Àº 'ºĞ'°ú 'ÃÊ'¸¸ ³²°Ô µÅ.
-        //(...) / 60: À§¿¡¼­ ±¸ÇÑ °ªÀ» 60À¸·Î ³ª´². ÀÌ·¸°Ô ÇÏ¸é 'ºĞ'¿¡ ÇØ´çÇÏ´Â °ªÀÌ ³ª¿Í.
-        int minutes = Mathf.FloorToInt((time % 3600) / 60);//ºĞ °è»ê
-        int seconds = Mathf.FloorToInt(time % 60);//ÃÊ °è»ê
-                                                  //ÀüÃ¼ ½Ã°£(time)À» 60À¸·Î ³ª´« ³ª¸ÓÁö °ªÀ» ±¸ÇØ.ÀÌ ³ª¸ÓÁö °ªÀº 0ºÎÅÍ 59 »çÀÌÀÇ ¼ıÀÚ°¡ µÇ°ÚÁö.ÀÌ°Ô ¹Ù·Î 'ÃÊ'¿¡ ÇØ´çÇÏ´Â °ªÀÌ¾ß.
+        //time % 3600: ì „ì²´ ì‹œê°„ì„ 3600(1ì‹œê°„)ìœ¼ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€ ê°’ì„ êµ¬í•´. ì´ë ‡ê²Œ í•˜ë©´ 1ì‹œê°„ì´ ë„˜ëŠ” ë¶€ë¶„ì€ ë²„ë¦¬ê³ , ë‚¨ì€ 'ë¶„'ê³¼ 'ì´ˆ'ë§Œ ë‚¨ê²Œ ë¼.
+        //(...) / 60: ìœ„ì—ì„œ êµ¬í•œ ê°’ì„ 60ìœ¼ë¡œ ë‚˜ëˆ . ì´ë ‡ê²Œ í•˜ë©´ 'ë¶„'ì— í•´ë‹¹í•˜ëŠ” ê°’ì´ ë‚˜ì™€.
+        int minutes = Mathf.FloorToInt((time % 3600) / 60);//ë¶„ ê³„ì‚°
+        int seconds = Mathf.FloorToInt(time % 60);//ì´ˆ ê³„ì‚°
+                                                  //ì „ì²´ ì‹œê°„(time)ì„ 60ìœ¼ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€ ê°’ì„ êµ¬í•´.ì´ ë‚˜ë¨¸ì§€ ê°’ì€ 0ë¶€í„° 59 ì‚¬ì´ì˜ ìˆ«ìê°€ ë˜ê² ì§€.ì´ê²Œ ë°”ë¡œ 'ì´ˆ'ì— í•´ë‹¹í•˜ëŠ” ê°’ì´ì•¼.
 
-        //string.FormatÀ» »ç¿ëÇÏ¿© "00:00:00" Çü½ÄÀ¸·Î Æ÷¸ËÆÃ
-        //"D2"´Â µÎ ÀÚ¸® ¼ıÀÚ·Î Ç¥½ÃÇÏ°í, ÇÑ ÀÚ¸®ÀÏ °æ¿ì ¾Õ¿¡ 0À» ºÙ¿©Áà (¿¹: 5 -> 05)
-        //D2´Â ¹®ÀÚ¿­ Æ÷¸ËÆÃ¿¡¼­ »ç¿ëµÇ´Â ¼ıÀÚ Æ÷¸Ë ÁöÁ¤ÀÚ¾ß. D´Â Decimal (½ÊÁø¼ö)¸¦ ÀÇ¹ÌÇÏ°í, 2´Â ÃÖ¼Ò ÀÚ¸´¼ö¸¦ ³ªÅ¸³».
-        //µû¶ó¼­ D2´Â "µÎ ÀÚ¸® ½ÊÁø¼ö·Î ¼ıÀÚ¸¦ Ç¥ÇöÇÏ¶ó"´Â ¶æÀÌ¾ß.
-        //¸¸¾à ¼ıÀÚ°¡ ÇÑ ÀÚ¸®(¿¹: 5)¸é, ¾Õ¿¡ 0À» Ã¤¿ö¼­ µÎ ÀÚ¸®(05)·Î ¸¸µé¾îÁà. ÀÌ ±â´ÉÀ» **ÆĞµù(Padding)**ÀÌ¶ó°í ÇØ.
-        //string.Format("{0:D2}", 5)ÀÇ °á°ú´Â "05"°¡ µÅ.
-        //string.Format("{0:D2}", 12)ÀÇ °á°ú´Â "12"°¡ µÅ.
+        //string.Formatì„ ì‚¬ìš©í•˜ì—¬ "00:00:00" í˜•ì‹ìœ¼ë¡œ í¬ë§·íŒ…
+        //"D2"ëŠ” ë‘ ìë¦¬ ìˆ«ìë¡œ í‘œì‹œí•˜ê³ , í•œ ìë¦¬ì¼ ê²½ìš° ì•ì— 0ì„ ë¶™ì—¬ì¤˜ (ì˜ˆ: 5 -> 05)
+        //D2ëŠ” ë¬¸ìì—´ í¬ë§·íŒ…ì—ì„œ ì‚¬ìš©ë˜ëŠ” ìˆ«ì í¬ë§· ì§€ì •ìì•¼. DëŠ” Decimal (ì‹­ì§„ìˆ˜)ë¥¼ ì˜ë¯¸í•˜ê³ , 2ëŠ” ìµœì†Œ ìë¦¿ìˆ˜ë¥¼ ë‚˜íƒ€ë‚´.
+        //ë”°ë¼ì„œ D2ëŠ” "ë‘ ìë¦¬ ì‹­ì§„ìˆ˜ë¡œ ìˆ«ìë¥¼ í‘œí˜„í•˜ë¼"ëŠ” ëœ»ì´ì•¼.
+        //ë§Œì•½ ìˆ«ìê°€ í•œ ìë¦¬(ì˜ˆ: 5)ë©´, ì•ì— 0ì„ ì±„ì›Œì„œ ë‘ ìë¦¬(05)ë¡œ ë§Œë“¤ì–´ì¤˜. ì´ ê¸°ëŠ¥ì„ **íŒ¨ë”©(Padding)**ì´ë¼ê³  í•´.
+        //string.Format("{0:D2}", 5)ì˜ ê²°ê³¼ëŠ” "05"ê°€ ë¼.
+        //string.Format("{0:D2}", 12)ì˜ ê²°ê³¼ëŠ” "12"ê°€ ë¼.
         gameTimer.text = string.Format("{0:D2}:{1:D2}", minutes, seconds);
     }
 
-    //ÇÊ¿äÇÏ´Ù¸é ¿ÜºÎ¿¡¼­ Å¸ÀÌ¸Ó¸¦ ¸ØÃß°Å³ª Àç°³ÇÏ´Â ÇÔ¼ö¸¦ Ãß°¡ÇÒ ¼ö ÀÖ¾î.
-    //StopTimer, ResumeTimer, ResetTimer ÇÔ¼ö´Â ¹Ì¸® ¸¸µé¾îµ×¾î
-    public void StopTimer()
-    {
-        timerRunning = false;
-    }
-
-    public void ResumeTimer()
-    {
-        timerRunning = true;
-    }
-
-    public void ResetTimer()//Æ¯Á¤ ½ÃÁ¡ºÎÅÍ ´Ù½Ã ½ÃÀÛÇÏ°í ½ÍÀ» ¶§ (¿¹: °ÔÀÓ Àç½ÃÀÛ)
+    //í•„ìš”í•˜ë‹¤ë©´ ì™¸ë¶€ì—ì„œ íƒ€ì´ë¨¸ë¥¼ ë©ˆì¶”ê±°ë‚˜ ì¬ê°œí•˜ëŠ” í•¨ìˆ˜ë¥¼ ì¶”ê°€í•  ìˆ˜ ìˆì–´.
+    //StopTimer, ResumeTimer, ResetTimer í•¨ìˆ˜ëŠ” ë¯¸ë¦¬ ë§Œë“¤ì–´ë’€ì–´
+    //íƒ€ì´ë¨¸ ì œì–´ í•¨ìˆ˜ë¥¼ í‘œí˜„ì‹ ë³¸ë¬¸(ëŒë‹¤ì‹)ìœ¼ë¡œ ê°„ê²°í™”
+    public void StopTimer() => timerRunning = false;
+    public void ResumeTimer() => timerRunning = true;
+    public void ResetTimer()//íŠ¹ì • ì‹œì ë¶€í„° ë‹¤ì‹œ ì‹œì‘í•˜ê³  ì‹¶ì„ ë•Œ (ì˜ˆ: ê²Œì„ ì¬ì‹œì‘)
     {
         gameStartTime = Time.time;
         timerRunning = true;

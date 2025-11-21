@@ -1,61 +1,58 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;//TextMeshPro¸¦ »ç¿ëÇÏ·Á¸é ÀÌ using ¹®ÀÌ ÇÊ¿ä
+using TMPro;//TextMeshProë¥¼ ì‚¬ìš©í•˜ë ¤ë©´ ì´ using ë¬¸ì´ í•„ìš”
 
 
-//ÀÌ ½ºÅ©¸³Æ®´Â °ÔÀÓ ³» ´Ù¾çÇÑ ¾Ë¸² (¾ÆÀÌÅÛ È¹µæ, ¸ó½ºÅÍ ½ºÆù µî)À» ÅëÇÕ °ü¸®.
-//ÀåÁ¡: ¸ğµç Á¾·ùÀÇ ¾Ë¸²¿¡ ÀÏ°üµÈ ½Ã°¢Àû È¿°ú (ÆäÀÌµå ÀÎ/¾Æ¿ô)¸¦ Àû¿ëÇÏ°í,
-//Àç»ç¿ë¼ºÀÌ ³ô¾Æ ¿©·¯ ½ºÅ©¸³Æ®¿¡¼­ ½±°Ô ¾Ë¸²À» ¶ç¿ï ¼ö ÀÖ½À´Ï´Ù.
-//´ÜÁ¡: °£´ÜÇÑ ¾Ë¸²¿¡µµ ÄÚ·çÆ¾°ú ÆäÀÌµå ·ÎÁ÷ÀÌ ÇÊ¿äÇÏ¿© »ó´ëÀûÀ¸·Î º¹ÀâÇÒ ¼ö ÀÖ¾î!.
-//(EnemyDifficulty ½ºÅ©¸³Æ®¿Í °°Àº Á÷Á¢ Á¦¾î ¹æ½Ä°ú ºñ±³ÇØºÁ!)
+//ì´ ìŠ¤í¬ë¦½íŠ¸ëŠ” ê²Œì„ ë‚´ ë‹¤ì–‘í•œ ì•Œë¦¼ (ì•„ì´í…œ íšë“, ëª¬ìŠ¤í„° ìŠ¤í° ë“±)ì„ í†µí•© ê´€ë¦¬.
+//ì¥ì : ëª¨ë“  ì¢…ë¥˜ì˜ ì•Œë¦¼ì— ì¼ê´€ëœ ì‹œê°ì  íš¨ê³¼ (í˜ì´ë“œ ì¸/ì•„ì›ƒ)ë¥¼ ì ìš©í•˜ê³ ,
+//ì¬ì‚¬ìš©ì„±ì´ ë†’ì•„ ì—¬ëŸ¬ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì‰½ê²Œ ì•Œë¦¼ì„ ë„ìš¸ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+//ë‹¨ì : ê°„ë‹¨í•œ ì•Œë¦¼ì—ë„ ì½”ë£¨í‹´ê³¼ í˜ì´ë“œ ë¡œì§ì´ í•„ìš”í•˜ì—¬ ìƒëŒ€ì ìœ¼ë¡œ ë³µì¡í•  ìˆ˜ ìˆì–´!.
+//(EnemyDifficulty ìŠ¤í¬ë¦½íŠ¸ì™€ ê°™ì€ ì§ì ‘ ì œì–´ ë°©ì‹ê³¼ ë¹„êµí•´ë´!)
 
 
 public class TextAlimManager : MonoBehaviour
 {
-    [Header("UI ¿¬°á")]
-    public TextMeshProUGUI NotificationText;//ÀÎ½ºÆåÅÍ¿¡¼­ UI ÅØ½ºÆ® ÄÄÆ÷³ÍÆ®¸¦ ÇÒ´çÇÒ º¯¼ö
+    [Header("UI ì—°ê²°")]
+    public TextMeshProUGUI NotificationText;//ì¸ìŠ¤í™í„°ì—ì„œ UI í…ìŠ¤íŠ¸ ì»´í¬ë„ŒíŠ¸ë¥¼ í• ë‹¹í•  ë³€ìˆ˜
 
-    [Header("¾Ë¸²ÀÌ Ç¥½Ã, »ç¶óÁú ½Ã°£")]
-    public float DisplayDuration = 2f;//¾Ë¸²ÀÌ È­¸é¿¡ Ç¥½ÃµÉ ½Ã°£ (ÃÊ)
-    public float FadeDuration = 0.5f;//¾Ë¸²ÀÌ »ç¶óÁú ¶§ ÆäÀÌµå¾Æ¿ô µÇ´Â ½Ã°£ (ÃÊ)
+    [Header("ì•Œë¦¼ì´ í‘œì‹œ, ì‚¬ë¼ì§ˆ ì‹œê°„")]
+    public float DisplayDuration = 2f;//ì•Œë¦¼ì´ í™”ë©´ì— í‘œì‹œë  ì‹œê°„ (ì´ˆ)
+    public float FadeDuration = 0.5f;//ì•Œë¦¼ì´ ì‚¬ë¼ì§ˆ ë•Œ í˜ì´ë“œì•„ì›ƒ ë˜ëŠ” ì‹œê°„ (ì´ˆ)
 
-    private Coroutine currentNotificationCoroutine;//ÇöÀç ½ÇÇà ÁßÀÎ ÄÚ·çÆ¾À» ÃßÀû
+    private Coroutine currentNotificationCoroutine;//í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ ì½”ë£¨í‹´ì„ ì¶”ì 
 
 
-    void Awake()//Start ´ë½Å Awake¿¡¼­ ÃÊ±âÈ­ÇÏ´Â °ÍÀÌ ÁÁ¾Æ.
+    void Awake()
     {
         if (NotificationText == null)
         {
-            Debug.LogError("TextAlimManager: notificationText°¡ ÇÒ´çµÇÁö ¾Ê¾Ò¾î! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇØ!");
+            Debug.LogError("TextAlimManager: notificationTextê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ì–´! ì¸ìŠ¤í™í„°ë¥¼ í™•ì¸í•´!");
             return;
         }
-        //½ÃÀÛ ½Ã ÅØ½ºÆ®¸¦ ¼û±è
+        //ì‹œì‘ ì‹œ í…ìŠ¤íŠ¸ë¥¼ ìˆ¨ê¹€
         NotificationText.color = new Color(NotificationText.color.r,
         NotificationText.color.g, NotificationText.color.b, 0);
     }
     
 
-    public void ShowNotification(string message)//¿ÜºÎ¿¡¼­ ¾Ë¸²À» ¿äÃ»ÇÒ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
-    {//¿ÜºÎ¿¡¼­ ¹ŞÀº ÅØ½ºÆ®¸¦ string Çü½ÄÀÇ message ¸Å°³º¯¼ö¿¡ ´ã¾ÆµÎ°í DisplayNotification·Î º¸³¿
+    public void ShowNotification(string message)//ì™¸ë¶€ì—ì„œ ì•Œë¦¼ì„ ìš”ì²­í•  ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
+    {//ì™¸ë¶€ì—ì„œ ë°›ì€ í…ìŠ¤íŠ¸ë¥¼ string í˜•ì‹ì˜ message ë§¤ê°œë³€ìˆ˜ì— ë‹´ì•„ë‘ê³  DisplayNotification ì½”ë£¨í‹´ìœ¼ë¡œ ë³´ëƒ„
 
-        //ÀÌÀü¿¡ ½ÇÇà ÁßÀÎ ÄÚ·çÆ¾(ÅØ½ºÆ® ¾Ë¶÷) ÀÌ ÀÖ´Ù¸é ÁßÁö
-        //¾ÆÀÌÅÛ ¾Ë¸²ÀÌ ¶ß´Â µµÁß¿¡ ´Ù¸¥ ¾Ë¸²ÀÌ ¶Ç ¶ß¸é, »õ·Î¿î ¾Ë¸²ÀÌ ¹Ù·Î Ç¥½ÃµÇµµ·Ï ±âÁ¸ ¾Ë¸²À» ²÷À½
-        if (currentNotificationCoroutine != null)
-            StopCoroutine(currentNotificationCoroutine);
+        //ì´ì „ì— ì‹¤í–‰ ì¤‘ì¸ ì½”ë£¨í‹´ì´ ìˆë‹¤ë©´ ì¤‘ì§€ ê°„ê²°í™”
+        if (currentNotificationCoroutine != null) StopCoroutine(currentNotificationCoroutine);
 
-
-        //Á¢¼ö¹ŞÀº message °ªÀ» DisplayNotification ÄÚ·çÆ¾À» ½ÃÀÛ
+        //ì ‘ìˆ˜ë°›ì€ message ê°’ì„ DisplayNotification ì½”ë£¨í‹´ì„ ì‹œì‘
         currentNotificationCoroutine = StartCoroutine(DisplayNotification(message));
-        //ShowNotificationÀÌ ÀÚ½ÅÀÇ message º¯¼ö(º¹»çº»)¿¡ ÀÖ´Â ¹®ÀÚ¿­ °ªÀ» ´Ù½Ã º¹»çÇØ¼­ DisplayNotification¿¡ ³Ñ°ÜÁÜ.
+        //ShowNotificationì´ ìì‹ ì˜ message ë³€ìˆ˜(ë³µì‚¬ë³¸)ì— ìˆëŠ” ë¬¸ìì—´ ê°’ì„ ë‹¤ì‹œ ë³µì‚¬í•´ì„œ DisplayNotificationì— ë„˜ê²¨ì¤Œ.
     }
 
     
-    IEnumerator DisplayNotification(string message)//ShowNotificationÀÌ ³Ñ°ÜÁØ ¸Ş¼¼Áö¸¦ UI¿¡ ¶ß°Ô ÇÏ´Â ¿ªÇÒ
+    IEnumerator DisplayNotification(string message)//ShowNotificationì´ ë„˜ê²¨ì¤€ ë©”ì„¸ì§€ë¥¼ UIì— ëœ¨ê²Œ í•˜ëŠ” ì—­í• 
     {
-        NotificationText.text = message;//UI¿¡ ¹ŞÀº ÅØ½ºÆ®¸¦ º¸³¿
+        NotificationText.text = message;//UIì— ë°›ì€ í…ìŠ¤íŠ¸ë¥¼ ë³´ëƒ„
 
-        //ÆäÀÌµåÀÎ (Åõ¸íµµ 0 -> 1)
+        //í˜ì´ë“œì¸ (íˆ¬ëª…ë„ 0 -> 1)
         float timer = 0f;
         Color startColor = new Color(NotificationText.color.r, NotificationText.color.g, NotificationText.color.b, 0);
         Color targetColor = new Color(NotificationText.color.r, NotificationText.color.g, NotificationText.color.b, 1);
@@ -63,27 +60,27 @@ public class TextAlimManager : MonoBehaviour
         {
             NotificationText.color = Color.Lerp(startColor, targetColor, timer / FadeDuration);
             timer += Time.deltaTime;
-            yield return null;//ÇÑ ÇÁ·¹ÀÓ ´ë±â
+            yield return null;//í•œ í”„ë ˆì„ ëŒ€ê¸°
         }
-        NotificationText.color = targetColor;//Á¤È®È÷ ºÒÅõ¸íÇÏ°Ô ¼³Á¤
+        NotificationText.color = targetColor;//ì •í™•íˆ ë¶ˆíˆ¬ëª…í•˜ê²Œ ì„¤ì •
 
         yield return new WaitForSeconds(DisplayDuration);
-        //¾Ë¸²ÀÌ displayDuration º¯¼ö¿¡ ¼³Á¤µÈ ½Ã°£(ÃÊ)¸¸Å­ È­¸é¿¡ À¯ÁöµÇµµ·Ï ´ë±â
-        //ÀÌ ÄÚ·çÆ¾ÀÌ Àá½Ã ¸ØÃçÀÖ´Ù°¡, ÀÌ ÁÙ ¾Æ·¡ÀÇ ÄÚµå¸¦ ½ÇÇàÇÏ¿© ¾Ë¸²À» »ç¶óÁö°Ô ÇÕ´Ï´Ù.
+        //ì•Œë¦¼ì´ displayDuration ë³€ìˆ˜ì— ì„¤ì •ëœ ì‹œê°„(ì´ˆ)ë§Œí¼ í™”ë©´ì— ìœ ì§€ë˜ë„ë¡ ëŒ€ê¸°
+        //ì´ ì½”ë£¨í‹´ì´ ì ì‹œ ë©ˆì¶°ìˆë‹¤ê°€, ì´ ì¤„ ì•„ë˜ì˜ ì½”ë“œë¥¼ ì‹¤í–‰í•˜ì—¬ ì•Œë¦¼ì„ ì‚¬ë¼ì§€ê²Œ í•©ë‹ˆë‹¤.
         
-        //ÆäÀÌµå¾Æ¿ô (Åõ¸íµµ 1 -> 0)
+        //í˜ì´ë“œì•„ì›ƒ (íˆ¬ëª…ë„ 1 -> 0)
         timer = 0f;
-        startColor = targetColor;//ÇöÀç »ö»ó (ºÒÅõ¸í)
+        startColor = targetColor;//í˜„ì¬ ìƒ‰ìƒ (ë¶ˆíˆ¬ëª…)
         targetColor = new Color(NotificationText.color.r, NotificationText.color.g, NotificationText.color.b, 0);
 
-        while (timer < FadeDuration)//ÅØ½ºÆ®ÀÇ ÆäÀÌµåÀÎ/ÆäÀÌµå¾Æ¿ô ¾Ö´Ï¸ŞÀÌ¼Ç
+        while (timer < FadeDuration)//í…ìŠ¤íŠ¸ì˜ í˜ì´ë“œì¸/í˜ì´ë“œì•„ì›ƒ ì• ë‹ˆë©”ì´ì…˜
         {
-            //½Ã°£¿¡ µû¶ó ÅØ½ºÆ® »ö»óÀ» ½ÃÀÛ(startColor)ºÎÅÍ ¸ñÇ¥(targetColor)±îÁö ºÎµå·´°Ô º¯È­½ÃÅ´ (ÆäÀÌµåÀÎ/¾Æ¿ô ¾Ö´Ï¸ŞÀÌ¼Ç)
+            //ì‹œê°„ì— ë”°ë¼ í…ìŠ¤íŠ¸ ìƒ‰ìƒì„ ì‹œì‘(startColor)ë¶€í„° ëª©í‘œ(targetColor)ê¹Œì§€ ë¶€ë“œëŸ½ê²Œ ë³€í™”ì‹œí‚´ (í˜ì´ë“œì¸/ì•„ì›ƒ ì• ë‹ˆë©”ì´ì…˜)
             NotificationText.color = Color.Lerp(startColor, targetColor, timer / FadeDuration);
-            timer += Time.deltaTime;//ÇÁ·¹ÀÓ´ç °æ°ú ½Ã°£¸¸Å­ Å¸ÀÌ¸Ó Áõ°¡
-            yield return null;//´ÙÀ½ ÇÁ·¹ÀÓ±îÁö ´ë±âÇÏ¿© ¾Ö´Ï¸ŞÀÌ¼Ç ¾÷µ¥ÀÌÆ®
+            timer += Time.deltaTime;//í”„ë ˆì„ë‹¹ ê²½ê³¼ ì‹œê°„ë§Œí¼ íƒ€ì´ë¨¸ ì¦ê°€
+            yield return null;//ë‹¤ìŒ í”„ë ˆì„ê¹Œì§€ ëŒ€ê¸°í•˜ì—¬ ì• ë‹ˆë©”ì´ì…˜ ì—…ë°ì´íŠ¸
         }
-        NotificationText.color = targetColor;//¿ÏÀüÈ÷ Åõ¸íÇÏ°Ô ¼³Á¤
-            NotificationText.text = "";//ÅØ½ºÆ® ³»¿ëµµ ºñ¿öÁÖ±â
+        NotificationText.color = targetColor;//ì™„ì „íˆ íˆ¬ëª…í•˜ê²Œ ì„¤ì •
+        NotificationText.text = "";//í…ìŠ¤íŠ¸ ë‚´ìš©ë„ ë¹„ì›Œì£¼ê¸°
     }
 }

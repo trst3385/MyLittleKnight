@@ -43,7 +43,7 @@ public class SpikeSpawn : MonoBehaviour
             SpawnSpike();
 
             //다음 스폰 주기는 ObstacleDifficultyManager 스크립트에서 최신값을 받아옴
-            if (ObstacleDifficultyManager.Instance != null)
+            if (ObstacleDifficultyManager.Instance != null) 
             {
                 spawnTimer = ObstacleDifficultyManager.Instance.GetCurrentSpikeSpawnInterval();
             }

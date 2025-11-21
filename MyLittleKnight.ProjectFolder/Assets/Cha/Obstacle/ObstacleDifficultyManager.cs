@@ -83,13 +83,13 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
 
     void Awake()
-    {//함수 안에 있는 if문은 딱 한 가지 목적을 위해 존재해. 이 스크립트를 가진 오브젝트가 게임에 딱 하나만 존재하도록 보장하는 것
-        if (Instance != null && Instance != this)//만약 이미 '유일한 인스턴스'가 존재하고, 그게 지금 나 자신이 아니라면
-            Destroy(gameObject);//이 코드가 "중복되는 오브젝트를 파괴하는 역할"을 해.
+    {   //싱글톤 패턴이 스크립트의 유일한 인스턴스 존재를 보장
+        //1.이미 인스턴스가 존재하면(중복이면)
+        if (Instance != null && Instance != this) Destroy(gameObject);//이 중복된 오브젝트를 파괴하고 종료
         else
         {
-            Instance = this;//이건 "오, 아직 아무도 없네? 그럼 내가 바로 그 '유일한 인스턴스'가 되어야겠다!" 라는 뜻이야.
-            DontDestroyOnLoad(gameObject);//EnemyDifficulty 스크립트에서도 있는거야. "씬이 바뀌어도 나를 파괴하지 마!" 라는 뜻이야.
+            Instance = this;//2.인스턴스가 없으면, '나'를 유일한 인스턴스로 지정
+            DontDestroyOnLoad(gameObject);//씬이 바뀌어도 오브젝트를 파괴하지 않고 유지
         }
     }
     void Start()
@@ -167,10 +167,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
     
     private void UpdateLevelText()//UI 텍스트를 업데이트 함수
     {
-        if (ObstacleLevelText != null)
-        {
-            ObstacleLevelText.text = $"장애물 Lv.{currentLevel}";
-        }
+        if (ObstacleLevelText != null) ObstacleLevelText.text = $"장애물 Lv.{currentLevel}";
     }
 }
 
