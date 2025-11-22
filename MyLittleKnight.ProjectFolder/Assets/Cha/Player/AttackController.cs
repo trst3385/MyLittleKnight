@@ -81,13 +81,9 @@ public class AttackController : MonoBehaviour
         {
             case WeaponType.Bow://현재 무기가 활이면
                 Animator.SetTrigger("Attack(Bow)");
-                if (Player != null)
-                    Player.SilhouetteBowAttack();//활 공격 동기화 호출(실루엣 스크립트로 보낼 함수, 검도 동일)
                 break;
             case WeaponType.Sword://현재 무기가 검이면
                 Animator.SetTrigger("Attack(Sword)");
-                if (Player != null)
-                    Player.SilhouetteSwordAttack();//검 공격 동기화 호출(실루엣)
                 break;
         }
     }

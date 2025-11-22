@@ -16,6 +16,7 @@ public class Sil_Player : MonoBehaviour
     private Animator silplayerAnimator;
     private SpriteRenderer silhouetteRenderer;
 
+
     void Start()
     {
         silplayerAnimator = GetComponent<Animator>();
@@ -48,37 +49,19 @@ public class Sil_Player : MonoBehaviour
         //이동 (Idle/Move) 상태 동기화
         bool isMoving = playerAnimator.GetBool("Move");
         silplayerAnimator.SetBool("Move", isMoving);
+        silhouetteRenderer.flipX = playerRenderer.flipX;//방향 동기화 (좌우 반전), Player 스크립트가 SpriteRenderer.flipX를 제어
 
-        //방향 동기화 (좌우 반전)
-        //원본 Player 스크립트의 로직이 SpriteRenderer.flipX를 제어하고 있어.
-        silhouetteRenderer.flipX = playerRenderer.flipX;
-    }
-
-    public void SilPlayerBowAttack()//활 공격 모션 동기화
-    {
-        if (!enabled) return;//스크립트 비활성화(에러) 상태라면 공격 동기화 무시
-
-        if (silplayerAnimator != null)
-            silplayerAnimator.SetTrigger("Attack(Bow)");
-    }
-    public void SilPlayerSwordAttack()//검 공격 모션 동기화(활 공격과 동일한 방식으로 추가)
-    {
-        if (!enabled) return;
-
-        if (silplayerAnimator != null)
-            silplayerAnimator.SetTrigger("Attack(Sword)");
-    }
-
-    public void SilPlayerDie()//Player 스크립트의 PlayerDie()함수에서 호출
-    {
-        if (silplayerAnimator != null)
+        //원본 Animator에 레이어가 여러 개 있을 수 있으니, 모든 레이어를 하나씩 검사.
+        //각 모션을 모두 복사해야 하므로 layerCount만큼 반복 
+        for (int i = 0; i < playerAnimator.layerCount; i++)
         {
-            silplayerAnimator.SetTrigger("Die");
-            //사망 모션이 시작된 후, 실루엣 복사본도 원본과 거의 같은 시간에 파괴되어야 하니까,
-            //원본 Player 스크립트의 PlayerDie함수의 Destroy(gameObject, DieTime);을 호출하므로,
-            //실루엣도 이와 동일하게 파괴되도록 (원본의 DieTime 변수와 같은 시간으로)
-            Destroy(gameObject, 1.5f);
+            //1. 원본 플레이어가 '현재' 어떤 상태인지 파악(걷는 중인지, 공격 중인지, 사망했는지)
+            AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(i);
+
+            //[실루엣에게 복사 명령] 실루엣 애니메이터에게 원본과 똑같이 따라 하라고 명령해.
+            silplayerAnimator.Play(stateInfo.fullPathHash,//(무엇을?)원본이 지금 하는 그 애니메이션의 이름표(ID)
+                                                        i,//(어디서?)원본과 같은 레이어(층)에서
+                stateInfo.normalizedTime);//(어디부터?)원본이 진행된 그 지점(%)부터 이어서 재생해서 끊김 없는 부드러운 동기화
         }
     }
-
 }

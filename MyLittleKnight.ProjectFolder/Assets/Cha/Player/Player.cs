@@ -132,8 +132,6 @@ public class Player : MonoBehaviour
             Invoke("CallGameOverManager", 1f);//1.5초 뒤에 CallGameOverManager함수를 호출, 플레이어가 죽으면 뜰 UI
         }
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
-
-        if (silplayer != null) silplayer.SilPlayerDie();//실루엣 복사본에게 사망 애니메이션 시작을 명령
     }
 
     
@@ -180,14 +178,5 @@ public class Player : MonoBehaviour
     {
         CurrentScore = 0;
         if (ScoreTextUI != null) ScoreTextUI.text = "Score: 0";
-    }
-
-    public void SilhouetteBowAttack()//Sil_Player 스크립트의 SilPlayerBowAttack함수에게 활공격 모션을 한다고 전달
-    {
-        if (silplayer != null) silplayer.SilPlayerBowAttack();
-    }
-    public void SilhouetteSwordAttack()//Sil_Player 스크립트의 SilPlayerSwordAttack함수에게 검공격 모션을 한다고 전달
-    {
-        if (silplayer != null) silplayer.SilPlayerSwordAttack();
     }
 }
