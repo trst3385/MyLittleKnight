@@ -16,12 +16,13 @@ public class Sil_Player : MonoBehaviour
     private Animator silplayerAnimator;
     private SpriteRenderer silhouetteRenderer;
 
-
-    void Start()
+    void Awake()//내부 컴포넌트는 Awake
     {
         silplayerAnimator = GetComponent<Animator>();
         silhouetteRenderer = GetComponent<SpriteRenderer>();
-
+    }
+    void Start()//외부 컴포넌트는 Start
+    {
         if (playerTransform != null)
         {
             //원본 플레이어의 컴포넌트 가져오기
