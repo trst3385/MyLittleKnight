@@ -1,25 +1,25 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;//RawImage¸¦ »ç¿ëÇÏ±â À§ÇØ ÇÊ¿äÇØ
+using UnityEngine.UI;//RawImageë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”í•´
 
 public class BackgroundScroller : MonoBehaviour
 {
-    public float scrollSpeed = 1f;//¹è°æÈ­¸é ¿òÁ÷ÀÌ´Â ¼Óµµ, ÀÎ½ºÆåÅÍ Ã¢¿¡¼­ ½ºÅ©·Ñ ¼Óµµ¸¦ Á¶Àı
-    private RawImage rawImage;
+    public float scrollSpeed = 1f;//ë°°ê²½í™”ë©´ ì›€ì§ì´ëŠ” ì†ë„, ì¸ìŠ¤í™í„° ì°½ì—ì„œ ìŠ¤í¬ë¡¤ ì†ë„ë¥¼ ì¡°ì ˆ
+    private RawImage rawImage;//ë°°ê²½í™”ë©´ ì´ë¯¸ì§€
 
-    void Start()
+    void Awake()//ë‚´ë¶€ ì»´í¬ë„ŒíŠ¸ëŠ” Awakeì—
     {
         rawImage = GetComponent<RawImage>();
     }
     void Update()
     {   
         if (rawImage != null)
-        {  
-            Rect uvRect = rawImage.uvRect;//Raw Image°¡ º¸°í ÀÖ´Â ÀÌ¹ÌÁöÀÇ ¿µ¿ª Á¤º¸¸¦ uvRect¶ó´Â º¯¼ö¿¡ ÀúÀå
-            uvRect.x += scrollSpeed * Time.deltaTime;//xÃà(ÁÂ¿ì)À¸·Î ÀÌµ¿,scrollSpeed º¯¼öÀÇ ¼Óµµ¿¡ µû¶ó ¸Å ÇÁ·¹ÀÓ¸¶´Ù
-            rawImage.uvRect = uvRect;//°è»êµÈ »õ·Î¿î À§Ä¡¸¦ Raw Image¿¡ ´Ù½Ã Àû¿ë
-                                     //ÀÌ °úÁ¤À» ¸Å ÇÁ·¹ÀÓ¸¶´Ù ¹İº¹ÇÏ´Ï±î ÀÌ¹ÌÁö°¡ °è¼Ó ¿òÁ÷ÀÌ´Â °ÍÃ³·³ º¸ÀÌ´Â °Å¾ß.
+        {  //RectëŠ” 'ì‚¬ê°í˜• ì˜ì—­'ì„ ì •ì˜í•  ë•Œ ì‚¬ìš©í•˜ëŠ” êµ¬ì¡°ì²´ì•¼. ì´ êµ¬ì¡°ì²´ ì•ˆì—ëŠ” ì‚¬ê°í˜•ì˜ ìœ„ì¹˜ì™€ í¬ê¸°ë¥¼ ë‚˜íƒ€ë‚´ëŠ” 4ê°œì˜ ê°’ì´ ë“¤ì–´ ìˆì–´.
+            Rect uvRect = rawImage.uvRect;//Raw Imageê°€ ë³´ê³  ìˆëŠ” ì´ë¯¸ì§€ì˜ ì˜ì—­ ì •ë³´ë¥¼ uvRectë¼ëŠ” ë³€ìˆ˜ì— ì €ì¥
+            uvRect.x += scrollSpeed * Time.deltaTime;//xì¶•(ì¢Œìš°)ìœ¼ë¡œ ì´ë™,scrollSpeed ë³€ìˆ˜ì˜ ì†ë„ì— ë”°ë¼ ë§¤ í”„ë ˆì„ë§ˆë‹¤
+            rawImage.uvRect = uvRect;//ê³„ì‚°ëœ ìƒˆë¡œìš´ ìœ„ì¹˜ë¥¼ Raw Imageì— ë‹¤ì‹œ ì ìš©
+                                     //ì´ ê³¼ì •ì„ ë§¤ í”„ë ˆì„ë§ˆë‹¤ ë°˜ë³µí•˜ë‹ˆê¹Œ ì´ë¯¸ì§€ê°€ ê³„ì† ì›€ì§ì´ëŠ” ê²ƒì²˜ëŸ¼ ë³´ì´ëŠ” ê±°ì•¼.
         }
     }
 }

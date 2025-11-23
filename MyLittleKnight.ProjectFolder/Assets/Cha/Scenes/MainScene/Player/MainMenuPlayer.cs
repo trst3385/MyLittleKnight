@@ -1,12 +1,12 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MainMenuPlayer : MonoBehaviour
 {
-    [HideInInspector]public float MoveSpeed;//MainMenuCutsceneManager ½ºÅ©¸³Æ®°¡ ÀÌ º¯¼ö¸¦ Á¦¾îÇÔ
+    [HideInInspector]public float MoveSpeed;//MainMenuCutsceneManager ìŠ¤í¬ë¦½íŠ¸ê°€ ì´ ë³€ìˆ˜ë¥¼ ì œì–´í•¨
     public Animator animator;
-    public int direction = 1;//1Àº ¿À¸¥ÂÊ, -1Àº ¿ŞÂÊ
+    public int direction = 1;//1ì€ ì˜¤ë¥¸ìª½, -1ì€ ì™¼ìª½
 
     void Start()
     {
@@ -16,17 +16,13 @@ public class MainMenuPlayer : MonoBehaviour
 
     void Update()
     {
-        //direction °ª¿¡ µû¶ó ÀÌµ¿ ¹æÇâÀ» °áÁ¤
+        //direction ê°’ì— ë”°ë¼ ì´ë™ ë°©í–¥ì„ ê²°ì •
         transform.Translate(Vector3.right * MoveSpeed * Time.deltaTime * direction);
 
-        //¹æÇâÀÌ ¹Ù²ğ ¶§ Ä³¸¯ÅÍ ½ºÇÁ¶óÀÌÆ®¸¦ ¹İÀü½ÃÄÑ¾ß ÇØ
+        //ë°©í–¥ì´ ë°”ë€” ë•Œ ìºë¦­í„° ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ë°˜ì „ì‹œì¼œì•¼ í•´
         if (direction == 1)
-        {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
         else
-        {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
     }
 }

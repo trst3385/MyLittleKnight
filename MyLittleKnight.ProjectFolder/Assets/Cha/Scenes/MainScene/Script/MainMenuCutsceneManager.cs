@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using Unity.VisualScripting;
@@ -7,23 +7,23 @@ using UnityEngine.SocialPlatforms;
 
 public class MainMenuCutsceneManager : MonoBehaviour
 {
-    public enum CutsceneState//°¢ ÄÆ¾ÀÀÇ °¢ »óÅÂ¸¦ Á¤ÀÇÇÏ´Â enum
+    public enum CutsceneState//ê° ì»·ì”¬ì˜ ê° ìƒíƒœë¥¼ ì •ì˜í•˜ëŠ” enum
     {
-        ChasePlayer, //1. ¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¸¦ ¦i¾Æ°¨
-        PlayerAttack,//2. ÇÃ·¹ÀÌ¾î°¡ °Ë °ø°İ ¸ğ¼ÇÀ» ÇÏ¸ç ¿ªÀ¸·Î ¸ó½ºÅÍ¸¦ ¦i¾Æ°¨
-        ChasePlayer2//3. ¿©·¯ ¸¶¸®ÀÇ ¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¸¦ ¦i¾Æ°¨
+        ChasePlayer, //1. ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ë¥¼ ì«’ì•„ê°
+        PlayerAttack,//2. í”Œë ˆì´ì–´ê°€ ê²€ ê³µê²© ëª¨ì…˜ì„ í•˜ë©° ì—­ìœ¼ë¡œ ëª¬ìŠ¤í„°ë¥¼ ì«’ì•„ê°
+        ChasePlayer2//3. ì—¬ëŸ¬ ë§ˆë¦¬ì˜ ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ë¥¼ ì«’ì•„ê°
     }
 
-    public CutsceneState CurrentState;//ÇöÀç ÄÆ¾ÀÀÇ »óÅÂ
+    public CutsceneState CurrentState;//í˜„ì¬ ì»·ì”¬ì˜ ìƒíƒœ
 
-    [Header("¿ÀºêÁ§Æ® ¿¬°á")]
+    [Header("ì˜¤ë¸Œì íŠ¸ ì—°ê²°")]
     public MainMenuPlayer Player;
     public MainMenuEnemy Monster;
     public MainMenuEnemy Monster2;
     public MainMenuEnemy EliteMonster;
 
-    [Header("¼Óµµ ¼³Á¤")]
-    //ÄÆ¾À ÀüÈ¯¿¡ ÇÊ¿äÇÑ º¯¼öµé
+    [Header("ì†ë„ ì„¤ì •")]
+    //ì»·ì”¬ ì „í™˜ì— í•„ìš”í•œ ë³€ìˆ˜ë“¤
     public float Cutscene1pSpeed = 2f;
     public float Cutscene1mSpeed = 3f;
     public float Cutscene1m1Speed = 3f;
@@ -37,27 +37,25 @@ public class MainMenuCutsceneManager : MonoBehaviour
     public float Cutscene3m1Speed = 3f;
     public float Cutscene3emSpeed = 3f;
 
-    [Header("ÄÆ¾À ÀüÈ¯ °ª")]
-    public float ChangeStateX = 20f;//ÄÆ¾À »óÅÂ¸¦ ¹Ù²Ü X ÁÂÇ¥ (È­¸é ¿À¸¥ÂÊ ³¡) ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ÇØ!
-    public float ReturnPositionX = -20f;//Ä³¸¯ÅÍ°¡ µ¹¾Æ¿Ã X ÁÂÇ¥ (È­¸é ¿ŞÂÊ ³¡)ÀÎ½ºÆåÅÍ¿¡¼­ ¼³Á¤ÇØ!
-    //ChangeStateX´Â ¿À¸¥ÂÊ ¹æÇâÀ¸·Î °¥¶§ÀÇ µµ´ŞÇÒ x°ª
-    //ReturnPositionX´Â ¹İ´ë·Î ¿ŞÂÊ ¹æÇâÀ¸·Î °¥¶§ÀÇ µµ´ŞÇÒ x°ª
-
-   
+    [Header("ì»·ì”¬ ì „í™˜ ê°’")]
+    public float ChangeStateX = 20f;//ì»·ì”¬ ìƒíƒœë¥¼ ë°”ê¿€ X ì¢Œí‘œ (í™”ë©´ ì˜¤ë¥¸ìª½ ë) ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•´!
+    public float ReturnPositionX = -20f;//ìºë¦­í„°ê°€ ëŒì•„ì˜¬ X ì¢Œí‘œ (í™”ë©´ ì™¼ìª½ ë)ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•´!
+    //ChangeStateXëŠ” ì˜¤ë¥¸ìª½ ë°©í–¥ìœ¼ë¡œ ê°ˆë•Œì˜ ë„ë‹¬í•  xê°’
+    //ReturnPositionXëŠ” ë°˜ëŒ€ë¡œ ì™¼ìª½ ë°©í–¥ìœ¼ë¡œ ê°ˆë•Œì˜ ë„ë‹¬í•  xê°’
 
     void Start()
     {
-        //°ÔÀÓ ½ÃÀÛ ½Ã Ã¹ ¹øÂ° »óÅÂ·Î ¼³Á¤ÇÏ°í ÄÆ¾ÀÀ» ½ÃÀÛ
+        //ê²Œì„ ì‹œì‘ ì‹œ ì²« ë²ˆì§¸ ìƒíƒœë¡œ ì„¤ì •í•˜ê³  ì»·ì”¬ì„ ì‹œì‘
         CurrentState = CutsceneState.ChasePlayer;
         SetState();
     }
 
     void Update()
     {
-        //¸Å ÇÁ·¹ÀÓ¸¶´Ù ÇöÀç »óÅÂ¸¦ Ã¼Å©ÇÏ°í ·ÎÁ÷À» ½ÇÇà
+        //ë§¤ í”„ë ˆì„ë§ˆë‹¤ í˜„ì¬ ìƒíƒœë¥¼ ì²´í¬í•˜ê³  ë¡œì§ì„ ì‹¤í–‰
         switch (CurrentState)
         {
-            case CutsceneState.ChasePlayer://°¡Àå µÚ¿¡ ÀÖ´Â ¸ó½ºÅÍ2ÀÇ x°ªÀ» ±âÁØÀ¸·Î x°ªÀÌ µµ´ŞÇÏ¸é ÄÆ¾À ÀüÈ¯(¿ŞÂÊ->¿À¸¥ÂÊ)
+            case CutsceneState.ChasePlayer://ê°€ì¥ ë’¤ì— ìˆëŠ” ëª¬ìŠ¤í„°2ì˜ xê°’ì„ ê¸°ì¤€ìœ¼ë¡œ xê°’ì´ ë„ë‹¬í•˜ë©´ ì»·ì”¬ ì „í™˜(ì™¼ìª½->ì˜¤ë¥¸ìª½)
                 if (Monster2.transform.position.x > ChangeStateX)
                 {
                     CurrentState = CutsceneState.PlayerAttack;
@@ -65,7 +63,7 @@ public class MainMenuCutsceneManager : MonoBehaviour
                 }
                 break;
 
-            case CutsceneState.PlayerAttack://°¡Àå µÚ¿¡ ÀÖ´Â PlayerÀÇ x°ªÀ» ±âÁØÀ¸·Î x°ªÀÌ µµ´ŞÇÏ¸é ÄÆ¾À ÀüÈ¯(¿À¸¥ÂÊ<-¿ŞÂÊ)
+            case CutsceneState.PlayerAttack://ê°€ì¥ ë’¤ì— ìˆëŠ” Playerì˜ xê°’ì„ ê¸°ì¤€ìœ¼ë¡œ xê°’ì´ ë„ë‹¬í•˜ë©´ ì»·ì”¬ ì „í™˜(ì˜¤ë¥¸ìª½<-ì™¼ìª½)
                 if (Player.transform.position.x < ReturnPositionX)
                 {
                     CurrentState = CutsceneState.ChasePlayer2;
@@ -73,7 +71,7 @@ public class MainMenuCutsceneManager : MonoBehaviour
                 }
                 break;
 
-            case CutsceneState.ChasePlayer2://°¡Àå µÚ¿¡ ÀÖ´Â Monster2ÀÇ x°ªÀ» ±âÁØÀ¸·Î x°ªÀÌ µµ´ŞÇÏ¸é ÄÆ¾À ÀüÈ¯(¿ŞÂÊ->¿À¸¥ÂÊ)
+            case CutsceneState.ChasePlayer2://ê°€ì¥ ë’¤ì— ìˆëŠ” Monster2ì˜ xê°’ì„ ê¸°ì¤€ìœ¼ë¡œ xê°’ì´ ë„ë‹¬í•˜ë©´ ì»·ì”¬ ì „í™˜(ì™¼ìª½->ì˜¤ë¥¸ìª½)
                 if (Monster2.transform.position.x > ChangeStateX)
                 {
                     CurrentState = CutsceneState.ChasePlayer;
@@ -83,7 +81,7 @@ public class MainMenuCutsceneManager : MonoBehaviour
         }
     }
 
-    void SetState()//»óÅÂ°¡ ¹Ù²ğ ¶§, °¢ Ä³¸¯ÅÍ¿Í ¸ó½ºÅÍÀÇ ¼Óµµ¿Í ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¼³Á¤
+    void SetState()//ìƒíƒœê°€ ë°”ë€” ë•Œ, ê° ìºë¦­í„°ì™€ ëª¬ìŠ¤í„°ì˜ ì†ë„ì™€ ì• ë‹ˆë©”ì´ì…˜ì„ ì„¤ì •
     {
         switch (CurrentState)
         {
@@ -91,28 +89,28 @@ public class MainMenuCutsceneManager : MonoBehaviour
 
                 Monster.gameObject.SetActive(true);
                 Monster2.gameObject.SetActive(true);
-                EliteMonster.gameObject.SetActive(false);//EliteMonster´Â ¾ÆÁ÷ »ç¿ë ¾ÈÇÏ´Ï ºñÈ°¼ºÈ­
+                EliteMonster.gameObject.SetActive(false);//EliteMonsterëŠ” ì•„ì§ ì‚¬ìš© ì•ˆí•˜ë‹ˆ ë¹„í™œì„±í™”
 
-                //ÀÌ ÄÚµå´Â ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¿ŞÂÊ ³¡(returnPositionX)À¸·Î ÀÌµ¿½ÃÅ°´Â ¿ªÇÒÀÌ¾ß.
-                //¸ó½ºÅÍ¿¡°Ô ÂÑ±â´Â Ã¹ ¹øÂ° ÄÆ¾ÀÀÌ ½ÃÀÛµÉ ¶§ ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¹Û¿¡¼­ µîÀå½ÃÅ°´Â µ¥ »ç¿ëÇØ.
+                //ì´ ì½”ë“œëŠ” í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ì™¼ìª½ ë(returnPositionX)ìœ¼ë¡œ ì´ë™ì‹œí‚¤ëŠ” ì—­í• ì´ì•¼.
+                //ëª¬ìŠ¤í„°ì—ê²Œ ì«“ê¸°ëŠ” ì²« ë²ˆì§¸ ì»·ì”¬ì´ ì‹œì‘ë  ë•Œ í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ë°–ì—ì„œ ë“±ì¥ì‹œí‚¤ëŠ” ë° ì‚¬ìš©í•´.
                 Player.transform.position = new Vector3(ReturnPositionX, Player.transform.position.y, Player.transform.position.z);
                  
-                //ÀÌ ÄÚµå´Â ¸ó½ºÅÍ¸¦ ÇÃ·¹ÀÌ¾îº¸´Ù -3¸¸Å­ ´õ ¿ŞÂÊ¿¡ À§Ä¡½ÃÅ°´Â ¿ªÇÒÀÌ¾ß.
-                //ÀÌ·¸°Ô ÇÏ¸é ÇÃ·¹ÀÌ¾î¿Í ¸ó½ºÅÍ »çÀÌ¿¡ °£°İÀÌ »ı°Ü¼­, ¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¸¦ ÂÑ´Â °ÍÃ³·³ º¸ÀÌ°Ô µÅ.
+                //ì´ ì½”ë“œëŠ” ëª¬ìŠ¤í„°ë¥¼ í”Œë ˆì´ì–´ë³´ë‹¤ -3ë§Œí¼ ë” ì™¼ìª½ì— ìœ„ì¹˜ì‹œí‚¤ëŠ” ì—­í• ì´ì•¼.
+                //ì´ë ‡ê²Œ í•˜ë©´ í”Œë ˆì´ì–´ì™€ ëª¬ìŠ¤í„° ì‚¬ì´ì— ê°„ê²©ì´ ìƒê²¨ì„œ, ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ë¥¼ ì«“ëŠ” ê²ƒì²˜ëŸ¼ ë³´ì´ê²Œ ë¼.
                 Monster.transform.position = new Vector3(ReturnPositionX - 3, Monster.transform.position.y, Monster.transform.position.z);
-                Monster2.transform.position = new Vector3(ReturnPositionX - 6, Monster2.transform.position.y, Monster2.transform.position.z); // <-- Monster2¸¦ ´õ µÚ¿¡ À§Ä¡½ÃÄÑ
+                Monster2.transform.position = new Vector3(ReturnPositionX - 6, Monster2.transform.position.y, Monster2.transform.position.z); // <-- Monster2ë¥¼ ë” ë’¤ì— ìœ„ì¹˜ì‹œì¼œ
 
 
-                //¹æÇâ ¿À¸¥ÂÊÀ¸·Î
+                //ë°©í–¥ ì˜¤ë¥¸ìª½ìœ¼ë¡œ
                 Player.direction = 1;
                 Monster.direction = 1;
                 Monster2.direction = 1;
                 
-                //ÇÃ·¹ÀÌ¾î¿Í ¸ó½ºÅÍÀÇ ¼Óµµ ¼³Á¤
+                //í”Œë ˆì´ì–´ì™€ ëª¬ìŠ¤í„°ì˜ ì†ë„ ì„¤ì •
                 Player.MoveSpeed = Cutscene1pSpeed;
                 Monster.MoveSpeed = Cutscene1mSpeed;
                 Monster2.MoveSpeed = Cutscene1m1Speed;
-                //¾Ö´Ï¸ŞÀÌ¼Ç ¼³Á¤
+                //ì• ë‹ˆë©”ì´ì…˜ ì„¤ì •
                 Player.animator.SetBool("Move", true);
                 Player.animator.SetBool("Attack", false);
 
@@ -124,34 +122,34 @@ public class MainMenuCutsceneManager : MonoBehaviour
 
             case CutsceneState.PlayerAttack:
 
-                Monster.gameObject.SetActive(true);//ÀÏ¹İ ¸ó½ºÅÍ È°¼ºÈ­
+                Monster.gameObject.SetActive(true);//ì¼ë°˜ ëª¬ìŠ¤í„° í™œì„±í™”
                 Monster2.gameObject.SetActive(true);
-                EliteMonster.gameObject.SetActive(false);//EliteMonster´Â ¾ÆÁ÷ »ç¿ë ¾ÈÇÏ´Ï ºñÈ°¼ºÈ­
+                EliteMonster.gameObject.SetActive(false);//EliteMonsterëŠ” ì•„ì§ ì‚¬ìš© ì•ˆí•˜ë‹ˆ ë¹„í™œì„±í™”
 
-                //ÀÌ ÄÚµå´Â 1, 3¹ø°ú ¹İ´ë·Î ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¿ŞÂÊ ³¡(returnPositionX)À¸·Î ÀÌµ¿½ÃÅ°´Â ¿ªÇÒÀÌ¾ß
-                //¸ó½ºÅÍ¿¡°Ô ÂÑ±â´Â Ã¹ ¹øÂ° ÄÆ¾ÀÀÌ ½ÃÀÛµÉ ¶§ ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¹Û¿¡¼­ µîÀå½ÃÅ°´Â µ¥ »ç¿ëÇØ
+                //ì´ ì½”ë“œëŠ” 1, 3ë²ˆê³¼ ë°˜ëŒ€ë¡œ í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ì™¼ìª½ ë(returnPositionX)ìœ¼ë¡œ ì´ë™ì‹œí‚¤ëŠ” ì—­í• ì´ì•¼
+                //ëª¬ìŠ¤í„°ì—ê²Œ ì«“ê¸°ëŠ” ì²« ë²ˆì§¸ ì»·ì”¬ì´ ì‹œì‘ë  ë•Œ í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ë°–ì—ì„œ ë“±ì¥ì‹œí‚¤ëŠ” ë° ì‚¬ìš©í•´
                 Player.transform.position = new Vector3(ChangeStateX + 8, Player.transform.position.y, Player.transform.position.z);
 
-                //ÀÌ ÄÚµå´Â ¸ó½ºÅÍ¸¦ ÇÃ·¹ÀÌ¾îº¸´Ù -3¸¸Å­ ´õ ¿ŞÂÊ¿¡ À§Ä¡½ÃÅ°´Â ¿ªÇÒÀÌ¾ß
-                //ÀÌ·¸°Ô ÇÏ¸é ÇÃ·¹ÀÌ¾î¿Í ¸ó½ºÅÍ »çÀÌ¿¡ °£°İÀÌ »ı°Ü¼­, ¸ó½ºÅÍ°¡ ÇÃ·¹ÀÌ¾î¸¦ ÂÑ´Â °ÍÃ³·³ º¸ÀÌ°Ô µÅ.
+                //ì´ ì½”ë“œëŠ” ëª¬ìŠ¤í„°ë¥¼ í”Œë ˆì´ì–´ë³´ë‹¤ -3ë§Œí¼ ë” ì™¼ìª½ì— ìœ„ì¹˜ì‹œí‚¤ëŠ” ì—­í• ì´ì•¼
+                //ì´ë ‡ê²Œ í•˜ë©´ í”Œë ˆì´ì–´ì™€ ëª¬ìŠ¤í„° ì‚¬ì´ì— ê°„ê²©ì´ ìƒê²¨ì„œ, ëª¬ìŠ¤í„°ê°€ í”Œë ˆì´ì–´ë¥¼ ì«“ëŠ” ê²ƒì²˜ëŸ¼ ë³´ì´ê²Œ ë¼.
                 Monster.transform.position = new Vector3(ChangeStateX + 3, Monster.transform.position.y, Monster.transform.position.z);
                 Monster2.transform.position = new Vector3(ChangeStateX + 6, Monster2.transform.position.y, Monster2.transform.position.z);
 
-                //ÇÃ·¹ÀÌ¾î°¡ ¸ó½ºÅÍ¸¦ ÂÑ¾Æ ¿ŞÂÊÀ¸·Î ÀÌµ¿
+                //í”Œë ˆì´ì–´ê°€ ëª¬ìŠ¤í„°ë¥¼ ì«“ì•„ ì™¼ìª½ìœ¼ë¡œ ì´ë™
                 Player.direction = -1;
                 Monster.direction = -1;
                 Monster2.direction = -1;
 
-                //¼Óµµ
+                //ì†ë„
                 Player.MoveSpeed = Cutscene2pSpeed;
                 Monster.MoveSpeed = Cutscene2mSpeed;
                 Monster2.MoveSpeed = Cutscene2m1Speed;
 
-                //¾Ö´Ï¸ŞÀÌ¼Ç ¼³Á¤
+                //ì• ë‹ˆë©”ì´ì…˜ ì„¤ì •
                 Player.animator.SetBool("Move", true);
-                Player.animator.SetBool("Attack", true);//°ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÀÛ
+                Player.animator.SetBool("Attack", true);//ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì‹œì‘
                 
-                //¸ó½ºÅÍ´Â µµ¸ÁÄ¡´Â ¸ğ¼ÇÀ» °è¼Ó À¯Áö
+                //ëª¬ìŠ¤í„°ëŠ” ë„ë§ì¹˜ëŠ” ëª¨ì…˜ì„ ê³„ì† ìœ ì§€
                 Monster.animator.SetBool("Move", true);
                 Monster.animator.SetBool("Attack", false);
                 Monster2.animator.SetBool("Move", true);
@@ -163,31 +161,31 @@ public class MainMenuCutsceneManager : MonoBehaviour
                 
                 Monster.gameObject.SetActive(true);
                 Monster2.gameObject.SetActive(true);
-                EliteMonster.gameObject.SetActive(true);//¿©±â¼­ Elite ¸ó½ºÅÍ¸¦ ½á¾ßÇÏ´Ï È°¼ºÈ­
+                EliteMonster.gameObject.SetActive(true);//ì—¬ê¸°ì„œ Elite ëª¬ìŠ¤í„°ë¥¼ ì¨ì•¼í•˜ë‹ˆ í™œì„±í™”
 
-                //ÀÌ ÄÚµå´Â ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¿À¸¥ÂÊ ³¡(changeStateX)À¸·Î ÀÌµ¿½ÃÅ°´Â ¿ªÇÒÀÌ¾ß.
-                //¸ó½ºÅÍ¸¦ ÂÑ´Â µÎ ¹øÂ° ÄÆ¾ÀÀÌ ½ÃÀÛµÉ ¶§ ÇÃ·¹ÀÌ¾î¸¦ È­¸é ¹Û¿¡¼­ µîÀå½ÃÅ°´Â µ¥ »ç¿ëÇØ.
+                //ì´ ì½”ë“œëŠ” í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ì˜¤ë¥¸ìª½ ë(changeStateX)ìœ¼ë¡œ ì´ë™ì‹œí‚¤ëŠ” ì—­í• ì´ì•¼.
+                //ëª¬ìŠ¤í„°ë¥¼ ì«“ëŠ” ë‘ ë²ˆì§¸ ì»·ì”¬ì´ ì‹œì‘ë  ë•Œ í”Œë ˆì´ì–´ë¥¼ í™”ë©´ ë°–ì—ì„œ ë“±ì¥ì‹œí‚¤ëŠ” ë° ì‚¬ìš©í•´.
                 Player.transform.position = new Vector3(ReturnPositionX, Player.transform.position.y, Player.transform.position.z);
 
-                //ÀÌ ÄÚµå´Â ¸ó½ºÅÍ¸¦ ÇÃ·¹ÀÌ¾îº¸´Ù 3¸¸Å­ ´õ ¿ŞÂÊ¿¡ À§Ä¡½ÃÄÑ.
-                //ÀÌ·¸°Ô ÇÏ¸é ÇÃ·¹ÀÌ¾î¿Í ¸ó½ºÅÍ »çÀÌ¿¡ °£°İÀÌ »ı°Ü¼­, ÇÃ·¹ÀÌ¾î°¡ ¸ó½ºÅÍ¸¦ ÂÑ´Â °ÍÃ³·³ º¸ÀÌ°Ô µÅ.
+                //ì´ ì½”ë“œëŠ” ëª¬ìŠ¤í„°ë¥¼ í”Œë ˆì´ì–´ë³´ë‹¤ 3ë§Œí¼ ë” ì™¼ìª½ì— ìœ„ì¹˜ì‹œì¼œ.
+                //ì´ë ‡ê²Œ í•˜ë©´ í”Œë ˆì´ì–´ì™€ ëª¬ìŠ¤í„° ì‚¬ì´ì— ê°„ê²©ì´ ìƒê²¨ì„œ, í”Œë ˆì´ì–´ê°€ ëª¬ìŠ¤í„°ë¥¼ ì«“ëŠ” ê²ƒì²˜ëŸ¼ ë³´ì´ê²Œ ë¼.
                 EliteMonster.transform.position = new Vector3(ReturnPositionX - 4, EliteMonster.transform.position.y, EliteMonster.transform.position.z);
                 Monster.transform.position = new Vector3(ReturnPositionX - 6, Monster.transform.position.y, Monster.transform.position.z);
                 Monster2.transform.position = new Vector3(ReturnPositionX - 8, Monster2.transform.position.y, Monster2.transform.position.z);
 
-                //¹æÇâ ¿À¸¥ÂÊÀ¸·Î
+                //ë°©í–¥ ì˜¤ë¥¸ìª½ìœ¼ë¡œ
                 Player.direction = 1;
                 EliteMonster.direction = 1;
                 Monster.direction = 1;
                 Monster2.direction = 1;
 
-                //¼Óµµ¿Í ¾Ö´Ï¸ŞÀÌ¼Ç ¼³Á¤
+                //ì†ë„ì™€ ì• ë‹ˆë©”ì´ì…˜ ì„¤ì •
                 EliteMonster.MoveSpeed = Cutscene3emSpeed;
                 Player.MoveSpeed = Cutscene3pSpeed;
                 Monster.MoveSpeed = Cutscene3mSpeed;
                 Monster2.MoveSpeed = Cutscene3m1Speed;
 
-                //°¢ ÀÌµ¿, °ø°İ ¿¡´Ï¸ŞÀÌ¼Ç
+                //ê° ì´ë™, ê³µê²© ì—ë‹ˆë©”ì´ì…˜
                 Player.animator.SetBool("Attack", false);
                 EliteMonster.animator.SetBool("Move", true);
                 EliteMonster.animator.SetBool("Attack", true);
@@ -197,6 +195,5 @@ public class MainMenuCutsceneManager : MonoBehaviour
                 Monster2.animator.SetBool("Attack", false);
                 break;
         }
-    }
-    
+    } 
 }
