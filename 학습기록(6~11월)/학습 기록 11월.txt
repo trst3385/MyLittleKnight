@@ -522,3 +522,32 @@ Sil_Player 스크립트의 LateUpdate()에서 사용한 Animator 시스템 API �
 - MainMenuCutsceneManager 스크립트는 플레이어, 몬스터의 각 case당 속도 변수(예: Cutscene1pSpeed)와 SetState() 함수 내의 `반복적인 코드가` 확장성과 유지보수성을 저해,
   그래서 내일 이 스크립트를 정리할거야.
 
+
+
+11/24
+MainMenuCutsceneManager 스크립트에 4번째 씬(case)를 추가. (플레이어가 활 공격을 하며 몬스터를 쫒아가)
+활 공격을 위해 화살 프리팹, 화살 스크립트 추가
+
+- CutsceneSpeedData 구조체 활용: 
+   1. struct를 정의하여 플레이어, 몬스터1, 몬스터2, 엘리트 몬스터의 속도를 하나의 묶음으로 관리하도록 했어,
+   이로써 인스펙터에서 각 컷신(Cutscene1~Cutscene4) 별 속도 데이터를 한눈에 확인하고 수정할 수 있게 되어 관리 효율이 높아졌지.
+
+- 4번째 상태에선 모든 몬스터가 오른쪽에서 왼쪽으로 도망가. 플레이어도 그 뒤를 쫒아가지만 이곳엔 검공격 대신 활 공격을 하게 했어.
+   1. ChasePlayer2 상태(3번째 case) 가 ChangeStateX끝에 도달하면(ChangeStateX값) → PlayerAttack2로 전환되도록 연결
+   2. PlayerAttack2 상태가 ReturnPositionX에 도달하면 → 다시 첫 상태인 ChasePlayer로 돌아가도록 연결하여 무한 루프 구조를 완벽하게 구현
+
+- 활 공격 연출 기능 (화살 발사) 추가.
+- 게임씬의 화살 프리팹과 화살 스크립트를 복사해서 가져왔어. 하지만 메인화면씬에선 다르게 써야 하니 화살 스크립트의 내부 로직을 크게 수정했어.
+   1. 게임 로직(데미지, EnemyHealth 참조)을 모두 제거하고, 컷신에 필요한 단순 이동 및 수명 관리, Enemy 태그 오브젝트에 닿으면 사라지는 기능만 남겨 컷신 전용 스크립트로 최적화했어
+   2. 화살의 이동 방식(transform.Translate)에서 발생하는 방향 오류를 해결하기 위해, 월드 좌표 기반 이동 transform.position += new Vector3(moveAmount, 0, 0); 방식으로 수정하여,
+   direction 변수값(화살 방향 (1: 오른쪽, -1: 왼쪽))에 따라 정확히 좌우로 날아가도록 수정
+**float moveAmount = direction * MoveSpeed * Time.deltaTime; 은 direction방향변수 (1, -1), MoveSpeed화살의 속도 변수, Time.deltaTime은 이전 프레임에서 현재 프레임까지 걸린 시간을 합친 변수야**
+**transform.position += new Vector3(moveAmount, 0, 0); 는 위치 업데이트. `화살의 새로운 위치는 = 현재 위치 + X축 방향의 이동 거리` (X축으로만 moveAmount만큼 움직이겠다는 벡터 값이야, Y와 Z는 0이므로 이동 없음)** 
+
+- 메인메뉴 플레이어 스크립트 (MainMenuPlayer.cs) 기능 추가.
+   1. MainMenuPlayer 스크립트에 ShootArrow() 함수를 추가하여 화살 프리팹을 동적 생성 (Instantiate)하도록 구현
+   2. 화살 생성 직후, 플레이어의 현재 방향 (this.direction)에 맞춰 화살의 이동 방향과 시각적 회전 (Y축 180도)을 동시에 설정하여 연출의 완성도를 높임
+   3. 플레이어의 활 공격 애니메이션 클립 중 시위를 놓는 프레임에 ShootArrow() 함수를 연결해서 모션과 발사 타이밍을 정확하게 일치시켰어
+
+
+
