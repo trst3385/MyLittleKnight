@@ -43,8 +43,8 @@ public class MainMenuCutsceneManager : MonoBehaviour
     public CutsceneSpeedData Cutscene4;//PlayerAttack3 상태 속도
 
     [Header("컷씬 전환 값")]
-    public float ChangeStateX = 20f;//컷씬 상태를 바꿀 X 좌표 (화면 오른쪽 끝) 인스펙터에서 설정해!
-    public float ReturnPositionX = -20f;//캐릭터가 돌아올 X 좌표 (화면 왼쪽 끝)인스펙터에서 설정해!
+    public float ChangeStateX = 21f;//컷씬 상태를 바꿀 X 좌표 (화면 오른쪽 끝) 인스펙터에서 설정해!
+    public float ReturnPositionX = -21f;//캐릭터가 돌아올 X 좌표 (화면 왼쪽 끝)인스펙터에서 설정해!
     //ChangeStateX는 오른쪽 방향으로 갈때의 도달할 x값
     //ReturnPositionX는 반대로 왼쪽 방향으로 갈때의 도달할 x값
 
