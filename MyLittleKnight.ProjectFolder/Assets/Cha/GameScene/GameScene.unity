@@ -16735,7 +16735,7 @@ MonoBehaviour:
   StatLevelUpTime: 20
   AtkIncreaseRatio: 0.2
   HPIncreaseRatio: 0.2
-  SpeedIncreaseRatio: 0.1
+  SpeedIncreaseRatio: 0.15
   notificationText: {fileID: 1888008558}
   enemyLevelText: {fileID: 1832495093}
   textalimManager: {fileID: 657598743}
