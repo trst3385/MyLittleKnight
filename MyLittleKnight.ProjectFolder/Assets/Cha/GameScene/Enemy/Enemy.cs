@@ -224,28 +224,30 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        //플레이어와의 거리가 StopDistance 이내일 경우 (Attack 준비)
+        //공격 로직(공격 가능 거리/ 쿨타임 체크)
         if (isInStopDistance)
         {
-            StopMovement();//몬스터 멈춤
+            rb.linearVelocity = Vector2.zero;//몬스터를 멈추는 대신(StopMovement함수 사용 대신),Rigidbody의 속도를 0으로 강제 설정하여 떨림 방지
+            animator.SetBool("Move", false); //함수 호출 대신 로직을 바로 실행하는게 더 효율적
 
             //쿨타임 체크 및 공격 애니메이션 미활성화 상태 확인
             if (canAttack && !animator.GetBool("Attack"))
             {
                 ApplyTouchDamage();//닿는 데미지 로직, 닿는 데미지가 일반 공격 쿨타임과 공유
                 lastAttackTime = Time.time;//쿨타임 시작 시간 기록
-
             }
 
-            if (!animator.GetBool("Attack"))//닿았을때 데미지와 별개로아직 공격 애니메이션이 시작되지 않았다면 시작          
-                animator.SetBool("Attack", true);
+            if (!animator.GetBool("Attack"))
+                animator.SetBool("Attack", true);//닿았을때 데미지와 별개로아직 공격 애니메이션이 시작되지 않았다면 시작
         }
-        else//플레이어와의 거리가 StopDistance보다 멀 경우
-        {
-            if (animator.GetBool("Attack")) animator.SetBool("Attack", false);// 공격 애니메이션이 켜져 있었다면 끄고 이동
+        else//공격 범위 밖에 있을 때
+        {   //공격 범위 밖이라면 공격 애니메이션을 끄고 무조건 플레이어를 추적
+            if (animator.GetBool("Attack")) animator.SetBool("Attack", false);
 
             MoveTowardsPlayer(playerCenterPosition);
         }
+
+
     }
 
 
@@ -333,13 +335,12 @@ public class Enemy : MonoBehaviour
         isDead = true;
         Debug.Log(enemyType + "몬스터 컷!");
 
-        if (deathAudioSource != null && deathSound != null)//몬스터 사망시 사망 사운드 재생
-            deathAudioSource.PlayOneShot(deathSound);//PlayOneShot은 현재 재생 중인 다른 소리를 끊지 않고, 새로운 소리를 한 번만 재생
-                                                     //예를 들어, 몬스터가 여러 마리 동시에 죽을 때 각자 죽는 소리가 모두 들리게 하려면 PlayOneShot을 쓰는 게 좋아.
-                                                     //만약 그냥 audioSource.Play()를 썼다면, 다른 소리가 재생될 때마다 이전 소리가 끊기게 돼
+        if (deathAudioSource != null && deathSound != null) deathAudioSource.PlayOneShot(deathSound);//몬스터 사망시 사망 사운드 재생
+        //PlayOneShot은 현재 재생 중인 다른 소리를 끊지 않고, 새로운 소리를 한 번만 재생
+        //몬스터가 여러 마리 동시에 죽을 때 각자 죽는 소리가 모두 들리게 하려면 PlayOneShot.
+        //만약 그냥 audioSource.Play()를 썼다면, 다른 소리가 재생될 때마다 이전 소리가 끊기게 돼
 
-        if (playerScript != null)//!= null은 Player스크립트가 null과 같지 않으면?. 즉 제대로 스크립트와 연결된 상태.
-            playerScript.AddScore(currentScoreValue);
+        if (playerScript != null) playerScript.AddScore(currentScoreValue);//몬스터가 죽으면 플레이어가 몬스터의 점수 획득
 
 
         if (EnemySpawner != null)

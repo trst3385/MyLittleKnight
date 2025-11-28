@@ -40,7 +40,7 @@ public class EnemyDifficulty : MonoBehaviour
     [SerializeField] private float StatLevelUpTime = 20f;//몬스터 스탯이 강해지는 시간 간격 (초)
     [SerializeField] private float AtkIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 공격력 증가 비율 (20% = 0.2) -> 20%씩
     [SerializeField] private float HPIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 체력 증가 비율 (20% = 0.2) -> 20%씩
-    [SerializeField] private float SpeedIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
+    [SerializeField] private float SpeedIncreaseRatio = 0.15f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
 
     
     [Header("UI, 오브젝트 연결")]

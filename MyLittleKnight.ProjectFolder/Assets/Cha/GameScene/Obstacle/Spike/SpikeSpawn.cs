@@ -13,9 +13,19 @@ public class SpikeSpawn : MonoBehaviour
     public Tilemap TargetTilemap;
     public LayerMask SpawnableLayer;
 
+    [Header("사운드 설정")]//가시 생성 사운드
+    [SerializeField] private AudioSource audioSource;//오디오 소스 컴포넌트
+    [SerializeField] private AudioClip spikeSpawnSound;//재생할 사운드 클립
+
     private float spawnTimer;//관리자 스크립트의 CurrentSpikeSpawnInterval 변수를 받음
 
-    void Start()
+    void Awake()//내부 컴포넌트는 Awake에
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) Debug.LogWarning("SpikeSpawn: AudioSource 컴포넌트가 없어! 사운드를 재생할 수 없어.");
+    }
+
+    void Start()//외부 스크립트는 Start에
     {
         if (TargetTilemap == null)//EnemySpawn 스크립트와 동일: 게임 시작 시 Tilemap 참조 필수 확인
         {
@@ -25,12 +35,10 @@ public class SpikeSpawn : MonoBehaviour
         }
 
         //초기 스폰 주기를 ObstacleDifficultyManager 스크립트에서 가져옴(currentSpikeSpawnInterval 변수)
-        float initialInterval = 5f; // 기본값
-        if (ObstacleDifficultyManager.Instance != null)
-        {
-            //ObstacleDifficultyManager 스크립트의 초기값으로 덮어쓰기
+        float initialInterval = 5f;//기본값
+        if (ObstacleDifficultyManager.Instance != null)//ObstacleDifficultyManager 스크립트의 초기값으로 덮어쓰기
             initialInterval = ObstacleDifficultyManager.Instance.GetCurrentSpikeSpawnInterval();
-        }
+
         spawnTimer = initialInterval;
     }
 
@@ -58,7 +66,10 @@ public class SpikeSpawn : MonoBehaviour
         Vector3 spawnPosition = GetValidSpawnPosition();
 
         if (spawnPosition != Vector3.zero)
-        {
+        {   
+            //PlayOneShot을 사용하여 여러 가시가 빠르게 생성되어도 소리가 겹치지 않고 재생
+            if (audioSource != null && spikeSpawnSound != null) audioSource.PlayOneShot(spikeSpawnSound);
+
             //가시 프리팹 생성
             GameObject newSpike = Instantiate(SpikePrefab, spawnPosition, Quaternion.identity);
 
