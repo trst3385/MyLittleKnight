@@ -630,3 +630,4 @@ MainMenuCutsceneManager 스크립트에 4번째 씬(case)를 추가. (플레이�
 - SpawnSpike() 함수 내에서 if (audioSource != null && spikeSpawnSound != null) 조건문을 만들어 audioSource.PlayOneShot(spikeSpawnSound)를 호출해서, 여러 가시가 동시에 생성되어도 소리가 끊기지 않도록 처리했어.
 
 **내일은 옵션창에서 각 사운드의 소리를 조절하는 기능을 추가해보자. 안되도 비슷하게만 해보는거야**
+**또 내일은 포트폴리오에 가시 생성 사운드를 받은 출처도 `사용 에셋(무료에셋)` 에 추가하자**
