@@ -599,3 +599,34 @@ MainMenuCutsceneManager 스크립트에 4번째 씬(case)를 추가. (플레이�
 
 **내일은 몬스터가 플레이어의 범위(콜라이더)에 도달하면 멈추고 공격 모션을 하는게 아닌 범위에 닿으면 이동을 멈추지 않고 공격. 즉, 중간에 멈추지 않고 움직이면서도 공격 모션을 하게 해보자**
 **그리고 오늘 했던 몬스터 떨림 현상을 수정했으니 내일은 다시 빌드해서 git과 포트폴리오에 올리자**
+
+
+
+11/28
+몬스터가 플레이어에게 닿으면 멈추지 않고 바로 공격 모션을 하도록 수정
+가시 생성시 사운드 추가
+
+- Enemy 스크립트의 ProcessMovementAndAttack()함수에서 공격 범위(isInStopDistance)에 진입했을 때 StopMovement() 함수 호출를 제거하고 추적(MoveTowardsPlayer) 로직을 유지하면서, 
+  몬스터가 플레이어의 중앙에 닿았을때 미세하게 넘어섰다가 돌아오는 과정에 의한 떨림현상 발생.
+- 그래서 ProcessMovementAndAttack() 함수 내 isInStopDistance if조건문에서 StopMovement() 대신 다음 두 줄을 **인라인(Inline)** 으로 직접 삽입하여 떨림을 제거하고 공격 준비 상태로 전환.
+   1. rb.linearVelocity = Vector2.zero; , animator.SetBool("Move", false);	
+   2. 몬스터가 정확히 멈춘 상태에서 공격 애니메이션을 실행하여 물리적인 안정성과 AI의 시각적 일관성을 모두 확보
+   3. StopMovement()함수 내에도 똑같은 로직이 있지만 "나는 지금 이동 자체를 멈추는 게 목적이 아니라, 떨림을 방지하기 위해 물리 속도(rb.linearVelocity)만 0으로 강제하는 것이 핵심" , 
+   "나는 몬스터를 완전히 정지시키려는 게 아니라, 떨림만 막기 위해 속도만 0으로 지정하고 공격 모션으로 전환하겠다" 라는 내 디자인 의도를 표현한거야!
+
+
+- 가시 생성시 사운드를 추가하기 위해 ObstacleDifficultyManager오브젝트(ObstacleDifficultyManager 스크립트와 같은 이름)에 AudioSource 컴포넌트를 추가하고, **Play On Awake**를 `반드시` 해제하여 이벤트 기반으로만 소리가 나도록 설정 
+- Play On Awake이란?
+   1. 게임 오브젝트가 활성화되어 씬에 로드되는 순간에 해당 AudioSource가 연결된 사운드 클립을 자동으로 재생할지 말지를 결정하는 토글 버튼이야,
+   2. 체크 되있으면 게임이 시작되거나 (씬 로드 시), 혹은 해당 오브젝트가 SetActive(true)로 활성화되는 즉시 소리가 재생돼  (사용 예: 배경 음악(BGM), 환경음(Ambient Sound)처럼 게임 내내 계속 재생되어야 하는 사운드)
+   3. 체크 해제 되있으면 스크립트에서 **audioSource.Play()**나 audioSource.PlayOneShot() 함수를 명령해서 호출해야만 소리가 재생돼 (사용 예: 발사, 폭발, 내 경우처럼 가시가 생성되는 이벤트가 발생했을 때만 소리가 나야 하는 효과음(SFX))
+- Spatial Blend란?
+   1. 소리가 *D(평면적)로 들릴지, 아니면 3D(입체적/공간적)로 들릴지를 결정하는 기능이야. 값은 0부터 1까지의 슬라이더로 조절해 (0은 2D, 1은 3D)
+   2. 0 = 거리가 멀어지거나 가까워져도 볼륨의 변화 없이 항상 똑같은 크기로 들려. 좌우 스피커(스테레오)로만 구분 (BGM, UI 클릭음, 네 가시 생성 사운드 (맵 어디서든 똑같이 들려야 할 때))
+   3. 1 = 청취자(플레이어 카메라)와의 **거리에 따라 볼륨과 패닝(좌우 위치)**이 현실적으로 변해. 멀면 작게, 가까우면 크게 들려 (몬스터의 발소리, 몬스터의 공격 소리 (몬스터가 가까이 와야만 소리가 커질 때))
+
+- SpikeSpawn 스크립트에 헤더로 AudioSource 컴포넌트와 AudioClip 변수를 추가하고, 가시 생성(SpawnSpike()) 직전에 사운드를 재생하는 로직 추가
+- 내부 컴포넌트인 AudioSource 참조는 **Awake()**에서 GetComponent<AudioSource>()로 초기화.
+- SpawnSpike() 함수 내에서 if (audioSource != null && spikeSpawnSound != null) 조건문을 만들어 audioSource.PlayOneShot(spikeSpawnSound)를 호출해서, 여러 가시가 동시에 생성되어도 소리가 끊기지 않도록 처리했어.
+
+**내일은 옵션창에서 각 사운드의 소리를 조절하는 기능을 추가해보자. 안되도 비슷하게만 해보는거야**
