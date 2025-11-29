@@ -1,12 +1,12 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;//TextMeshPro를 사용하려면 추가
+using UnityEngine.Audio;
+using Unity.Android.Gradle;//AudioMixer를 사용하기 위한 네임스페이스
 
 public class OptionsManager : MonoBehaviour
-{    
+{
     public GameObject optionsPanel;//옵션창 패널 연결할 변수
     public TextMeshProUGUI warningText;//경고 메시지 텍스트 UI 연결할 변수
 
@@ -30,24 +30,21 @@ public class OptionsManager : MonoBehaviour
             return;//여기서 함수를 끝내서 옵션 창이 켜지지 않게 막아
         }
 
-        //경고 메시지 숨기기 (토글 전, 혹시 남아있을 수 있는 경고를 정리)
-        if (warningText != null) warningText.gameObject.SetActive(false);
+        if (warningText != null) warningText.gameObject.SetActive(false);//경고 메시지 숨기기 (토글 전, 혹시 남아있을 수 있는 경고를 정리)
 
         //패널의 다음 상태를 결정하고 활성화/비활성화
         bool isPanelActive = !optionsPanel.activeSelf;//다음 상태 (true: 켬, false: 끔)
         optionsPanel.SetActive(isPanelActive);
 
-        //게임 시간 제어. Time.timeScale로 게임 시간 정지/재개
-        if (isPanelActive) Time.timeScale = 0f;
+        if (isPanelActive) Time.timeScale = 0f;//게임 시간 제어. Time.timeScale로 게임 시간 정지/재개
         else if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//옵션창 닫고, 카운트다운 끝났으면 시간 재개
     }
     
     IEnumerator HideWarningText()//warningText UI 경고 메시지를 숨기는 코루틴
     {
-        //warningText UI 메세지가 띄워지면 n초 동안 기다려
-        yield return new WaitForSecondsRealtime(1f);
-        //warningText UI 메시지를 비활성화
-        if (warningText != null) warningText.gameObject.SetActive(false);
+        yield return new WaitForSecondsRealtime(1f);//warningText UI 메세지가 띄워지면 n초 동안 기다려
+
+        if (warningText != null) warningText.gameObject.SetActive(false);//warningText UI 메시지를 비활성화
     }
 
     public void RestartGame()//게임 재시작 함수 (재시작 버튼에 연결)
