@@ -2,15 +2,29 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;//TextMeshPro를 사용하려면 추가
-using UnityEngine.Audio;
-using Unity.Android.Gradle;//AudioMixer를 사용하기 위한 네임스페이스
+using UnityEngine.Audio;//AudioMixer를 사용하기 위한 네임스페이스
+using UnityEngine.UI;
 
 public class OptionsManager : MonoBehaviour
 {
     public GameObject optionsPanel;//옵션창 패널 연결할 변수
     public TextMeshProUGUI warningText;//경고 메시지 텍스트 UI 연결할 변수
 
+    [Header("사운드 UI 및 믹서 설정")]
+    public AudioMixer mainMixer;//MainMixer 에셋 연결 (인스펙터에서)
+    public GameObject optionsContainer;//메인 버튼들(Restart, SoundButton 등)을 담은 'Options' 오브젝트 연결
+    public GameObject soundControlPanel;//슬라이더와 BackButton을 담은 'SoundControlPanel' 오브젝트 연결
+    public Slider bgmSlider;//BGM 슬라이더 오브젝트 참조
+    public Slider sfxSlider;//SFX 슬라이더 오브젝트 참조
 
+
+    void Start()
+    {
+        // 게임 시작 시 슬라이더의 현재 값(Max 1.0)을 가져와 믹서에 적용하여 최대 볼륨으로 초기화
+        if (bgmSlider != null) SetBGMVolume(bgmSlider.value);
+
+        if (sfxSlider != null) SetSFXVolume(sfxSlider.value);
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.O)) ToggleOptionsPanel();//옵션 패널이 꺼져있을 때만 키를 누르면 패널을 켜
@@ -34,17 +48,63 @@ public class OptionsManager : MonoBehaviour
 
         //패널의 다음 상태를 결정하고 활성화/비활성화
         bool isPanelActive = !optionsPanel.activeSelf;//다음 상태 (true: 켬, false: 끔)
-        optionsPanel.SetActive(isPanelActive);
+        optionsPanel.SetActive(isPanelActive);//최상위 OptionsPanel 켜기/ 끄기
 
-        if (isPanelActive) Time.timeScale = 0f;//게임 시간 제어. Time.timeScale로 게임 시간 정지/재개
+        if (isPanelActive)//게임 시간 제어.옵션창이 켜지면 게임 멈춤
+        {
+            Time.timeScale = 0f;//게임 시간 정지, Time.timeScale로 게임 시간 정지/재개
+
+            //옵션창을 켤 때 (isPanelActive == true)
+            //1. 사운드 조절 창은 무조건 끄고 (숨기고)
+            soundControlPanel.SetActive(false);
+            //2. 메인 버튼 컨테이너만 무조건 킨다. (O키를 누르면 항상 이 화면으로 시작)
+            optionsContainer.SetActive(true);
+        }
         else if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//옵션창 닫고, 카운트다운 끝났으면 시간 재개
+
+
+        //옵션 창 닫을 때 사운드 창도 함께 닫는 로직은 그대로 유지
+        if (!isPanelActive && soundControlPanel.activeSelf) CloseSoundControls();
     }
-    
     IEnumerator HideWarningText()//warningText UI 경고 메시지를 숨기는 코루틴
     {
         yield return new WaitForSecondsRealtime(1f);//warningText UI 메세지가 띄워지면 n초 동안 기다려
 
         if (warningText != null) warningText.gameObject.SetActive(false);//warningText UI 메시지를 비활성화
+    }
+
+    public void SetBGMVolume(float volume)//볼륨 조절, BGM 슬라이더 OnValueChanged 이벤트에 연결(다이나믹 플롯의 함수로 연결)
+    {   //-80dB가 **'무음(Silence)'**을 나타내는 값
+        //슬라이더 값이 0에 가까울 때(Min Value) 완전히 무음(-80dB)으로 설정
+        if (volume <= 0.0001f) mainMixer.SetFloat("BGMVolume", -80f);
+        else
+        {
+            float db = 20f * Mathf.Log10(volume);//정상 범위(0.0001 ~ 1.0)에서는 로그 공식 적용
+            mainMixer.SetFloat("BGMVolume", db);
+        }
+    }
+    public void SetSFXVolume(float volume)//SFX 슬라이더 OnValueChanged 이벤트에 연결(다이나믹 플롯의 함수로 연결)
+    {
+        if (volume <= 0.0001f) mainMixer.SetFloat("SFXVolume", -80f);
+        else
+        {
+            float db = 20f * Mathf.Log10(volume);
+            mainMixer.SetFloat("SFXVolume", db);
+        }
+    }
+    public void OpenSoundControls() // SoundButton 클릭 시 호출
+    {
+        //1. 메인 버튼 컨테이너를 숨기고
+        optionsContainer.SetActive(false);
+        //2. 사운드 조절 패널을 보여줘
+        soundControlPanel.SetActive(true);
+    }
+    public void CloseSoundControls()//SoundControlPanel의 BackButton 클릭 시 호출
+    {
+        //1. 사운드 조절 패널을 숨기고
+        soundControlPanel.SetActive(false);
+        //2. 메인 버튼 컨테이너를 다시 보여줘
+        optionsContainer.SetActive(true);
     }
 
     public void RestartGame()//게임 재시작 함수 (재시작 버튼에 연결)
