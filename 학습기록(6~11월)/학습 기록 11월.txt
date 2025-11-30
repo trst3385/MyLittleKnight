@@ -648,3 +648,25 @@ MainMenuCutsceneManager 스크립트에 4번째 씬(case)를 추가. (플레이�
 
 **내일은 이어서 이 작업을 마무리 해보자. SoundButton을 클릭하면 다른 UI창이 떠서 이 곳에 슬라이더 형식으로 각 사운드들을 조절하게 하는거야**
 
+
+
+11/30
+BGM사운드 볼륨 제어 기능 최종 완성 및 버그 해결
+
+- 옵션 창에 SoundButton을 클릭하면 새로운 UI창인 SoundControlPanel을 생성. (옵션창과 같은 크기)
+   1. 이 SoundControlPanel UI는 비활성화. (O키를 눌러야만 뜨게 해야 하니까 처음에는 숨겨져 있어야해)
+   2. SoundControlPanel UI에 UI - Slider 두개를 만들어  BGM(배경음), SFX(효과음) 슬라이더를 추가
+   3. OptionsManager 스크립트에 오디오 MainMixer, 사운드 창인 soundControlPanel, 각 슬라이더를 연결할 변수를 만들고 OptionsManager 오브젝트에 있는 OptionsManager 스크립트 인스펙터에 각 UI를 연결
+
+- 어제 계획한대로 옵션창에 사운드 버튼을 누르면 배경음, 효과음을 슬라이더 식으로 조절하는 UI창을 만들었어 (이 사운드 옵션을 클릭하면 기존의 옵션창은 사라지고 이 사운드 조절 창만 남게 돼)
+- [최대 버그 해결] OptionsManager 스크립트에 각 사운드 조절 함수 (SetBGMVolume, SetSFXVolume (float volume))을 추가. 인스펙터에서 이 함수를 연결해 **이벤트를 Static Parameter에서 Dynamic float에 있는 함수로 연결**
+   1. Slider 컴포넌트의 On Value Changed 이벤트를 Static Parameter에서 Dynamic float으로 재연결하여 슬라이더의 현재 위치 값이 실시간으로 스크립트 함수에 전달되도록 수정 (이것이 소리가 안 돌아오던 근본적인 원인 해결)
+
+- 볼륨 스케일 표준화. BGM/SFX 슬라이더의 Min Value를 0.0001로, Max Value를 1.0으로 설정하여 유니티 표준 dB 로그 변환 공식에 맞게 조정. (이전 1 ~ 10 범위 사용으로 인한 민감도 문제 해결)
+- 무음 기능 구현. 처음에는 -20dB로 하니 소리를 슬라이더를 가장 왼쪽으로 위치시켜도 소리가 작게 들렸어,
+  확인 결과, SetBGMVolume, SetSFXVolume 함수 내의 최소 볼륨 값을 유니티 믹서의 무음 기준인 **-80dB**로 변경. (오디오 믹서에서 0dB는 최대 볼륨, -80dB가 무음임을 학습)
+- 초기화 로직도 추가. OptionsManager.Start() 함수에 bgmSlider.value를 통해 볼륨을 **0dB (최대)**로 초기화하는 코드를 추가해서, 게임 시작 시 소리가 작게 들리는 문제 방지.
+
+**Unity UI 이벤트 연결의 이해: Dynamic float과 Static Parameter의 차이를 명확히 이해했어. 값이 변하는 UI 요소는 반드시 Dynamic 방식으로 연결해야 실시간 데이터가 전달됨을 확인**
+**Audio Mixer $\text{dB}$ 단위 이해: 0dB는 최대 볼륨, **-80dB** 는 무음임을 확인하고, 코드로 이 값을 정확히 제어하는 방법을 습득**
+**내일은 효과은 SFX도 몬스터,플레이어의 공격, 사망, 아이템생성,획득,가시 등등의 효과음을 조절해보자. 그리고 내일은 다시 빌드하고 git이랑 포트폴리오에 추가도 하고. 11월도 수고 정말 많았어!**
