@@ -17,6 +17,9 @@ public class Item: MonoBehaviour
     [SerializeField] private AudioClip shieldSound;
     [SerializeField] private AudioClip weaponChangeCtbSound;
     [SerializeField] private AudioClip weaponChangeCtsSound;
+
+    private AudioSource audioSource;//프리팹에 붙어있는 AudioSource 컴포넌트를 저장할 변수
+
     public enum ItemType//아이템 종류를 쉽게 구분하기 위해 열거형으로
     {//enum 안에 정의된 각 항목들은 정수(integer) 값을 가져. 가장 위에 있는 항목은 0, 그 다음은 1,
      //이런 식으로 자동으로 숫자가 매겨지지. 물론 네가 직접 숫자를 지정해줄 수도 있어.
@@ -46,21 +49,21 @@ public class Item: MonoBehaviour
 
     void Start()
     {
-        //ItemSpawner를 씬에서 찾아서 할당
         itemSpawner = FindAnyObjectByType<ItemSpawner>();
         if (itemSpawner == null) Debug.LogWarning("ItemSpawner를 씬에서 찾을 수 없어! 아이템 카운트가 업데이트되지 않을 거야!");
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) Debug.LogWarning("아이템 프리팹에 AudioSource 컴포넌트가 없어! SFX 조절이 안 돼!");
 
         //일정 시간 후에 아이템이 사라지도록
         Destroy(gameObject, DespawnTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)//어떤 콜라이더"(other)와 "접촉이 발생했을 때
-    {   //이 함수는 이 아이템의 Collider2D (Is Trigger가 체크된)가 다른 Collider2D와 닿았을 때 호출.
-
+    {   
         if (isUsed) return;
 
-        //닿은 오브젝트가 "Player" 태그를 가지고 있는지 확인
-        if (!other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player")) return;//닿은 오브젝트가 "Player" 태그를 가지고 있는지 확인
 
         isUsed = true;
 
@@ -91,25 +94,10 @@ public class Item: MonoBehaviour
             case ItemType.ChangeToBow: soundToPlay = weaponChangeCtbSound; break;
             case ItemType.ChangeToSword: soundToPlay = weaponChangeCtsSound; break;
         }
-        if (soundToPlay != null)//아이템 오브젝트가 사라지더라도 사운드는 들리게
+        if (soundToPlay != null && SoundManager.Instance != null)
         {
-            GameObject soundObject = new GameObject("OneShotAudio");//코드가 실행될 때마다 생성되는 오브젝트야,
-            //코드 안에서 만들어진 오브젝트지
-            //이 코드가 실행되면 씬에 "OneShotAudio"라는 이름의 빈 오브젝트가 하나 만들어져
-            //이 오브젝트는 소리를 재생하는 역할만 하고, 소리 재생이 끝나면 자동으로 사라져
-
-            soundObject.transform.position = transform.position;//soundObject의 위치를 아이템이 있던 위치(transform.position)와 같게 설정해.
-                                                                //이렇게 하면 소리가 아이템이 있던 곳에서 나는 것처럼 들려.
-            AudioSource tempAudioSource = soundObject.AddComponent<AudioSource>();//soundObject에 AudioSource 컴포넌트를 추가
-            tempAudioSource.clip = soundToPlay;//새로 만든 AudioSource 컴포넌트에 재생할 사운드 파일(soundToPlay)을 할당해.
-            tempAudioSource.volume = 1f;//소리의 볼륨을 최대로 설정. 이렇게 하면 볼륨이 일정하게 유지돼.
-            tempAudioSource.spatialBlend = 0;//spatialBlend의 0이 2D 사운드, 1이 3D 사운드
-            //2D 사운드는 카메라와의 거리에 상관없이 항상 같은 크기로 들리기 때문에, 아이템을 먹을 때마다 소리 크기가 달라지는 문제를 해결
-            tempAudioSource.Play();
-
-            //소리 재생이 끝난 뒤에 자동으로 파괴되도록
-            //소리가 재생되는 시간만큼 기다렸다가, 소리 재생이 끝나면 soundObject를 자동으로 파괴
-            Destroy(soundObject, soundToPlay.length);
+            //믹서에 연결된 SoundManager에게 소리 재생을 맡김
+            SoundManager.Instance.PlaySFX(soundToPlay);
         }
         //아이템은 한번만 먹고 사라져야해, 이걸 지우면 아이템을 먹어도 사라지지 않아
         Destroy(gameObject);
