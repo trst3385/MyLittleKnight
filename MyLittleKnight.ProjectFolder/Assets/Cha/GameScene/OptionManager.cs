@@ -27,7 +27,7 @@ public class OptionsManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.O)) ToggleOptionsPanel();//옵션 패널이 꺼져있을 때만 키를 누르면 패널을 켜
+        if (Input.GetKeyDown(KeyCode.Escape)) ToggleOptionsPanel();//옵션 패널이 꺼져있을 때만 키를 누르면 패널을 켜
     }
 
     public void ToggleOptionsPanel()//옵션창과 활성화될때 게임의 일시정지 기능을 켜고 끄는 역할
