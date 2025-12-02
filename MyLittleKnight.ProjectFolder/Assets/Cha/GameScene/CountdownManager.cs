@@ -52,7 +52,7 @@ public class CountdownManager : MonoBehaviour
 
             //카운트다운 사운드 재생
             //배열의 인덱스를 사용해 사운드 파일 재생
-            if (countdownAudioSource != null && countdownSounds.Length >= i)
+            if (countdownAudioSource != null && countdownSounds.Length >= i) 
                 countdownAudioSource.PlayOneShot(countdownSounds[3 - i]);
 
             yield return new WaitForSecondsRealtime(1f);//1초 대기
@@ -72,10 +72,8 @@ public class CountdownManager : MonoBehaviour
         //카운트다운 텍스트 비활성화
         if (CountdownText != null) CountdownText.gameObject.SetActive(false);
 
-        //카운트다운이 끝났다는 것을 알려줘
-        isCountdownFinished = true;
+        isCountdownFinished = true;//카운트다운이 끝났다는 것을 알려줘
 
-        //카운트다운이 끝나면 게임 시작해, 0f에서 1f로 바꿨잖아
-        Time.timeScale = 1f;
+        Time.timeScale = 1f;//카운트다운이 끝나면 게임 시작해, 0f에서 1f로 바꿨잖아
     }
 }
