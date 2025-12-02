@@ -21,6 +21,8 @@ public class SoundManager : MonoBehaviour
     ///<summary>
     ///SFX 믹서 그룹을 통해 소리를 재생하는 공용 함수
     ///</summary>
+    //<summary>, </summary> 기능은 다른 스크립트에서 이 PlaySFX함수가 어떤 역할을 하는지 알려주는거야,
+    //여기서나 외부에서나 이 함수 이름을 선택하면 "SFX 믹서 그룹...." 적힌게 보여
     public void PlaySFX(AudioClip clip)
     {
         if (sfxAudioSource != null && clip != null) sfxAudioSource.PlayOneShot(clip);
