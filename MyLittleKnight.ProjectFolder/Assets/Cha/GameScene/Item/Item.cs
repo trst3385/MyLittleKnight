@@ -96,7 +96,7 @@ public class Item: MonoBehaviour
         }
         if (soundToPlay != null && SoundManager.Instance != null)
         {
-            //믹서에 연결된 SoundManager에게 소리 재생을 맡김
+            //믹서에 연결된 SoundManager 스크립트에게 소리 재생을 맡김
             SoundManager.Instance.PlaySFX(soundToPlay);
         }
         //아이템은 한번만 먹고 사라져야해, 이걸 지우면 아이템을 먹어도 사라지지 않아
