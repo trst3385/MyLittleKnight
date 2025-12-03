@@ -18,11 +18,19 @@ public class OptionsManager : MonoBehaviour
     public Slider sfxSlider;//SFX 슬라이더 오브젝트 참조
 
 
-    void Start()
+    void Start()//디스크에 저장된 값을 불러와 믹서와 슬라이더에 적용하도록 수정
     {
-        // 게임 시작 시 슬라이더의 현재 값(Max 1.0)을 가져와 믹서에 적용하여 최대 볼륨으로 초기화
-        if (bgmSlider != null) SetBGMVolume(bgmSlider.value);
+        //1. 저장된 볼륨 값 로드 (저장된 값이 없으면 기본값 1.0f 사용)
+        float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
 
+        //2. 슬라이더의 위치를 로드된 값으로 설정
+        if (bgmSlider != null) bgmSlider.value = bgmVolume;
+        if (sfxSlider != null) sfxSlider.value = sfxVolume;
+
+        //3.SetVolume 함수를 호출하여 Audio Mixer에 최종 볼륨 적용
+        //(SetVolume 함수 내부에 저장 로직을 넣을 예정이므로, 여기서 호출하면 로드와 동시에 저장도 됨)
+        if (bgmSlider != null) SetBGMVolume(bgmSlider.value);
         if (sfxSlider != null) SetSFXVolume(sfxSlider.value);
     }
     void Update()
@@ -82,6 +90,8 @@ public class OptionsManager : MonoBehaviour
             float db = 20f * Mathf.Log10(volume);//정상 범위(0.0001 ~ 1.0)에서는 로그 공식 적용
             mainMixer.SetFloat("BGMVolume", db);
         }
+        PlayerPrefs.SetFloat("BGMVolume", volume);
+        PlayerPrefs.Save();//디스크에 저장
     }
     public void SetSFXVolume(float volume)//SFX 슬라이더 OnValueChanged 이벤트에 연결(다이나믹 플롯의 함수로 연결)
     {
@@ -91,8 +101,10 @@ public class OptionsManager : MonoBehaviour
             float db = 20f * Mathf.Log10(volume);
             mainMixer.SetFloat("SFXVolume", db);
         }
+        PlayerPrefs.SetFloat("SFXVolume", volume);
+        PlayerPrefs.Save();//디스크에 저장
     }
-    public void OpenSoundControls() // SoundButton 클릭 시 호출
+    public void OpenSoundControls()//SoundButton 클릭 시 호출
     {
         //1. 메인 버튼 컨테이너를 숨기고
         optionsContainer.SetActive(false);
