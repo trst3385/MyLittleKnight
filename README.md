@@ -1,7 +1,10 @@
 <div align="center">
+ 
  # My Little Knight
 
   2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
+
+</div>
 
 <p align="center">
   **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
