@@ -1,4 +1,5 @@
-   # My Little Knight
+<div align="center">
+ # My Little Knight
 
   2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
 
