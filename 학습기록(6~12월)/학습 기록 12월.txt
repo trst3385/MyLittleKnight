@@ -111,3 +111,27 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 **`핵심 로직 구현 & 기술적 문제 해결` 에서 옵션창의 기능들을 설명하면 "당연한 기초 기능을 길게 설명하네?" 라는 인상을 줄 수 있어서 추가를 안하기로 했어**
 **내일은 문제해결의 '옵션창의 각종 기능 구현(사운드 조절, 재시작, 메인화면으로 이동, 게임 종료. OptionsManager.cs)' 토글에서 각 기능 해결 과정 대신 핵심 로직만을 간단히 보이게 해보자**
+
+
+
+12/6
+포트폴리오에 문제해결의 '옵션창의 각종 기능 구현`에서 재시작, 메인화면으로 이동, 게임 종료에 대한 로직 설명
+
+- 옵션창의 각종 기능 구현 토글에서 각 기능(옵션창을 켜면 게임 멈춤, 재시작, 메인화면 이동, 게임 종료 기능에 대해 로직과 작동 방식을 설명했어.
+- 각 기능마다 작은 토글 (제목3 토글)을 만들어서 가독성을 확보하면서 명확하게 분류를 했어.
+   1. `게임 상태 제어 및 UI 무결성 로직` 작은 토글에 `Time.timeScale을 사용한 일시정지, CountdownManager.isCountdownFinished 변수 체크를 통한 카운트다운 중 옵션 창 접근 차단 및 경고 메시지 출력 구현` 설명을 적어,
+   옵션창이 켜졌을때는 게임이 일시정지, 카운트다운이 작동 중에 옵션창을 켜면 warningText.text = "카운트 중이야! 잠시만 기다려!"; 작동
+   2. 'Scene 및 Application 제어 로직' 작은 토글에 `SceneManager.LoadScene API를 사용한 재시작 및 메인 화면 이동, #if UNITY_EDITOR를 활용한 빌드 환경 대응 종료 처리(Application.Quit()) 구현.`을 설명을 적었어
+      2-1. RestartGame() 함수의 SceneManager.LoadScene(SceneManager.GetActiveScene().name); 으로 게임씬을 재로드(재시작)
+      2-2. ExitGame() 함수의 SceneManager.LoadScene("MainMenuScene"); 으로 메인화면씬 (MainMenuScene)으로 이동
+      2-3. QuitGame()함수의 전처리기로 게임을 종료 로직을 설명:
+       #if UNITY_EDITOR
+       UnityEditor.EditorApplication.isPlaying = false;
+       #else
+       Application.Quit();
+       #endif
+
+- 전처리기 지시문이란: 컴파일이 시작되기 전에 특정 코드를 포함할지/제외할지 결정하는 지시문.
+- 유니티 에디터 환경(UNITY_EDITOR)과 실제 사용자용 빌드 환경(else)에서 서로 다른 코드를 실행하게 하여 프로그램의 안정성을 확보해
+   1. QuitGame() 함수에서 #if UNITY_EDITOR를 사용해서 에디터 실행 중에는 UnityEditor.EditorApplication.isPlaying = false; (에디터 플레이 모드 종료)를 호출하고
+   2. 빌드된 실행 파일에서는 Application.Quit(); (프로세스 완전 종료)를 호출하여 각 환경에 맞는 안전한 종료를 구현하지**
