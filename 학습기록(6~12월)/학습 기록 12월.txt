@@ -135,3 +135,26 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 - 유니티 에디터 환경(UNITY_EDITOR)과 실제 사용자용 빌드 환경(else)에서 서로 다른 코드를 실행하게 하여 프로그램의 안정성을 확보해
    1. QuitGame() 함수에서 #if UNITY_EDITOR를 사용해서 에디터 실행 중에는 UnityEditor.EditorApplication.isPlaying = false; (에디터 플레이 모드 종료)를 호출하고
    2. 빌드된 실행 파일에서는 Application.Quit(); (프로세스 완전 종료)를 호출하여 각 환경에 맞는 안전한 종료를 구현하지**
+
+
+
+12/7
+노션 포트폴리오의 '장애물 투과 실루엣 시스템 구현' 로직 전면 수정.
+
+- 기존의 Sil_Player 스크립트의 복잡했던 중개자패턴으로 작성한 내용을 지웠어. 그래서 바꾼 **유니티의 실행 순서(Execution Order)**를 활용한 **'관찰자(Observer) 패턴'**으로 코드를 변경한걸 포트폴리오에 수정하지 않았었어.
+- 기존의 복잡한 3단계 명령 체계(AttackController → Player → Sil_Player) 대신, 유니티의 실행 순서(Execution Order)를 활용한 '관찰자(Observer) 패턴' 기반의 설계로 변경되었음을 강조했어.
+
+- 지속 상태 동기화 및 Jittering 방지: LateUpdate()를 사용하여 원본 플레이어의 모든 물리/애니메이션 연산이 끝난 후, 최종 위치, 방향(flipX), 이동 상태(Move)를,
+  복사해 화면 떨림(Jittering)을 방지하는 부드러운 시각적 동기화를 보장했어.
+- 애니메이터 완전 복제 (핵심 기술):
+   1. 일회성 명령 함수를 사용하는 대신, for 루프와 **playerAnimator.GetCurrentAnimatorStateInfo()**를 통해 원본 애니메이터의 모든 레이어와 상태를 읽어왔어
+   2. **stateInfo.normalizedTime**을 활용하여 애니메이션의 현재 재생 지점까지 완벽하게 복제해서, 공격, 사망 등 모든 일회성 모션까지 별도의 함수 호출 없이 완벽하게 따라 하게 만들었음을 강조했어
+- 극도로 낮은 결합도 달성: 실루엣 스크립트가 원본 플레이어의 public 함수를 전혀 호출하지 않고 오직 상태만 읽어오기(Read-Only) 때문에, 
+  스크립트 간의 결합도가 '관찰자(Observer)' 수준으로 낮아져 코드의 안정성과 유지보수 효율성이 극대화되었음을 명확히 했어.
+
+- 이전의 실루엣 스크립트는 `AttackController.cs -> Player.SilhouetteBowAttack() (Public 함수 호출) -> Sil_Player.SilPlayerBowAttack() (Public 함수 호출)` 이런 식으로,
+  AttackController 스크립트는 Player 스크립트에 특정 이름의 함수가 존재한다는 사실에 의존하고 있어. 이게 바로 '높은 결합도'야. 만약 Player 스크립트에서 함수 이름이 바뀌면, AttackController 스크립트도 무조건 수정해야 해. 
+- 지금의 실루엣 스크립트는 public Transform이나 private Animator같은 컴포넌트 참조는 원본 플레이어 오브젝트를 참조할뿐, '위치, 행동만을 보고 원본의 데이터를 받고 그대로 따라하는것일 뿐이라서, 
+  결합도에 영향을 주지 않는 안정적인 구조로 간주되는 거야.
+
+**이전의 실루엣 스크립트 Sil_Player의 중개자 역할로 했었을때의 구현 방식과 그로인한 단점들과 지금의 관찰자 역할의 이점을 작은 토글로 만들어서 기재했어**
