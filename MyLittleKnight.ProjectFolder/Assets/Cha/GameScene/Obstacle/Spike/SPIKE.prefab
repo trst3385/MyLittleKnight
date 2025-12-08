@@ -190,6 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a59ab4700aa52664e96c33a2351fd1fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spike
+  DebuffDamageSound: {fileID: 8300000, guid: 581151fb271d1994880caba86708da21, type: 3}
 --- !u!1 &2514659664180079895
 GameObject:
   m_ObjectHideFlags: 0

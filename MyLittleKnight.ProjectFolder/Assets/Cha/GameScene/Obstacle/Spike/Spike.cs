@@ -3,6 +3,9 @@ using System.Collections;//코루틴을 사용하기 위해
 
 public class Spike : MonoBehaviour
 {
+    [Header("사운드 설정")]
+    public AudioClip DebuffDamageSound;//가시 디버프시 들릴 디버프 데미지를 받을 동안 들릴 사운드
+
     private PlayerShield playerShield;//플레이어 방어력스크립트 참조
 
     //코루틴에서만 사용하는 코루틴의 실행과 중지를 제어하는 '코루틴 전용 변수'
@@ -98,6 +101,9 @@ public class Spike : MonoBehaviour
 
             playerShield.TakeShieldDamage(currentDebuffDamage);//playerShield 스크립트 내부에 방어력이 0이되면 체력으로 보내는 로직이 있어,
                                                                //그래서 PlayerHealth를 직접 선언 안해도 돼
+
+            if (DebuffDamageSound != null && SoundManager.Instance != null)
+                SoundManager.Instance.PlaySFX(DebuffDamageSound);//SoundManager의 PlaySFX 함수를 호출하여 사운드 재생 명령
 
             yield return new WaitForSeconds(damageTick);//여기서 실행을 멈추고 damageInterval 초 후에,
                                                         //재개되어 타이머를 줄이고 다음 틱 데미지를 줌
