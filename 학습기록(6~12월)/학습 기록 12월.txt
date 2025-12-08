@@ -158,3 +158,26 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
   결합도에 영향을 주지 않는 안정적인 구조로 간주되는 거야.
 
 **이전의 실루엣 스크립트 Sil_Player의 중개자 역할로 했었을때의 구현 방식과 그로인한 단점들과 지금의 관찰자 역할의 이점을 작은 토글로 만들어서 기재했어**
+
+
+
+12/8
+가시 함정 디버프 피해 발생 시 사운드 재생 기능 추가
+
+- Spike 스크립트의 ApplyDebuffDamage() 코루틴 함수에 사운드 재생 로직 추가.
+- 가시 오브젝트는 시간이 지나면 Destroy(gameObject, duration)으로 사라지지만, SoundManager 오브젝트는 DontDestroyOnLoad로 유지되는 영구 오브젝트야.
+   1. 그래서 가시 프리팹에 AudioSource를 추가하지 않고 가시 스크립트에 public AudioClip DebuffDamageSound; 를 추가해 인스펙터에서 사운드 파일을 드래그로 연결
+   2. ApplyDebuffDamage() 코루틴 함수 내부에 if (DebuffDamageSound != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(DebuffDamageSound); 코드를 추가
+   3. 가시를 밟고 빠져나갈때 시작될 디퍼브 데미지에 틱마다 사운드를 재생할 수 있게 됐어
+   4. SoundManager가 사운드를 관리하니 가시가 사라져도 사운드는 그대로 유지가 돼
+
+- SoundManager의 역할에 대한 명확한 이해: 사운드 재생 시스템 관리를 전담한다!
+   1. **소리 재생의 분리** 아이템이나 가시 디버프처럼 일시적으로 존재하는 오브젝트에 붙어있는 소리를 재생할 때 사용해
+   2. **파괴로부터의 독립** 소리 재생을 명령한 오브젝트(아이템, 가시)가 제 생성시간이 다 되어 Destroy() 함수에 의해 사라져도 (메모리에서 제거되어도), 소리가 중간에 끊기면 안 되는 상황에 사용하지
+   3. **SoundManager는 정적인 인스턴스(Instance)**로 존재해 사라지지 않는 오브젝트야. 따라서 Spike 스크립트와 같은 일반 오브젝트가 파괴되어도, 
+   재생 명령은 이미 SoundManager에게 전달되었고, SoundManager가 재생을 책임지기 때문에 소리는 끊김 없이 끝까지 유지돼
+
+**포트폴리오의 사용 에셋(무료에셋)에 이 가시 디버프 사운드의 출처와, 라이센스도 추가했어**
+**내일은 타일맵에 30초마다 생성되는 바닥을 밟으면 모든 몬스터,장애물이 잠시 멈추는 기능을 추가해보자@@** 
+
+
