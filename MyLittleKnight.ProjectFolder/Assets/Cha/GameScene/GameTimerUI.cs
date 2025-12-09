@@ -33,6 +33,11 @@ public class GameTimerUI : MonoBehaviour
     {
         if (!timerRunning) return;//타이머가 작동 중이 아니면 업데이트하지 않음
 
+        //TimeFreeze로 시간이 멈췄다면 타이머 업데이트를 하지 않고, 현재 시간에 머무름
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+ 
+
+
         float elapsedTime = Time.time - gameStartTime;//현재 시간에서 시작 시간을 빼서 경과 시간 계산
         UpdateTimerUI(elapsedTime);//UI 업데이트
     }
@@ -57,6 +62,14 @@ public class GameTimerUI : MonoBehaviour
         gameTimer.text = string.Format("{0:D2}:{1:D2}", minutes, seconds);
     }
 
+
+    public void AdjustStartTime(float frozenDuration)//TimeFreeze로 시간 정지가 끝나고 시간을 재개할 때 Time.time과의 차이를 보정하는 함수
+    {
+        //정지되어 있던 시간(frozenDuration)만큼 gameStartTime을 늘려서 보정.
+        //Time.time은 계속 흐르므로, gameStartTime을 늘려야 경과 시간이 '줄어드는' 효과가 생김.
+        gameStartTime += frozenDuration;
+        Debug.Log($"GameTimerUI: 시작 시간 {frozenDuration:F2}초 보정 완료.");
+    }
     //필요하다면 외부에서 타이머를 멈추거나 재개하는 함수를 추가할 수 있어.
     //StopTimer, ResumeTimer, ResetTimer 함수는 미리 만들어뒀어
     //타이머 제어 함수를 표현식 본문(람다식)으로 간결화
