@@ -88,6 +88,11 @@ public class EnemyDifficulty : MonoBehaviour
     
     void Update()
     {
+        //TimeFreeze로 시간이 멈췄는지 체크하고, 멈췄다면 타이머 증가 로직을 건너뜀
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+
+
+
         //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
         timeSinceLastLevelUp += Time.deltaTime;
         if(timeSinceLastLevelUp >= StatLevelUpTime)

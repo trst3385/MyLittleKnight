@@ -90,6 +90,10 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
     void Update()
     {
+        //TimeFreeze로 시간이 멈췄는지 체크하고, 멈췄다면 타이머 감소 및 스폰 로직을 건너뜀
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+
+
         spawnTimer -= Time.deltaTime;//남은 시간 감소
 
         if (spawnTimer <= 0f)//타이머가 0이하가 되면 스폰

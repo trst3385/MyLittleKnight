@@ -44,6 +44,10 @@ public class SpikeSpawn : MonoBehaviour
 
     void Update()
     {
+        //TimeFreeze로 의해 시간이 멈췄다면, 난이도 타이머 증가 로직을 건너뛰고 바로 함수 종료
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+
+
         spawnTimer -= Time.deltaTime;
 
         if (spawnTimer <= 0f)
@@ -51,10 +55,8 @@ public class SpikeSpawn : MonoBehaviour
             SpawnSpike();
 
             //다음 스폰 주기는 ObstacleDifficultyManager 스크립트에서 최신값을 받아옴
-            if (ObstacleDifficultyManager.Instance != null) 
-            {
+            if (ObstacleDifficultyManager.Instance != null)
                 spawnTimer = ObstacleDifficultyManager.Instance.GetCurrentSpikeSpawnInterval();
-            }
             else spawnTimer = 5f;//난이도 관리자가 없을 경우를 대비해 기본값 사용  
         }
     }

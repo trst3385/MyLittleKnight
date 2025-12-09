@@ -115,10 +115,13 @@ public class ObstacleDifficultyManager : MonoBehaviour
     
     void Update()
     {
-        bool levelUpJustHappened = false;//장애물의 레벨업이 발생했는지 확인하는 플래그
+        //TimeFreeze 스크립트에 의해 시간이 멈췄다면, 난이도 타이머 증가 로직을 건너뛰고 바로 함수 종료
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+
+
+        bool ObstacleLevelUp = false;//장애물의 레벨업이 발생했는지 확인하는 플래그
 
         timeSinceLastLevelUp += Time.deltaTime;//통합 강화 시간 타이머 증가
-
 
         if (timeSinceLastLevelUp >= LevelUpTime)//장애물 통합 강화 조건
         {
@@ -138,11 +141,11 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
             //강화가 완료되었으니, 타이머를 리셋하고 레벨업 플래그 설정
             timeSinceLastLevelUp = 0f;//통합 타이머 리셋
-            levelUpJustHappened = true;//모든 장애물이 레벨업 되었다고 true
+            ObstacleLevelUp = true;//모든 장애물이 레벨업 되었다고 true
         }
         
 
-        if (levelUpJustHappened)//모든 강화가 끝난 후, 레벨업 플래그를 확인하여 레벨 증가 UI 업데이트
+        if (ObstacleLevelUp)//모든 강화가 끝난 후, 레벨업 플래그를 확인하여 레벨 증가 UI 업데이트
         {                       //이 로직은 모든 개별 강화 if문이 끝난 후, 강화가 발생했음을 확인하는 최종 검증 단계
             currentLevel++;
             UpdateLevelText();

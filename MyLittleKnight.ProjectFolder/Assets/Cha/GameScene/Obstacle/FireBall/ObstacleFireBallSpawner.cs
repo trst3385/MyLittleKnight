@@ -29,6 +29,10 @@ public class ObstacleFireBallSpawner : MonoBehaviour
 
     private void SpawnFireBall()
     {
+        //InvokeRepeating은 계속 타이머를 돌리지만, 여기서 즉시 리턴하여 생성을 막기
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+    
+
         CancelInvoke("SpawnFireBall");
         float newInterval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
         InvokeRepeating("SpawnFireBall", ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval(), ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());

@@ -102,6 +102,17 @@ public class Enemy : MonoBehaviour
     
     void FixedUpdate()//FixedUpdate에선 Time.deltaTime보단 Time.fixedDeltaTime(정확한 물리 계산과 일관된 이동 속도를 보장)
     {
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
+        {
+            if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
+            {
+                rb.linearVelocity = Vector2.zero;//물리적인 움직임 정지
+                animator.SetBool("Move", false);//애니메이션 정지
+            }
+            return;//FixedUpdate의 나머지 모든 로직 (추적, 공격) 건너뛰기
+        }
+
+
         if (isDead)//몬스터 사망시
         {
             rb.linearVelocity = Vector2.zero;//즉시 멈춤

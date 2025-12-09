@@ -39,8 +39,12 @@ public class ObstacleFireBall : MonoBehaviour
 
     void FixedUpdate()//발사체는 물리적인 움직임이므로 FixedUpdate를 사용하는게 좋아
     {
+        //TimeFreeze로 시간이 멈추면 이미 발사된 발사체도 멈춰야해
+        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
+
+
         //MoveSpeed를 난이도 매니저에서 가져오기
-        float currentSpeed = 5f; // Fallback 기본값
+        float currentSpeed = 5f;//Fallback 기본값
         if (ObstacleDifficultyManager.Instance != null) currentSpeed = ObstacleDifficultyManager.Instance.GetCurrentFireBallSpeed();
   
         //현재 위치를 계속해서 이동 방향과 속도에 따라 업데이트
