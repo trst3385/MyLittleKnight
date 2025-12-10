@@ -38,26 +38,26 @@ public class TimeFreezeItemSpawner : MonoBehaviour
 
         if (spawnTimer <= 0f)
         {
-            TrySpawnTimeFreezeItem();
+            SpawnTimeFreezeItem();
             spawnTimer = spawnInterval;//타이머 리셋
         }
     }
 
-    void TrySpawnTimeFreezeItem()
+    void SpawnTimeFreezeItem()
     {
         if (timeFreezeItemPrefab == null) return;//시간정지 아이템이 없으면 함수종료
 
         //최대 개수 체크 (1개만 존재 가능)
         if (currentItemCount >= maxSimultaneousItems)
         {
-            //Debug.Log("TimeFreezeItemSpawner: 이미 최대 개수가 존재하여 스폰하지 않아!");
+            Debug.Log("TimeFreezeItemSpawner: 이미 최대 개수가 존재하여 스폰되지 않아!");
             return;
         }
 
         Vector3 spawnPosition = GetValidSpawnPosition();
         if (spawnPosition == Vector3.zero)
         {
-            Debug.LogWarning("TimeFreezeItemSpawner: 유효한 스폰 위치를 찾을 수 없었어!");
+            Debug.LogWarning("TimeFreezeItemSpawner: 유효한 스폰 위치를 찾을 수 없어!");
             return;
         }
 
@@ -68,28 +68,33 @@ public class TimeFreezeItemSpawner : MonoBehaviour
         if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>시간 증폭기 등장!</color>");
     }
 
-    Vector3 GetValidSpawnPosition()//타일맵 내 랜덤 위치에 생성
-    {                              //몬스터, 아이템, 가시의 스폰 스크립트와 같은 로직이야
-        int maxAttempts = 100;
+    Vector3 GetValidSpawnPosition()//타일맵 특정 위치(중앙)에 생성
+    {                              //몬스터, 아이템, 가시의 스폰 스크립트의 로직을 가져왔지만 이 아이템은 오직 중앙에만 오도록 수정
 
-        for (int i = 0; i < maxAttempts; i++)
+        //1. 타일맵의 경계(Bounds)를 가져옴
+        BoundsInt bounds = targetTilemap.cellBounds;
+
+        //2. 중앙 셀 좌표 계산 (타일맵 좌표계를 기준으로 정중앙 셀을 찾음)
+        //예를 들어 10x10 타일맵이라면 중심은 (5, 5)가 되도록 계산
+        int centerX = bounds.xMin + bounds.size.x / 2;
+        int centerY = bounds.yMin + bounds.size.y / 2;
+        Vector3Int centerCell = new Vector3Int(centerX, centerY, 0);
+
+        //3. 중앙에 타일이 존재하는지 확인 (타일이 없으면 스폰 불가)
+        if (targetTilemap.HasTile(centerCell))
         {
-            BoundsInt bounds = targetTilemap.cellBounds;
-            int randomX = Random.Range(bounds.xMin, bounds.xMax);
-            int randomY = Random.Range(bounds.yMin, bounds.yMax);
-            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
+            //4. 중앙 셀의 월드 좌표를 가져옴
+            Vector3 centerWorldPosition = targetTilemap.GetCellCenterWorld(centerCell);
 
-            if (targetTilemap.HasTile(randomCell))
-            {
-                Vector3 cellCenterTile = targetTilemap.GetCellCenterWorld(randomCell);
+            //5. 주변에 다른 오브젝트(콜라이더)가 없는지 확인 (안전성 확보)
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(centerWorldPosition, 0.5f, spawnableLayer);
 
-                //주변에 다른 콜라이더(오브젝트)가 없는지 확인
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterTile, 0.5f, spawnableLayer);
+            //다른 콜라이더가 없으면 유효한 중앙 위치를 반환
+            if (colliders.Length == 0) return centerWorldPosition;
 
-                if (colliders.Length == 0) return cellCenterTile;
-            }
+            Debug.LogWarning("TimeFreezeItemSpawner: 타일맵 중앙에 이미 다른 오브젝트가 있어!");
         }
-        return Vector3.zero;
+        return Vector3.zero;//중앙에 타일이 없거나, 다른 오브젝트가 있으면 스폰 실패
     }
 
     //ItemFreezeItem 스크립트에서 호출될 함수
