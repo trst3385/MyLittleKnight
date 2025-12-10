@@ -246,3 +246,5 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 **Early Exit(return;) 패턴을 사용하여 Enemy 스크립트의 FixedUpdate함수 코드 흐름을 단순화하는 이점을 확인**
 **post Processing의 Volume 컴포넌트는 초기 상태를 비활성화해야 스크립트 제어(활성화/비활성화)가 원하는 대로 작동함을 이해
 **Saturation 값을 -100으로 설정해야 완전한 흑백(Greyscale)이 됨을 확인**
+
+**내일은 새롭게 빌드해서 git과 포트폴리오에 추가하자 업데이트 버전도 확인하고!**
