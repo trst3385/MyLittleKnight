@@ -211,3 +211,38 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 **내일은 시간 정지 아이템 프리팹을 만들고 TimeFreezeItemSpawner에 프리팹을 넣어 완성해보도록 하자!**
 
+**Post-process Volume 컴포넌트의 Is Global 항목을 체크해. (이것을 체크해야 카메라 위치에 상관없이 씬 전체에 효과가 적용돼.)**
+
+
+
+12/10
+시간 정지 아이템 시스템 (TimeFreeze System) 최종 기능 구현 및 시각/청각 피드백 추가
+
+- 시각 효과 (Post Processing) 구현:
+- Post Processing 설정: 시간 정지 아이템을 획득하면 Post-process Volume 컴포넌트를 사용하여 아이템 획득 시 화면을 Greyscale(흑백)로 변경하는 효과 구현했어.
+   1. Color Grading의 Saturation 값을 **-100**으로 설정하여 채도를 제거했어
+   2. PostProcessVolume 컴포넌트는 게임 시작 시 비활성화 상태로 두고, 스크립트가 제어하도록 설정 완료 (스크립트에서 조절하는거라 처음에는 비활성화 상태로 둬야해)
+- 연결 지점: PostProcessVolume_TimeFreeze 오브젝트를 TimeFreezeManager 오브젝트의 TimeFreeze 스크립트 내 Freeze Volume 슬롯에 연결 완료. (인스펙터에 연결)
+- 카메라 설정: 플레이어 오브젝트의 자식으로 있던 Main Camera에 Post Process Layer 컴포넌트를 추가하고 Everything으로 설정하여 렌더링 파이프라인에 포스트 프로세싱 효과를 등록했어.
+- 첫 번째 연결: 프로파일 → 볼륨 컴포넌트 (설계도 전달):
+   1. 이 프로파일 파일을 씬에 있는 PostProcessVolume_TimeFreeze 오브젝트의 Post-process Volume 컴포넌트 내 Profile 칸에 연결했어
+   2. 이제 PostProcessVolume_TimeFreeze 오브젝트는 "나는 화면을 회색으로 바꾸는 방법을 알고 있어!"라는 정보를 가지게 돼
+- 두 번째 연결: 볼륨 오브젝트 → TimeFreeze 스크립트 (제어권 전달):
+   1. 첫 번째 연결로 효과가 적용된 PostProcessVolume_TimeFreeze 오브젝트 자체를 통째로 가져와서,
+   TimeFreezeManager 오브젝트의 TimeFreeze.cs 스크립트 내 Freeze Volume 칸에 연결했지
+   2. 이 연결 덕분에 TimeFreeze 스크립트가 아이템 획득 시 이 볼륨을 enabled = true로 켜서 화면을 회색으로 만들고, 시간이 풀리면 다시 enabled = false로 끌 수 있게 되는 거야
+
+- 시간 정지 로직 (TimeFreeze.cs) 연동:
+- TimeFreeze 스크립트에 PostProcessVolume 변수를 연결하고, 코루틴 시작 시 freezeVolume.enabled = true로 활성화, ResumeTime() 시 freezeVolume.enabled = false로 비활성화하는 로직 추가,
+  시간이 지나면 시간 정지가 끝나는거지.
+
+- 몬스터 제어 (Enemy.cs):
+- 시간 정지 상태일 때 물리 및 애니메이션을 정지시킨 후, return을 사용하여 FixedUpdate() 함수의 나머지 모든 추적/공격 로직을 무시하고 현재 프레임의 함수 실행을 즉시 종료하여 멈춘 상태를 유지한다. (이것을 Early Exit 패턴이라고 해)
+
+- 사운드 및 스폰 로직(TimeFreezeItem, TimeFreezeItemSpawner.cs):
+   1. TimeFreezeItem 스크립트에 획득 사운드(pickupSound)를 추가하고 SoundManager.PlaySFX()를 호출하여 아이템 획득 시 효과음 재생 기능 추가. (아이템을 획득시 들리는거라 아이템이 파괴되어도 들려야 하기 때문에 SoundManager를 사용)
+   2. 아이템 스폰 위치를 타일맵 내 랜덤 위치가 아닌 타일맵 중앙으로 고정하는 로직 최종 확정 및 적용했어
+
+**Early Exit(return;) 패턴을 사용하여 Enemy 스크립트의 FixedUpdate함수 코드 흐름을 단순화하는 이점을 확인**
+**post Processing의 Volume 컴포넌트는 초기 상태를 비활성화해야 스크립트 제어(활성화/비활성화)가 원하는 대로 작동함을 이해
+**Saturation 값을 -100으로 설정해야 완전한 흑백(Greyscale)이 됨을 확인**
