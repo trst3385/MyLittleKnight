@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering.PostProcessing;
 
 public class TimeFreeze : MonoBehaviour
 {
     public static TimeFreeze Instance { get; private set; }//어디서든 접근할 수 있는 유일한 인스턴스(싱글톤)
     public bool IsTimeFrozen { get; private set; } = false;//모든 몬스터, 장애물, 게임 타이머는 이 플래그를 체크해야 해
                                                            //현재 시간이 정지 상태인지 확인하는 전역 플래그
+    [Header("시각 효과")]
+    [SerializeField] private PostProcessVolume freezeVolume;//TimeFreeze_Profile이 연결된 볼륨
 
     private GameTimerUI gameTimerUI;//GameTimerUI 변수
     private Coroutine freezeCoroutine;//시간 정지 코루틴을 제어할 변수
@@ -34,6 +37,9 @@ public class TimeFreeze : MonoBehaviour
         //3. 시간 재개 로직
         IsTimeFrozen = false;
 
+        if (freezeVolume != null) freezeVolume.enabled = false;//시간 정지 해제 시 볼륨 비활성화 (화면 컬러 복구)
+
+
         Debug.Log("시간 재개: " + frozenDuration.ToString("F2") + "초 동안 멈춤");
     }
 
@@ -56,6 +62,10 @@ public class TimeFreeze : MonoBehaviour
     {
         IsTimeFrozen = true;//1. 시간 정지 상태 On
         //@@정지 시작 시 사운드, 이펙트 등을 여기에 추가해@@
+
+
+        if (freezeVolume != null) freezeVolume.enabled = true;//시간 정지 시작 시 볼륨 활성화 (화면 회색)
+
 
         float timer = duration;
 
