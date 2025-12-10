@@ -104,13 +104,18 @@ public class Enemy : MonoBehaviour
     {
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
         {
+            if (animator.enabled) animator.enabled = false;//애니메이터가 활성화되어 있다면
+                                                           //애니메이터 비활성화: 몬스터가 그 상태 그대로 얼어붙음
+
             if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
             {
                 rb.linearVelocity = Vector2.zero;//물리적인 움직임 정지
                 animator.SetBool("Move", false);//애니메이션 정지
             }
-            return;//FixedUpdate의 나머지 모든 로직 (추적, 공격) 건너뛰기
+            return;//시간 정지 상태이니 FixedUpdate의 나머지 모든 추적/공격 로직을 건너뛰고 함수 종료
         }
+        if (animator != null && !animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
+
 
 
         if (isDead)//몬스터 사망시
