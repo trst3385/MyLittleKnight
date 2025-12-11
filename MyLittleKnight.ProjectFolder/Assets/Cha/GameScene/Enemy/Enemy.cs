@@ -45,7 +45,6 @@ public class Enemy : MonoBehaviour
 
 
     [Header("사운드")]//사운드 관련
-    [SerializeField] private AudioSource deathAudioSource;
     [SerializeField] private AudioClip deathSound;
 
 
@@ -69,16 +68,14 @@ public class Enemy : MonoBehaviour
     private bool playerWasDead = false;//플레이어가 이전에 죽었었는지 추적하는 변수
     private bool isDead = false;//사망 변수(기본값 false)
     private bool isKnockedBack = false;//넉백 중인지 여부를 나타내는 플래그
+    private bool isPendingDeath = false;//처리를 시간 정지 해제 시까지 대기시키는 플래그
 
-    
 
     void Awake()//내부 컴포넌트는 Awake에
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (deathAudioSource == null) Debug.LogError("Enemy: AudioSource 컴포넌트를 찾을 수 없어!");
     }
 
     void Start()//외부 스크립트는 Start에
@@ -116,6 +113,9 @@ public class Enemy : MonoBehaviour
         }
         if (animator != null && !animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
 
+        
+        //시간이 풀렸을 때, 대기 중인 사망이 있다면 실행, 사망 모션이 아니여도 여기서 몬스터 사망시 행동 발동
+        if (isPendingDeath) ExecuteDeathSequence();//지연된 사망 시퀀스 실행 (사망 사운드/모션 발동)
 
 
         if (isDead)//몬스터 사망시
@@ -351,28 +351,40 @@ public class Enemy : MonoBehaviour
         isDead = true;
         Debug.Log(enemyType + "몬스터 컷!");
 
-        if (deathAudioSource != null && deathSound != null) deathAudioSource.PlayOneShot(deathSound);//몬스터 사망시 사망 사운드 재생
-        //PlayOneShot은 현재 재생 중인 다른 소리를 끊지 않고, 새로운 소리를 한 번만 재생
-        //몬스터가 여러 마리 동시에 죽을 때 각자 죽는 소리가 모두 들리게 하려면 PlayOneShot.
-        //만약 그냥 audioSource.Play()를 썼다면, 다른 소리가 재생될 때마다 이전 소리가 끊기게 돼
-
         if (playerScript != null) playerScript.AddScore(currentScoreValue);//몬스터가 죽으면 플레이어가 몬스터의 점수 획득
-
-
         if (EnemySpawner != null)
         {   //현재 몬스터의 타입이 Strong 또는 Elite인지 확인
             bool isThisStrongOrElite = (enemyType == EnemyType.Strong || enemyType == EnemyType.Elite);
-
             EnemySpawner.EnemyDied(isThisStrongOrElite);//EnemySpawn 스크립트의 EnemyDied 함수를 호출하여 몬스터가 죽었음을 알림
         }
 
+        //시간 정지 상태 체크 및 분기
+        bool isFrozen = TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen;
+        if (isFrozen)
+        {
+            isPendingDeath = true;
+            Debug.Log("사망 모션이 시간이 풀릴 때까지 지연됩니다.");
+            return;
+        }
+
+        ExecuteDeathSequence();//시간이 정상일 때 지연 없이 즉시 사망 시퀀스 실행
+    }
+    public void ExecuteDeathSequence()//시간 정지로 지연되었던 사망 시퀀스(사운드, 모션, 파괴)를 실행하는 함수
+    {                                 //시간 정지가 아닐때에도 여기서 몬스터의 사망 시퀀스를 발동해
+        //1. 사운드 재생 (시간이 풀렸으니 사운드 재생)
+        if (deathSound != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(deathSound);
+
+        //2. 애니메이션 및 오브젝트 파괴
         if (animator != null)
         {
             animator.SetTrigger("Die");
-
-            float DieTime = 1.5f;//사망 후 ~초 후에 사라짐
-
-            Destroy(gameObject, DieTime);//DieTime지역변수의 시간 후 몬스터 삭제
+            float DieTime = 1.5f;
+            //시간이 풀리면 1.5초 뒤에 사라지도록 예약
+            //Destroy(gameObject, DieTime)는 TimeScale의 영향을 받지 않는 RealTime을 사용하므로, 
+            //여기서 호출해야 1.5초 뒤에 사라져.
+            Destroy(gameObject, DieTime);
         }
+        //3. 플래그 초기화
+        isPendingDeath = false;//이제 대기 상태가 아님
     }
 }
