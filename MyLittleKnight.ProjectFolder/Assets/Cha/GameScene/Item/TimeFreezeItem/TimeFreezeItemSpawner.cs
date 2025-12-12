@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class TimeFreezeItemSpawner : MonoBehaviour
@@ -11,6 +12,10 @@ public class TimeFreezeItemSpawner : MonoBehaviour
     [Header("오브젝트, 레이어 연결")]
     [SerializeField] private Tilemap targetTilemap;
     [SerializeField] private LayerMask spawnableLayer;
+
+    [Header("등장 사운드")]
+    [SerializeField] private AudioClip itemSpawnSFX;//인스펙터에 연결할 등장 사운드
+
 
     //내부에서 사용할 변수들
     private float spawnTimer;
@@ -64,8 +69,12 @@ public class TimeFreezeItemSpawner : MonoBehaviour
         Instantiate(timeFreezeItemPrefab, spawnPosition, Quaternion.identity);//아이템 생성
         currentItemCount++;//카운트 증가
 
-        //알림 메시지
-        if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>시간 증폭기 등장!</color>");
+        //알림 메시지(12/12. 지금은 사용 안할거야. 등장시 들릴 사운드만 추가만 할거야.
+        //if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>Time Freeze 등장!</color>");
+        
+        if (itemSpawnSFX != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(itemSpawnSFX);//아이템 등장시 사운드
+        //SoundManager 스크립트를 이용
+
     }
 
     Vector3 GetValidSpawnPosition()//타일맵 특정 위치(중앙)에 생성

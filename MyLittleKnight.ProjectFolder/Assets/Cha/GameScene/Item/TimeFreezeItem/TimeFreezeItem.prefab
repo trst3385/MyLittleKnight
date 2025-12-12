@@ -272,5 +272,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3619050bdce0a8549a74a6399a25123e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeFreezeItem
-  freezeDuration: 3
+  freezeDuration: 5
   pickupSound: {fileID: 8300000, guid: 8d890a2a7e12d384ab0a7d9877e07ae8, type: 3}
