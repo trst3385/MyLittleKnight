@@ -65,6 +65,7 @@ public class PlayerStatsEffects : MonoBehaviour
             {
                 bowWeapon.ArrowDamage += ItemCSdamage;//PlayerAttack 스크립트의 활 공격력 증가
                 bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);//PlayerAttack 스크립트의 공격속도 증가
+                bowWeapon.AcquireBowEnhanceItem();//BowWeapon 스크립트에 정의된 강화 스택 증가 함수 호출
                 currentArrowLevel++;//활 강화 숫자 증가
                 UpdateWeaponLevelUI();//UI 업데이트
                 Debug.Log("PlayerStatsEffects: 화살 공격력이 " + ItemCSdamage + " 증가! 현재 공격력: " + bowWeapon.ArrowDamage);

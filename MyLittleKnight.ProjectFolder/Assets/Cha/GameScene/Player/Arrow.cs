@@ -7,7 +7,11 @@ public class Arrow : MonoBehaviour
     [Header("화살  데미지, 생성시간")]
     public float ArrowDamage = 1f;
     public float LifeTime = 3f;//()초가 지나면 화살이 사라짐
-   
+
+    [Header("강화 화살 속성")]
+    [HideInInspector] public bool IsEnhanced = false;//강화 화살인지 (BowWeapon 스크립트에서 설정됨)
+    [HideInInspector] public float SlowFactor = 0f;//몬스터 이동 속도 감소 비율 (0.5f = 50% 느려짐)
+
     void Start()
     {   
         Destroy(gameObject, LifeTime);   
@@ -22,9 +26,21 @@ public class Arrow : MonoBehaviour
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(ArrowDamage);
-                Debug.Log($"{other.name}에게 {ArrowDamage} 데미지를 주었다!");
+                Debug.Log($"{other.name}에게 {ArrowDamage} 데미지!");
+
+                if (IsEnhanced)
+                {
+                    //EnemyHealth 스크립트에서 몬스터 오브젝트의 Enemy 스크립트를 찾음
+                    Enemy enemyScript = other.GetComponent<Enemy>();
+                    if (enemyScript != null)
+                    {
+                        //다음 단계에서 구현할 Enemy 스크립트의 함수를 호출
+                        enemyScript.ApplySlowEffect(SlowFactor);
+                        Debug.Log($"{other.name}에게 슬로우 효과 적용됨!");
+                    }
+                }
             }
-            Destroy(gameObject);//적과 충돌했으니 사라짐(파괴)
+            if (!IsEnhanced) Destroy(gameObject);//일반 화살은 충돌 후 파괴
         }
         else if (other.CompareTag("Ground")) Destroy(gameObject);//화살이 타일맵 경계선에 닿으면 파괴
         //콜라이더 범위(타일맵 밖) 밖으로 화살이 나가면 화살 파괴, 타일맵(Tag:Ground) 안에 있어서 OnTriggerEnter2D의 상황이 아님!

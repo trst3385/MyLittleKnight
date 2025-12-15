@@ -1332,6 +1332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeFreeze
   freezeVolume: {fileID: 1590795982}
+  bgmAudioSource: {fileID: 1614388533}
 --- !u!1 &161380975 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2055102311959635369, guid: 7277dd75e907b27448ec1de08238d0bb,
@@ -7570,7 +7571,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 48b69d5c155e63a40b84294ecfe2a906, type: 2}
+  - {fileID: 2100000, guid: 70b4c4c984003d44c80b0de5109f9280, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -21374,6 +21375,9 @@ MonoBehaviour:
   ArrowSpeed: 20
   ArrowDamage: 1
   NumberOfArrows360: 8
+  EnhancedArrowPrefab: {fileID: 7820076382309403483, guid: 3595dfc4c6969d24991df91f89a39275,
+    type: 3}
+  SlowFactor: 0.5
   BaseArrowCooldown: 2
   lastArrowAttackTime: -1
   bowAudioSource: {fileID: 16655320}

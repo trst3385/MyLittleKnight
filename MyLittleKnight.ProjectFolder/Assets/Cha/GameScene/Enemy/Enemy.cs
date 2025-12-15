@@ -387,4 +387,22 @@ public class Enemy : MonoBehaviour
         //3. 플래그 초기화
         isPendingDeath = false;//이제 대기 상태가 아님
     }
+
+    /// <summary>
+    /// 강화 화살에 피격 시 호출되어 몬스터에게 슬로우 효과를 적용합니다.
+    /// </summary>
+    /// <param name="factor">이동 속도 감소 비율 (예: 0.5f = 50% 느려짐)</param>
+    public void ApplySlowEffect(float factor)
+    {
+        if (isDead) return;
+
+        //강화 화살에 여러 번 맞아도 이동 속도가 계속 줄어들지 않도록 방지
+        if (currentMoveSpeed < NormalStats.MoveSpeed)
+        {
+            Debug.Log($"{gameObject.name} 이미 슬로우 상태이므로 중첩하지 않습니다.");
+            return;
+        }
+        currentMoveSpeed *= factor;//현재 이동 속도에 슬로우 비율을 적용하고, 이 값이 영구적으로 유지됨
+        Debug.Log($"{gameObject.name} 영구 슬로우 적용! 최종 속도: {currentMoveSpeed}");
+    }
 }

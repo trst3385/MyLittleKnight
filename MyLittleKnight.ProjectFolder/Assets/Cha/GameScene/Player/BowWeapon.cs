@@ -9,10 +9,16 @@ public class BowWeapon : MonoBehaviour
     [Header("활 공격,방향,프리팹,오브젝트")]
     //활 공격 설정
     public GameObject ArrowPrefab;//화살 프리팹을 보관할 변수 (인스펙터 설정)
-    public Transform ArrowSpawnPoint;//ȭ�� ���� ��ġ(�ν����� ����)
+    public Transform ArrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
     public float ArrowSpeed = 10f;//발사 속도
     public float ArrowDamage = 1f;//화살 데미지
     public int NumberOfArrows360 = 8;//360도 회전 시 발사할 화살의 수 (예: 8방향)
+
+    [Header("강화 공격 설정")]//활 아이템 3회 획득시 강화
+    public GameObject EnhancedArrowPrefab;//강화 화살 프리팹 (인스펙터 연결)
+    public float SlowFactor = 0.5f;//몬스터 이동 속도 감소 비율 (0.5f = 50% 느려짐)
+    private int currentEnhanceStacks = 0;//현재 강화 횟수 누적 (3번 획득 시 발동)
+    private const int MAX_ENHANCE_STACKS = 3;//강화 발동에 필요한 횟수
 
     [Header("공격 속도")]
     public float BaseArrowCooldown = 2f;//활의 초기/최대 공격 쿨타임 (아이템 효과 미적용 원본)
@@ -23,8 +29,7 @@ public class BowWeapon : MonoBehaviour
     [SerializeField] private AudioSource bowAudioSource;
     [SerializeField] private AudioClip bowAttackSound;
 
-
-    [Header("UI 연결")]
+    [Header("쿨타임 UI바 연결")]
     public Slider BowCooldownBar;
 
     void Start()
@@ -38,17 +43,28 @@ public class BowWeapon : MonoBehaviour
 
     public void ShootArrow()//360도 화살 발사
     {
+        //강화 화살
+        bool isEnhanced = currentEnhanceStacks >= MAX_ENHANCE_STACKS;
+        GameObject activeArrowPrefab = ArrowPrefab;
+        float activeArrowDamage = ArrowDamage;
+        if (isEnhanced)
+        {
+            activeArrowPrefab = EnhancedArrowPrefab;//1.강화 화살 프리팹 사용
+            Debug.Log(">>> 특수 강화 공격 발동! (관통 + 슬로우)");
+        }
+        
+
         if (bowAudioSource != null && bowAttackSound != null) bowAudioSource.PlayOneShot(bowAttackSound);//활 공격 시 사운드 재생
         else Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
         //PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
 
-        if (ArrowPrefab == null)//화살 프리팹이 설정되었는지 안 되었는지
+        if (activeArrowPrefab == null)
         {
-            Debug.LogError("Arrow Prefab이 설정되지 않았어!");
+            Debug.LogError("사용할 화살 Prefab이 설정되지 않았어!");
             return;
         }
         //화살을 발사할 때 로그에 알림
-        Debug.Log("화살 발사! 설정된 데미지: " + this.ArrowDamage);
+        Debug.Log("화살 발사! 설정된 데미지: " + activeArrowDamage);
 
         //각 화살의 각도 계산
         float angleStep = 360f / NumberOfArrows360;
@@ -64,8 +80,7 @@ public class BowWeapon : MonoBehaviour
             Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
 
             //화살 생성 (플레이어의 중앙에서 발사되도록 ArrowSpawnPoint 오브젝트 사용)                  
-            GameObject arrow = Instantiate(ArrowPrefab, ArrowSpawnPoint.position, Quaternion.identity);
-
+            GameObject arrow = Instantiate(activeArrowPrefab, ArrowSpawnPoint.position, Quaternion.identity);
             
             Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
             if (arrowRb != null)
@@ -79,12 +94,38 @@ public class BowWeapon : MonoBehaviour
                 //화살의 Arrow 스크립트에 데미지 설정
                 Arrow arrowScript = arrow.GetComponent<Arrow>();
                 if (arrowScript != null)
-                    arrowScript.ArrowDamage = this.ArrowDamage;//현재 ArrowDamage 값                                                         
+                {
+                    arrowScript.ArrowDamage = activeArrowDamage;//현재 ArrowDamage 값 
+
+                    //강화 화살에 슬로우 및 관통 정보 전달
+                    if (isEnhanced)
+                    {
+                        arrowScript.IsEnhanced = true;//Arrow 스크립트에서 IsEnhanced 변수를 추가해야 해.
+                        arrowScript.SlowFactor = SlowFactor;
+                    }
+                }                                                    
                 else Debug.LogWarning("생성된 화살 프리팹에 'Arrow' 스크립트가 없어! 데미지 설정 불가능!");
             }
             else Debug.LogWarning("생성된 화살 프리팹에 Rigidbody2D가 없어!");
         }
         lastArrowAttackTime = Time.time;
+
+        if (isEnhanced) currentEnhanceStacks = 0;//강화 공격 발동 후 스택 초기화
+    }
+
+    /// <summary>
+    /// 강화 활 아이템 획득 시 호출하여 스택을 쌓고, 3스택 달성 시 효과를 활성화.
+    /// </summary>
+    public void AcquireBowEnhanceItem()
+    {
+        if (currentEnhanceStacks < MAX_ENHANCE_STACKS)
+        {
+            currentEnhanceStacks++;
+            Debug.Log($"활 강화 아이템 획득! 현재 스택: {currentEnhanceStacks} / {MAX_ENHANCE_STACKS}");
+        }
+        //3스택을 달성하면 다음 공격은 강화 공격이 되도록 플래그 등을 설정할 수 있지만,
+        //여기서는 ShootArrow함수에서 스택만 체크하도록 단순하게 처리해보자.
+        //만약 3스택이 되면 UI 등으로 플레이어에게 알림을 주는 로직이 여기에 추가하자.
     }
 
     public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//활 공격력 강화(아이템 획득) 시 쿨타임 감소 함수
