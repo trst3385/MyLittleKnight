@@ -2,12 +2,12 @@
 오디오 시스템 구조 안정화 (SoundManager스크립트의 도입 )
 옵션 창 UI/UX 개선
 
-- 아이템 획득 시 소리가 끊기는 문제와 SFX 볼륨 제어 불가 문제를 해결하기 위해 싱글톤 SoundManager 시스템을 도입했어, 
+- 아이템 획득 시 소리가 끊기는 문제와 SFX 볼륨 제어 불가 문제를 해결하기 위해 싱글톤 SoundManager 시스템을 도입했어,
 SoundManager 오브젝트를 생성하고 싱글톤 패턴으로 구축하여, 게임 전체의 일회성 SFX 재생을 중앙에서 관리하도록 역할을 확립했어.
-   1. 문제점: 아이템 획득 시 Destroy로 인해 오브젝트에 붙은 사운드 컴포넌트가 즉시 제거되어 소리가 끊기는 문제를 겪었어,
-   아이템은 획득시에 파괴되고 동시에 획득 시 사운드가 들려야해. 하지만 Destroy로 인해 아이템이 삭제가 되니 사운드가 들리지 않아
-   2. 해결책: 아이템 파괴는 Item 스크립트가 담당하고, 획득 사운드 관리는 영구적인 SoundManager 스크립트가 담당하도록 역할을 분리했어.
-   3. 아이템 파괴는 item 스크립트가 하지만 획득 시 사운드 관리는 이젠 SoundManager 스크립트가 관리해서 Item 스크립트에서 SoundManager 스크립트를 호출하는 식으로 바꿨어
+   1. 문제점: 아이템 획득 시 Destroy로 인해 오브젝트에 붙은 사운드 컴포넌트가 즉시 제거되어 소리가 끊기는 문제를 겪었어,
+   아이템은 획득시에 파괴되고 동시에 획득 시 사운드가 들려야해. 하지만 Destroy로 인해 아이템이 삭제가 되니 사운드가 들리지 않아
+   2. 해결책: 아이템 파괴는 Item 스크립트가 담당하고, 획득 사운드 관리는 영구적인 SoundManager 스크립트가 담당하도록 역할을 분리했어.
+   3. 아이템 파괴는 item 스크립트가 하지만 획득 시 사운드 관리는 이젠 SoundManager 스크립트가 관리해서 Item 스크립트에서 SoundManager 스크립트를 호출하는 식으로 바꿨어
 
 - item.cs 로직 변경: 비효율적인 동적 AudioSource 생성 로직을 제거하고, 획득 사운드 재생 코드를 SoundManager.Instance.PlaySFX(soundToPlay) 호출로 대체했어,
 이를 통해 아이템이 즉시 파괴되더라도 소리가 끊기지 않고 SFX 슬라이더의 제어를 받도록 수정했지.
@@ -16,7 +16,7 @@ SoundManager 오브젝트를 생성하고 싱글톤 패턴으로 구축하여, �
 
 - SoundControlPanel의 BGM과 SFX 텍스트를 추가해 각 슬라이더가 어떤 용도인지 구별이 가능하고 흰색으로 설정하여 가독성을 높였어.
 - GameExitManager 스크립트를 제거하고, OptionsManager 스크립트의 Update 함수를 수정하여 O 키 대신 Escape (ESC) 키로 옵션 패널을 켜고 끄도록 통합했어.
-   1. 이로써 ESC는 일시 정지/메뉴 열기 역할만 수행하며, 게임 종료는 옵션 창 내부의 'Quit Game' 버튼을 통해서만 가능하도록 안전한 종료 절차를 확립
+   1. 이로써 ESC는 일시 정지/메뉴 열기 역할만 수행하며, 게임 종료는 옵션 창 내부의 'Quit Game' 버튼을 통해서만 가능하도록 안전한 종료 절차를 확립
 - 옵션창의 버튼 이름 변경. 옵션 창의 Exit 버튼을 **'Main Menu'**로, Quit 버튼을 'Quit Game' 등으로 변경하여, 두 종료 기능의 역할을 명확히 구분했어.
 
 
@@ -30,21 +30,21 @@ SoundManager 스크립트의 PlaySFX 함수에 XML 문서화 주석(///<summary>
 
 
 - XML 주석 도입: SoundManager 스크립트의 핵심 함수인 **PlaySFX** 함수 바로 위에 **XML 문서화 주석 (///<summary>)** 을 추가하여 코드의 가독성 및 문서화 수준을 높였어.
-   1. 결과: 다른 스크립트(Item 스크립트 등)에서 PlaySFX 함수를 호출할 때, 함수 위에 툴팁(Tooltip) 형식으로 함수의 역할("SFX 믹서 그룹을 통해 소리를 재생하는 공용 함수")이 즉시 표시되도록 개선했어
-   2. 효과: 이로써 이 PlaySFX함수를 사용하는 개발자(미래의 나도 포함)가 SoundManager 스크립트를 열어보지 않고도 PlaySFX 함수의 기능을 바로 파악할 수 있게 되어 유지보수 효율이 크게 향상했지
+   1. 결과: 다른 스크립트(Item 스크립트 등)에서 PlaySFX 함수를 호출할 때, 함수 위에 툴팁(Tooltip) 형식으로 함수의 역할("SFX 믹서 그룹을 통해 소리를 재생하는 공용 함수")이 즉시 표시되도록 개선했어
+   2. 효과: 이로써 이 PlaySFX함수를 사용하는 개발자(미래의 나도 포함)가 SoundManager 스크립트를 열어보지 않고도 PlaySFX 함수의 기능을 바로 파악할 수 있게 되어 유지보수 효율이 크게 향상했지
 
 - XML 주석 작성 방법 (기록용)
 - 목적: XML 주석은 단순한 설명이 아닌, C# 컴파일러가 인식하여 IDE(에디터)에서 함수 설명을 툴팁으로 자동 제공하는 공식 문서화 기능이야.
 - 작성 방법:
-   1. 설명을 달고자 하는 함수 선언 바로 윗줄에 슬래시를 세 번 (///) 입력
-   2. 에디터가 자동으로 <summary> 태그를 완성해 주면, 그 안에 함수의 핵심 기능을 간결하게 작성
+   1. 설명을 달고자 하는 함수 선언 바로 윗줄에 슬래시를 세 번 (///) 입력
+   2. 에디터가 자동으로 <summary> 태그를 완성해 주면, 그 안에 함수의 핵심 기능을 간결하게 작성
 ///<summary>
 ///SFX 믹서 그룹을 통해 소리를 재생하는 공용 함수
 ///</summary>
 //이 주석은 바로 밑의 PlaySFX 함수에 대한 설명으로 연결
-public void PlaySFX(AudioClip clip) 
+public void PlaySFX(AudioClip clip)
 {
-    // ... 함수 내용 ...
+    // ... 함수 내용 ...
 }
 
 **오늘 몸살기운이 심해서 많은 기능을 추가하고 개선하지 못했어. 그래도 아무것도 안하진 않았어. 그만큼 내가 간절하니까**
@@ -58,44 +58,44 @@ public void PlaySFX(AudioClip clip)
 
 - 게임을 종료했다가 다시 시작해도 볼륨 설정값이 마지막에 조절했던 볼륨 그대로 유지되도록 구현하기 위해,
 OptionsManager 스크립트에 `PlayerPrefs` 을 활용한 영구	 저장 로직을 추가.
-   1. SetBGMVolume, SetSFXVolume 함수에서 사용자가 슬라이더를 조절할 때마다 **PlayerPrefs.SetFloat("KeyName", volume)**을 추가, 사용하여 변경된 볼륨 값(0.0 ~ 1.0)을 디스크에 즉시 기록
-   2. PlayerPrefs.Save()를 통해 데이터 손실 없이 안전하게 저장되도록 구현
-   3. Start() 함수에  **PlayerPrefs.GetFloat("BGMVolume", 1f)**를 사용하여 저장된 값을 불러옴 (저장된 값이 없을 경우 기본값 1f(최대 볼륨)를 사용하도록 안전장치 마련, SFXVolume도 동일한 로직)
-   4. 로드된 값을 슬라이더에 반영하고, 해당 값으로 SetBGMVolume(SFXVolume도 동일) 함수를 호출하여 Audio Mixer에 적용, 볼륨이 초기화되지 않도록 개선
+   1. SetBGMVolume, SetSFXVolume 함수에서 사용자가 슬라이더를 조절할 때마다 **PlayerPrefs.SetFloat("KeyName", volume)**을 추가, 사용하여 변경된 볼륨 값(0.0 ~ 1.0)을 디스크에 즉시 기록
+   2. PlayerPrefs.Save()를 통해 데이터 손실 없이 안전하게 저장되도록 구현
+   3. Start() 함수에  **PlayerPrefs.GetFloat("BGMVolume", 1f)**를 사용하여 저장된 값을 불러옴 (저장된 값이 없을 경우 기본값 1f(최대 볼륨)를 사용하도록 안전장치 마련, SFXVolume도 동일한 로직)
+   4. 로드된 값을 슬라이더에 반영하고, 해당 값으로 SetBGMVolume(SFXVolume도 동일) 함수를 호출하여 Audio Mixer에 적용, 볼륨이 초기화되지 않도록 개선
 
 
 - CountdownManager 스크립트의 게임 시작 전 카운트다운 소리도 SFXVolume 슬라이더로 조절하도록 수정했어.
 - CountdownManager 오브젝트의(스크립트와 동일한 이름) Audio Source 컴포넌트의 Output을 **SFX Mixer Group**으로 연결.
-   1. 스크립트는 소리 재생 명령만 수행하고, 볼륨 값에 대해 알 필요가 없어
-   2. OptionsManager 스크립트는 오직 Audio Mixer에게 "SFX 볼륨을 이 값으로 설정해줘"고 명령(SetFloat)만 하는거야
-   3. Audio Mixer가 중앙에서 그 볼륨 값에 맞춰 CountdownManager 스크립트에서 들어오는 소리를 조절하여 재생
-   4. 효과: 스크립트 간의 의존성을 높이지 않고, 오디오 믹서를 통해 모든 SFX가 단일한 설정 값의 통제를 받도록 시스템 구조를 완성한거야**
+   1. 스크립트는 소리 재생 명령만 수행하고, 볼륨 값에 대해 알 필요가 없어
+   2. OptionsManager 스크립트는 오직 Audio Mixer에게 "SFX 볼륨을 이 값으로 설정해줘"고 명령(SetFloat)만 하는거야
+   3. Audio Mixer가 중앙에서 그 볼륨 값에 맞춰 CountdownManager 스크립트에서 들어오는 소리를 조절하여 재생
+   4. 효과: 스크립트 간의 의존성을 높이지 않고, 오디오 믹서를 통해 모든 SFX가 단일한 설정 값의 통제를 받도록 시스템 구조를 완성한거야**
 
 **오늘 몸이 좋지 않아 많은 기능을 추가하지는 못했지만, 게임의 기본기이자 가장 중요한 시스템 중 하나인 옵션 및 사운드 영구 저장 시스템을 완벽하게 마무리했어,
-  기능의 양보다 코드의 품질과 안정성을 높이는 데 집중했고, 내 시스템 설계 능력과 책임감을 증명하는거야.**
+  기능의 양보다 코드의 품질과 안정성을 높이는 데 집중했고, 내 시스템 설계 능력과 책임감을 증명하는거야.**
 **내일은 git, 노션 포트폴리오에 시연 영상을 다시 업로드하자. 옵션키, 사운드 조절 기능이 추가됐으니까**
 
 
 
 12/4
-전날(12/3) 완성한 옵션 설정 영구 저장 기능 및 SoundManager 싱글톤 로직을 포트폴리오에 상세히 기록하고, 
+전날(12/3) 완성한 옵션 설정 영구 저장 기능 및 SoundManager 싱글톤 로직을 포트폴리오에 상세히 기록하고,
 GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추가.
 
 - 시연 영상 제작: 기존의 플레이 영상에 `사운드 영구 저장 기능`, `오디오 믹서 통합` 등 핵심 기능을 강조한 시연 영상을 제작하고 YouTube에 업로드.
 - README에 올리기 전, HTML <div align="center"> 태그를 사용하여 제목과 설명을 중앙 정렬하여 프로젝트의 시각적 가독성을 높였어.
-- 포트폴리오 통합: 포트폴리오(노션)에 시연 영상을 **임베드(Embed)**하고, README에는 이미지를 클릭하면 영상으로 이동하는 링크를 추가했어. 
+- 포트폴리오 통합: 포트폴리오(노션)에 시연 영상을 **임베드(Embed)**하고, README에는 이미지를 클릭하면 영상으로 이동하는 링크를 추가했어.
 
 
 - 포트폴리오의 '핵심 로직 구현 & 기술적 문제 해결' 섹션에 두 가지 주요 기술적 성과를 토글 형태로 분리하여 추가.
 - `영구적인 사운드 설정 저장 및 오디오 믹서 통합`:
-   1. 기술적 구현: PlayerPrefs를 활용한 영구 저장 로직(Start(), SetVolume())과 20 * Log10(volume) 변환 공식을 기록하고, 설정값 저장 및 자연스러운 볼륨 조절의 기술적 배경을 설명
-   2. 코드 증명: OptionsManager 스크립트의 SetBGMVolume(SFX도 동일)함수를 ```로 코드 일부분을 보여줘서 직관적으로 코드를 이해하게 기록했어
+   1. 기술적 구현: PlayerPrefs를 활용한 영구 저장 로직(Start(), SetVolume())과 20 * Log10(volume) 변환 공식을 기록하고, 설정값 저장 및 자연스러운 볼륨 조절의 기술적 배경을 설명
+   2. 코드 증명: OptionsManager 스크립트의 SetBGMVolume(SFX도 동일)함수를 ```로 코드 일부분을 보여줘서 직관적으로 코드를 이해하게 기록했어
 - `오브젝트 파괴 시 사운드 끊김 문제 해결(SoundManager.cs 싱글톤)`:
-   1. 문제 정의 및 해결: 아이템 획득 시 오브젝트 파괴(Destroy(gameObject))로 인해 사운드가 끊기는 문제를 정의하고, 이를 SoundManager 싱글톤 패턴으로 오디오 생명 주기 관리 문제를 해결했음을 강조
-   2. 코드 증명: SoundManager의 핵심 코드와 함께, 아이템 스크립트에서 **SoundManager.Instance.PlaySFX()**를 호출하여 책임을 분리하는 로직까지 추가 기록했어
+   1. 문제 정의 및 해결: 아이템 획득 시 오브젝트 파괴(Destroy(gameObject))로 인해 사운드가 끊기는 문제를 정의하고, 이를 SoundManager 싱글톤 패턴으로 오디오 생명 주기 관리 문제를 해결했음을 강조
+   2. 코드 증명: SoundManager의 핵심 코드와 함께, 아이템 스크립트에서 **SoundManager.Instance.PlaySFX()**를 호출하여 책임을 분리하는 로직까지 추가 기록했어
 
-**내일은 포트폴리오의 `핵심 로직 구현 & 기술적 문제 해결` 에서  `옵션창의 각종 기능 구현(사운드 조절, 재시작, 메인화면으로 이동, 게임 종료. OptionsManager.cs)` 토글 안에,
-  옵션창의 남은 기능. 재시작, 메인화면 이동, 게임 종료 기능에 대해 설명해보자**
+**내일은 포트폴리오의 `핵심 로직 구현 \& 기술적 문제 해결` 에서  `옵션창의 각종 기능 구현(사운드 조절, 재시작, 메인화면으로 이동, 게임 종료. OptionsManager.cs)` 토글 안에,
+  옵션창의 남은 기능. 재시작, 메인화면 이동, 게임 종료 기능에 대해 설명해보자**
 
 
 
@@ -103,13 +103,13 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 노션 포트폴리오의 '게임 플레이 & 특징'에 옵션창에 옵션창의 기능 설명
 
 - 옵션창의 이미지를 업로드하고 Sound, ReStart, MainMenu, Quit Game 버튼에 대한 설명을 기술.
-   1. - **일시 정지(Pause) 기능:** 게임 중 **ESC 키**를 눌러 즉시 일시 정지 및 옵션 메뉴에 접근할 수 있도록 구현했습니다.
-   2. **볼륨 설정 영구 저장:** 설정한 BGM/SFX 볼륨 값이 **게임 종료 후에도 유지되어** 매번 설정할 필요가 없습니다.(`핵심 로직 구현 & 기술적 문제 해결` 토글에서 기술 구현 과정 서술)
-   3. **게임 재시작 기능:** 버튼 클릭 시 현재 씬을 다시 로드하여 빠르게 게임을 **재시작**할 수 있습니다.
-   4. **메인 화면 이동:** 플레이 중 언제든지 메인 메뉴 씬으로 이동할 수 있습니다.
-   5. **게임 종료: `Application.Quit()`** 명령을 사용하여 **빌드된 실행 파일 환경**에서 운영체제(OS)를 통해 게임 프로세스를 안전하게 종료합니다.
+   1. - **일시 정지(Pause) 기능:** 게임 중 **ESC 키**를 눌러 즉시 일시 정지 및 옵션 메뉴에 접근할 수 있도록 구현했습니다.
+   2. **볼륨 설정 영구 저장:** 설정한 BGM/SFX 볼륨 값이 **게임 종료 후에도 유지되어** 매번 설정할 필요가 없습니다.(`핵심 로직 구현 \& 기술적 문제 해결` 토글에서 기술 구현 과정 서술)
+   3. **게임 재시작 기능:** 버튼 클릭 시 현재 씬을 다시 로드하여 빠르게 게임을 **재시작**할 수 있습니다.
+   4. **메인 화면 이동:** 플레이 중 언제든지 메인 메뉴 씬으로 이동할 수 있습니다.
+   5. **게임 종료: `Application.Quit()`** 명령을 사용하여 **빌드된 실행 파일 환경**에서 운영체제(OS)를 통해 게임 프로세스를 안전하게 종료합니다.
 
-**`핵심 로직 구현 & 기술적 문제 해결` 에서 옵션창의 기능들을 설명하면 "당연한 기초 기능을 길게 설명하네?" 라는 인상을 줄 수 있어서 추가를 안하기로 했어**
+**`핵심 로직 구현 \& 기술적 문제 해결` 에서 옵션창의 기능들을 설명하면 "당연한 기초 기능을 길게 설명하네?" 라는 인상을 줄 수 있어서 추가를 안하기로 했어**
 **내일은 문제해결의 '옵션창의 각종 기능 구현(사운드 조절, 재시작, 메인화면으로 이동, 게임 종료. OptionsManager.cs)' 토글에서 각 기능 해결 과정 대신 핵심 로직만을 간단히 보이게 해보자**
 
 
@@ -119,22 +119,22 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 - 옵션창의 각종 기능 구현 토글에서 각 기능(옵션창을 켜면 게임 멈춤, 재시작, 메인화면 이동, 게임 종료 기능에 대해 로직과 작동 방식을 설명했어.
 - 각 기능마다 작은 토글 (제목3 토글)을 만들어서 가독성을 확보하면서 명확하게 분류를 했어.
-   1. `게임 상태 제어 및 UI 무결성 로직` 작은 토글에 `Time.timeScale을 사용한 일시정지, CountdownManager.isCountdownFinished 변수 체크를 통한 카운트다운 중 옵션 창 접근 차단 및 경고 메시지 출력 구현` 설명을 적어,
-   옵션창이 켜졌을때는 게임이 일시정지, 카운트다운이 작동 중에 옵션창을 켜면 warningText.text = "카운트 중이야! 잠시만 기다려!"; 작동
-   2. 'Scene 및 Application 제어 로직' 작은 토글에 `SceneManager.LoadScene API를 사용한 재시작 및 메인 화면 이동, #if UNITY_EDITOR를 활용한 빌드 환경 대응 종료 처리(Application.Quit()) 구현.`을 설명을 적었어
-      2-1. RestartGame() 함수의 SceneManager.LoadScene(SceneManager.GetActiveScene().name); 으로 게임씬을 재로드(재시작)
-      2-2. ExitGame() 함수의 SceneManager.LoadScene("MainMenuScene"); 으로 메인화면씬 (MainMenuScene)으로 이동
-      2-3. QuitGame()함수의 전처리기로 게임을 종료 로직을 설명:
-       #if UNITY_EDITOR
-       UnityEditor.EditorApplication.isPlaying = false;
-       #else
-       Application.Quit();
-       #endif
+   1. `게임 상태 제어 및 UI 무결성 로직` 작은 토글에 `Time.timeScale을 사용한 일시정지, CountdownManager.isCountdownFinished 변수 체크를 통한 카운트다운 중 옵션 창 접근 차단 및 경고 메시지 출력 구현` 설명을 적어,
+   옵션창이 켜졌을때는 게임이 일시정지, 카운트다운이 작동 중에 옵션창을 켜면 warningText.text = "카운트 중이야! 잠시만 기다려!"; 작동
+   2. 'Scene 및 Application 제어 로직' 작은 토글에 `SceneManager.LoadScene API를 사용한 재시작 및 메인 화면 이동, #if UNITY\_EDITOR를 활용한 빌드 환경 대응 종료 처리(Application.Quit()) 구현.`을 설명을 적었어
+      2-1. RestartGame() 함수의 SceneManager.LoadScene(SceneManager.GetActiveScene().name); 으로 게임씬을 재로드(재시작)
+      2-2. ExitGame() 함수의 SceneManager.LoadScene("MainMenuScene"); 으로 메인화면씬 (MainMenuScene)으로 이동
+      2-3. QuitGame()함수의 전처리기로 게임을 종료 로직을 설명:
+       #if UNITY_EDITOR
+       UnityEditor.EditorApplication.isPlaying = false;
+       #else
+       Application.Quit();
+       #endif
 
 - 전처리기 지시문이란: 컴파일이 시작되기 전에 특정 코드를 포함할지/제외할지 결정하는 지시문이야. 모든 전치리기는 # 지시어로 시작해. (컴파일 하기전에 소스 파일들을 정리하고, 정의 된 부분만 컴파일)
 - 유니티 에디터 환경(UNITY_EDITOR)과 실제 사용자용 빌드 환경(else)에서 서로 다른 코드를 실행하게 하여 프로그램의 안정성을 확보해
-   1. QuitGame() 함수에서 #if UNITY_EDITOR를 사용해서 에디터 실행 중에는 UnityEditor.EditorApplication.isPlaying = false; (에디터 플레이 모드 종료)를 호출하고
-   2. 빌드된 실행 파일에서는 Application.Quit(); (프로세스 완전 종료)를 호출하여 각 환경에 맞는 안전한 종료를 구현하지**
+   1. QuitGame() 함수에서 #if UNITY_EDITOR를 사용해서 에디터 실행 중에는 UnityEditor.EditorApplication.isPlaying = false; (에디터 플레이 모드 종료)를 호출하고
+   2. 빌드된 실행 파일에서는 Application.Quit(); (프로세스 완전 종료)를 호출하여 각 환경에 맞는 안전한 종료를 구현하지**
 
 
 
@@ -145,17 +145,17 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 - 기존의 복잡한 3단계 명령 체계(AttackController → Player → Sil_Player) 대신, 유니티의 실행 순서(Execution Order)를 활용한 '관찰자(Observer) 패턴' 기반의 설계로 변경되었음을 강조했어.
 
 - 지속 상태 동기화 및 Jittering 방지: LateUpdate()를 사용하여 원본 플레이어의 모든 물리/애니메이션 연산이 끝난 후, 최종 위치, 방향(flipX), 이동 상태(Move)를,
-  복사해 화면 떨림(Jittering)을 방지하는 부드러운 시각적 동기화를 보장했어.
+  복사해 화면 떨림(Jittering)을 방지하는 부드러운 시각적 동기화를 보장했어.
 - 애니메이터 완전 복제 (핵심 기술):
-   1. 일회성 명령 함수를 사용하는 대신, for 루프와 **playerAnimator.GetCurrentAnimatorStateInfo()**를 통해 원본 애니메이터의 모든 레이어와 상태를 읽어왔어
-   2. **stateInfo.normalizedTime**을 활용하여 애니메이션의 현재 재생 지점까지 완벽하게 복제해서, 공격, 사망 등 모든 일회성 모션까지 별도의 함수 호출 없이 완벽하게 따라 하게 만들었음을 강조했어
-- 극도로 낮은 결합도 달성: 실루엣 스크립트가 원본 플레이어의 public 함수를 전혀 호출하지 않고 오직 상태만 읽어오기(Read-Only) 때문에, 
-  스크립트 간의 결합도가 '관찰자(Observer)' 수준으로 낮아져 코드의 안정성과 유지보수 효율성이 극대화되었음을 명확히 했어.
+   1. 일회성 명령 함수를 사용하는 대신, for 루프와 **playerAnimator.GetCurrentAnimatorStateInfo()**를 통해 원본 애니메이터의 모든 레이어와 상태를 읽어왔어
+   2. **stateInfo.normalizedTime**을 활용하여 애니메이션의 현재 재생 지점까지 완벽하게 복제해서, 공격, 사망 등 모든 일회성 모션까지 별도의 함수 호출 없이 완벽하게 따라 하게 만들었음을 강조했어
+- 극도로 낮은 결합도 달성: 실루엣 스크립트가 원본 플레이어의 public 함수를 전혀 호출하지 않고 오직 상태만 읽어오기(Read-Only) 때문에,
+  스크립트 간의 결합도가 '관찰자(Observer)' 수준으로 낮아져 코드의 안정성과 유지보수 효율성이 극대화되었음을 명확히 했어.
 
-- 이전의 실루엣 스크립트는 `AttackController.cs -> Player.SilhouetteBowAttack() (Public 함수 호출) -> Sil_Player.SilPlayerBowAttack() (Public 함수 호출)` 이런 식으로,
-  AttackController 스크립트는 Player 스크립트에 특정 이름의 함수가 존재한다는 사실에 의존하고 있어. 이게 바로 '높은 결합도'야. 만약 Player 스크립트에서 함수 이름이 바뀌면, AttackController 스크립트도 무조건 수정해야 해. 
-- 지금의 실루엣 스크립트는 public Transform이나 private Animator같은 컴포넌트 참조는 원본 플레이어 오브젝트를 참조할뿐, '위치, 행동만을 보고 원본의 데이터를 받고 그대로 따라하는것일 뿐이라서, 
-  결합도에 영향을 주지 않는 안정적인 구조로 간주되는 거야.
+- 이전의 실루엣 스크립트는 `AttackController.cs -> Player.SilhouetteBowAttack() (Public 함수 호출) -> Sil\_Player.SilPlayerBowAttack() (Public 함수 호출)` 이런 식으로,
+  AttackController 스크립트는 Player 스크립트에 특정 이름의 함수가 존재한다는 사실에 의존하고 있어. 이게 바로 '높은 결합도'야. 만약 Player 스크립트에서 함수 이름이 바뀌면, AttackController 스크립트도 무조건 수정해야 해.
+- 지금의 실루엣 스크립트는 public Transform이나 private Animator같은 컴포넌트 참조는 원본 플레이어 오브젝트를 참조할뿐, '위치, 행동만을 보고 원본의 데이터를 받고 그대로 따라하는것일 뿐이라서,
+  결합도에 영향을 주지 않는 안정적인 구조로 간주되는 거야.
 
 **이전의 실루엣 스크립트 Sil_Player의 중개자 역할로 했었을때의 구현 방식과 그로인한 단점들과 지금의 관찰자 역할의 이점을 작은 토글로 만들어서 기재했어**
 
@@ -166,19 +166,19 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 - Spike 스크립트의 ApplyDebuffDamage() 코루틴 함수에 사운드 재생 로직 추가.
 - 가시 오브젝트는 시간이 지나면 Destroy(gameObject, duration)으로 사라지지만, SoundManager 오브젝트는 DontDestroyOnLoad로 유지되는 영구 오브젝트야.
-   1. 그래서 가시 프리팹에 AudioSource를 추가하지 않고 가시 스크립트에 public AudioClip DebuffDamageSound; 를 추가해 인스펙터에서 사운드 파일을 드래그로 연결
-   2. ApplyDebuffDamage() 코루틴 함수 내부에 if (DebuffDamageSound != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(DebuffDamageSound); 코드를 추가
-   3. 가시를 밟고 빠져나갈때 시작될 디퍼브 데미지에 틱마다 사운드를 재생할 수 있게 됐어
-   4. SoundManager가 사운드를 관리하니 가시가 사라져도 사운드는 그대로 유지가 돼
+   1. 그래서 가시 프리팹에 AudioSource를 추가하지 않고 가시 스크립트에 public AudioClip DebuffDamageSound; 를 추가해 인스펙터에서 사운드 파일을 드래그로 연결
+   2. ApplyDebuffDamage() 코루틴 함수 내부에 if (DebuffDamageSound != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(DebuffDamageSound); 코드를 추가
+   3. 가시를 밟고 빠져나갈때 시작될 디퍼브 데미지에 틱마다 사운드를 재생할 수 있게 됐어
+   4. SoundManager가 사운드를 관리하니 가시가 사라져도 사운드는 그대로 유지가 돼
 
 - SoundManager의 역할에 대한 명확한 이해: 사운드 재생 시스템 관리를 전담한다!
-   1. **소리 재생의 분리** 아이템이나 가시 디버프처럼 일시적으로 존재하는 오브젝트에 붙어있는 소리를 재생할 때 사용해
-   2. **파괴로부터의 독립** 소리 재생을 명령한 오브젝트(아이템, 가시)가 제 생성시간이 다 되어 Destroy() 함수에 의해 사라져도 (메모리에서 제거되어도), 소리가 중간에 끊기면 안 되는 상황에 사용하지
-   3. **SoundManager는 정적인 인스턴스(Instance)**로 존재해 사라지지 않는 오브젝트야. 따라서 Spike 스크립트와 같은 일반 오브젝트가 파괴되어도, 
-   재생 명령은 이미 SoundManager에게 전달되었고, SoundManager가 재생을 책임지기 때문에 소리는 끊김 없이 끝까지 유지돼
+   1. **소리 재생의 분리** 아이템이나 가시 디버프처럼 일시적으로 존재하는 오브젝트에 붙어있는 소리를 재생할 때 사용해
+   2. **파괴로부터의 독립** 소리 재생을 명령한 오브젝트(아이템, 가시)가 제 생성시간이 다 되어 Destroy() 함수에 의해 사라져도 (메모리에서 제거되어도), 소리가 중간에 끊기면 안 되는 상황에 사용하지
+   3. **SoundManager는 정적인 인스턴스(Instance)**로 존재해 사라지지 않는 오브젝트야. 따라서 Spike 스크립트와 같은 일반 오브젝트가 파괴되어도,
+   재생 명령은 이미 SoundManager에게 전달되었고, SoundManager가 재생을 책임지기 때문에 소리는 끊김 없이 끝까지 유지돼
 
 **포트폴리오의 사용 에셋(무료에셋)에 이 가시 디버프 사운드의 출처와, 라이센스도 추가했어**
-**내일은 타일맵에 20초마다 생성되는 바닥을 밟으면 모든 몬스터,장애물이 잠시 멈추는 기능을 추가해보자@@** 
+**내일은 타일맵에 20초마다 생성되는 바닥을 밟으면 모든 몬스터,장애물이 잠시 멈추는 기능을 추가해보자@@**
 
 
 
@@ -187,27 +187,27 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 - TimeFreeze 시스템 핵심 로직 클린업 및 타이머 보정.
 - TimeFreeze.cs:
-   1. timeWhenFrozen 변수를 추가하여 시간 정지 시작 시점을 기록하고, 재개 시 정확한 정지 시간을 계산하도록 구현
-   2. ResumeTime() 함수에 IsTimeFrozen = false 및 디버그 로직을 통합하여 정리 과정을 단순화
-   3. 플레이어 제어에 영향을 주지 않도록 Time.timeScale 관련 코드를 모두 제거
-   4. TimeFreeze 스크립트는 게임 내 시간 정지 시스템의 중앙 통제 역할을 하므로, 특정 오브젝트에 종속되지 않는 매니저(Manager) 스크립트로 설계했어
-      4-1. 역할: IsTimeFrozen 플래그를 통해 몬스터, 장애물, 스포너 등 모든 엔티티의 움직임을 제어하는 핵심 시스템
-      4-2. 위치: 씬에 배치된 빈 오브젝트 (TimeFreezeManager)에 단 하나만 붙여서 사용한다 (싱글톤 패턴)
-      4-3. 호출: 시간정지 아이템 획득 시 (TimeFreezeItem.cs) 이 스크립트의 TimeFreeze.Instance.ActivateTimeFreeze() 함수를 호출함으로써 시스템이 작동
+   1. timeWhenFrozen 변수를 추가하여 시간 정지 시작 시점을 기록하고, 재개 시 정확한 정지 시간을 계산하도록 구현
+   2. ResumeTime() 함수에 IsTimeFrozen = false 및 디버그 로직을 통합하여 정리 과정을 단순화
+   3. 플레이어 제어에 영향을 주지 않도록 Time.timeScale 관련 코드를 모두 제거
+   4. TimeFreeze 스크립트는 게임 내 시간 정지 시스템의 중앙 통제 역할을 하므로, 특정 오브젝트에 종속되지 않는 매니저(Manager) 스크립트로 설계했어
+      4-1. 역할: IsTimeFrozen 플래그를 통해 몬스터, 장애물, 스포너 등 모든 엔티티의 움직임을 제어하는 핵심 시스템
+      4-2. 위치: 씬에 배치된 빈 오브젝트 (TimeFreezeManager)에 단 하나만 붙여서 사용한다 (싱글톤 패턴)
+      4-3. 호출: 시간정지 아이템 획득 시 (TimeFreezeItem.cs) 이 스크립트의 TimeFreeze.Instance.ActivateTimeFreeze() 함수를 호출함으로써 시스템이 작동
 - GameTimerUI.cs:
-   1. TimeFreeze.Instance.IsTimeFrozen 상태를 확인해서 타이머 업데이트를 멈추도록 구현 (시간 정지 동안은 게임 시간이 흐르지 않게 했어)
-   2. AdjustStartTime() 함수를 추가하여 시간 정지가 해제될 때 정지된 시간만큼 게임 타이머가 보정되어 흐름이 이어지도록 처리
+   1. TimeFreeze.Instance.IsTimeFrozen 상태를 확인해서 타이머 업데이트를 멈추도록 구현 (시간 정지 동안은 게임 시간이 흐르지 않게 했어)
+   2. AdjustStartTime() 함수를 추가하여 시간 정지가 해제될 때 정지된 시간만큼 게임 타이머가 보정되어 흐름이 이어지도록 처리
 
 - 시간 정지 아이템 구현
 - TimeFreezeItem.cs:
-   1. 아이템 지속 시간(freezeDuration)을 **[SerializeField] private float**로 변경해서 유니티 인스펙터에서 쉽게 설정 가능하게 수정
-   2. 플레이어가 아이템을 획득(OnTriggerEnter2D) 시 TimeFreeze.ActivateTimeFreeze(duration) 호출 (오늘은 스크립트만 만들고 시간정비 아이템 프리팹은 만들지 않았어)
+   1. 아이템 지속 시간(freezeDuration)을 **[SerializeField] private float**로 변경해서 유니티 인스펙터에서 쉽게 설정 가능하게 수정
+   2. 플레이어가 아이템을 획득(OnTriggerEnter2D) 시 TimeFreeze.ActivateTimeFreeze(duration) 호출 (오늘은 스크립트만 만들고 시간정비 아이템 프리팹은 만들지 않았어)
 
 - 특수 아이템 스폰 로직 분리
 - TimeFreezeItemSpawner.cs:
-   1. 단일 책임 원칙을 지키기 위해 일반 아이템 스포너(ItemSpawner)와 분리 (ItemSpawner 스크립트에 추가하면 코드량이 길어지고 단일 책임 원칙에 어긋나!)
-   2. 20초 주기로 아이템을 스폰해서 맵에 최대 1개만 존재하도록 관리 로직 구현 (스폰 로직은 몬스터, 아이템, 가시 Spawner 스크립트와 동일한 로직이야)
-   3. TimeFreeze 상태에서는 스폰 타이머가 멈추도록 연동 (시간 정지 상태에선 몬스터, 장애물이 스폰되지 않아, 이미 스폰된 몬스터, 장애물은 이동이 정지된 상태지만 데미지는 줄 수 있어)
+   1. 단일 책임 원칙을 지키기 위해 일반 아이템 스포너(ItemSpawner)와 분리 (ItemSpawner 스크립트에 추가하면 코드량이 길어지고 단일 책임 원칙에 어긋나!)
+   2. 20초 주기로 아이템을 스폰해서 맵에 최대 1개만 존재하도록 관리 로직 구현 (스폰 로직은 몬스터, 아이템, 가시 Spawner 스크립트와 동일한 로직이야)
+   3. TimeFreeze 상태에서는 스폰 타이머가 멈추도록 연동 (시간 정지 상태에선 몬스터, 장애물이 스폰되지 않아, 이미 스폰된 몬스터, 장애물은 이동이 정지된 상태지만 데미지는 줄 수 있어)
 
 **내일은 시간 정지 아이템 프리팹을 만들고 TimeFreezeItemSpawner에 프리팹을 넣어 완성해보도록 하자!**
 
@@ -220,28 +220,28 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 - 시각 효과 (Post Processing) 구현:
 - Post Processing 설정: 시간 정지 아이템을 획득하면 Post-process Volume 컴포넌트를 사용하여 아이템 획득 시 화면을 Greyscale(흑백)로 변경하는 효과 구현했어.
-   1. Color Grading의 Saturation 값을 **-100**으로 설정하여 채도를 제거했어
-   2. PostProcessVolume 컴포넌트는 게임 시작 시 비활성화 상태로 두고, 스크립트가 제어하도록 설정 완료 (스크립트에서 조절하는거라 처음에는 비활성화 상태로 둬야해)
+   1. Color Grading의 Saturation 값을 **-100**으로 설정하여 채도를 제거했어
+   2. PostProcessVolume 컴포넌트는 게임 시작 시 비활성화 상태로 두고, 스크립트가 제어하도록 설정 완료 (스크립트에서 조절하는거라 처음에는 비활성화 상태로 둬야해)
 - 연결 지점: PostProcessVolume_TimeFreeze 오브젝트를 TimeFreezeManager 오브젝트의 TimeFreeze 스크립트 내 Freeze Volume 슬롯에 연결 완료. (인스펙터에 연결)
 - 카메라 설정: 플레이어 오브젝트의 자식으로 있던 Main Camera에 Post Process Layer 컴포넌트를 추가하고 Everything으로 설정하여 렌더링 파이프라인에 포스트 프로세싱 효과를 등록했어.
 - 첫 번째 연결: 프로파일 → 볼륨 컴포넌트 (설계도 전달):
-   1. 이 프로파일 파일을 씬에 있는 PostProcessVolume_TimeFreeze 오브젝트의 Post-process Volume 컴포넌트 내 Profile 칸에 연결했어
-   2. 이제 PostProcessVolume_TimeFreeze 오브젝트는 "나는 화면을 회색으로 바꾸는 방법을 알고 있어!"라는 정보를 가지게 돼
+   1. 이 프로파일 파일을 씬에 있는 PostProcessVolume_TimeFreeze 오브젝트의 Post-process Volume 컴포넌트 내 Profile 칸에 연결했어
+   2. 이제 PostProcessVolume_TimeFreeze 오브젝트는 "나는 화면을 회색으로 바꾸는 방법을 알고 있어!"라는 정보를 가지게 돼
 - 두 번째 연결: 볼륨 오브젝트 → TimeFreeze 스크립트 (제어권 전달):
-   1. 첫 번째 연결로 효과가 적용된 PostProcessVolume_TimeFreeze 오브젝트 자체를 통째로 가져와서,
-   TimeFreezeManager 오브젝트의 TimeFreeze.cs 스크립트 내 Freeze Volume 칸에 연결했지
-   2. 이 연결 덕분에 TimeFreeze 스크립트가 아이템 획득 시 이 볼륨을 enabled = true로 켜서 화면을 회색으로 만들고, 시간이 풀리면 다시 enabled = false로 끌 수 있게 되는 거야
+   1. 첫 번째 연결로 효과가 적용된 PostProcessVolume_TimeFreeze 오브젝트 자체를 통째로 가져와서,
+   TimeFreezeManager 오브젝트의 TimeFreeze.cs 스크립트 내 Freeze Volume 칸에 연결했지
+   2. 이 연결 덕분에 TimeFreeze 스크립트가 아이템 획득 시 이 볼륨을 enabled = true로 켜서 화면을 회색으로 만들고, 시간이 풀리면 다시 enabled = false로 끌 수 있게 되는 거야
 
 - 시간 정지 로직 (TimeFreeze.cs) 연동:
 - TimeFreeze 스크립트에 PostProcessVolume 변수를 연결하고, 코루틴 시작 시 freezeVolume.enabled = true로 활성화, ResumeTime() 시 freezeVolume.enabled = false로 비활성화하는 로직 추가,
-  시간이 지나면 시간 정지가 끝나는거지.
+  시간이 지나면 시간 정지가 끝나는거지.
 
 - 몬스터 제어 (Enemy.cs):
 - 시간 정지 상태일 때 물리 및 애니메이션을 정지시킨 후, return을 사용하여 FixedUpdate() 함수의 나머지 모든 추적/공격 로직을 무시하고 현재 프레임의 함수 실행을 즉시 종료하여 멈춘 상태를 유지한다. (이것을 Early Exit 패턴이라고 해)
 
 - 사운드 및 스폰 로직(TimeFreezeItem, TimeFreezeItemSpawner.cs):
-   1. TimeFreezeItem 스크립트에 획득 사운드(pickupSound)를 추가하고 SoundManager.PlaySFX()를 호출하여 아이템 획득 시 효과음 재생 기능 추가. (아이템을 획득시 들리는거라 아이템이 파괴되어도 들려야 하기 때문에 SoundManager를 사용)
-   2. 아이템 스폰 위치를 타일맵 내 랜덤 위치가 아닌 타일맵 중앙으로 고정하는 로직 최종 확정 및 적용했어
+   1. TimeFreezeItem 스크립트에 획득 사운드(pickupSound)를 추가하고 SoundManager.PlaySFX()를 호출하여 아이템 획득 시 효과음 재생 기능 추가. (아이템을 획득시 들리는거라 아이템이 파괴되어도 들려야 하기 때문에 SoundManager를 사용)
+   2. 아이템 스폰 위치를 타일맵 내 랜덤 위치가 아닌 타일맵 중앙으로 고정하는 로직 최종 확정 및 적용했어
 
 **Early Exit(return;) 패턴을 사용하여 Enemy 스크립트의 FixedUpdate함수 코드 흐름을 단순화하는 이점을 확인**
 **post Processing의 Volume 컴포넌트는 초기 상태를 비활성화해야 스크립트 제어(활성화/비활성화)가 원하는 대로 작동함을 이해
@@ -256,15 +256,15 @@ GitHub의 README와 노션 포트폴리오에 최신 시연 영상을 새로 추
 
 - 상태 플래그 추가. private bool isPendingDeath = false; 를 추가. (사망 처리를 시간 정지 해제 시까지 지연 대기시키는 플래그)
 - 피드백 단일화 함수(ExecuteDeathSequence) 구현:
-   1. 몬스터 사망 시 발생하는 시각 및 청각 피드백 (사망 사운드 재생, Die 애니메이션 트리거, Destroy(gameObject, 1.5f) 예약)을 이 함수 하나로 단일화했어
-   2. 이 함수는 isPendingDeath 플래그를 false로 초기화하는 역할도 담당해
+   1. 몬스터 사망 시 발생하는 시각 및 청각 피드백 (사망 사운드 재생, Die 애니메이션 트리거, Destroy(gameObject, 1.5f) 예약)을 이 함수 하나로 단일화했어
+   2. 이 함수는 isPendingDeath 플래그를 false로 초기화하는 역할도 담당해
 - EnemyDie() 로직 분기:
-   1. isDead = true, 점수 획득, 스포너 업데이트 등의 즉시 처리 로직은 시간이 멈춰도 바로 실행
-   2. if (TimeFreeze.IsTimeFrozen) 체크를 통해 시간이 정지된 상태라면 isPendingDeath = true로 설정하고 ExecuteDeathSequence() 호출을 막아 모션과 사운드를 지연시켰어
-   3. 정지 상태가 아닐때는 ExecuteDeathSequence()를 즉시 호출하도록 해서 몬스터 사망 시 사운드와, 사망 모션을 발동하도록 유지했어
+   1. isDead = true, 점수 획득, 스포너 업데이트 등의 즉시 처리 로직은 시간이 멈춰도 바로 실행
+   2. if (TimeFreeze.IsTimeFrozen) 체크를 통해 시간이 정지된 상태라면 isPendingDeath = true로 설정하고 ExecuteDeathSequence() 호출을 막아 모션과 사운드를 지연시켰어
+   3. 정지 상태가 아닐때는 ExecuteDeathSequence()를 즉시 호출하도록 해서 몬스터 사망 시 사운드와, 사망 모션을 발동하도록 유지했어
 FixedUpdate() 발동 조건 추가:
-   1. FixedUpdate() 함수에서 시간이 정상으로 돌아왔을 때 (!IsTimeFrozen), if (isPendingDeath)를 체크해서 지연된 ExecuteDeathSequence()를 발동하도록 코드를 추가
-   2. 즉, 시간 정지때 몬스터의 체력이 0이 되어 사망 판정이 날때 사운드와 사망 모션은 발동하지 않고 가만히 멈춰있다가 시간 정지가 끝나면 곧바로 사운드와 사망 모션을 발동하도록 한거지!
+   1. FixedUpdate() 함수에서 시간이 정상으로 돌아왔을 때 (!IsTimeFrozen), if (isPendingDeath)를 체크해서 지연된 ExecuteDeathSequence()를 발동하도록 코드를 추가
+   2. 즉, 시간 정지때 몬스터의 체력이 0이 되어 사망 판정이 날때 사운드와 사망 모션은 발동하지 않고 가만히 멈춰있다가 시간 정지가 끝나면 곧바로 사운드와 사망 모션을 발동하도록 한거지!
 
 **최종 결과로 시간 정지 중 몬스터가 사망해도 그 자리에 얼어붙은 채 남아있다가, 시간이 풀리는 순간 사망 사운드와 모션이 재생되며 사라지는 일관성 있고 멋진 연출을 완성했어!**
 **몸살 비염이 심해서 오늘은 좀 늦게 시작했어. 그래서 빌드하고 이걸 압축해서 git에 올리고 다운로드 링크를 복사해 포트폴리오에 추가하고, 게임 플레이 영상을 올리지 못했어. 이건 내일 !!꼭!! 하자**
@@ -279,7 +279,7 @@ Time Freeze 시스템 UX 최종 보완
 
 - 시간정지 아이템 등장 알림 텍스트의 폰트 깨짐 현상을 확인. (시간 중□기 등장!) 및 다른 알림과 충돌하여 정보 전달력이 떨어지는 문제를 해결했어.
 - 글자 깨짐과 다른 알림과의 충돌과 이미 많은 알림 (아이템 등장, 일반 몬스터 등장)으로 인해 제대로 확인이 불가해서 결국,
-  시간 정지 아이템 등장 알림 텍스트를 제거하고(TimeFreezeItemSpawner 스크립트의 알림 if문을 주석처리), 전용 SFX(효과음) 재생 방식으로 변경해서 시각적 방해 없이 아이템 등장 정보를 확실하게 인지하도록 개선했어.
+  시간 정지 아이템 등장 알림 텍스트를 제거하고(TimeFreezeItemSpawner 스크립트의 알림 if문을 주석처리), 전용 SFX(효과음) 재생 방식으로 변경해서 시각적 방해 없이 아이템 등장 정보를 확실하게 인지하도록 개선했어.
 
 
 - v1.X.X = MAJOR(주 버전): 하위 호환성을 완전히 파괴하는 대규모 변경이 있을 때 (예: 게임의 핵심 시스템 전체를 갈아엎을 때) 1.x.x → 2.0.0
@@ -300,13 +300,51 @@ Time Freeze 시스템 UX 최종 보완
 포트폴리오의 Time Freeze 시스템 '기술적 문제 해결' 섹션 상세 서술 완료
 
 - '핵심 로직 구현 & 기술적 문제 해결' 에서 '시간 정지(Time Freeze) 시스템 완성 및 고품질 연출 구현 (TimeFreeze.cs)' 를 만들어 시간정지 기능과 그로 인한 특히 몬스터의 행동 정지에 대해 서술했어.
-   1. TimeFreeze 스크립트 상세 로직 추가: 시스템의 코어 로직(싱글톤 패턴, 코루틴 연장 로직, 타이머 보정)을 토글 형태로 상세 분석하여 포트폴리오에 추가
-   2. 로직 안정성 설명 보완: 아이템 재등장 로직을 고려하여 "중복 활성화 방지" 로직의 구현 의도(잠재적 버그 방지 및 안정성)를 명확히 설명
+   1. TimeFreeze 스크립트 상세 로직 추가: 시스템의 코어 로직(싱글톤 패턴, 코루틴 연장 로직, 타이머 보정)을 토글 형태로 상세 분석하여 포트폴리오에 추가
+   2. 로직 안정성 설명 보완: 아이템 재등장 로직을 고려하여 "중복 활성화 방지" 로직의 구현 의도(잠재적 버그 방지 및 안정성)를 명확히 설명
 
 - Enemy 스크립트의 로직 상세 추가: 몬스터 스크립트에서 TimeFreeze.IsTimeFrozen 값을 받아 행동을 정지하는 로직과, isPendingDeath 플래그를 이용해 사망 모션을 지연시키는 핵심 로직을 상세 서술.
-   1. 몬스터 수용 로직 명시: Enemy 스크립트의 FixedUpdate() 함수에서 IsTimeFrozen 플래그를 체크하여 물리 및 애니메이터를 멈추는 시간 정지 수용 로직을 분석하여 추가
-   2. 사망 지연 연출 기술 강조: isPendingDeath 플래그를 활용하여 시간이 풀리는 순간 사망 모션을 활성화함으로써, 연출의 일관성을 완벽하게 확보했음을 최종 문구로 강조하여 마무리
+   1. 몬스터 수용 로직 명시: Enemy 스크립트의 FixedUpdate() 함수에서 IsTimeFrozen 플래그를 체크하여 물리 및 애니메이터를 멈추는 시간 정지 수용 로직을 분석하여 추가
+   2. 사망 지연 연출 기술 강조: isPendingDeath 플래그를 활용하여 시간이 풀리는 순간 사망 모션을 활성화함으로써, 연출의 일관성을 완벽하게 확보했음을 최종 문구로 강조하여 마무리
 
 - Post-Processing 으로 시간 정지시 시각 연출에 대해서도 서술했어.
-   1. 연출 의도 및 구현 명시: PostProcessVolume 컴포넌트를 사용하여 시간 정지 시 색상 채도를 낮추고 흑백 톤으로 전환하는 시각 효과 로직을 포트폴리오에 추가
-   2. UX 강조: 이 시각적 변화가 플레이어에게 강렬한 피드백을 제공하고 시간 정지 상태를 직관적으로 인지하게 하여 몰입도를 극대화했음을 설명
+   1. 연출 의도 및 구현 명시: PostProcessVolume 컴포넌트를 사용하여 시간 정지 시 색상 채도를 낮추고 흑백 톤으로 전환하는 시각 효과 로직을 포트폴리오에 추가
+   2. UX 강조: 이 시각적 변화가 플레이어에게 강렬한 피드백을 제공하고 시간 정지 상태를 직관적으로 인지하게 하여 몰입도를 극대화했음을 설명
+
+
+
+12/14
+본가에 다녀왔어
+
+
+
+12/15
+시간 정지 시 배경 음악도 같이 정지
+활 아이템 3회 획득 시 다음 활 공격 강화(슬로우, 화살 이미지 변경)
+일반 화살, 강화 화살 프리팹의 RigidBody의 Interpolate를 None에서 Interpolate으로 변경
+
+- TimeFreeze 스크립트에 헤더로 private AudioSource bgmAudioSource; 를 만들어 배경음악 오브젝트(BGM_Manager)를 TimeFreeze 스크립트에 연결.
+- 시간 정지(슬로우) 시 BGM 일시 정지(Pause), 재개(UnPause) 로직 구현.
+
+
+- BowWeapon, PlayerStatsEffects, Item 스크립트에 ArrowPower 아이템 획득 시 데미지 증가와 동시에 강화 스택 1 증가 로직 통합.
+- BowWeapon 스크립트에서 스택이 3개 이상일 때 다음 공격 시 강화 화살인 EnhancedArrowPrefab 을 사용해 강화공격, 사용 후 스택 초기화.
+   1. 강화 상태에 따라 일반 화살과 다른 외형의 프리팹을 사용하도록 연결 완료(BowWeapon 스크립트 인스펙터에 강화 화살 프리팹 드래그 연결)
+- Arrow, Enemy 스크립트에서 강화 화살 피격 시 몬스터의 속도를 영구적으로 감소. (SlowDuration 변수 제거 및 로직 정리 완료)
+- 일반/강화 화살 프리팹의 RigidBody2D에서 Interpolate 설정을 Interpolate로 변경하여 떨림 현상 개선.(물리 움직임 최적화)
+
+
+- 일반 화살 프리팹의 RigidBody의 Interpolate를 'None' 에서 'Interpolate'로 변경. (이전 프레임의 위치를 기반으로 현재 프레임의 위치를 예측하여 움직임을 부드럽게 보간해줘)
+- 일반적인 문제 (None).
+   1. Rigidbody가 None (보간 없음)으로 설정되어 있으면, 물리 계산과 화면을 그리는 속도가 서로 달라
+   2. 물리 계산 (Fixed Update): 1초에 50번 (예시), 화면 그리기 (Update): 1초에 120번 (예시). 화면이 120번 그려지는 동안, 물리 위치는 50번만 업데이트돼
+   3. 결과로 화면이 새로 그려질 때마다 오브젝트의 위치가 듬성듬성 바뀌니까, 특히 오브젝트가 빠를 때 화면에서 '끊기거나 덜덜 떨리는' (Jittering) 현상이 발생해
+- Interpolate의 역할.
+   1. 이전 프레임의 위치를 기반으로 현재 프레임의 위치를 예측하여 움직임을 부드럽게 보간(Blend) 해줘
+   2. 이전 위치 기억: 물리 업데이트 A가 끝났을 때의 위치를 기억해
+   3. 현재 위치 계산: 물리 업데이트 B가 곧 끝날 위치를 계산해
+   4. 예측 및 보간 (Blend): 물리 업데이트 A와 B 사이에서 발생하는 렌더링 프레임이 화면을 그릴 때, A 위치와 B 위치 사이를 시간 비율에 맞춰 부드럽게 예측하여 그려
+   5. 즉, Interpolate는 실제 물리 계산 결과(A와 B)를 무시하지 않으면서, 그 사이의 시각적인 움직임을 채워서 연속적으로 보이게 만들어 주는 거야
+- 결과로 실제 물리 업데이트는 듬성듬성해도, 우리 눈에는 A에서 B로 튕기듯이 이동하지 않고 아주 부드럽게 미끄러지듯이 이동하는 것처럼 보여. 이 덕분에 몬스터나 화살에서 느꼈던 떨림 현상(Jittering)이 사라지는 거야.
+
+**내일은 검 공격도 활과 비슷하게 검 아이템 3회 획득시 강화효과를 추가해보자. 그리고 README,포트폴리오에도 무기 강화에 대해 적고 빌드하자**
