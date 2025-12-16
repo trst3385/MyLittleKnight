@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6112c2a9e18279a4cbc65c4c021c85ec
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 332804
+  packageName: Free Casual GUI
+  packageVersion: 1.0
+  assetPath: Assets/Skyden_Games/Free_Casual_GUI/Demo/Scripts/SearchUrl.cs
+  uploadId: 824884
