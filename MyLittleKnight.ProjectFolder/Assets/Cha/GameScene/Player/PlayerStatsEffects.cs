@@ -63,8 +63,8 @@ public class PlayerStatsEffects : MonoBehaviour
         {
             if(bowWeapon != null)
             {
-                bowWeapon.ArrowDamage += ItemCSdamage;//PlayerAttack 스크립트의 활 공격력 증가
-                bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);//PlayerAttack 스크립트의 공격속도 증가
+                bowWeapon.ArrowDamage += ItemCSdamage;
+                bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);
                 bowWeapon.AcquireBowEnhanceItem();//BowWeapon 스크립트에 정의된 강화 스택 증가 함수 호출
                 currentArrowLevel++;//활 강화 숫자 증가
                 UpdateWeaponLevelUI();//UI 업데이트
@@ -78,10 +78,13 @@ public class PlayerStatsEffects : MonoBehaviour
     {
         if (currentSwordLevel < MaxLevel)//현재 레벨이 MaxLevel보다 작을 때만 실행
         {
-            if(bowWeapon != null)
+            if(swordWeapon != null)
             {
-                swordWeapon.SwordDamage += ItemCSdamage;//SwordWeapon의 검 공격력 증가
-                swordWeapon.SwordEnergyDamage += ItemCSdamage;//SwordWeapon의 검기 공격력 증가
+                swordWeapon.SwordDamage += ItemCSdamage;
+                swordWeapon.SwordEnergyDamage += ItemCSdamage;
+
+                if (swordWeapon != null) swordWeapon.AcquireSwordEnhanceItem();//스택 증가 함수 호출
+
                 currentSwordLevel++;//검 강화 숫자 증가
                 UpdateWeaponLevelUI();//UI 업데이트
                 Debug.Log("PlayerStatsEffects: 검 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);

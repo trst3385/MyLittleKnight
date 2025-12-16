@@ -14,6 +14,12 @@ public class SwordWeapon : MonoBehaviour
     public TextMeshProUGUI CooldownText;
     private SpriteRenderer SpriteRenderer;
 
+    [Header("검 강화 스택")]
+    public int MAX_ENHANCE_STACKS = 3;
+    [HideInInspector] public int currentEnhanceStacks = 0;//현재 스택
+    [Header("강화 효과.쿨타임감소")]
+    public float EnhancedCooldownDecrease = 2f;//강화 시 줄일 쿨타임 (2초)
+
     [Header("검 공격 관련")]
     public float SwordDamage = 2f;//검 공격력 (인스펙터 설정)
     public BoxCollider2D SwordAttackCollider;//SwordPoint 오브젝트의 BoxCollider2D를 직접 연결
@@ -52,11 +58,13 @@ public class SwordWeapon : MonoBehaviour
     public void SwordAttack()//검 공격 함수(애니메이션 이벤트로 호출될 함수)
     {                        //SwordPoint의 BoxCollider2D를 사용하여 OverlapBox로 충돌 감지
 
+        bool isEnhanced = currentEnhanceStacks >= MAX_ENHANCE_STACKS;//강화 체크 검 아이템 3회 획득시 강화
+
         //검 공격시 사운드 재생
         if (swordAudioSource != null && swordAttackSound != null) swordAudioSource.PlayOneShot(swordAttackSound);
         //PlayOneShot은 이름 그대로 현재 재생 중인 다른 소리를 끊지 않고, 새로운 소리를 한 번만 재생하는 함수야
 
-        if (SwordAttackCollider == null)//swordAttackCollider가 null상태와 같다면? 반대는 !=
+        if (SwordAttackCollider == null)
         {
             Debug.LogError("PlayerAttack: Sword Attack Collider가 연결되지 않아 검 공격을 수행할 수 없어!");
             return;
@@ -84,8 +92,7 @@ public class SwordWeapon : MonoBehaviour
                 continue;
             //continue는 foreach 문이나 다른 반복문(for, while 등)에서 현재 반복을 즉시 건너뛰고 다음 반복으로 넘어가게 하는 명령어
 
-            //몬스터의 콜라이더의 태그가 'enemyTag' 변수와 일치하는지 확인
-            if (hitCollider.CompareTag(EnemyTag))
+            if (hitCollider.CompareTag(EnemyTag))//몬스터의 콜라이더의 태그가 'enemyTag' 변수와 일치하는지 확인
             {
                 EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
@@ -112,6 +119,17 @@ public class SwordWeapon : MonoBehaviour
         }
         LaunchSwordEnergy();//검 에너지 발사
         lastSwordSkillTime = Time.time;//공격 후 다시 쿨타임 시작
+
+        if (isEnhanced)//강화 효과 적용 및 스택 초기화
+        {
+            Debug.Log("검 강화 공격 발동! 쿨타임 2초 감소!");
+            SwordSkillCooldown -= EnhancedCooldownDecrease;//쿨타임 감소
+
+            //최소 쿨타임을 설정 (5초 이하로 내려가지 않도록)
+            if (SwordSkillCooldown < 5f) SwordSkillCooldown = 5f;
+
+            currentEnhanceStacks = 0;//강화 발동 후 스택 초기화
+        }
     }
 
     private void LaunchSwordEnergy()//검 에너지를 생성하고 초기 속도 및 방향을 설정하는 함수
@@ -147,6 +165,15 @@ public class SwordWeapon : MonoBehaviour
     //쿨타임이 끝났는지 여부를 반환하는 간결한 메서드(표현식 본문 메서드)
     public bool CanAttack() => Time.time >= lastSwordSkillTime + SwordSkillCooldown;
 
+    ///<summary>
+    ///외부 (아이템 스크립트)에서 호출되어 강화 스택을 1 증가.
+    ///</summary>
+    public void AcquireSwordEnhanceItem()//외부(Item스크립트)에서 호출되어 검 강화 스택을 1 증가시키는 함수
+    {
+        //최대 스택을 초과하지 않도록 Min 함수 사용
+        currentEnhanceStacks = Mathf.Min(currentEnhanceStacks + 1, MAX_ENHANCE_STACKS);
+        Debug.Log($"검 강화 아이템 획득! 현재 스택: {currentEnhanceStacks}/{MAX_ENHANCE_STACKS}");
+    }
 
     private void UpdateSwordSkillUI()//검 스킬의 쿨타임을 계산하고 UI를 업데이트하는 함수
     {                                //Update 함수로 호출했으니 매 프레임마다 호출되지!
