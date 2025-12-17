@@ -52,7 +52,6 @@ public class BowWeapon : MonoBehaviour
             activeArrowPrefab = EnhancedArrowPrefab;//1.강화 화살 프리팹 사용
             Debug.Log(">>> 특수 강화 공격 발동! (관통 + 슬로우)");
         }
-        
 
         if (bowAudioSource != null && bowAttackSound != null) bowAudioSource.PlayOneShot(bowAttackSound);//활 공격 시 사운드 재생
         else Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
@@ -110,22 +109,32 @@ public class BowWeapon : MonoBehaviour
         }
         lastArrowAttackTime = Time.time;
 
-        if (isEnhanced) currentEnhanceStacks = 0;//강화 공격 발동 후 스택 초기화
+        if (isEnhanced)//강화공격을 하면 강화 스택3 감소
+        {
+            //예시로 아이템 6회 획득 때 강화 공격 후, 3이 남아서 다음 발사도 강화가 됨.
+            currentEnhanceStacks -= MAX_ENHANCE_STACKS;
+
+            //PlayerStatsEffects 컴포넌트를 가져와서 UI를 다시 그려달라고 명령.
+            PlayerStatsEffects statsEffects = GetComponent<PlayerStatsEffects>();
+            if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
+        } 
     }
 
-    /// <summary>
-    /// 강화 활 아이템 획득 시 호출하여 스택을 쌓고, 3스택 달성 시 효과를 활성화.
-    /// </summary>
-    public void AcquireBowEnhanceItem()
-    {
-        if (currentEnhanceStacks < MAX_ENHANCE_STACKS)
-        {
-            currentEnhanceStacks++;
-            Debug.Log($"활 강화 아이템 획득! 현재 스택: {currentEnhanceStacks} / {MAX_ENHANCE_STACKS}");
-        }
-        //3스택을 달성하면 다음 공격은 강화 공격이 되도록 플래그 등을 설정할 수 있지만,
-        //여기서는 ShootArrow함수에서 스택만 체크하도록 단순하게 처리해보자.
-        //만약 3스택이 되면 UI 등으로 플레이어에게 알림을 주는 로직이 여기에 추가하자.
+    //활 강화 스택을 알려주는 함수(람다식)
+    //현재 쌓인 0, 1, 2, 3 스택값을 알려줌
+    public int GetCurrentStacks() => currentEnhanceStacks;
+
+
+    public void AcquireBowEnhanceItem()//활 아이템을 획득 시 강화 공격 스택 쌓기
+    {                                  //아이템을 먹어서 스택이 딱 3이 되는 그 순간,
+                                       //UI 색깔을 즉시 금색으로 바꿔서 "이제 쏠 수 있어!"라고 알려줘야 하기 때문이야.
+        //if문을 없애거나 조건을 지워서 3개 이상도 계속 쌓이게 함.
+        //레벨이 6, 9가 될 때까지 안 쏘면 스택도 6, 9가 되어야 중첩이 됨.
+        currentEnhanceStacks++;
+        Debug.Log($"활 강화 아이템 획득! 현재 누적 스택: {currentEnhanceStacks}");
+
+        PlayerStatsEffects statsEffects = GetComponent<PlayerStatsEffects>();
+        if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
     }
 
     public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//활 공격력 강화(아이템 획득) 시 쿨타임 감소 함수

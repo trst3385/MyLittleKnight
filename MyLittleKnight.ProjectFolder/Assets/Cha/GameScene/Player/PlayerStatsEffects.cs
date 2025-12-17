@@ -59,19 +59,30 @@ public class PlayerStatsEffects : MonoBehaviour
     //아이템 효과 함수들
     public void ArrowDamageUp(float ItemCSdamage, float coolDown)
     {
-        if (currentArrowLevel < MaxLevel)//현재 레벨이 MaxLevel보다 작을 때만 실행
+        //활 레벨과 상관없이 아이템을 먹으면 강화 스택은 무조건 쌓여야 함
+        if (bowWeapon != null)
         {
-            if(bowWeapon != null)
+            bowWeapon.AcquireBowEnhanceItem();//스택 증가 및 UI 업데이트 호출
+
+            //1. 이번에 활 아이템을 획득해서 딱 3, 6, 9...가 됐을 때(강화 장전 알림)
+            //2. 혹은 이미 3개 이상 쌓여있는 상태에서 또 먹었을 때 (강화 유지/중첩 알림)
+            int currentStacks = bowWeapon.GetCurrentStacks();
+            if (currentStacks >= 3) StartCoroutine(PunchScale(ArrowLevelText.GetComponent<RectTransform>()));
+        }
+
+        if (currentArrowLevel < MaxLevel)//레벨 상승 및 공격력 증가는 MaxLevel 미만일 때만 실행
+        {
+            if (bowWeapon != null)
             {
                 bowWeapon.ArrowDamage += ItemCSdamage;
                 bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);
-                bowWeapon.AcquireBowEnhanceItem();//BowWeapon 스크립트에 정의된 강화 스택 증가 함수 호출
-                currentArrowLevel++;//활 강화 숫자 증가
-                UpdateWeaponLevelUI();//UI 업데이트
+                currentArrowLevel++;
                 Debug.Log("PlayerStatsEffects: 화살 공격력이 " + ItemCSdamage + " 증가! 현재 공격력: " + bowWeapon.ArrowDamage);
             }
         }
         else Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 메시지
+
+        UpdateWeaponLevelUI();//UI 업데이트
     }
 
     public void SwordDamageUp(float ItemCSdamage)
@@ -131,13 +142,19 @@ public class PlayerStatsEffects : MonoBehaviour
 
     //?와 :는 C# 언어의 삼항 연산자, 간단한 if-else 구문을 한 줄로 간결하게 표현할 수 있어
     //?은 참(if문의 내용), :은 거짓(else 내용)
-    void UpdateWeaponLevelUI()//무기 강화 횟수 UI를 업데이트하는 함수
+    public void UpdateWeaponLevelUI()//무기 강화 횟수 UI를 업데이트하는 함수
     {
         if (ArrowLevelText != null)//활 공격이 강화 됐다고 ArrowLevelText UI에 보내
         {
             ArrowLevelText.text = (currentArrowLevel >= MaxLevel)//강화 숫자가 MaxLevel보다 낮으면
             ? "B Level: Max"
             : $"B Level: {currentArrowLevel}";//MaxLevel과 같다면  
+
+            //2. ★ 색상 변경 로직 ★ 
+            //3회 획득할 때마다 강화된다고 했으니까, % (나머지 연산자)를 쓰면 편해!
+            //레벨이 3, 6, 9... 처럼 3의 배수일 때 색을 바꿔주는 거야.
+            if (bowWeapon != null && bowWeapon.GetCurrentStacks() >= 3) ArrowLevelText.color = new Color(1f, 0.84f, 0f);//금색으로 변경
+            else ArrowLevelText.color = Color.white;//강화 화살을 쐈거나 스택이 부족하면 다시 흰색
         }
         else Debug.LogWarning("PlayerStatsEffects: ArrowLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");
 
@@ -166,6 +183,26 @@ public class PlayerStatsEffects : MonoBehaviour
             : $"M Level: {currentMoveSpeedLevel}";
         }
         else Debug.LogWarning("PlayerStatsEffects: MoveSpeedLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");      
+    }
+
+
+    IEnumerator PunchScale(RectTransform rect)//텍스트를 순간적으로 키웠다 원래대로 돌리는 연출
+    {
+        Vector3 originalScale = Vector3.one;//기본 크기 (1, 1, 1)
+        rect.localScale = originalScale * 1.5f;//1.5배로 커짐
+
+        float duration = 0.2f;//연출 시간
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            //부드럽게 원래 크기로 돌아오게 함
+            rect.localScale = Vector3.Lerp(originalScale * 1.5f, originalScale, elapsed / duration);
+            yield return null;
+        }
+        rect.localScale = originalScale;//마지막에 확실히 1로 고정
     }
 }
 
