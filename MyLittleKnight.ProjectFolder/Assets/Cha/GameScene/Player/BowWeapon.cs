@@ -125,14 +125,13 @@ public class BowWeapon : MonoBehaviour
     public int GetCurrentStacks() => currentEnhanceStacks;
 
 
-    public void AcquireBowEnhanceItem()//활 아이템을 획득 시 강화 공격 스택 쌓기
-    {                                  //아이템을 먹어서 스택이 딱 3이 되는 그 순간,
-                                       //UI 색깔을 즉시 금색으로 바꿔서 "이제 쏠 수 있어!"라고 알려줘야 하기 때문이야.
-        //if문을 없애거나 조건을 지워서 3개 이상도 계속 쌓이게 함.
-        //레벨이 6, 9가 될 때까지 안 쏘면 스택도 6, 9가 되어야 중첩이 됨.
+    public void AcquireBowEnhanceItem()//활 아이템 획득 시 강화 스택를 갱신하고, 이를 UI에 즉시 반영하도록 요청하는 함수.
+    {
+        //1. 강화 스택 숫자를 1 증가 (3, 6, 9... 계속 쌓임)
         currentEnhanceStacks++;
         Debug.Log($"활 강화 아이템 획득! 현재 누적 스택: {currentEnhanceStacks}");
 
+        //2.PlayerStatsEffects 스크립트를 찾아가서 "바뀐 스택 확인해서 활 레벨 UI 다시 그려!"라고 시켜
         PlayerStatsEffects statsEffects = GetComponent<PlayerStatsEffects>();
         if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
     }

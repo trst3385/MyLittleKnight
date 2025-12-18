@@ -20,9 +20,12 @@ public class PlayerStatsEffects : MonoBehaviour
     public TextMeshProUGUI MoveSpeedLevelText;
     public TextMeshProUGUI ArrowSpeedText;
 
-    [Header("최대치 레벨 관련 변수")]
+    [Header("아이템 최대치 레벨 관련 변수")]
     public int MaxLevel = 10;//모든 이속,활,검 레벨에 적용할 최대치
 
+    [Header("활 강화 시 사운드 설정")]
+    public AudioSource effectsAudioSource;//사운드를 재생할 오디오 소스
+    public AudioClip enhancedArrowReadySound;//재생할 'EnhancedArrowReady' 파일
 
     //활과 검의 강화 횟수를 저장할 변수
     //[HideInInspector]를 써도 되지만 이 변수를 직접 만질 일이 없으니 private으로 했어. 또 이 변수를 외부에서도 쓰지 않으니까
@@ -56,18 +59,30 @@ public class PlayerStatsEffects : MonoBehaviour
     }
 
 
-    //아이템 효과 함수들
-    public void ArrowDamageUp(float ItemCSdamage, float coolDown)
+    public void ArrowDamageUp(float ItemCSdamage, float coolDown)//아이템 효과 함수들
     {
         //활 레벨과 상관없이 아이템을 먹으면 강화 스택은 무조건 쌓여야 함
         if (bowWeapon != null)
         {
             bowWeapon.AcquireBowEnhanceItem();//스택 증가 및 UI 업데이트 호출
 
-            //1. 이번에 활 아이템을 획득해서 딱 3, 6, 9...가 됐을 때(강화 장전 알림)
-            //2. 혹은 이미 3개 이상 쌓여있는 상태에서 또 먹었을 때 (강화 유지/중첩 알림)
             int currentStacks = bowWeapon.GetCurrentStacks();
-            if (currentStacks >= 3) StartCoroutine(PunchScale(ArrowLevelText.GetComponent<RectTransform>()));
+            if (currentStacks > 0 && currentStacks % 3 == 0)//활 아이템을 3번 획득할때 레벨 UI와 강화 사운드게 들리게
+            {
+                // 텍스트 커지는 연출
+                StartCoroutine(PunchScale(ArrowLevelText.GetComponent<RectTransform>()));
+
+                // 강화 사운드 재생
+                if (effectsAudioSource != null && enhancedArrowReadySound != null)
+                    effectsAudioSource.PlayOneShot(enhancedArrowReadySound);
+                else//사운드가 안 나올 때 이유를 알려주는 디버그 로그
+                {
+                    if (effectsAudioSource == null)
+                        Debug.LogWarning("PlayerStatsEffects: effectsAudioSource가 인스펙터에 연결되지 않았어!");
+                    if (enhancedArrowReadySound == null)
+                        Debug.LogWarning("PlayerStatsEffects: enhancedArrowReadySound(클립)이 할당되지 않았어!");
+                }
+            }
         }
 
         if (currentArrowLevel < MaxLevel)//레벨 상승 및 공격력 증가는 MaxLevel 미만일 때만 실행
