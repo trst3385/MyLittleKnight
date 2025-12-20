@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;//씬 전환을 위해 추가
 
 //when something get into the alta, make the runes glow
 namespace Cainos.PixelArtTopDown_Basic

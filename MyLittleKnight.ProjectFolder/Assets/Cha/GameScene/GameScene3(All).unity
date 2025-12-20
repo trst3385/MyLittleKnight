@@ -789,6 +789,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameTimer: {fileID: 94900878}
+  portalPrefab: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  targetTime: 60
 --- !u!1 &101321035 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8199604799029797720, guid: 7277dd75e907b27448ec1de08238d0bb,
@@ -1821,7 +1824,7 @@ PrefabInstance:
     - target: {fileID: 2055102311959635375, guid: 9e7797bb065982d4497d030f065d6e2f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.55
+      value: -2.57
       objectReference: {fileID: 0}
     - target: {fileID: 2055102311959635375, guid: 9e7797bb065982d4497d030f065d6e2f,
         type: 3}
