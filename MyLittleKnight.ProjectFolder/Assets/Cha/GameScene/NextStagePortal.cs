@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;//씬 전환을 위해 추가
 public class NextStagePortal : MonoBehaviour
 {
     [Header("이동할 씬 이름")]
-    public string nextGameScene;
+    public string nextGameScene;//씬의 이름을 적어!(씬마다 다른 씬 이름을 적자)
 
     [Header("포탈 연출 설정")]
     public List<SpriteRenderer> runes;//빛날 룬들(상하좌우)을 인스펙터에서 넣어줘

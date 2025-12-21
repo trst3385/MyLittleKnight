@@ -351,6 +351,11 @@ public class Enemy : MonoBehaviour
         isDead = true;
         Debug.Log(enemyType + "몬스터 컷!");
 
+
+        //타입별 몬스터가 죽으면 죽인 횟수를 MonsterCountManager에게 전달
+        if (MonsterCountManager.Instance != null) MonsterCountManager.Instance.DeathCount(this.enemyType);
+
+
         if (playerScript != null) playerScript.AddScore(currentScoreValue);//몬스터가 죽으면 플레이어가 몬스터의 점수 획득
         if (EnemySpawner != null)
         {   //현재 몬스터의 타입이 Strong 또는 Elite인지 확인

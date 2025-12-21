@@ -9,7 +9,7 @@ public class GameTimerUI : MonoBehaviour
     [Header("GameTimer UI 연결")]
     [SerializeField] private TextMeshProUGUI gameTimer;//유니티 인스펙터에서 UI 텍스트 컴포넌트를 연결할 변수
 
-    [Header("포탈 소환 설정")]
+    [Header("포탈 소환 설정, 조건")]
     public GameObject portalPrefab;//생성할 포탈 프리팹
     public Transform spawnPoint;//포탈이 나타날 위치
     public float targetTime = 60f;//목표 시간 (1분)
@@ -17,6 +17,7 @@ public class GameTimerUI : MonoBehaviour
     private float gameStartTime;//게임이 시작된 시간
     private bool timerRunning = true;//타이머가 작동 중인지 여부
     private bool isPortalSpawned = false;//포탈이 이미 생겼는지 체크
+
 
 
     void Awake()
@@ -43,8 +44,14 @@ public class GameTimerUI : MonoBehaviour
         UpdateTimerUI(elapsedTime);//UI 업데이트
 
 
-        //경과 시간이 1분(60초) 이상이고, 아직 포탈을 소환하지 않았다면, 포탈 등장
-        if (elapsedTime >= targetTime && !isPortalSpawned) SpawnPortal();
+        //포탈이 열릴 조건
+        //1. 시간이 지났나?(1분 후)
+        bool timeReached = elapsedTime >= targetTime;
+        //2. MonsterCountManager 스크립트에게 미션 완료 여부를 물어본다(특정 몬스터 별 처치 수, SRP 준수)
+        bool missionOk = false;
+        if (MonsterCountManager.Instance != null) missionOk = MonsterCountManager.Instance.IsMissionComplete();
+        //모든 조건 충족 시 포탈 소환
+        if (timeReached && missionOk && !isPortalSpawned) SpawnPortal();
     }
 
     private void SpawnPortal()
@@ -53,7 +60,7 @@ public class GameTimerUI : MonoBehaviour
         if (portalPrefab != null && spawnPoint != null)
         {
             Instantiate(portalPrefab, spawnPoint.position, Quaternion.identity);
-            Debug.Log("★★★ 1분이 지났어! 다음 스테이지로 가는 포탈 등장! ★★★");
+            Debug.Log("★★★다음 스테이지로 가는 포탈 등장! ★★★");
         }
         else Debug.LogError("GameTimerUI: 포탈 프리팹이나 스폰 포인트가 연결되지 않았어!");
     }

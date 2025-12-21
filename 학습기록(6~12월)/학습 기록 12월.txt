@@ -448,3 +448,28 @@ Time Freeze 시스템 UX 최종 보완
 - 각 씬 GameScene1, 2 (3는 최종단계라 제외)마다 각 씬별로 목적지가 다른 포탈 프리팹을 개별 설정하여 독립적인 스테이지 전개 가능하도록 했어.
    1. 프리팹 관리: 모든 씬이 같은 프리팹을 공유할 때 목적지가 꼬이는 문제를 확인하고, 씬별 전용 포탈을 만들기 위해 포탈을 복사하고 이름을 변경해서 인스펙터 값을 개별 설정(Override.새롭게 재정의)하여 해결
    2. 1번 씬(No Obstacle) → 2번 씬(FireBall) → 3번 씬(All)으로 이어지는 흐름 구축
+
+
+
+12/21
+1분 후 포탈이 생성 되는것이 아닌, 타입별 몬스터 처치 조건을 달아서 충족 해야지만 포탈이 열리게 수정
+점수 UI밑에 ??/?? 방식으로 처치해야 몬스터 수를 텍스트로 표시
+
+- 단순히 1분을 버티는 것뿐만 아니라, 지정된 수의 Normal, Strong, Elite 몬스터를 모두 잡아야 스테이지가 클리어되도록 로직을 고도화했어.(1분만 버티고 다음 스테이지로 넘어가면 몬스터를 처치하지 않고 도망만 치면 넘어가게 되니까)
+- Enemy 스크립트에서 몬스터가 죽으면 if (MonsterCountManager.Instance != null) MonsterCountManager.Instance.DeathCount(this.enemyType); 으로 죽었다는 신호를 MonsterCountManager로 보내
+- MonsterCountManager 스크립트의 public void DeathCount(Enemy.EnemyType type) 함수에서 처치한 횟수를 UpdateCounterUI 함수로 보내 처치 현황 UI에 보내.
+- GameTimerUI 스크립트에선 시간(1분 이후)과 MonsterCountManager 스크립트의 몬스터 처치 처치 수를 확인하고 이 두가지 조건이 충족되면 차원문 등장.
+
+
+- 코드 구조 개선 (SRP 및 캡슐화 적용):
+   1. MonsterCountManager 추가(스크립트와 오브젝트 동일한 이름): 처치 수 카운트 및 미션 달성 여부 판단 로직을 전담시켜
+   2. GameTimerUI 스크립트 역할 조정: 게임시간 측정과 포탈 소환 트리거 역할에 집중하게 하여 스크립트 간 의존성을 낮췄어
+
+- UI 및 디테일 최적화:
+   1. 화면의 점수 UI 밑에 Normal: 0/20 같은 형식으로 실시간 목표 달성률을 표시했어
+   2. 목표 수치를 초과해도 숫자가 계속 올라가지 않게 Mathf.Min을 활용해 예외 처리를 완료
+
+**!!내일 할일!!**
+**카운트 UI에 카운트가 충족되면 색이나 텍스트 변경**
+**게임씬2,3에카운트 UI에 잡아야 하는 몬스터 수 증가**
+**빌드, README, 노션 포트폴리오에 스테이지 이동에 대한 내용 설명**
