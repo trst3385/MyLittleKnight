@@ -455,6 +455,7 @@ Time Freeze 시스템 UX 최종 보완
 1분 후 포탈이 생성 되는것이 아닌, 타입별 몬스터 처치 조건을 달아서 충족 해야지만 포탈이 열리게 수정
 점수 UI밑에 ??/?? 방식으로 처치해야 몬스터 수를 텍스트로 표시
 
+- 설계 관점: 스크립트의 비대화를 막기 위해 MonsterCountManager 스크립트를 분리해서 유지보수성을 높였고, 인터페이스(IsMissionComplete)를 통해 객체 간 협력 구조를 설계.
 - 단순히 1분을 버티는 것뿐만 아니라, 지정된 수의 Normal, Strong, Elite 몬스터를 모두 잡아야 스테이지가 클리어되도록 로직을 고도화했어.(1분만 버티고 다음 스테이지로 넘어가면 몬스터를 처치하지 않고 도망만 치면 넘어가게 되니까)
 - Enemy 스크립트에서 몬스터가 죽으면 if (MonsterCountManager.Instance != null) MonsterCountManager.Instance.DeathCount(this.enemyType); 으로 죽었다는 신호를 MonsterCountManager로 보내
 - MonsterCountManager 스크립트의 public void DeathCount(Enemy.EnemyType type) 함수에서 처치한 횟수를 UpdateCounterUI 함수로 보내 처치 현황 UI에 보내.
@@ -468,8 +469,9 @@ Time Freeze 시스템 UX 최종 보완
 - UI 및 디테일 최적화:
    1. 화면의 점수 UI 밑에 Normal: 0/20 같은 형식으로 실시간 목표 달성률을 표시했어
    2. 목표 수치를 초과해도 숫자가 계속 올라가지 않게 Mathf.Min을 활용해 예외 처리를 완료
+   3. UX 관점: "플레이어에게 '잡아야 할 몬스터 수'를 명확히 제시하여 게임의 목표 의식을 강화할 수 있지
 
 **!!내일 할일!!**
 **카운트 UI에 카운트가 충족되면 색이나 텍스트 변경**
 **게임씬2,3에카운트 UI에 잡아야 하는 몬스터 수 증가**
-**빌드, README, 노션 포트폴리오에 스테이지 이동에 대한 내용 설명**
+**빌드하고, README, 노션 포트폴리오에 스테이지 이동에 대한 내용 설명**
