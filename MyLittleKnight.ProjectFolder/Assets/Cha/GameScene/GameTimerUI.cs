@@ -53,7 +53,7 @@ public class GameTimerUI : MonoBehaviour
         //모든 조건 충족 시 포탈 소환
         if (timeReached && missionOk && !isPortalSpawned) SpawnPortal();
     }
-
+    
     private void SpawnPortal()
     {
         isPortalSpawned = true;//중복 소환 방지

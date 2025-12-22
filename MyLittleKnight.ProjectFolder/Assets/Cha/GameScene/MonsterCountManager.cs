@@ -51,12 +51,17 @@ public class MonsterCountManager : MonoBehaviour
     {
         if (counterText == null) return;
 
+        //각 몬스터별로 조건을 다 채웠는지 확인해서 색상 태그 입히기(조건식 ? 참 일때 값, : 거짓일_때_값 삼항 연산자)
+        string nColor = (normalKills >= reqNormal) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+        string sColor = (strongKills >= reqStrong) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+        string eColor = (eliteKills >= reqElite) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+
         // 문자열 형식을 만들어줌
         counterText.text = string.Format(
-            "Normal: {0}/{1}\nStrong: {2}/{3}\nElite: {4}/{5}",
-            normalKills, reqNormal,
-            strongKills, reqStrong,
-            eliteKills, reqElite
+        "{0}Normal: {1}/{2}</color>\n{3}Strong: {4}/{5}</color>\n{6}Elite: {7}/{8}</color>",
+        nColor, normalKills, reqNormal,
+        sColor, strongKills, reqStrong,
+        eColor, eliteKills, reqElite
         );
     }
 
