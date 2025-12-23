@@ -240,7 +240,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 100}
+  m_SizeDelta: {x: 450, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &31075086
 MonoBehaviour:
@@ -264,8 +264,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: My little knight
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b65444e8aa32acb4d9426ccf79f1f66a, type: 2}
-  m_sharedMaterial: {fileID: -877472994401978091, guid: b65444e8aa32acb4d9426ccf79f1f66a,
+  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
+  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -451,8 +451,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3c3327974bf6b814796bf88c4d937cc4, type: 2}
-  m_sharedMaterial: {fileID: -5385763039738179692, guid: 3c3327974bf6b814796bf88c4d937cc4,
+  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
+  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -831,8 +831,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3c3327974bf6b814796bf88c4d937cc4, type: 2}
-  m_sharedMaterial: {fileID: -5385763039738179692, guid: 3c3327974bf6b814796bf88c4d937cc4,
+  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
+  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1817,7 +1817,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 400}
-  m_SizeDelta: {x: 500, y: 200}
+  m_SizeDelta: {x: 530, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1279452729
 MonoBehaviour:
@@ -2450,8 +2450,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3c3327974bf6b814796bf88c4d937cc4, type: 2}
-  m_sharedMaterial: {fileID: -5385763039738179692, guid: 3c3327974bf6b814796bf88c4d937cc4,
+  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
+  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

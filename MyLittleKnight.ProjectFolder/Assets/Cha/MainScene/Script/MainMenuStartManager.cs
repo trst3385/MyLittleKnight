@@ -1,12 +1,12 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;//¾À ÀüÈ¯À» À§ÇØ ¹İµå½Ã ÇÊ¿äÇØ
+using UnityEngine.SceneManagement;//ì”¬ ì „í™˜ì„ ìœ„í•´ ë°˜ë“œì‹œ í•„ìš”í•´
 
 public class MainMenuStartManager : MonoBehaviour
 {
-    public void LoadGameScene()//GameStartButton¹öÆ°À» ´©¸£¸é ÀÌ ÇÔ¼ö°¡ È£ÃâµÇ¾î °ÔÀÓ ¾ÀÀ¸·Î ³Ñ¾î°¡
+    public void LoadGameScene()//GameStartButtonë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ì´ í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ì–´ ê²Œì„ ì”¬ìœ¼ë¡œ ë„˜ì–´ê°€
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene1(No Obstacle)");
     }
 }

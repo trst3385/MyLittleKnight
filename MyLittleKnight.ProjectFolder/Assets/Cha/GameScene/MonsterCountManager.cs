@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MonsterCountManager : MonoBehaviour
 {
@@ -25,23 +26,29 @@ public class MonsterCountManager : MonoBehaviour
     }
     void Start()
     {
-        UpdateCounterUI(); // 시작할 때 초기화 (0/10 이런 식으로)
+        UpdateCounterUI();//시작할 때 초기화 (0/10 이런 식으로)
     }
 
     public void DeathCount(Enemy.EnemyType type)//타입별 몬스터 사망시 카운트
     {
+        //현재 씬이 3번 씬(무한 모드)인지 체크
+        bool isInfiniteMode = SceneManager.GetActiveScene().name == "GameScene3(All)";
+
         switch (type)
-        {   //Mathf.Min(현재값 + 1, 목표값)을 사용하면 목표값을 절대 넘지 않아  
+        {
             case Enemy.EnemyType.Normal:
-                normalKills = Mathf.Min(normalKills + 1, reqNormal);
+                if (isInfiniteMode) normalKills++;//무한 모드면 그냥 증가
+                else normalKills = Mathf.Min(normalKills + 1, reqNormal);//아니면 제한
                 break;
 
             case Enemy.EnemyType.Strong:
-                strongKills = Mathf.Min(strongKills + 1, reqStrong);
+                if (isInfiniteMode) strongKills++;
+                else strongKills = Mathf.Min(strongKills + 1, reqStrong);
                 break;
 
             case Enemy.EnemyType.Elite:
-                eliteKills = Mathf.Min(eliteKills + 1, reqElite);
+                if (isInfiniteMode) eliteKills++;
+                else eliteKills = Mathf.Min(eliteKills + 1, reqElite);
                 break;
         }
         UpdateCounterUI();//숫자가 오를 때마다 UI 갱신
@@ -51,20 +58,30 @@ public class MonsterCountManager : MonoBehaviour
     {
         if (counterText == null) return;
 
-        //각 몬스터별로 조건을 다 채웠는지 확인해서 색상 태그 입히기(조건식 ? 참 일때 값, : 거짓일_때_값 삼항 연산자)
-        string nColor = (normalKills >= reqNormal) ? "<color=#00FF00>" : "<color=#FFFFFF>";
-        string sColor = (strongKills >= reqStrong) ? "<color=#00FF00>" : "<color=#FFFFFF>";
-        string eColor = (eliteKills >= reqElite) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+        //현재 활성화된 씬의 이름이나 인덱스를 확인
+        if (SceneManager.GetActiveScene().name == "GameScene3(All)")
+        {
+            //챌린지 모드: 목표치 없이 현재 처치 수만 표시
+            counterText.text = string.Format(
+                "Normal: {0}\nStrong: {1}\nElite: {2}",
+                normalKills, strongKills, eliteKills
+            );//무한 모드니까 텍스트 색상은 흰색(기본)
+        }
+        else
+        {
+            //기존 1, 2번 씬 로직: 목표치와 색상 변경 포함
+            string nColor = (normalKills >= reqNormal) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+            string sColor = (strongKills >= reqStrong) ? "<color=#00FF00>" : "<color=#FFFFFF>";
+            string eColor = (eliteKills >= reqElite) ? "<color=#00FF00>" : "<color=#FFFFFF>";
 
-        // 문자열 형식을 만들어줌
-        counterText.text = string.Format(
-        "{0}Normal: {1}/{2}</color>\n{3}Strong: {4}/{5}</color>\n{6}Elite: {7}/{8}</color>",
-        nColor, normalKills, reqNormal,
-        sColor, strongKills, reqStrong,
-        eColor, eliteKills, reqElite
-        );
+            counterText.text = string.Format(
+                "{0}Normal: {1}/{2}</color>\n{3}Strong: {4}/{5}</color>\n{6}Elite: {7}/{8}</color>",
+                nColor, normalKills, reqNormal,
+                sColor, strongKills, reqStrong,
+                eColor, eliteKills, reqElite
+            );
+        }
     }
-
     public bool IsMissionComplete()//조건(몬스터 일정 수 처치)을 만족했는지 알려주는 함수
     {                              //GameTimerUI 스크립트의 Update함수에서 사용
         return normalKills >= reqNormal &&
