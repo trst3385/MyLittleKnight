@@ -242,7 +242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3919769227660172588
 Transform:
   m_ObjectHideFlags: 0
@@ -251,9 +251,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2804721568643049255}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.853544, y: -10.566313, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4386131637449809355}
@@ -376,4 +376,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 727d44f4e0214ab4288d551ae8e72a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NextStagePortal
-  nextGameScene: 
+  nextGameScene: GameScene2
