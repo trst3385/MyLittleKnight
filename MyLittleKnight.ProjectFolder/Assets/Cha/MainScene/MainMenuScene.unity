@@ -264,16 +264,16 @@ MonoBehaviour:
       m_Calls: []
   m_text: My little knight
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
-  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
+  m_fontAsset: {fileID: 11400000, guid: 705790f8f895963428ec140ca10935ff, type: 2}
+  m_sharedMaterial: {fileID: 153072625231126575, guid: 705790f8f895963428ec140ca10935ff,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4282268479
+  m_fontColor: {r: 0.24528301, g: 0.23255606, b: 0.24139692, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -451,8 +451,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
-  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
+  m_fontAsset: {fileID: 11400000, guid: 705790f8f895963428ec140ca10935ff, type: 2}
+  m_sharedMaterial: {fileID: 153072625231126575, guid: 705790f8f895963428ec140ca10935ff,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -831,8 +831,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
-  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
+  m_fontAsset: {fileID: 11400000, guid: 705790f8f895963428ec140ca10935ff, type: 2}
+  m_sharedMaterial: {fileID: 153072625231126575, guid: 705790f8f895963428ec140ca10935ff,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2450,8 +2450,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d52c8801cbe5eda48a55b87dccfa6028, type: 2}
-  m_sharedMaterial: {fileID: -4222613143324822572, guid: d52c8801cbe5eda48a55b87dccfa6028,
+  m_fontAsset: {fileID: 11400000, guid: 705790f8f895963428ec140ca10935ff, type: 2}
+  m_sharedMaterial: {fileID: 153072625231126575, guid: 705790f8f895963428ec140ca10935ff,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

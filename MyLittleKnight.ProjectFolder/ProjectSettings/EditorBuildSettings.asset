@@ -9,13 +9,13 @@ EditorBuildSettings:
     path: Assets/Cha/MainScene/MainMenuScene.unity
     guid: 274082a4b97e0ff42aa4abfe4915abe1
   - enabled: 1
-    path: Assets/Cha/GameScene/GameScene1(No Obstacle).unity
+    path: Assets/Cha/GameScene/GameScene1.unity
     guid: 9697d8c3c03f80a4fa0998f1b6c542c6
   - enabled: 1
-    path: Assets/Cha/GameScene/GameScene2(FireBall).unity
+    path: Assets/Cha/GameScene/GameScene2.unity
     guid: d01d7b13e9d326a47962cafe8e7fd29b
   - enabled: 1
-    path: Assets/Cha/GameScene/GameScene3(All).unity
+    path: Assets/Cha/GameScene/GameScene3.unity
     guid: 34c20af1f1c4c494487c4bd8c959790f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -10,13 +10,12 @@ public class GameTimerUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameTimer;//유니티 인스펙터에서 UI 텍스트 컴포넌트를 연결할 변수
 
     [Header("포탈 소환 설정, 조건")]
-    public GameObject portalPrefab;//생성할 포탈 프리팹
-    public Transform spawnPoint;//포탈이 나타날 위치
+    public GameObject portalObject;//씬에 미리 배치된 포탈 오브젝트를 연결
     public float targetTime = 60f;//목표 시간 (1분)
 
     private float gameStartTime;//게임이 시작된 시간
     private bool timerRunning = true;//타이머가 작동 중인지 여부
-    private bool isPortalSpawned = false;//포탈이 이미 생겼는지 체크
+    private bool isPortalActivated = false;//포탈이 이미 생겼는지 체크
 
 
 
@@ -50,19 +49,19 @@ public class GameTimerUI : MonoBehaviour
         //2. MonsterCountManager 스크립트에게 미션 완료 여부를 물어본다(특정 몬스터 별 처치 수, SRP 준수)
         bool missionOk = false;
         if (MonsterCountManager.Instance != null) missionOk = MonsterCountManager.Instance.IsMissionComplete();
-        //모든 조건 충족 시 포탈 소환
-        if (timeReached && missionOk && !isPortalSpawned) SpawnPortal();
+        //모든 조건 충족 시 포탈 활성화 함수 호출
+        if (timeReached && missionOk && !isPortalActivated) ActivatePortal();
     }
     
-    private void SpawnPortal()
+    private void ActivatePortal()
     {
-        isPortalSpawned = true;//중복 소환 방지
-        if (portalPrefab != null && spawnPoint != null)
+        isPortalActivated = true;//포탈 중복 스폰 방지
+        if (portalObject != null)
         {
-            Instantiate(portalPrefab, spawnPoint.position, Quaternion.identity);
-            Debug.Log("★★★다음 스테이지로 가는 포탈 등장! ★★★");
+            portalObject.SetActive(true);//비활성화된 포탈을 켠다!
+            Debug.Log("★★★ 포탈 활성화 완료! ★★★");
         }
-        else Debug.LogError("GameTimerUI: 포탈 프리팹이나 스폰 포인트가 연결되지 않았어!");
+        else Debug.LogError("GameTimerUI: portalObject가 연결되지 않았어!");
     }
 
     private void UpdateTimerUI(float time)
@@ -102,7 +101,8 @@ public class GameTimerUI : MonoBehaviour
     {
         gameStartTime = Time.time;
         timerRunning = true;
-        isPortalSpawned = false;//리셋할 때 플래그도 초기화
+        isPortalActivated = false;//리셋할 때 플래그도 초기화
+        if (portalObject != null) portalObject.SetActive(false);//재시작 시 포탈 다시 끄기
         UpdateTimerUI(0);
     }
 }
