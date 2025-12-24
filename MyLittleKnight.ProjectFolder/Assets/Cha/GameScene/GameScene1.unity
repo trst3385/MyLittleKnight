@@ -5726,21 +5726,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Portal1
       objectReference: {fileID: 0}
-    - target: {fileID: 2804721568643049255, guid: c3e797d9f06d1ad4691c2a983e65696e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3919769227660172588, guid: c3e797d9f06d1ad4691c2a983e65696e,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3919769227660172588, guid: c3e797d9f06d1ad4691c2a983e65696e,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
     - target: {fileID: 3919769227660172588, guid: c3e797d9f06d1ad4691c2a983e65696e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5790,11 +5775,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8522120169878395169, guid: c3e797d9f06d1ad4691c2a983e65696e,
-        type: 3}
-      propertyPath: nextGameScene
-      value: GameScene2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
