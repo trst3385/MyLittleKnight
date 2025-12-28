@@ -647,10 +647,33 @@ README에 3개의 씬과 각 씬의 특징, 프리팹을 이용한 씬 추가의
 
 **당장 내일 아니더라도 꼭 추가할 것! 조급해하지 말고 하나씩!**
 **1. 포탈에 닿았을때 게임이 일시정지 되고 다음 씬으로 넘어가기 전에 사운드 추가.**
-**2. 게임씬3에서의 몬스터 카운트가 죽기 전까지 처치한 몬스터 수만 보여주기에 사망시 게임오버UI창에 잡은 몬스터 수 보여주기**
-**3. 게임오버 창에 뜨면 메인화면 이동 버튼 추가**
-**4. 타일맵 밖 12시 방향에 스폰되는 Elite 몬스터**
+**2. 타일맵 밖 12시 방향에 스폰되는 Elite 몬스터**
+**3. 검 공격시 즉각 공격하지 않는 문제**
 
+
+12/28
+게임오버 UI에 메인메뉴 이동 버튼 추가, 게임오버 UI를 프리팹으로 만들어2, 3씬에도 적용
+게임씬3에서 게임오버 창에 총 처치한 몬스터의 수 텍스트 추가
+
+- 플레이어 사망시 보일 GameOverPanel UI에 메인화면으로 이동하는 버튼 추가.
+   1. UI를 다루는 GameOverManager 스크립트에 GoToMainMenu() 함수를 추가
+   2. 새로 만든 버튼의  인스펙터에서 On Click에 GameOverManager 스크립트를 담은 오브젝트를 연결 후, 
+   GoToMainMenu() 함수도 연결해 메인 화면으로 이동
+   3. Time.timeScale = 1f; 처리를 통해 씬 전환 시 발생할 수 있는 시간 정지 버그를 차단
+
+
+- GameOverPanel UI를  프리팹(Prefab)화 해서 다른 1,2,3씬에게도 적용.
+- 1, 2, 3번 모든 씬에 일일이 UI를 만들지 않고, 프리팹 하나로 관리하게 했어. 이제 디자인 하나만 고치면 모든 씬에 똑같이 적용되니까 유지보수가 엄청 편해졌을 거야
+   
+
+- 3번 씬은 무한모드니까 이곳의 GameOverPanel UI에는 사망 시 처치한 타입별 몬스터의 수를 텍스트로 띄워주게 했어.
+- 싱글톤 활용으로 MonsterCountManager.Instance를 통해 매니저 간 데이터 참조를 간결하게 처리. MonsterCountManager에서 받은 몬스터가 처치 됐다는 신호를 3번씬의 GameOverManager 스크립트에게도 보내.
+   1. 무한 모드인 3번 씬에서만 '몬스터 타입별 처치 수'가 나오게 GameOverManager 스크립트에 코드를 짰어. DisplayFinalScore() 함수에서 if 문으로 1, 2번 씬은 깔끔하게 점수만 나오게 하고,
+   현재 씬이 3번씬 인걸 확인(string currentSceneName = SceneManager.GetActiveScene().name;)
+   2. (if (currentSceneName == "GameScene3" && MonsterCountManager.Instance != null))으로 현재 씬이 3번씬일때 텍스트를 활성화해
+   3. 나머지 1,2씬은 else로 타입별 몬스터 처치 텍스트를 비활성화 하게 했어 (if (NormalKillText != null) NormalKillText.gameObject.SetActive(false);)
+
+**게임오버 UI에 가려지지 않는 UI 대처: 하이어라키 순서 변경: Canvas 안에서 GameOverPanel을 가장 맨 아래로 드래그해. 그러면 무조건 다른 UI들을 덮어버리게 돼**
 
 
 
