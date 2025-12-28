@@ -32,7 +32,7 @@ public class MonsterCountManager : MonoBehaviour
     public void DeathCount(Enemy.EnemyType type)//타입별 몬스터 사망시 카운트
     {
         //현재 씬이 3번 씬(무한 모드)인지 체크
-        bool isInfiniteMode = SceneManager.GetActiveScene().name == "GameScene3(All)";
+        bool isInfiniteMode = SceneManager.GetActiveScene().name == "GameScene3";
 
         switch (type)
         {
@@ -59,7 +59,7 @@ public class MonsterCountManager : MonoBehaviour
         if (counterText == null) return;
 
         //현재 활성화된 씬의 이름이나 인덱스를 확인
-        if (SceneManager.GetActiveScene().name == "GameScene3(All)")
+        if (SceneManager.GetActiveScene().name == "GameScene3")
         {
             //챌린지 모드: 목표치 없이 현재 처치 수만 표시
             counterText.text = string.Format(

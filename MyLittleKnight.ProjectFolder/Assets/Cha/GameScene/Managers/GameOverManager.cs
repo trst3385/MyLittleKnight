@@ -18,9 +18,21 @@ public class GameOverManager : MonoBehaviour
     [Header("FinalScoreTextUI 연결")]
     public TextMeshProUGUI FinalScoreText;//게임 오버 패널에 표시할 점수 텍스트 (Inspector에서 연결)
                                           //GameOverPanel UI의 자식에 있어!
+    [Header("상세 처치 수 UI 연결")]
+    public TextMeshProUGUI NormalKillText;
+    public TextMeshProUGUI StrongKillText;
+    public TextMeshProUGUI EliteKillText;
+
     [Header("Player 스크립트 참조")]
     public Player PlayerScript;//Player스크립트 참조
 
+
+    void Awake()
+    {
+        //싱글톤 초기화(굳이 public GameOverManager gameOverManager; 변수를 만들어서 연결하기 번거롭잖아?)
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     void Start()//Start 함수는 오브젝트가 활성화될 때 한 번 실행
     {
@@ -52,12 +64,40 @@ public class GameOverManager : MonoBehaviour
 
     void DisplayFinalScore()//게임 오버 시 최종 점수를 UI에 표시하는 함수
     {
+        //1. 최종 점수는 모든 씬에서 공통으로 표시
         if (FinalScoreText != null && PlayerScript != null)
             FinalScoreText.text = "최종 점수: " + PlayerScript.CurrentScore.ToString();
-        else if (FinalScoreText == null)
-            Debug.LogError("FinalScoreText가 GameOverManager에 할당되지 않았어!");
-        else if (PlayerScript == null)
-            Debug.LogError("Player Script가 GameOverManager에 할당되지 않아 점수를 가져올 수 없어!");
+
+        //2. 현재 씬 이름 확인
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        //3. 게임씬3(무한 모드)일 때만 처치 수 텍스트를 활성화하고 데이터 입력
+        if (currentSceneName == "GameScene3" && MonsterCountManager.Instance != null)
+        {
+            // 텍스트 오브젝트 자체를 활성화
+            if (NormalKillText != null)
+            {
+                NormalKillText.gameObject.SetActive(true);
+                NormalKillText.text = "Normal: " + MonsterCountManager.Instance.normalKills;
+            }
+            if (StrongKillText != null)
+            {
+                StrongKillText.gameObject.SetActive(true);
+                StrongKillText.text = "Strong: " + MonsterCountManager.Instance.strongKills;
+            }
+            if (EliteKillText != null)
+            {
+                EliteKillText.gameObject.SetActive(true);
+                EliteKillText.text = "Elite: " + MonsterCountManager.Instance.eliteKills;
+            }
+        }
+        else
+        {
+            //1, 2번 씬이거나 무한 모드가 아니면 처치 수 UI를 숨김
+            if (NormalKillText != null) NormalKillText.gameObject.SetActive(false);
+            if (StrongKillText != null) StrongKillText.gameObject.SetActive(false);
+            if (EliteKillText != null) EliteKillText.gameObject.SetActive(false);
+        }
     }
     
 
@@ -72,4 +112,15 @@ public class GameOverManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+
+    public void GoToMainMenu()//메인 화면 이동
+    {
+        //게임 오버 시 멈췄던 시간을 다시 시작, 이걸 안 하면 메인 화면에 갔을 때 게임이 멈춰있을 수 있어!
+        Time.timeScale = 1f;
+
+        //플레이어 점수 초기화 (필요하다면!)
+        if (PlayerScript != null) PlayerScript.ResetScore();
+
+        SceneManager.LoadScene("MainMenuScene");//메인 메뉴 씬 로드
+    }
 }
