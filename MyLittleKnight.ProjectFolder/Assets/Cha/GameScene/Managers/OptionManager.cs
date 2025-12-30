@@ -12,7 +12,7 @@ public class OptionsManager : MonoBehaviour
 
     [Header("사운드 UI 및 믹서 설정")]
     public AudioMixer mainMixer;//MainMixer 에셋 연결 (인스펙터에서)
-    public GameObject optionsContainer;//메인 버튼들(Restart, SoundButton 등)을 담은 'Options' 오브젝트 연결
+    public GameObject Options;//메인 버튼들(Restart, SoundButton 등)을 담은 'Options' 오브젝트 연결
     public GameObject soundControlPanel;//슬라이더와 BackButton을 담은 'SoundControlPanel' 오브젝트 연결
     public Slider bgmSlider;//BGM 슬라이더 오브젝트 참조
     public Slider sfxSlider;//SFX 슬라이더 오브젝트 참조
@@ -66,7 +66,7 @@ public class OptionsManager : MonoBehaviour
             //1. 사운드 조절 창은 무조건 끄고 (숨기고)
             soundControlPanel.SetActive(false);
             //2. 메인 버튼 컨테이너만 무조건 킨다. (O키를 누르면 항상 이 화면으로 시작)
-            optionsContainer.SetActive(true);
+            Options.SetActive(true);
         }
         else if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//옵션창 닫고, 카운트다운 끝났으면 시간 재개
 
@@ -107,7 +107,7 @@ public class OptionsManager : MonoBehaviour
     public void OpenSoundControls()//SoundButton 클릭 시 호출
     {
         //1. 메인 버튼 컨테이너를 숨기고
-        optionsContainer.SetActive(false);
+        Options.SetActive(false);
         //2. 사운드 조절 패널을 보여줘
         soundControlPanel.SetActive(true);
     }
@@ -116,7 +116,7 @@ public class OptionsManager : MonoBehaviour
         //1. 사운드 조절 패널을 숨기고
         soundControlPanel.SetActive(false);
         //2. 메인 버튼 컨테이너를 다시 보여줘
-        optionsContainer.SetActive(true);
+        Options.SetActive(true);
     }
 
     public void RestartGame()//게임 재시작 함수 (재시작 버튼에 연결)

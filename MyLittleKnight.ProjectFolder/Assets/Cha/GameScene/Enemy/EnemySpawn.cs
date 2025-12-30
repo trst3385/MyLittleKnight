@@ -134,9 +134,6 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
 
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);//InstantiateAndSetupEnemy함수 호출
-        
-        //TextAlimManager 스크립트에 텍스트 알림 표시
-        if (textalimManager != null) textalimManager.ShowNotification("몬스터 스폰!");
     }
 
     void SpawnStrongEnemy()//Strong 몬스터를 호출하는 함수

@@ -62,9 +62,6 @@ public class ItemSpawner : MonoBehaviour
 
         Instantiate(itemToSpawn, spawnPosition, Quaternion.identity);
         currentItemCount++;
-
-        //textAlimManager 스크립트에게 스폰 알림 보내기, UI에 뜰 텍스트
-        if (textalimManager != null) textalimManager.ShowNotification("<color=yellow>아이템 등장!</color>");
     }
 
     Vector3 GetValidSpawnPosition()//아이템의 생성 위치를 정하는 함수, 랜덤으로 세 위치중에서 선택
