@@ -370,7 +370,7 @@ Vector3 GetValidSpawnPosition()
 - 유니티 UI 시스템의 앵커(Anchor)와 피벗(Pivot) 개념을 명확히 이해하게 되었고, 기기별 해상도 차이에 대응하는 기초적인 방법을 습득했습니다.
 </details>
 
-
+---
 
 ## Build History
 * **v1.1.0**: 게임 종료 후에도 저장된 사운드 값 유지, SFX 볼륨으로 카운트다운 사운드도 조절 가능
