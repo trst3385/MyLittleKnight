@@ -130,7 +130,7 @@ public class OptionsManager : MonoBehaviour
         //따라서 이 코드는 "현재 씬의 이름을 가져와서, 그 이름으로 씬을 다시 로드해" 라는 뜻이야.
     }
 
-    public void ExitGame()//현 게임을 끄고 메인화면으로 가는 함수
+    public void MainMenu()//현 게임을 끄고 메인화면으로 가는 함수
     {
         Time.timeScale = 1f;//게임 재시작과 마찬가지로, 메인화면으로 돌아갈 때도 시간을 정상으로 돌려놔.
         SceneManager.LoadScene("MainMenuScene");//MainMenuScene 이름의 씬을 로드해서 다시 메인화면 씬으로 돌아가게 해
