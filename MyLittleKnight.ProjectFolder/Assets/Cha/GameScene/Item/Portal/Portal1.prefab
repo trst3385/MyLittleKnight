@@ -192,7 +192,6 @@ GameObject:
   - component: {fileID: 351876007765521337}
   - component: {fileID: 5165424310940072879}
   - component: {fileID: 8522120169878395169}
-  - component: {fileID: 9012980731058847883}
   m_Layer: 20
   m_Name: Portal1
   m_TagString: Untagged
@@ -334,16 +333,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NextStagePortal
   nextGameScene: GameScene2
---- !u!114 &9012980731058847883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2804721568643049255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 727d44f4e0214ab4288d551ae8e72a2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NextStagePortal
-  nextGameScene: 

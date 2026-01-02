@@ -44,7 +44,7 @@ public class EnemyDifficulty : MonoBehaviour
 
     
     [Header("UI, 오브젝트 연결")]
-    [SerializeField] private TextMeshProUGUI notificationText;
+    [SerializeField] private TextMeshProUGUI enemyDifficultyStatsText;
     [SerializeField] private TextMeshProUGUI enemyLevelText;
     [SerializeField] private TextAlimManager textalimManager;
     [SerializeField] private EnemySpawn enemySpawn;
@@ -83,7 +83,7 @@ public class EnemyDifficulty : MonoBehaviour
         if (enemySpawn == null) Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
         if (textalimManager == null) Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
 
-        if (notificationText != null) notificationText.text = "";//게임 시작 시 UI 텍스트를 비움
+        if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";//게임 시작 시 UI 텍스트를 비움
     }
     
     void Update()
@@ -108,9 +108,9 @@ public class EnemyDifficulty : MonoBehaviour
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, NormalSpawnCount + (currentDifficultyLevel * NormalSpawnCountUp));
             if (enemySpawn != null) enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
 
-            if (notificationText != null)//EnemyDifficultyStatsText UI로 전달
+            if (enemyDifficultyStatsText != null)//EnemyDifficultyStatsText UI로 전달
             {
-                notificationText.text = $"<color=red>몬스터가 더 강해졌습니다! (레벨 {currentDifficultyLevel})</color>";
+                enemyDifficultyStatsText.text = $"<color=red>몬스터가 더 강해졌다! (레벨 {currentDifficultyLevel})</color>";
                 Invoke("ClearNotification", 3f);
             }
             timeSinceLastLevelUp = 0f;//타이머 리셋
@@ -124,7 +124,7 @@ public class EnemyDifficulty : MonoBehaviour
     private void ClearNotification()//이 함수는 notificationText UI 알림을 화면에서 지워주는 역할
     {                               //이 함수는 보통 Invoke("ClearNotification", 3f);처럼 일정 시간 뒤에 자동으로 호출되도록 해서,
                                     //"몬스터가 강해졌습니다!" 같은 알림이 3초 후에 사라지게 만드는 용도로 쓰여.
-        if (notificationText != null) notificationText.text = "";
+        if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";
     }
 
 
