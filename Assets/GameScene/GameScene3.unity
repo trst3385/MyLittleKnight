@@ -3782,6 +3782,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   optionsPanel: {fileID: 6833207230783088364}
   warningText: {fileID: 671612818008766562}
+  buttonClickSound: {fileID: 8300000, guid: 8e42f07cea014354b8ddb44f45061391, type: 3}
   mainMixer: {fileID: 24100000, guid: ef4174f5cd9a8664e9bb29e5bb08133c, type: 2}
   Options: {fileID: 3878546603225035516}
   soundControlPanel: {fileID: 6578926733372223136}

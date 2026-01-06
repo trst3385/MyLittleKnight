@@ -11,6 +11,7 @@ public class OptionsManager : MonoBehaviour
     public TextMeshProUGUI warningText;//경고 메시지 텍스트 UI 연결할 변수
 
     [Header("사운드 UI 및 믹서 설정")]
+    public AudioClip buttonClickSound;//버튼 클릭 시 들릴 사운드
     public AudioMixer mainMixer;//MainMixer 에셋 연결 (인스펙터에서)
     public GameObject Options;//메인 버튼들(Restart, SoundButton 등)을 담은 'Options' 오브젝트 연결
     public GameObject soundControlPanel;//슬라이더와 BackButton을 담은 'SoundControlPanel' 오브젝트 연결
@@ -57,6 +58,11 @@ public class OptionsManager : MonoBehaviour
         //패널의 다음 상태를 결정하고 활성화/비활성화
         bool isPanelActive = !optionsPanel.activeSelf;//다음 상태 (true: 켬, false: 끔)
         optionsPanel.SetActive(isPanelActive);//최상위 OptionsPanel 켜기/ 끄기
+
+        //옵션창이 켜질 때든 꺼질 때든 소리를 재생
+        if (SoundManager.Instance != null && buttonClickSound != null)
+            SoundManager.Instance.PlaySFX(buttonClickSound);
+
 
         if (isPanelActive)//게임 시간 제어.옵션창이 켜지면 게임 멈춤
         {
@@ -106,6 +112,7 @@ public class OptionsManager : MonoBehaviour
     }
     public void OpenSoundControls()//SoundButton 클릭 시 호출
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(buttonClickSound);//Sound창 버튼을 누를때 사운드
         //1. 메인 버튼 컨테이너를 숨기고
         Options.SetActive(false);
         //2. 사운드 조절 패널을 보여줘
@@ -113,14 +120,18 @@ public class OptionsManager : MonoBehaviour
     }
     public void CloseSoundControls()//SoundControlPanel의 BackButton 클릭 시 호출
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(buttonClickSound);//Sound창의 Done 버튼을 누를때 사운드
+
         //1. 사운드 조절 패널을 숨기고
         soundControlPanel.SetActive(false);
         //2. 메인 버튼 컨테이너를 다시 보여줘
         Options.SetActive(true);
     }
 
-    public void RestartGame()//게임 재시작 함수 (재시작 버튼에 연결)
+    public void RestartGame()//게임 재시작 함수 (현재 씬을 재시작)
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(buttonClickSound);//ReStart 버튼을 누를때 사운드
+
         //게임을 재시작할 때는 시간을 다시 정상으로 돌려놓야해.
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -132,6 +143,8 @@ public class OptionsManager : MonoBehaviour
 
     public void GoToMainMenu()//현 게임을 끄고 메인화면으로 가는 함수
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(buttonClickSound);//MainMenu 버튼 누를때 사운드
+
         Time.timeScale = 1f;//게임 재시작과 마찬가지로, 메인화면으로 돌아갈 때도 시간을 정상으로 돌려놔.
         SceneManager.LoadScene("MainMenuScene");//MainMenuScene 이름의 씬을 로드해서 다시 메인화면 씬으로 돌아가게 해
         Debug.Log("메인화면으로 이동");
@@ -139,6 +152,8 @@ public class OptionsManager : MonoBehaviour
 
     public void  QuitGame()//게임을 완전히 끄는 함수
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(buttonClickSound);//Quit Game 버튼 누를때 사운드
+
         Time.timeScale = 1f;
         Debug.Log("게임 종료. 재밋었어?");
 
