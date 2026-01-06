@@ -75,7 +75,7 @@
 
 본 프로젝트의 핵심 로직과 설계 원칙(SRP)이 적용된 스크립트는 아래 경로에서 체계적으로 분류되어 있습니다.
 
-경로: MyLittleKnight(프로젝트 폴더) → Assets → Cha → (GameScene, MainScene) 핵심 스크립트 폴더
+경로: MyLittleKnight → Assets → (GameScene, MainScene) 핵심 스크립트 폴더
 
 <br/>
 
