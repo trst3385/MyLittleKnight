@@ -82,8 +82,8 @@ public class MonsterCountManager : MonoBehaviour
             );
         }
     }
-    public bool IsMissionComplete()//조건(몬스터 일정 수 처치)을 만족했는지 알려주는 함수
-    {                              //GameTimerUI 스크립트의 Update함수에서 사용
+    public bool IsMissionComplete()//포탈이 화성화 될 조건(몬스터 일정 수 처치)을 만족했는지 알려주는 함수
+    {                             
         return normalKills >= reqNormal &&
                strongKills >= reqStrong &&
                eliteKills >= reqElite;

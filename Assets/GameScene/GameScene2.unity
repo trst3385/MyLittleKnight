@@ -508,6 +508,16 @@ PrefabInstance:
       propertyPath: appearanceSound
       value: 
       objectReference: {fileID: 8300000, guid: b4d96060412589d4ea26e035a06976aa, type: 3}
+    - target: {fileID: 2902527046845444889, guid: 9131c2dbea986fe46842b5772e107122,
+        type: 3}
+      propertyPath: portalSpawnSound
+      value: 
+      objectReference: {fileID: 8300000, guid: b4d96060412589d4ea26e035a06976aa, type: 3}
+    - target: {fileID: 2902527046845444889, guid: 9131c2dbea986fe46842b5772e107122,
+        type: 3}
+      propertyPath: portalTouchSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 205954f13c4d23349846be9f1d7f27f4, type: 3}
     - target: {fileID: 8108346583137167064, guid: 9131c2dbea986fe46842b5772e107122,
         type: 3}
       propertyPath: m_LocalScale.z
@@ -13795,8 +13805,8 @@ MonoBehaviour:
   strongKills: 0
   eliteKills: 0
   reqNormal: 30
-  reqStrong: 8
-  reqElite: 4
+  reqStrong: 10
+  reqElite: 6
   counterText: {fileID: 671999796}
 --- !u!1 &1445770439 stripped
 GameObject:
@@ -14943,6 +14953,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1922947606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1922947607}
+  - component: {fileID: 1922947608}
+  m_Layer: 0
+  m_Name: PortalManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1922947607
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922947606}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -604.26447, y: -341.2583, z: -3.0555475}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1986098103}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1922947608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922947606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02db9e169690b964e8bfffae0092d8fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PortalManager
+  targetTime: 60
+  portalObject: {fileID: 1232909992}
 --- !u!1 &1928541479 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8199604799029797720, guid: 9e7797bb065982d4497d030f065d6e2f,
@@ -15105,6 +15161,7 @@ Transform:
   - {fileID: 117700932}
   - {fileID: 222994266}
   - {fileID: 1443636791}
+  - {fileID: 1922947607}
   - {fileID: 126913910}
   - {fileID: 235864847}
   - {fileID: 1590795983}
