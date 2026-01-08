@@ -129,7 +129,7 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
 ### 원인 분석
 
 - **콜라이더 설정 오류**: 몬스터 프리팹에 콜라이더가 하나뿐이라 물리적인 충돌 처리가 부족했습니다. 또한, 플레이어의 자식 오브젝트인 `SwordPoint`의 콜라이더 속성이 잘못 설정되어 몬스터에게 접근하지 못하게 막는 '벽' 역할을 했습니다.
-    ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/raw/main/Image/Monster.Bug.gif)<br><br><br>
+    ![몬스터가 플레이어에게 닿지 못함](https://private-user-images.githubusercontent.com/194064418/533164611-cce44fc1-53fc-4e4e-b806-6b151b535345.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc4NDkzMDgsIm5iZiI6MTc2Nzg0OTAwOCwicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTY0NjExLWNjZTQ0ZmMxLTUzZmMtNGU0ZS1iODA2LTZiMTUxYjUzNTM0NS5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwOFQwNTEwMDhaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02N2M0OGIxMzEzZmJlNGI0ZTIyNTJmNDZhZGYyZTgzMjA5Njg4ZjAzODA2OGE2MzA0OWRmOGU4ODIzNGY0YzE0JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.drwGLjOIG6E5j0EX5tw32h7agEroZI4NFgVf6lPRRyQ)<br><br><br>
 - **다중 역할 충돌**: 플레이어에게 콜라이더가 하나만 있어, 벽에 부딪히는 물리적 충돌과 몬스터와 겹치는 감지 역할을 동시에 수행할 수 없었습니다.
 
 ### 해결 과정
