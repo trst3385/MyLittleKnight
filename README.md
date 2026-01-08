@@ -293,6 +293,7 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
     - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.  
         
 2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:
+이 함수는 타일맵의 범위를 계산하여 **장애물이 없는 빈 타일**을 찾아 몬스터 스폰 위치를 반환합니다.
 ```csharp
 Vector3 GetValidSpawnPosition()
 {
