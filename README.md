@@ -10,7 +10,7 @@
   **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
 </p>  
 <p align="center">
-  <a href= "https://youtu.be/UtYPre4dEiA">
+  <a href= "https://youtu.be/kcR9PTpgw6Y">
     <img src= "https://private-user-images.githubusercontent.com/194064418/533162546-8607194c-a14f-4005-91ba-ab9a8800bd5a.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc4NDgyODcsIm5iZiI6MTc2Nzg0Nzk4NywicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTYyNTQ2LTg2MDcxOTRjLWExNGYtNDAwNS05MWJhLWFiOWE4ODAwYmQ1YS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwOFQwNDUzMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xNjRkMTZlNjM0N2VkZGM3MTgzMjM1MTQ5NDczMmI0OGViNDJhNzk3MDM3ZGMyOWUxMmQ3ODVmOWE1Y2EwMDhmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.0MJHBsISz3_A8lsiTLW7UVQ14thJNy-M2r7dO8zRWEM" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
@@ -36,8 +36,8 @@
 <br/>
 
 - **생존에 도움을 주는 각종 아이템**:
-  - 활과 검의 공격력 상승 아이템, 체력과 방어력을 회복하는 아이템, 이동속도 증가 아이템이 맵 내에서 랜덤 스폰됩니다.
-  - 활 공격 아이템 획득 시 활 공격 쿨타임을 줄여주는 기능의 아이템이 존재합니다.
+  - 활과 검의 데미지 상승 아이템, 체력과 방어력을 회복하는 아이템, 이동속도 증가 아이템이 맵 내에서 랜덤 스폰됩니다.
+  - 활 공격 아이템 획득 시 활 공격 데미지 증가 뿐만 아니라 활 공격 쿨타임을 줄여주는 기능도 추가.
   - **아이템 스폰 시스템**: 5초마다 맵 내 무작위 위치에 아이템 하나가 스폰되고, 10초마다 무작위 위치에 아이템 랜덤 상자가 스폰됩니다.
 
 <br/>
@@ -129,7 +129,7 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
 ### 원인 분석
 
 - **콜라이더 설정 오류**: 몬스터 프리팹에 콜라이더가 하나뿐이라 물리적인 충돌 처리가 부족했습니다. 또한, 플레이어의 자식 오브젝트인 `SwordPoint`의 콜라이더 속성이 잘못 설정되어 몬스터에게 접근하지 못하게 막는 '벽' 역할을 했습니다.
-    ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/raw/main/Image/Monster.Bug.gif)<br><br><br>
+    ![몬스터가 플레이어에게 닿지 못함](https://private-user-images.githubusercontent.com/194064418/533164611-cce44fc1-53fc-4e4e-b806-6b151b535345.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc4NDkzMDgsIm5iZiI6MTc2Nzg0OTAwOCwicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTY0NjExLWNjZTQ0ZmMxLTUzZmMtNGU0ZS1iODA2LTZiMTUxYjUzNTM0NS5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwOFQwNTEwMDhaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02N2M0OGIxMzEzZmJlNGI0ZTIyNTJmNDZhZGYyZTgzMjA5Njg4ZjAzODA2OGE2MzA0OWRmOGU4ODIzNGY0YzE0JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.drwGLjOIG6E5j0EX5tw32h7agEroZI4NFgVf6lPRRyQ)<br><br><br>
 - **다중 역할 충돌**: 플레이어에게 콜라이더가 하나만 있어, 벽에 부딪히는 물리적 충돌과 몬스터와 겹치는 감지 역할을 동시에 수행할 수 없었습니다.
 
 ### 해결 과정
@@ -383,5 +383,6 @@ Vector3 GetValidSpawnPosition()
 * **v1.5.0**: 게임오버 UI에 메인화면 이동버튼 추가, 게임씬3에서 처치한 몬스터 수 표시, 타일맵 밖에 생성되는 몬스터 버그 수정.
 * **v1.5.1**: 이동모션 중에도 즐각 공격 가능하게 수정.
 * **v1.5.2**: 다음 씬으로 가는 포탈 생성시, 상호작용시 사운드 추가, 옵션UI 버튼 클릭시 사운드 추가.
+* **v1.5.3**: 이동속도, 활, 검 강화 레벨 UI텍스트 Width 길이 수정 (250 -> 300), 활 공격속도 강화 레벨 UI 텍스트 삭제.
 
 
