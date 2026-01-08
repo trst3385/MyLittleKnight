@@ -11,7 +11,7 @@
 </p>  
 <p align="center">
   <a href= "https://youtu.be/UtYPre4dEiA">
-    <img src= "https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainMenu.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+    <img src= "https://private-user-images.githubusercontent.com/194064418/533162546-8607194c-a14f-4005-91ba-ab9a8800bd5a.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc4NDgyODcsIm5iZiI6MTc2Nzg0Nzk4NywicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTYyNTQ2LTg2MDcxOTRjLWExNGYtNDAwNS05MWJhLWFiOWE4ODAwYmQ1YS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwOFQwNDUzMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xNjRkMTZlNjM0N2VkZGM3MTgzMjM1MTQ5NDczMmI0OGViNDJhNzk3MDM3ZGMyOWUxMmQ3ODVmOWE1Y2EwMDhmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.0MJHBsISz3_A8lsiTLW7UVQ14thJNy-M2r7dO8zRWEM" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
 
