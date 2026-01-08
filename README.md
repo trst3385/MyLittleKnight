@@ -11,7 +11,7 @@
 </p>  
 <p align="center">
   <a href= "https://youtu.be/UtYPre4dEiA">
-    <img src= "https://github.com/trst3385/MyLittleKnight/blob/main/Image/MainMenu.png?raw=true" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+    <img src= "https://private-user-images.githubusercontent.com/194064418/533162546-8607194c-a14f-4005-91ba-ab9a8800bd5a.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc4NDgyODcsIm5iZiI6MTc2Nzg0Nzk4NywicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTYyNTQ2LTg2MDcxOTRjLWExNGYtNDAwNS05MWJhLWFiOWE4ODAwYmQ1YS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwOFQwNDUzMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xNjRkMTZlNjM0N2VkZGM3MTgzMjM1MTQ5NDczMmI0OGViNDJhNzk3MDM3ZGMyOWUxMmQ3ODVmOWE1Y2EwMDhmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.0MJHBsISz3_A8lsiTLW7UVQ14thJNy-M2r7dO8zRWEM" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
 
@@ -129,7 +129,7 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
 ### 원인 분석
 
 - **콜라이더 설정 오류**: 몬스터 프리팹에 콜라이더가 하나뿐이라 물리적인 충돌 처리가 부족했습니다. 또한, 플레이어의 자식 오브젝트인 `SwordPoint`의 콜라이더 속성이 잘못 설정되어 몬스터에게 접근하지 못하게 막는 '벽' 역할을 했습니다.
-    ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/blob/main/Image/Monster.Bug.gif?raw=true)<br><br><br>
+    ![몬스터가 플레이어에게 닿지 못함](https://github.com/trst3385/MyLittleKnight/raw/main/Image/Monster.Bug.gif)<br><br><br>
 - **다중 역할 충돌**: 플레이어에게 콜라이더가 하나만 있어, 벽에 부딪히는 물리적 충돌과 몬스터와 겹치는 감지 역할을 동시에 수행할 수 없었습니다.
 
 ### 해결 과정
@@ -292,7 +292,8 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
     - `TargetTilemap.cellBounds` 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, `TargetTilemap.HasTile()` 로 해당 위치에 타일이 있는지 확인했습니다.
     - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.  
         
-2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정:
+2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정 <br/>
+이 함수는 타일맵의 범위를 계산하여 **장애물이 없는 빈 타일**을 찾아 몬스터 스폰 위치를 반환합니다.
 ```csharp
 Vector3 GetValidSpawnPosition()
 {
@@ -325,7 +326,7 @@ Vector3 GetValidSpawnPosition()
  - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
  - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
  - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
- - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다    
+ - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다   . 
 
       
 3. **플레이어 반응형 스폰 로직 구현**:
