@@ -18,7 +18,6 @@ public class PlayerStatsEffects : MonoBehaviour
     public TextMeshProUGUI ArrowLevelText;
     public TextMeshProUGUI SwordLevelText;
     public TextMeshProUGUI MoveSpeedLevelText;
-    public TextMeshProUGUI ArrowSpeedText;
 
     [Header("아이템 최대치 레벨 관련 변수")]
     public int MaxLevel = 10;//모든 이속,활,검 레벨에 적용할 최대치
@@ -172,15 +171,6 @@ public class PlayerStatsEffects : MonoBehaviour
             else ArrowLevelText.color = Color.white;//강화 화살을 쐈거나 스택이 부족하면 다시 흰색
         }
         else Debug.LogWarning("PlayerStatsEffects: ArrowLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");
-
-        if (ArrowSpeedText != null)//활 공격 속도 UI 업데이트
-        {
-            ArrowSpeedText.text = (currentArrowLevel >= 5)
-            ? "SPD: Max"
-            : $"SPD: {currentArrowLevel}";
-
-            if (currentArrowLevel >= 5) Debug.Log("최고 속도!");//Debug.Log는 따로 if문을...
-        }
 
         if (SwordLevelText != null)//검 공격이 강화됐다고 SwordLevelText UI에 보내 
         {

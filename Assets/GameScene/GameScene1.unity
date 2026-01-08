@@ -15018,6 +15018,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: GoToMainMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 4172993625181196110, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 4400928521605482152, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
         type: 3}
       propertyPath: m_IsActive
@@ -15103,6 +15108,31 @@ PrefabInstance:
       propertyPath: portalObject
       value: 
       objectReference: {fileID: 855360424}
+    - target: {fileID: 7910738874474849085, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7910738874474849085, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 290
+      objectReference: {fileID: 0}
+    - target: {fileID: 7989533729818633884, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8057051130175363100, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8057051130175363100, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 8580178286319020945, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -15144,7 +15174,8 @@ PrefabInstance:
       value: RestartGame
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8318414070351825034, guid: 446d62ce7f019664c818b5aaa8cb5f6e, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 446d62ce7f019664c818b5aaa8cb5f6e, type: 3}
@@ -15283,18 +15314,6 @@ GameObject:
 --- !u!114 &2041781585 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5804388477815271089, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2041781571}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2041781586 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8057051130175363100, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
     type: 3}
   m_PrefabInstance: {fileID: 2041781571}
   m_PrefabAsset: {fileID: 0}
@@ -15772,7 +15791,6 @@ MonoBehaviour:
   ArrowLevelText: {fileID: 2041781587}
   SwordLevelText: {fileID: 2041781585}
   MoveSpeedLevelText: {fileID: 2041781588}
-  ArrowSpeedText: {fileID: 2041781586}
   MaxLevel: 10
   effectsAudioSource: {fileID: 8942827210478653175}
   enhancedArrowReadySound: {fileID: 8300000, guid: f6de534c09de6f241b95245a7f66a906,

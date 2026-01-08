@@ -14946,6 +14946,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: GoToMainMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 4172993625181196110, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 4478453093201193058, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
         type: 3}
       propertyPath: m_Name
@@ -14996,6 +15001,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1129692587}
+    - target: {fileID: 7989533729818633884, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 9125966219087424612, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -15007,7 +15017,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1129692587}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8318414070351825034, guid: 446d62ce7f019664c818b5aaa8cb5f6e, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 446d62ce7f019664c818b5aaa8cb5f6e, type: 3}
@@ -15182,18 +15193,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 656607916583862664}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4301353637663437006 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8057051130175363100, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
-    type: 3}
-  m_PrefabInstance: {fileID: 656607916583862664}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &4585774766421080605
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15309,7 +15308,6 @@ MonoBehaviour:
   ArrowLevelText: {fileID: 6416383920100929756}
   SwordLevelText: {fileID: 3031761872289907594}
   MoveSpeedLevelText: {fileID: 2691743297108038254}
-  ArrowSpeedText: {fileID: 4301353637663437006}
   MaxLevel: 10
   effectsAudioSource: {fileID: 8942827210478653175}
   enhancedArrowReadySound: {fileID: 8300000, guid: f6de534c09de6f241b95245a7f66a906,
