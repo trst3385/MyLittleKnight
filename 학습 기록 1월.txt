@@ -156,7 +156,7 @@ README의 이미지 파일 최적화
    1. 참조 자동화: 인스펙터에서 마우스로 드래그해서 연결하던 방식을 Awake에서 FindFirstObjectByType 등을 활용해 자동으로 찾도록 로직 변경
    2. 결합도 낮추기: 매니저들이 서로를 직접 들고 있지 않아도 Instance를 통해 소통할 수 있어 코드가 훨씬 유연해짐
    3. 클래스 간 통신 개선: EnemyDifficulty가 EnemySpawn을 부를 때, 변수에 담아두지 않고 EnemySpawn.Instance로 직접 접근하도록 수정
-   4. Awake() 함수 시점에 새로 추가한 InitializeReferences() 함수를 실행하여 씬 내의 필요한 UI와 객체를 자동으로 찾도록 구현
+   4. Awake() 함수 시점에 새로 추가한 InitializeReferences() 함수를 실행하여 씬 내의 필요한 UI와 객체를 자동으로 찾도록 구현, 씬이 바뀌어도 코드가 알아서 척척 새 UI를 찾아낼거야
    5. 중복 로직 제거: Start 함수 내에 남아있던 불필요한 검색 코드와 에러 로그를 삭제하여 스크립트 경량화
 
 **내일도 남은 모든 UI와 매니저 스크립트를 정리하고 Player와 몬스터 스크립트도 정리해보자**
