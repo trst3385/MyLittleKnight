@@ -25,8 +25,6 @@ public class EnemyDifficulty : MonoBehaviour
         MoveSpeed
     }
 
-    //[SerializeField]가 붙은 private라서 인스펙터에 보이니 헤더의 변수는 Pascal Case로 적용했어
-    //인스펙터에서 설정할 변수들
     [Header("Normal 몬스터 스폰 초기 스폰 시간")]
     public float NormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
 
@@ -42,13 +40,12 @@ public class EnemyDifficulty : MonoBehaviour
     [SerializeField] private float HPIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 체력 증가 비율 (20% = 0.2) -> 20%씩
     [SerializeField] private float SpeedIncreaseRatio = 0.15f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
 
-    
-    [Header("UI, 오브젝트 연결")]
+
+    [Header("UI, 오브젝트 연결(코드에서 자동으로 연결된 상태)")]
     [SerializeField] private TextMeshProUGUI enemyDifficultyStatsText;
     [SerializeField] private TextMeshProUGUI enemyLevelText;
     [SerializeField] private TextAlimManager textalimManager;
-    [SerializeField] private EnemySpawn enemySpawn;
-    
+
 
     public static EnemyDifficulty Instance { get; private set; }
 
@@ -61,28 +58,54 @@ public class EnemyDifficulty : MonoBehaviour
 
     void Awake()
     {
-        //게임 시작 시 이 스크립트의 유일한 인스턴스를 설정해.
-        if(Instance != null && Instance != this) Destroy(gameObject);//이미 인스턴스가 있으면 자신을 파괴(중복 방지)
-
+        //싱글톤 설정 (중복 방지 및 유지)
+        if (Instance == null)
+            Instance = this;
         else
         {
-            Instance = this;//자신이 유일한 인스턴스가 됨
-            DontDestroyOnLoad(gameObject);//씬이 바뀌어도 파괴되지 않게 (게임 전체 난이도 관리용)
+            Destroy(gameObject);
+            return;
         }
+
+        //Awake에서 모든 참조 자동 연결
+        InitializeReferences();
     }
-    void Start()
+
+    private void InitializeReferences()// 씬이 바뀌었을 때도 UI를 새로 찾을 수 있게 함수로 분리
+
     {
+        //UI 텍스트 찾기
+        if (enemyDifficultyStatsText == null)
+        {
+            GameObject enemydifficultystatsText = GameObject.Find("EnemyDifficultyStatsText");
+            if (enemydifficultystatsText != null) enemyDifficultyStatsText = enemydifficultystatsText.GetComponent<TextMeshProUGUI>();
+            else Debug.LogWarning("EnemyDifficulty: 'EnemyDifficultyStatsText' UI 오브젝트를 찾을 수 없어! 이름을 확인해봐!");
+        }
+
+        if (enemyLevelText == null)
+        {
+            GameObject enemydifficultyleveltext = GameObject.Find("EnemyDifficultyLevelText");
+            if (enemydifficultyleveltext != null) enemyLevelText = enemydifficultyleveltext.GetComponent<TextMeshProUGUI>();
+            else Debug.LogWarning("EnemyDifficulty: 'EnemyDifficultyLevelText' UI 오브젝트를 찾을 수 없어! 이름을 확인해봐!");
+        }
+
+        //타 매니저 찾기 (싱글톤이 아니거나 컴포넌트 방식일 때)
+        if (textalimManager == null)
+        {
+            textalimManager = FindFirstObjectByType<TextAlimManager>();
+            if (textalimManager == null) Debug.LogError("EnemyDifficulty: 씬에 TextAlimManager UI가 없어!");
+        }
+
+    }
+
+    void Start()
+    {   //초기화 로직
         currentNormalSpawnTime = NormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
         currentNormalSpawnCount = NormalSpawnCount;//시작 시 동시 스폰 개수 초기화
         timeSinceLastLevelUp = 0f;//게임 타이머 초기화
         currentDifficultyLevel = 0;//난이도 레벨 초기화
         UpdateMonsterLevelText();
          
-
-        //EnemySpawn 인스턴스 찾아서 저장
-        if (enemySpawn == null) Debug.LogError("EnemyDifficulty: EnemySpawn 스크립트를 씬에서 찾을 수 없어!");
-        if (textalimManager == null) Debug.LogError("EnemyDifficulty: TextAlimManager 스크립트를 씬에서 찾을 수 없어!");
-
         if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";//게임 시작 시 UI 텍스트를 비움
     }
     
@@ -106,7 +129,8 @@ public class EnemyDifficulty : MonoBehaviour
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, NormalSpawnCount + (currentDifficultyLevel * NormalSpawnCountUp));
-            if (enemySpawn != null) enemySpawn.SetNormalSpawnCount(currentNormalSpawnCount);//EnemySpawn에 변경된 개수 전달
+            if (EnemySpawn.Instance != null)//EnemySpawn에 변경된 개수 전달
+                EnemySpawn.Instance.SetNormalSpawnCount(currentNormalSpawnCount);
 
             if (enemyDifficultyStatsText != null)//EnemyDifficultyStatsText UI로 전달
             {

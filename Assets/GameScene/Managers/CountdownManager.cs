@@ -6,19 +6,42 @@ using TMPro;//TextMeshPro를 사용하기 위해 필요
 
 public class CountdownManager : MonoBehaviour
 {
+    public static CountdownManager Instance { get; private set; }//싱글톤 선언
+
     //다른 스크립트가 카운트다운이 끝났는지 알 수 있게 하는 변수 (다른 스크립트에서 접근 가능하도록 static으로 선언)
     //**클래스이름.변수** 로 접근!
-    public static bool isCountdownFinished = false;//기본값은 false 상태.
+    public static bool isCountdownFinished = false;//기본값은 false
     //혹시라도 게임을 재시작하거나 다른 씬에서 넘어올 때,
     //이전 상태의 true 값이 남아 있을 수 있기 때문에, 확실하게 false 상태로 만들어주는 거야
 
-
-    [Header("CountdownText UI연결")]//인스펙터에 할당할 카운트다운 텍스트UI 오브젝트
-    public TextMeshProUGUI CountdownText;
-
-    [Header("사운드 연결")]//카운트다운에 나올 사운드
-    public AudioSource countdownAudioSource;
+    [Header("UI&사운드 연결(코드에서 자동으로 연결된 상태)")]
+    public TextMeshProUGUI CountdownText;//CountdownText UI
+    public AudioSource countdownAudioSource;//카운트다운에 나올 사운드
     public AudioClip[] countdownSounds;//배열을 만드는거야. AudioClip을 넣을 countdownSounds 변수들을 배열로 여러개 만드는거야
+
+    void Awake()
+    {
+        //싱글톤 초기화
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);//이미 존재하는 매니저가 있다면, 새로 생긴 녀석은 파괴
+            return;
+        }
+
+        if (countdownAudioSource == null)//내부 컴포넌트 자동 할당 (매니저 오브젝트에 AudioSource가 붙어 있을 때)
+            countdownAudioSource = GetComponent<AudioSource>();
+
+        //외부 UI 자동 연결(UI 이름으로 찾기)
+        if (CountdownText == null)
+        {
+            GameObject countdowntext = GameObject.Find("CountdownText");
+            if (countdowntext != null)
+                CountdownText = countdowntext.GetComponent<TextMeshProUGUI>();
+            else Debug.LogWarning("CountdownManager: 'CountdownText' 오브젝트를 찾을 수 없어! 하이래키 이름을 확인해봐!");
+        }
+    }
 
     void Start()
     {
@@ -26,7 +49,6 @@ public class CountdownManager : MonoBehaviour
         //Time.timeScale: 게임 전체의 시간 흐름 속도를 조절. 0f로 설정하면 게임이 일시정지 상태
         //카운트가 끝나면 시작해야 하니 밑에는 1f;로 둘꺼야
         Time.timeScale = 0f;
-
         isCountdownFinished = false;//혹시 모를 상황을 대비해 초기화
         StartCoroutine(CountdownToStart());
     }

@@ -7,9 +7,10 @@ using UnityEngine.Tilemaps;//Tilemap 관련 기능을 사용하기 위해
 
 public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하는 것이 C#의 표준 코딩 컨벤션이야.
 {   //이렇게 통일하면 코드가 훨씬 깔끔하고 다른 개발자들이 봤을 때도 이해하기 쉬워져.
-    
-    [Header("스크립트, 오브젝트 연결")]
-    //인스펙터에 할당할 변수들
+
+    public static EnemySpawn Instance { get; private set; }//싱글톤 선언
+
+    [Header("스크립트, 오브젝트 연결(코드에서 자동으로 연결된 상태,배열만 제외)")]
     public GameObject[] EnemyPrefabs;//인스펙터에서 스폰할 몬스터 프리팹을 할당 (0번 인덱스에 Normal 몬스터)
     public Tilemap TargetTilemap;//몬스터를 스폰할 타일맵을 할당 (플레이 가능한 영역)
     public LayerMask SpawnableLayer;//몬스터가 스폰될 수 있는 영역 (바닥, 벽 등)의 레이어 마스크
@@ -36,16 +37,47 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     private float normalSpawnTime;//Normal 몬스터의 스폰 주기 (EnemyDifficulty에서 가져온 고정값)
     private int normalSpawnCount = 1;//EnemyDifficulty 스크립트에서 받아올 동시 스폰 개수
 
+    void Awake()
+    {
+        if (Instance == null)//싱글톤 초기화 (중복 방지)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        InitializeReferences();//자동 참조 연결
+    }
+
+    private void InitializeReferences()
+    {
+        //타일맵 찾기
+        if (TargetTilemap == null)
+            TargetTilemap = FindFirstObjectByType<Tilemap>();
+
+        //플레이어 찾기
+        if (PlayerScript == null)
+        {
+            GameObject playerscript = GameObject.FindWithTag("Player");
+            if (playerscript != null) PlayerScript = playerscript.GetComponent<Player>();
+        }
+
+        //텍스트 알림 매니저 찾기
+        if (textalimManager == null)
+            textalimManager = FindFirstObjectByType<TextAlimManager>();
+    }
+
+
     void Start()
     {
         spawnTimer = 2f;//게임 시작 시 첫 몬스터 스폰을 2초 뒤로 늦춤
-
         nextEliteSpawnScore = EliteSpawnScoreThreshold;//첫 Elite 스폰 점수 초기화
 
 
-        //EnemyPrefabs 배열이 비어있는지 확인w (에러 방지)
+        //EnemyPrefabs 배열이 비어있는지 확인 (에러 방지)
         if (EnemyPrefabs == null || EnemyPrefabs.Length == 0)
-            Debug.LogError("EnemySpawn: EnemyPrefabs 배열에 몬스터 프리팹이 할당되지 않았어! 인스펙터를 확인해!");
+            Debug.LogError("EnemySpawn: EnemyPrefabs 배열이 비어있어!");
 
 
         //강한 몬스터 프리팹 인덱스 유효성 검사 (EnemyPrefabs 배열의 크기보다 크거나 0보다 작으면 안됨)
@@ -56,17 +88,8 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         //Elite 몬스터 프리팹 인덱스 유효성 검사
         if (EliteEnemyPrefabIndex >= EnemyPrefabs.Length || EliteEnemyPrefabIndex < 0)
             Debug.LogWarning("Elite Enemy Prefab Index가 EnemyPrefabs 배열 범위를 벗어났어! 엘리트 몬스터 스폰이 안될 수 있어!");
-        
-
-        //시작 시 TextAlimManager 스크립트를 찾아서 할당
-        textalimManager = FindFirstObjectByType<TextAlimManager>();
-        if (textalimManager == null)
-            Debug.LogWarning("EnemySpawn: TextAlimManager를 찾을 수 없습니다. 스폰 알림이 표시되지 않습니다.");
 
 
-        //EnemyDifficulty 스크립트에서 초기 스폰 주기를 가져와
-        //싱글톤 스크립트라서 따로 참조 변수, 인스펙터에서 직접 연결할 필요 없이 코드 안에서
-        //EnemyDifficulty.Instance 를 통해 바로 접근할 수 있어. 싱글톤 패턴의 가장 큰 특징이야!
         if (EnemyDifficulty.Instance != null)
         {
             normalSpawnTime = EnemyDifficulty.Instance.CurrentNormalSpawnTime;
@@ -76,16 +99,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         {
             Debug.LogError("EnemySpawn: EnemyDifficulty.Instance를 찾을 수 없어! EnemyDifficulty 스크립트가 씬에 있는지 확인해!");
             normalSpawnTime = 4f;//기본값으로 설정 (오류 방지)
-        }
-            
-        //Player 스크립트 참조 가져오기
-        GameObject playerGameObject = GameObject.FindWithTag("Player");
-        if (playerGameObject != null)
-        {
-            PlayerScript = playerGameObject.GetComponent<Player>();
-            if (PlayerScript == null) Debug.LogError("EnemySpawn: Player 오브젝트에 Player 스크립트가 없어!");
-        }
-        else Debug.LogWarning("EnemySpawn: 'Player' 태그를 가진 오브젝트를 찾을 수 없어!");   
+        } 
     }
 
     void Update()
