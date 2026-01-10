@@ -4,9 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class MonsterCountManager : MonoBehaviour
 {
-    public static MonsterCountManager Instance;//어디서든 접근 가능하게 싱글톤 설정
+    public static MonsterCountManager Instance { get; private set; }//어디서든 접근 가능하게 싱글톤 설정
 
-    [Header("현재 처치 수")]//private으로 해도되지만 얼마를 죽였는지 인스펙터로도 확인할 수 있게
+    [Header("현재 처치 수")]
     public int normalKills;
     public int strongKills;
     public int eliteKills;
@@ -16,17 +16,30 @@ public class MonsterCountManager : MonoBehaviour
     public int reqStrong;
     public int reqElite;
 
-    [Header("MonsterCounterText UI 연결")]
+    [Header("자동 연결될 MonsterCounterText UI")]
     [SerializeField] private TextMeshProUGUI counterText;//화면에 표시될 텍스트
 
     void Awake()
     {
-        if (Instance == null) Instance = this;//싱글톤으로 설정 (어디서든 접근 가능하게)
-        else Destroy(gameObject);
+        if (Instance == null) Instance = this;//싱글톤 설정
+        else { Destroy(gameObject); return; }
+
+        InitializeReferences();//참조 자동 연결
     }
     void Start()
     {
-        UpdateCounterUI();//시작할 때 초기화 (0/10 이런 식으로)
+        UpdateCounterUI();//시작할 때 초기화 (Normal: 0/10 이런 식으로)
+    }
+
+    private void InitializeReferences()
+    {
+        // 씬에서 "MonsterCounterText"라는 이름의 오브젝트를 찾아 연결
+        if (counterText == null)
+        {
+            GameObject textObj = GameObject.Find("MonsterCounterText");
+            if (textObj != null) counterText = textObj.GetComponent<TextMeshProUGUI>();
+            else Debug.LogWarning("MonsterCountManager: 'MonsterCounterText'를 찾을 수 없어!");
+        }
     }
 
     public void DeathCount(Enemy.EnemyType type)//타입별 몬스터 사망시 카운트
@@ -62,10 +75,8 @@ public class MonsterCountManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "GameScene3")
         {
             //챌린지 모드: 목표치 없이 현재 처치 수만 표시
-            counterText.text = string.Format(
-                "Normal: {0}\nStrong: {1}\nElite: {2}",
-                normalKills, strongKills, eliteKills
-            );//무한 모드니까 텍스트 색상은 흰색(기본)
+            counterText.text = $"Normal: {normalKills}\nStrong: {strongKills}\nElite: {eliteKills}";
+            //무한 모드(GameScene3에선 텍스트 색상은 흰색(기본)
         }
         else
         {
@@ -74,16 +85,13 @@ public class MonsterCountManager : MonoBehaviour
             string sColor = (strongKills >= reqStrong) ? "<color=#00FF00>" : "<color=#FFFFFF>";
             string eColor = (eliteKills >= reqElite) ? "<color=#00FF00>" : "<color=#FFFFFF>";
 
-            counterText.text = string.Format(
-                "{0}Normal: {1}/{2}</color>\n{3}Strong: {4}/{5}</color>\n{6}Elite: {7}/{8}</color>",
-                nColor, normalKills, reqNormal,
-                sColor, strongKills, reqStrong,
-                eColor, eliteKills, reqElite
-            );
+            counterText.text = $"{nColor}Normal: {normalKills}/{reqNormal}</color>\n" +
+                               $"{sColor}Strong: {strongKills}/{reqStrong}</color>\n" +
+                               $"{eColor}Elite: {eliteKills}/{reqElite}</color>";
         }
     }
     public bool IsMissionComplete()//포탈이 화성화 될 조건(몬스터 일정 수 처치)을 만족했는지 알려주는 함수
-    {                             
+    {
         return normalKills >= reqNormal &&
                strongKills >= reqStrong &&
                eliteKills >= reqElite;

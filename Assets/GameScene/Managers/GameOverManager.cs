@@ -8,39 +8,56 @@ using UnityEngine.SceneManagement;
 public class GameOverManager : MonoBehaviour
 {//플레이어가 죽으면 실행될 UI 스크립트.
 
-    [Header("싱글톤 인스턴스")]
-    //다른 스크립트에서 쉽게 접근할 수 있도록싱글톤 패턴을 위한 인스턴스
-    public static GameOverManager Instance;
+    public static GameOverManager Instance { get; private set; }
 
-    [Header("GameOverPanel UI 연결")]
-    public GameObject GameOverPanel;//인스펙터에서 게임 오버 패널을 할당할 변수
 
-    [Header("FinalScoreTextUI 연결")]
-    public TextMeshProUGUI FinalScoreText;//게임 오버 패널에 표시할 점수 텍스트 (Inspector에서 연결)
-                                          //GameOverPanel UI의 자식에 있어!
-    [Header("상세 처치 수 UI 연결")]
-    public TextMeshProUGUI NormalKillText;
-    public TextMeshProUGUI StrongKillText;
-    public TextMeshProUGUI EliteKillText;
+    [Header("자동 연결될 UI 요소들")]
+    [SerializeField] private GameObject GameOverPanel;//게임 오버 패널
+    [SerializeField] private TextMeshProUGUI FinalScoreText;//게임 오버 패널에 표시할 점수 텍스트
+    [SerializeField] private TextMeshProUGUI NormalKillText;
+    [SerializeField] private TextMeshProUGUI StrongKillText;
+    [SerializeField] private TextMeshProUGUI EliteKillText;
 
-    [Header("Player 스크립트 참조")]
-    public Player PlayerScript;//Player스크립트 참조
+
+    [Header("자동 연결될 외부 참조")]
+    [SerializeField] private Player PlayerScript;//Player스크립트
 
 
     void Awake()
     {
         //싱글톤 초기화(굳이 public GameOverManager gameOverManager; 변수를 만들어서 연결하기 번거롭잖아?)
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else { Destroy(gameObject); return; }
+
+        InitializeReferences();//수동 드래그 대신 자동 참조 실행
+    }
+    
+    private void InitializeReferences()
+    {
+        if (GameOverPanel == null)//게임 오버 패널 찾기 (이름으로 찾기)
+            GameOverPanel = GameObject.Find("GameOverPanel");
+
+        if (GameOverPanel != null)//텍스트 UI들 찾기 (패널이 있다면 그 자식들 중에서 찾기)
+        {
+            //GetComponentInChildren를 쓰면 자식 오브젝트들 중에서 해당 컴포넌트를 가진 애를 찾아줘
+            //다만, 이름이 겹칠 수 있으니 '오브젝트 이름'으로 찾는 게 더 정확할 수 있어!
+            if (FinalScoreText == null) FinalScoreText = GameObject.Find("FinalScoreText")?.GetComponent<TextMeshProUGUI>();
+            if (NormalKillText == null) NormalKillText = GameObject.Find("NormalKillText")?.GetComponent<TextMeshProUGUI>();
+            if (StrongKillText == null) StrongKillText = GameObject.Find("StrongKillText")?.GetComponent<TextMeshProUGUI>();
+            if (EliteKillText == null) EliteKillText = GameObject.Find("EliteKillText")?.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (PlayerScript == null)//플레이어 찾기 (태그 활용)
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null) PlayerScript = playerObj.GetComponent<Player>();
+        }
     }
 
     void Start()//Start 함수는 오브젝트가 활성화될 때 한 번 실행
     {
         //게임 시작 시 게임 오버 패널은 비활성화, 케릭터가 죽어야만 생성
         if (GameOverPanel != null) GameOverPanel.SetActive(false);
-
-        //플레이어 스크립트가 할당되지 않았다면 경고 로그 출력
-        if (PlayerScript == null) Debug.LogError("GameOverManager에 Player Script가 할당되지 않았어!");
     }
 
     public void OnGameOver()//게임 오버 상태가 되면 호출될 함수
@@ -68,36 +85,27 @@ public class GameOverManager : MonoBehaviour
         if (FinalScoreText != null && PlayerScript != null)
             FinalScoreText.text = "최종 점수: " + PlayerScript.CurrentScore.ToString();
 
-        //2. 현재 씬 이름 확인
-        string currentSceneName = SceneManager.GetActiveScene().name;
 
-        //3. 게임씬3(무한 모드)일 때만 처치 수 텍스트를 활성화하고 데이터 입력
-        if (currentSceneName == "GameScene3" && MonsterCountManager.Instance != null)
+        // 2. 처치 수 표시 (MonsterCountManager가 있다면 씬 상관없이 실행)
+        if (MonsterCountManager.Instance != null)
         {
-            // 텍스트 오브젝트 자체를 활성화
-            if (NormalKillText != null)
+            if (NormalKillText != null)// Normal 몬스터 처치 수
             {
                 NormalKillText.gameObject.SetActive(true);
                 NormalKillText.text = "Normal: " + MonsterCountManager.Instance.normalKills;
             }
-            if (StrongKillText != null)
+            if (StrongKillText != null)// Strong 몬스터 처치 수
             {
                 StrongKillText.gameObject.SetActive(true);
                 StrongKillText.text = "Strong: " + MonsterCountManager.Instance.strongKills;
             }
-            if (EliteKillText != null)
+            if (EliteKillText != null)// Elite 몬스터 처치 수
             {
                 EliteKillText.gameObject.SetActive(true);
                 EliteKillText.text = "Elite: " + MonsterCountManager.Instance.eliteKills;
             }
         }
-        else
-        {
-            //1, 2번 씬이거나 무한 모드가 아니면 처치 수 UI를 숨김
-            if (NormalKillText != null) NormalKillText.gameObject.SetActive(false);
-            if (StrongKillText != null) StrongKillText.gameObject.SetActive(false);
-            if (EliteKillText != null) EliteKillText.gameObject.SetActive(false);
-        }
+        else Debug.LogWarning("GameOverManager: MonsterCountManager.Instance를 찾을 수 없어!");
     }
     
 

@@ -7,14 +7,17 @@ using UnityEngine.Tilemaps;//타일맵을 사용하려면 필요
 
 public class ItemSpawner : MonoBehaviour
 {
+    public static ItemSpawner Instance { get; private set; } // 싱글톤 선언
 
-    //인스펙터에 할당할 변수들
-    public GameObject[] ItemPrefabs;//스폰할 아이템 프리팹 목록
-    [Header("오브젝트, 레이어 연결")]//위에 itemPrefabs 변수는 []로 드롭다운 메뉴가 생겨서 헤더 안에 포함하지 않았어
-    public Tilemap TargetTilemap;//아이템을 스폰할 타일맵
-    public LayerMask SpawnableLayer;//아이템이 스폰될 수 있는 레이어 (바닥 등)
+    [Header("스폰할 아이템 목록 (인스펙터 할당)")]
+    public GameObject[] ItemPrefabs;
+
+    [Header("자동 연결될 참조들")]
+    [SerializeField] private Tilemap TargetTilemap;
+    [SerializeField] private LayerMask SpawnableLayer;
+
     [Header("아이템이 스폰되는 시간")]
-    public float ItemSpawnTime = 10f;//아이템이 스폰되는 주기 (초)
+    public float ItemSpawnTime = 5f;
 
 
     //내부에서 사용할 변수들
@@ -22,24 +25,43 @@ public class ItemSpawner : MonoBehaviour
     private int currentItemCount;
     private TextAlimManager textalimManager;//TextAlimManager 스크립트 참조
 
+    void Awake()
+    {
+        //싱글톤 초기화
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
+        InitializeReferences();
+    }
+
+    private void InitializeReferences()
+    {
+        //타일맵 자동 찾기
+        if (TargetTilemap == null)
+        {
+            TargetTilemap = FindFirstObjectByType<Tilemap>();
+            if (TargetTilemap == null) Debug.LogError("ItemSpawner: 타일맵을 찾을 수 없어!");
+        }
+
+        //알림 매니저 자동 연결
+        if (textalimManager == null) textalimManager = FindFirstObjectByType<TextAlimManager>();
+
+        //레이어 기본값 설정 (Ground 레이어 가정)
+        if (SpawnableLayer == 0) SpawnableLayer = LayerMask.GetMask("Ground");
+    }
 
     void Start()
     {
-        //!= null은 "null이 아닐 때" 즉, "무언가가 존재할 때"를 의미하고,
-        //== null은 "null일 때" 즉, "아무것도 없거나 비어있을 때"를 의미해.
-        spawnTimer = ItemSpawnTime;
-        if (ItemPrefabs == null || ItemPrefabs.Length == 0) Debug.LogError("ItemSpawner: 아이템 프리팹이 할당되지 않았어!");
+        spawnTimer = ItemSpawnTime;//게임 시작 후 ItemSpawnTime시간에 아이템이 등장
 
-        if (TargetTilemap == null) Debug.LogError("ItemSpawner: 타일맵이 할당되지 않았어!");
-
-        textalimManager = FindFirstObjectByType<TextAlimManager>();
-        if (textalimManager == null) Debug.LogError("TextAlimManager 씬에서 찾을 수 없어!");
+        if (ItemPrefabs == null || ItemPrefabs.Length == 0)
+            Debug.LogError("ItemSpawner: 아이템 프리팹이 할당되지 않았어!");
     }
 
     void Update()
     {
         spawnTimer -= Time.deltaTime;
-        if (spawnTimer <= 0f)
+        if (spawnTimer <= 0f)//랜덤한 아이템이 spawnTimer 시간에 등장
         {
             SpawnRandomItem();
             spawnTimer = ItemSpawnTime;
@@ -51,11 +73,7 @@ public class ItemSpawner : MonoBehaviour
         if (ItemPrefabs == null || ItemPrefabs.Length == 0) return;
 
         Vector3 spawnPosition = GetValidSpawnPosition();//GetValidSpawnPosition함수 호출
-        if (spawnPosition == Vector3.zero)
-        {
-            Debug.LogWarning("아이템 스폰: 타일맵 내에서 유효한 스폰 위치를 찾을 수 없었어!");
-            return;
-        }
+        if (spawnPosition == Vector3.zero) return;//생성할 자리가 없으면 스폰 중단
 
         int randomIndex = Random.Range(0, ItemPrefabs.Length);
         GameObject itemToSpawn = ItemPrefabs[randomIndex];

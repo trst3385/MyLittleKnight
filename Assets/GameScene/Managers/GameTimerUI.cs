@@ -12,7 +12,6 @@ public class GameTimerUI : MonoBehaviour
 
     private float gameStartTime;//게임이 시작된 시간
     private bool timerRunning = true;//타이머가 작동 중인지 여부
-    private bool isPortalActivated = false;//포탈이 이미 생겼는지 체크
 
     void Awake()
     {
