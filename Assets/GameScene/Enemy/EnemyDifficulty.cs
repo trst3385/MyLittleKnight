@@ -69,6 +69,12 @@ public class EnemyDifficulty : MonoBehaviour
 
         //Awake에서 모든 참조 자동 연결
         InitializeReferences();
+
+        //초기화 로직
+        currentNormalSpawnTime = NormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
+        currentNormalSpawnCount = NormalSpawnCount;//시작 시 동시 스폰 개수 초기화
+        timeSinceLastLevelUp = 0f;//게임 타이머 초기화
+        currentDifficultyLevel = 0;//난이도 레벨 초기화
     }
 
     private void InitializeReferences()// 씬이 바뀌었을 때도 UI를 새로 찾을 수 있게 함수로 분리
@@ -99,11 +105,7 @@ public class EnemyDifficulty : MonoBehaviour
     }
 
     void Start()
-    {   //초기화 로직
-        currentNormalSpawnTime = NormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
-        currentNormalSpawnCount = NormalSpawnCount;//시작 시 동시 스폰 개수 초기화
-        timeSinceLastLevelUp = 0f;//게임 타이머 초기화
-        currentDifficultyLevel = 0;//난이도 레벨 초기화
+    {   
         UpdateMonsterLevelText();
          
         if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";//게임 시작 시 UI 텍스트를 비움

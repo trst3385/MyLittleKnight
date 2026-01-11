@@ -493,6 +493,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 559715697072742828, guid: 9131c2dbea986fe46842b5772e107122,
+        type: 3}
+      propertyPath: m_TagString
+      value: Portal
+      objectReference: {fileID: 0}
     - target: {fileID: 2902527046845444889, guid: 9131c2dbea986fe46842b5772e107122,
         type: 3}
       propertyPath: audioSource
@@ -13425,11 +13430,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5510274048330827631, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: targetTilemap
+      value: 
+      objectReference: {fileID: 1254152492}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 27eaa84ada58dd24aafcd97c0e0ba758, type: 3}
+--- !u!114 &1715466251 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+    type: 3}
+  m_PrefabInstance: {fileID: 1715466250}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f2c29b53bb901841b7444792ff67bc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1774235543 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7508116785346154267, guid: 9e7797bb065982d4497d030f065d6e2f,
@@ -14026,7 +14048,7 @@ MonoBehaviour:
   ScoreTextUI: {fileID: 671999801}
   walkingaudioSource: {fileID: 16655319}
   walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
-  gameOverManager: {fileID: 0}
+  gameOverManager: {fileID: 1715466251}
   CurrentScore: 0
 --- !u!1 &1641517803311988306
 GameObject:

@@ -2791,6 +2791,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2804721568643049255, guid: c3e797d9f06d1ad4691c2a983e65696e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Portal
+      objectReference: {fileID: 0}
     - target: {fileID: 3919769227660172588, guid: c3e797d9f06d1ad4691c2a983e65696e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14242,6 +14247,11 @@ PrefabInstance:
       propertyPath: TargetTilemap
       value: 
       objectReference: {fileID: 1254152492}
+    - target: {fileID: 372382363196880986, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: SpawnableLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1134275910337054827, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: m_Name
@@ -14382,6 +14392,11 @@ PrefabInstance:
       propertyPath: targetTilemap
       value: 
       objectReference: {fileID: 1254152492}
+    - target: {fileID: 5510274048330827631, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: spawnableLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 6813449158767587547, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: TargetTilemap

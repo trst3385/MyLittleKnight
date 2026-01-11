@@ -9,6 +9,7 @@ TagManager:
   - ItemChest
   - Tree
   - Player_Sil
+  - Portal
   layers:
   - Default
   - TransparentFX

@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class ObstacleDifficultyManager : MonoBehaviour
 {
+   
+    public static ObstacleDifficultyManager Instance { get; private set; }//싱글톤 패턴 선언
+
     [Header("통합 장애물 레벨업 시간")]//발사체, 가시의 통합 강화 시간
     public float LevelUpTime = 20f;//전체 장애물의 통합 강화 주기
     private float timeSinceLastLevelUp = 0f;//통합 타이머
@@ -78,26 +81,40 @@ public class ObstacleDifficultyManager : MonoBehaviour
     //모든 장애물 강화레벨 통합
     private int currentLevel = 0;//현재 난이도 레벨을 저장할 변수(난이도 강화 시점마다 1씩 증가)
 
-    // 어디서든 이 스크립트에 접근할 수 있게 해주는 '싱글톤' 패턴
-    public static ObstacleDifficultyManager Instance { get; private set; }
-
 
     void Awake()
-    {   //싱글톤 패턴이 스크립트의 유일한 인스턴스 존재를 보장
-        //1.이미 인스턴스가 존재하면(중복이면)
-        if (Instance != null && Instance != this) Destroy(gameObject);//이 중복된 오브젝트를 파괴하고 종료
-        else
+    {
+        //싱글톤 패턴이 스크립트의 유일한 인스턴스 존재를 보장
+        if (Instance != null && Instance != this)
         {
-            Instance = this;//2.인스턴스가 없으면, '나'를 유일한 인스턴스로 지정
-            DontDestroyOnLoad(gameObject);//씬이 바뀌어도 오브젝트를 파괴하지 않고 유지
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);//씬이 바뀌어도 오브젝트를 파괴하지 않고 유지
+
+        
+        InitializeReferences();//참조 자동 연결
+    }
+
+    private void InitializeReferences()
+    {
+        if (ObstacleLevelText == null)//UI 텍스트 자동 찾기
+        {
+            GameObject textObj = GameObject.Find("ObstacleLevelText");
+            if (textObj != null) ObstacleLevelText = textObj.GetComponent<TextMeshProUGUI>();
         }
     }
+
     void Start()
     {
         //게임이 시작될 때, 인스펙터에 설정해 둔 초기값(initial)을,
         //실제 게임에서 사용할 현재 값(current)에 넣어주는 역할을 해.
         //current... 변수를 **게임의 변화하는 상태**를 담는 그릇으로 사용하고,
         //initial... 변수를 **변하지 않는 기준점**으로 사용해서 역할을 명확히 분리.
+
+        //FireBall 초기화
         currentFireballSpeed = FireBallSpeed;
         currentFireballSpawnInterval = FireBallSpawnTime;
         currentFireballDamage = FireBallDamage;
@@ -109,8 +126,7 @@ public class ObstacleDifficultyManager : MonoBehaviour
         currentSpikeDuration = SpikeLifeTime;
         currentDebuffDamageValue = DebuffDamage;
 
-        //게임 시작 시 UI 텍스트에 초기 레벨을 표시
-        UpdateLevelText();
+        UpdateLevelText();//게임 시작 시 UI 텍스트에 초기 레벨을 표시
     }
     
     void Update()
@@ -118,41 +134,34 @@ public class ObstacleDifficultyManager : MonoBehaviour
         //TimeFreeze 스크립트에 의해 시간이 멈췄다면, 난이도 타이머 증가 로직을 건너뛰고 바로 함수 종료
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
 
+        timeSinceLastLevelUp += Time.deltaTime;//timeSinceLastLevelUp의 시간이 0..1...2..초 증가. 20초가 되면 강화 시작
 
-        bool ObstacleLevelUp = false;//장애물의 레벨업이 발생했는지 확인하는 플래그
-
-        timeSinceLastLevelUp += Time.deltaTime;//통합 강화 시간 타이머 증가
-
-        if (timeSinceLastLevelUp >= LevelUpTime)//장애물 통합 강화 조건
-        {
-            //FireBall 강화 로직
-            currentFireballSpeed = Mathf.Min(currentFireballSpeed + FireBallSpeedUp, MaxFireBallSpeed);
-            currentFireballSpawnInterval = Mathf.Max(MinSpawnTime, currentFireballSpawnInterval - FireBallSpawnTimeDown);
-            currentFireballDamage += FireBallDamageUp;
-            Debug.Log($"발사체 강화 완료! 속도: {currentFireballSpeed}, 주기: {currentFireballSpawnInterval}, 데미지: {currentFireballDamage}");
-
-            //가시 강화 로직
-            currentSpikeDamage = Mathf.Min(currentSpikeDamage + SpikeDamageUp, MaxSpikeDamage);
-            currentDebuffDamageValue = Mathf.Min(currentDebuffDamageValue + DebuffDamageUp, MaxDebuffDamage);
-            currentDebuffDuration = Mathf.Min(MaxDebuffTime, currentDebuffDuration + SpikeDebuffTimeUP);
-            currentSpikeSpawnInterval = Mathf.Max(MinSpikeSpawnTime, currentSpikeSpawnInterval - SpikeSpawnTimeDown);
-            currentSpikeDuration = Mathf.Min(currentSpikeDuration + SpikeLifeTimeUp, MaxSpikeLifeTime);
-            Debug.Log($"가시 강화 완료! 데미지: {currentSpikeDamage}, 디버프 시간: {currentDebuffDuration}, 디버프 데미지: {currentDebuffDamageValue}");
-
-            //강화가 완료되었으니, 타이머를 리셋하고 레벨업 플래그 설정
-            timeSinceLastLevelUp = 0f;//통합 타이머 리셋
-            ObstacleLevelUp = true;//모든 장애물이 레벨업 되었다고 true
-        }
-        
-
-        if (ObstacleLevelUp)//모든 강화가 끝난 후, 레벨업 플래그를 확인하여 레벨 증가 UI 업데이트
-        {                       //이 로직은 모든 개별 강화 if문이 끝난 후, 강화가 발생했음을 확인하는 최종 검증 단계
-            currentLevel++;
-            UpdateLevelText();
-
-            Debug.Log($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) 완벽 동기화 성공! FireBall/가시 동시 강화 완료!");
-        }
+        //누적된 게임 시간이 설정한 레벨업 주기(LevelUpTime(20초))에 도달하면 실제 강화 함수를 호출함
+        if (timeSinceLastLevelUp >= LevelUpTime) LevelUpObstacles();
     }
+
+    private void LevelUpObstacles()
+    {
+        //FireBall 강화
+        currentFireballSpeed = Mathf.Min(currentFireballSpeed + FireBallSpeedUp, MaxFireBallSpeed);
+        currentFireballSpawnInterval = Mathf.Max(MinSpawnTime, currentFireballSpawnInterval - FireBallSpawnTimeDown);
+        currentFireballDamage += FireBallDamageUp;
+
+        //가시 강화
+        currentSpikeDamage = Mathf.Min(currentSpikeDamage + SpikeDamageUp, MaxSpikeDamage);
+        currentDebuffDamageValue = Mathf.Min(currentDebuffDamageValue + DebuffDamageUp, MaxDebuffDamage);
+        currentDebuffDuration = Mathf.Min(MaxDebuffTime, currentDebuffDuration + SpikeDebuffTimeUP);
+        currentSpikeSpawnInterval = Mathf.Max(MinSpikeSpawnTime, currentSpikeSpawnInterval - SpikeSpawnTimeDown);
+        currentSpikeDuration = Mathf.Min(currentSpikeDuration + SpikeLifeTimeUp, MaxSpikeLifeTime);
+
+        //공통 데이터 갱신
+        timeSinceLastLevelUp = 0f;
+        currentLevel++;
+        UpdateLevelText();
+
+        Debug.Log($"★★★ 전체 장애물 레벨업! (Lv.{currentLevel}) ★★★");
+    }
+
 
     //FireBall, 발사체가 생성될 때, 현재 적용된 속도, 생성 주기, 데미지를 반환
     public float GetCurrentFireBallSpeed() => currentFireballSpeed;

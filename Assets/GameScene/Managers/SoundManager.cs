@@ -1,25 +1,42 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]// 이 스크립트가 붙은 오브젝트에 AudioSource가 없다면 자동으로 추가해주는 기능
+//이 코드를 클래스 위에 적어두면, 네가 실수로 AudioSource를 삭제하려고 해도 유니티가,
+//"이 스크립트 쓰려면 이거 필요해!"라며 삭제를 막아주고, 스크립트를 붙일 때 자동으로 컴포넌트도 추가해줘.
+
 public class SoundManager : MonoBehaviour
 {
-
-
-    //12.3 지금은 아이템 생성시에 들릴 목적으로 사용하고 있어. 나중에는 이 스크립트를 이용해서 다른 오브젝트,
-    //프리팹에 필요할 사운드를 조절해보자
     public static SoundManager Instance { get; private set; }//싱글톤 패턴으로 어디서든 접근 가능하게
     private AudioSource sfxAudioSource;//SFX 믹서에 연결된 AudioSource
 
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);//씬이 변경되어도 파괴되지 않도록 설정
-
-        //SoundManager가 씬에 하나만 있도록 보장
-        if (Instance == null)
+        //싱글톤 중복 방지 및 유지
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        //AudioSource 참조 자동 연결
+        InitializeAudioSource();
+    }
+
+    private void InitializeAudioSource()
+    {
+        if (sfxAudioSource == null)
+        {
             sfxAudioSource = GetComponent<AudioSource>();
         }
-        else Destroy(gameObject);
+
+        //기본 설정 (SFX는 보통 루프하지 않고, 게임 시작 시 바로 재생되지 않게 설정)
+        sfxAudioSource.playOnAwake = false;
+        sfxAudioSource.loop = false;
+        //주의: 인스펙터에서 이 AudioSource의 'Output'에 
+        //Mixer의 SFX 그룹을 꼭 연결해줘야 나중에 볼륨 조절이 먹혀!
     }
 
     ///<summary>
