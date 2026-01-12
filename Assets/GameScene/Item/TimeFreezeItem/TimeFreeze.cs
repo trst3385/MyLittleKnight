@@ -1,33 +1,82 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;//포스트 프로세싱 사용 시 필요
 
 public class TimeFreeze : MonoBehaviour
 {
     public static TimeFreeze Instance { get; private set; }//어디서든 접근할 수 있는 유일한 인스턴스(싱글톤)
+
+    [Header("상태")]
     public bool IsTimeFrozen { get; private set; } = false;//모든 몬스터, 장애물, 게임 타이머는 이 플래그를 체크해야 해
                                                            //현재 시간이 정지 상태인지 확인하는 전역 플래그
     [Header("시각 효과")]
     [SerializeField] private PostProcessVolume freezeVolume;//TimeFreeze_Profile이 연결된 볼륨
 
-    [Header("배경음악 제어")]
-    [SerializeField] private AudioSource bgmAudioSource;//BGM_Manager오브젝트의 AudioSource 연결,정지 시 배경음악 멈춤
-
-    private GameTimerUI gameTimerUI;//GameTimerUI 변수
-    private Coroutine freezeCoroutine;//시간 정지 코루틴을 제어할 변수
-    private float timeWhenFrozen;//시간이 정지되기 시작한 시점을 기록할 변수
+    private AudioSource bgmAudioSource;
+    private GameTimerUI gameTimerUI;
+    private Coroutine freezeCoroutine;
+    private float timeWhenFrozen;
 
     void Awake()
     {
-        if (Instance != null && Instance != this) Destroy(gameObject);//싱글톤 패턴 구현으로 이 스크립트의 유일한 인스턴스를 보장
-        else Instance = this;
-
-        //GameTimerUI 참조 찾기
-        gameTimerUI = FindFirstObjectByType<GameTimerUI>();
-        if (gameTimerUI == null) Debug.LogError("TimeFreeze: GameTimerUI 스크립트를 찾을 수 없어!");
+        if (Instance == null) Instance = this;//싱글톤 설정
+        else { Destroy(gameObject); return; }
     }
 
-    public void ResumeTime()
+    void Start()
+    {
+        //외부 참조는 Start에서!
+        InitializeReferences();
+    }
+
+    private void InitializeReferences()
+    {
+        //GameTimerUI 찾기
+        if (gameTimerUI == null)
+            gameTimerUI = Object.FindAnyObjectByType<GameTimerUI>();
+
+        if (bgmAudioSource == null)//BGM 오디오 소스 찾기 (BGM_Manager 태그나 이름을 활용)
+        {
+            GameObject bgmObj = GameObject.Find("BGM_Manager");//이름으로 찾거나
+            if (bgmObj != null) bgmAudioSource = bgmObj.GetComponent<AudioSource>();
+        }
+
+        if (freezeVolume != null) freezeVolume.enabled = false;//볼륨 초기화
+    }
+
+    ///<summary>
+    ///아이템 획득 시 호출하여 시간 정지 기능을 활성화.
+    ///</summary>
+    ///<param name="duration">시간 정지 지속 시간 (초)</param>
+    public void ActivateTimeFreeze(float duration)
+    {
+        if (freezeCoroutine != null) StopCoroutine(freezeCoroutine);
+
+        if (!IsTimeFrozen) timeWhenFrozen = Time.time;
+
+        Debug.Log($"[TimeFreeze] 시간 정지 시작! {duration}초 동안 지속.");
+        freezeCoroutine = StartCoroutine(FreezeTimeCoroutine(duration));
+    }
+
+    IEnumerator FreezeTimeCoroutine(float duration)
+    {
+        IsTimeFrozen = true;
+
+        if (bgmAudioSource != null) bgmAudioSource.Pause();//BGM 일시정지
+
+        if (freezeVolume != null) freezeVolume.enabled = true;//화면 효과 켜기
+
+        float timer = duration;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;//Time.timeScale을 건드리지 않기 때문에 deltaTime은 정상 작동함
+            yield return null;
+        }
+        ResumeTime();
+        freezeCoroutine = null;
+    }
+
+    public void ResumeTime()//시간정지가 끝날때
     {
         if (!IsTimeFrozen) return;
 
@@ -46,44 +95,5 @@ public class TimeFreeze : MonoBehaviour
         if (bgmAudioSource != null) bgmAudioSource.UnPause();//BGM 다시 재생 추가 (UnPause 사용)!
 
         Debug.Log("시간 재개: " + frozenDuration.ToString("F2") + "초 동안 멈춤");
-    }
-
-    ///<summary>
-    ///아이템 획득 시 호출하여 시간 정지 기능을 활성화.
-    ///</summary>
-    ///<param name="duration">시간 정지 지속 시간 (초)</param>
-    public void ActivateTimeFreeze(float duration)
-    {
-        //1.이미 정지 중이라면 기존 코루틴을 멈추고 새로운 시간으로 연장
-        if (freezeCoroutine != null) StopCoroutine(freezeCoroutine);
-
-        if (!IsTimeFrozen) timeWhenFrozen = Time.time;//새로 정지를 시작할 때만 timeWhenFrozen 기록
-
-        Debug.Log($"[TimeFreeze] 시간 정지 시작! {duration}초 동안 지속.");
-        freezeCoroutine = StartCoroutine(FreezeTimeCoroutine(duration));
-    }
-
-    IEnumerator FreezeTimeCoroutine(float duration)
-    {
-        IsTimeFrozen = true;//1. 시간 정지 상태 On
-                            
-        if (bgmAudioSource != null) bgmAudioSource.Pause();//BGM 일시 정지
-
-        //@@정지 시작 시 사운드, 이펙트 등을 여기에 추가해@@
-
-        if (freezeVolume != null) freezeVolume.enabled = true;//시간 정지 시작 시 볼륨 활성화 (화면 회색)
-
-
-        float timer = duration;
-
-        while (timer > 0)//2. 시간이 멈춰있는 동안 카운트다운
-        {
-            timer -= Time.deltaTime;//Time.deltaTime을 사용하여 시간이 멈춰도 플레이어 관점의 시간은 흐르게 함
-            yield return null;
-        }
-
-        ResumeTime();//코루틴이 끝났을 때 ResumeTime()을 호출
-
-        freezeCoroutine = null;//(정지 해제 시 사운드, 이펙트 등을 여기에 추가할 수 있어)
     }
 }

@@ -10,6 +10,7 @@ TagManager:
   - Tree
   - Player_Sil
   - Portal
+  - TimeFreezeItem
   layers:
   - Default
   - TransparentFX
