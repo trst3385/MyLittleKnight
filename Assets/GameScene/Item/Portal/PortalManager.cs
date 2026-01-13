@@ -9,7 +9,7 @@ public class PortalManager : MonoBehaviour
     public GameObject portalObject;//씬에 비활성화된 포탈을 연결
 
     private bool isActivated = false;
-    private GameTimerUI gameTimer;//매 프레임 Find를 하지 않기 위해 미리 캐싱해둘 변수
+    private GameTimerManager gameTimer;//매 프레임 Find를 하지 않기 위해 미리 캐싱해둘 변수
 
     void Awake()
     {
@@ -31,7 +31,7 @@ public class PortalManager : MonoBehaviour
     private void InitializeReferences()
     {
         if (gameTimer == null)//타이머 찾기
-            gameTimer = Object.FindAnyObjectByType<GameTimerUI>();
+            gameTimer = Object.FindAnyObjectByType<GameTimerManager>();
 
         // 포탈 오브젝트가 비어있다면 태그로 찾기
         if (portalObject == null) portalObject = GameObject.FindWithTag("Portal");

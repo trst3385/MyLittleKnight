@@ -34,6 +34,7 @@ Transform:
   - {fileID: 3995619279339009640}
   - {fileID: 9155138147343195552}
   - {fileID: 4563366518362194099}
+  - {fileID: 9034304993278988588}
   - {fileID: 2043906982142018692}
   - {fileID: 7231295429464951537}
   - {fileID: 2752340933870889738}
@@ -863,7 +864,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeFreeze
   freezeVolume: {fileID: 5876211394937705463}
-  bgmAudioSource: {fileID: 8113076376020775190}
 --- !u!1 &6017965265383613443
 GameObject:
   m_ObjectHideFlags: 0
@@ -1167,6 +1167,51 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   ItemSpawnTime: 5
+--- !u!1 &8552823993019388454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9034304993278988588}
+  - component: {fileID: 8594193889375196130}
+  m_Layer: 0
+  m_Name: GameTimerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9034304993278988588
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8552823993019388454}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4.6619263, y: 300.47916, z: -3.0555475}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5250910147843911543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8594193889375196130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8552823993019388454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e49f9c2639ba644c844c330ac1410df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameTimerManager
+  gameTimer: {fileID: 0}
 --- !u!1 &9020764542937942150
 GameObject:
   m_ObjectHideFlags: 0
@@ -1413,12 +1458,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f39e2600c638b846b5de0c11be10008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeFreezeItemSpawner
-  timeFreezeItemPrefab: {fileID: 7572644136445505618, guid: e403de628b63ee44d9f576130bb81621,
-    type: 3}
+  timeFreezeItem: {fileID: 0}
   spawnInterval: 20
-  maxSimultaneousItems: 1
-  targetTilemap: {fileID: 0}
-  spawnableLayer:
-    serializedVersion: 2
-    m_Bits: 8
   itemSpawnSFX: {fileID: 8300000, guid: a6afa83985c6cfc4298fc239e8a5a572, type: 3}

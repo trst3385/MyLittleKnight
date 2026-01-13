@@ -2121,6 +2121,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8211952696949778068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &562680226 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1650420321830654460, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2041781571}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &614431603 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2055102311959635369, guid: 9e7797bb065982d4497d030f065d6e2f,
@@ -14325,11 +14337,6 @@ PrefabInstance:
       propertyPath: TargetTilemap
       value: 
       objectReference: {fileID: 1254152492}
-    - target: {fileID: 372382363196880986, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
-        type: 3}
-      propertyPath: SpawnableLayer.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 1134275910337054827, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: m_Name
@@ -14465,16 +14472,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5510274048330827631, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
-        type: 3}
-      propertyPath: targetTilemap
-      value: 
-      objectReference: {fileID: 1254152492}
-    - target: {fileID: 5510274048330827631, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
-        type: 3}
-      propertyPath: spawnableLayer.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 6813449158767587547, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: TargetTilemap
@@ -14485,6 +14482,11 @@ PrefabInstance:
       propertyPath: counterText
       value: 
       objectReference: {fileID: 2041781572}
+    - target: {fileID: 8594193889375196130, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: gameTimer
+      value: 
+      objectReference: {fileID: 562680226}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -13,7 +13,7 @@ public class TimeFreeze : MonoBehaviour
     [SerializeField] private PostProcessVolume freezeVolume;//TimeFreeze_Profile이 연결된 볼륨
 
     private AudioSource bgmAudioSource;
-    private GameTimerUI gameTimerUI;
+    private GameTimerManager gameTimerUI;
     private Coroutine freezeCoroutine;
     private float timeWhenFrozen;
 
@@ -33,7 +33,7 @@ public class TimeFreeze : MonoBehaviour
     {
         //GameTimerUI 찾기
         if (gameTimerUI == null)
-            gameTimerUI = Object.FindAnyObjectByType<GameTimerUI>();
+            gameTimerUI = Object.FindAnyObjectByType<GameTimerManager>();
 
         if (bgmAudioSource == null)//BGM 오디오 소스 찾기 (BGM_Manager 태그나 이름을 활용)
         {
