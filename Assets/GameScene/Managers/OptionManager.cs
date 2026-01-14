@@ -29,22 +29,91 @@ public class OptionsManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);     
 
-        InitializeReferences();//드래그 생략을 위한 자동 참조 시도
+        InitializeReferences();//씬 시작하자마자 드래그 없이 모든 UI 자동 연결
     }
 
     private void InitializeReferences()
     {
-        //씬에 "OptionsCanvas" 같은 이름으로 프리팹이 있다면 내부에서 컴포넌트들을 자동으로 찾음
-        //(직접 드래그가 되어있다면 넘어가고, 비어있을 때만 찾음)
-        if (optionsPanel == null) optionsPanel = GameObject.Find("OptionsPanel");
-        if (warningText == null) warningText = GameObject.Find("WarningText")?.GetComponent<TextMeshProUGUI>();
+        //최상위 패널 찾기 (비활성화 상태여도 찾아야 함)
+        if (optionsPanel == null)
+        {
+            Canvas[] allCanvases = Resources.FindObjectsOfTypeAll<Canvas>();
+            foreach (Canvas canvas in allCanvases)
+            {
+                if (canvas.gameObject.scene.name == null) continue; // 프리팹 제외
+                Transform found = canvas.transform.Find("OptionsPanel");
+                if (found != null)
+                {
+                    optionsPanel = found.gameObject;
+                    break;
+                }
+            }
+        }
 
-        //슬라이더 등도 이름으로 찾기 가능
-        if (bgmSlider == null) bgmSlider = GameObject.Find("BGMSlider")?.GetComponent<Slider>();
-        if (sfxSlider == null) sfxSlider = GameObject.Find("SFXSlider")?.GetComponent<Slider>();
+        if (optionsPanel != null)//패널 안의 자식들 이름으로 자동 찾기 및 버튼 함수 연결
+        {
+            //WarningText도 이제 패널 안에 있으니 FindChildEx로 한 번만 찾으면 돼
+            warningText = FindChildEx(optionsPanel.transform, "WarningText")?.GetComponent<TextMeshProUGUI>();
+
+            //하위 그룹 오브젝트 찾기
+            Options = FindChildEx(optionsPanel.transform, "Options");
+            soundControlPanel = FindChildEx(optionsPanel.transform, "SoundControlPanel");
+
+            //슬라이더 및 텍스트 찾기
+            bgmSlider = FindChildEx(optionsPanel.transform, "BGMSlider")?.GetComponent<Slider>();
+            sfxSlider = FindChildEx(optionsPanel.transform, "SFXSlider")?.GetComponent<Slider>();
+            warningText = FindChildEx(optionsPanel.transform, "WarningText")?.GetComponent<TextMeshProUGUI>();
+
+            //버튼 자동 연결. 인스펙터 OnClick()에 수동 연결할 필요 없음!
+            SetupButton("ReStartButton", RestartGame);
+            SetupButton("Main MenuButton", GoToMainMenu);
+            SetupButton("SoundButton", OpenSoundControls);
+            SetupButton("BackButton", CloseSoundControls);
+            SetupButton("QuitGameButton", QuitGame);
+
+            //슬라이더 자동 연결
+            if (bgmSlider != null)
+            {
+                bgmSlider.onValueChanged.RemoveAllListeners();
+                bgmSlider.onValueChanged.AddListener(SetBGMVolume);
+            }
+            if (sfxSlider != null)
+            {
+                sfxSlider.onValueChanged.RemoveAllListeners();
+                sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+            }
+
+            optionsPanel.SetActive(false);//시작할 때 옵션창 꺼두기
+            if (warningText != null) warningText.gameObject.SetActive(false);
+        }
     }
+
+    private GameObject FindChildEx(Transform parent, string name)//이름만으로 자식을 뒤져서 찾아주는 헬퍼 함수
+    {
+        Transform[] children = parent.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in children)
+        {
+            if (child.name == name) return child.gameObject;
+        }
+        return null;
+    }
+
+    private void SetupButton(string btnName, UnityEngine.Events.UnityAction action)//버튼을 찾아 함수(리스너)를 직접 달아주는 함수
+    {
+        GameObject btnObj = FindChildEx(optionsPanel.transform, btnName);
+        if (btnObj != null)
+        {
+            Button btn = btnObj.GetComponent<Button>();
+            if (btn != null)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(action);
+            }
+        }
+    }
+
 
     void Start()//디스크에 저장된 값을 불러와 믹서와 슬라이더에 적용하도록 수정
     {
@@ -56,7 +125,7 @@ public class OptionsManager : MonoBehaviour
         if (bgmSlider != null) bgmSlider.value = bgmVolume;
         if (sfxSlider != null) sfxSlider.value = sfxVolume;
 
-        //3.SetVolume 함수를 호출하여 Audio Mixer에 최종 볼륨 적용
+        //SetVolume 함수를 호출하여 Audio Mixer에 최종 볼륨 적용
         //(SetVolume 함수 내부에 저장 로직을 넣을 예정이므로, 여기서 호출하면 로드와 동시에 저장도 됨)
         SetBGMVolume(bgmVolume);
         SetSFXVolume(sfxVolume);
@@ -68,48 +137,56 @@ public class OptionsManager : MonoBehaviour
 
     public void ToggleOptionsPanel()//옵션창과 활성화될때 게임의 일시정지 기능을 켜고 끄는 역할
     {
-        //카운트다운 중에는 차단
-        if (!optionsPanel.activeSelf && !CountdownManager.isCountdownFinished)
+        //1. 카운트다운 중일 때 처리
+        if (!CountdownManager.isCountdownFinished)
         {
-            ShowWarning("카운트 중이야! 잠시만 기다려!");
-            return;
+            if (!optionsPanel.activeSelf)
+            {
+                StopAllCoroutines(); // 중복 방지
+                StartCoroutine(ShowWarningOnly());
+                return;
+            }
         }
 
+        //2. 카운트다운 끝난 후 정상 토글 로직
         bool isPanelActive = !optionsPanel.activeSelf;
         optionsPanel.SetActive(isPanelActive);
 
-        //버튼 사운드 재생
         if (SoundManager.Instance != null && buttonClickSound != null)
             SoundManager.Instance.PlaySFX(buttonClickSound);
 
         if (isPanelActive)
         {
-            Time.timeScale = 0f;//일시정지
-            soundControlPanel.SetActive(false);
-            Options.SetActive(true);
+            Time.timeScale = 0f;
+            if (soundControlPanel != null) soundControlPanel.SetActive(false);
+            if (Options != null) Options.SetActive(true);
+            if (warningText != null) warningText.gameObject.SetActive(false);
         }
         else
         {
-            if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//옵션창 닫을 때 카운트가 끝난 상태면 시간 재개
+            if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//닫을 때 카운트가 끝난 상태면 시간 재개
         }
     }
 
-    private void ShowWarning(string message)
+    IEnumerator ShowWarningOnly()
     {
+        optionsPanel.SetActive(true);//warningText가 OptionsPanel의 자식이므로 부모를 먼저 켜야 함
+
+        //버튼들은 안 보이게 숨기기
+        if (Options != null) Options.SetActive(false);
+        if (soundControlPanel != null) soundControlPanel.SetActive(false);
+
         if (warningText != null)
         {
-            warningText.text = message;
+            warningText.text = "카운트 중이야! 잠시만 기다려!";
             warningText.gameObject.SetActive(true);
-            StopAllCoroutines();//기존 코루틴 중복 방지
-            StartCoroutine(HideWarningText());
         }
-    }
 
-    IEnumerator HideWarningText()//warningText UI 경고 메시지를 숨기는 코루틴
-    {
-        yield return new WaitForSecondsRealtime(1f);//warningText UI 메세지가 띄워지면 n초 동안 기다려
+        yield return new WaitForSecondsRealtime(1f);//실제 시간 기준으로 1초 대기 (Time.timeScale이 0이어도 작동)
 
-        if (warningText != null) warningText.gameObject.SetActive(false);//warningText UI 메시지를 비활성화
+        if (warningText != null) warningText.gameObject.SetActive(false);
+
+        optionsPanel.SetActive(false);//마지막에 부모 패널을 다시 꺼줘야 원래 화면으로 돌아옴
     }
 
     public void SetBGMVolume(float volume)//볼륨 조절

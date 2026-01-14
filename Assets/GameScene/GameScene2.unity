@@ -13470,6 +13470,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spawner,Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 3676212416584751528, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: portalObject
+      value: 
+      objectReference: {fileID: 1232909992}
     - target: {fileID: 4927545278322459909, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: m_Size.x
@@ -13579,6 +13584,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540937867558904229, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: reqElite
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540937867558904229, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: reqNormal
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540937867558904229, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: reqStrong
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8594193889375196130, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
