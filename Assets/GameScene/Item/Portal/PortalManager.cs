@@ -56,10 +56,14 @@ public class PortalManager : MonoBehaviour
                 }
             }
 
-            if (portalObject != null)
-                Debug.Log($"포탈 자등 연결 성공: {portalObject.name}");
-            else
-                Debug.LogWarning("씬에서 포탈을 찾지 못했어. 태그와 스크립트를 확인해봐!");
+            if (portalObject != null)//포탈 오브젝트가 연결 됐을때 뜰 로그
+                Debug.Log($"포탈 자동 연결 성공: {portalObject.name}");
+            else//현재 씬 이름을 확인해서 GameScene3가 아닐 때만 경고를 띄움
+            {
+                string sceneName = SceneManager.GetActiveScene().name;
+                if (sceneName != "GameScene3")
+                    Debug.LogWarning($"{sceneName}에서 포탈을 찾지 못했어. 태그와 스크립트를 확인해봐!");
+            }
         }
     }
 
