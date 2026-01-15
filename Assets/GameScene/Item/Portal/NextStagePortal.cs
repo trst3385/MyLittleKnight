@@ -10,7 +10,7 @@ public class NextStagePortal : MonoBehaviour
     public AudioClip portalTouchSound;
 
 
-    private void OnEnable() // 매니저가 이 오브젝트를 SetActive(true) 하는 순간 실행됨!
+    private void OnEnable()//매니저가 이 오브젝트를 SetActive(true) 하는 순간 실행됨!
     {
         if (SoundManager.Instance != null && portalSpawnSound != null)
             SoundManager.Instance.PlaySFX(portalSpawnSound);

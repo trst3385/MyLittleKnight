@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PortalManager : MonoBehaviour
 {
@@ -6,6 +7,8 @@ public class PortalManager : MonoBehaviour
 
     [Header("포탈 활성화 조건")]
     public float targetTime = 60f;
+
+    [Header("포탈 오브젝트(이미 코드 내에서 연결된 상태야")]
     public GameObject portalObject;//씬에 비활성화된 포탈을 연결
 
     private bool isActivated = false;
@@ -33,11 +36,32 @@ public class PortalManager : MonoBehaviour
         if (gameTimer == null)//타이머 찾기
             gameTimer = Object.FindAnyObjectByType<GameTimerManager>();
 
-        // 포탈 오브젝트가 비어있다면 태그로 찾기
-        if (portalObject == null) portalObject = GameObject.FindWithTag("Portal");
-        // 유니티 인스펙터 상단에서 Tag를 'Portal'로 설정해두면 됨!
-    }
+        if (portalObject == null)
+        {
+            // Resources.FindObjectsOfTypeAll은 씬에 있는 모든 '컴포넌트'를 뒤질 때 가장 강력해.
+            // 포탈에 붙어있는 'NextStagePortal' 스크립트를 직접 찾아보자.
+            NextStagePortal[] portals = Resources.FindObjectsOfTypeAll<NextStagePortal>();
 
+            foreach (var portal in portals)
+            {
+                // 프리팹이 아니고 실제 씬에 배치된 오브젝트인지 확인
+                if (portal.gameObject.hideFlags == HideFlags.None && portal.gameObject.scene.name != null)
+                {
+                    // 태그까지 확인하면 더 확실하겠지?
+                    if (portal.CompareTag("Portal"))
+                    {
+                        portalObject = portal.gameObject;
+                        break;
+                    }
+                }
+            }
+
+            if (portalObject != null)
+                Debug.Log($"포탈 자등 연결 성공: {portalObject.name}");
+            else
+                Debug.LogWarning("씬에서 포탈을 찾지 못했어. 태그와 스크립트를 확인해봐!");
+        }
+    }
 
     void Update()
     {

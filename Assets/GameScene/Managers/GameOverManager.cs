@@ -34,25 +34,65 @@ public class GameOverManager : MonoBehaviour
     
     private void InitializeReferences()
     {
-        if (GameOverPanel == null)//게임 오버 패널 찾기 (이름으로 찾기)
-            GameOverPanel = GameObject.Find("GameOverPanel");
-
-        if (GameOverPanel != null)//텍스트 UI들 찾기 (패널이 있다면 그 자식들 중에서 찾기)
+        if (GameOverPanel == null)//1. 비활성화된 GameOverPanel 찾기
         {
-            //GetComponentInChildren를 쓰면 자식 오브젝트들 중에서 해당 컴포넌트를 가진 애를 찾아줘
-            //다만, 이름이 겹칠 수 있으니 '오브젝트 이름'으로 찾는 게 더 정확할 수 있어!
-            if (FinalScoreText == null) FinalScoreText = GameObject.Find("FinalScoreText")?.GetComponent<TextMeshProUGUI>();
-            if (NormalKillText == null) NormalKillText = GameObject.Find("NormalKillText")?.GetComponent<TextMeshProUGUI>();
-            if (StrongKillText == null) StrongKillText = GameObject.Find("StrongKillText")?.GetComponent<TextMeshProUGUI>();
-            if (EliteKillText == null) EliteKillText = GameObject.Find("EliteKillText")?.GetComponent<TextMeshProUGUI>();
+            //씬 내의 모든 오브젝트를 뒤져서 이름이 "GameOverPanel"인 놈을 찾음
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            foreach (GameObject obj in allObjects)
+            {
+                //실제 씬에 있는 오브젝트인지 확인 (프리팹 제외)
+                if (obj.hideFlags == HideFlags.None && obj.scene.name != null && obj.name == "GameOverPanel")
+                {
+                    GameOverPanel = obj;
+                    break;
+                }
+            }
         }
 
-        if (PlayerScript == null)//플레이어 찾기 (태그 활용)
+        if (GameOverPanel != null)//2. 패널을 찾았다면 그 자식 텍스트들을 연결
+        {
+            //FindChildEx는 어제 OptionsManager 때 썼던 함수랑 똑같아! 아래에 추가해줄게.
+            FinalScoreText = FindChildEx(GameOverPanel.transform, "FinalScoreText")?.GetComponent<TextMeshProUGUI>();
+            NormalKillText = FindChildEx(GameOverPanel.transform, "NormalKillText")?.GetComponent<TextMeshProUGUI>();
+            StrongKillText = FindChildEx(GameOverPanel.transform, "StrongKillText")?.GetComponent<TextMeshProUGUI>();
+            EliteKillText = FindChildEx(GameOverPanel.transform, "EliteKillText")?.GetComponent<TextMeshProUGUI>();
+
+            //버튼 자동 연결
+            SetupButton("RestartButton", RestartGame);
+            SetupButton("MainMenuButton", GoToMainMenu);
+        }
+
+        if (PlayerScript == null)//3. 플레이어 찾기
         {
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null) PlayerScript = playerObj.GetComponent<Player>();
         }
     }
+
+    private void SetupButton(string btnName, UnityEngine.Events.UnityAction action)//버튼 리스너를 달아주는 헬퍼 함수
+    {
+        GameObject btnObj = FindChildEx(GameOverPanel.transform, btnName);
+        if (btnObj != null)
+        {
+            UnityEngine.UI.Button btn = btnObj.GetComponent<UnityEngine.UI.Button>();
+            if (btn != null)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(action);
+            }
+        }
+    }
+
+    private GameObject FindChildEx(Transform parent, string name)//자식 오브젝트를 이름으로 찾아주는 헬퍼 함수
+    {
+        Transform[] children = parent.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in children)
+        {
+            if (child.name == name) return child.gameObject;
+        }
+        return null;
+    }
+
 
     void Start()//Start 함수는 오브젝트가 활성화될 때 한 번 실행
     {

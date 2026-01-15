@@ -14396,7 +14396,7 @@ PrefabInstance:
         type: 3}
       propertyPath: portalObject
       value: 
-      objectReference: {fileID: 855360424}
+      objectReference: {fileID: 0}
     - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: PlayerScript

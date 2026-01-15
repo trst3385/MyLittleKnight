@@ -13146,6 +13146,31 @@ PrefabInstance:
       propertyPath: ObstacleLevelText
       value: 
       objectReference: {fileID: 1723841356}
+    - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: EliteKillText
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: GameOverPanel
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: FinalScoreText
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: NormalKillText
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: StrongKillText
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4927545278322459909, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: m_Size.x
@@ -13838,6 +13863,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1882547698}
+    - target: {fileID: 6244688887423777214, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GoToMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 7989533729818633884, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
         type: 3}
@@ -13853,6 +13883,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1882547698}
+    - target: {fileID: 9203966861472680733, guid: 446d62ce7f019664c818b5aaa8cb5f6e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestartGame
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

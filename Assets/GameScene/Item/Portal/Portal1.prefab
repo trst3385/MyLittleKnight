@@ -333,3 +333,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NextStagePortal
   nextGameScene: GameScene2
+  portalSpawnSound: {fileID: 0}
+  portalTouchSound: {fileID: 0}
