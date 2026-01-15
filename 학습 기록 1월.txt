@@ -299,6 +299,7 @@ GameTimer 로직 분리 및 매니저 시스템 구축(GameTimer 싱글톤 매�
 1/15
 1, 2씬의 포탈 생성 로직 자동화 (드래그 앤 드롭 제거)
 플레이어 사망 시 뜨는 게임오버 UI 연결 자동화
+GameScene3 포탈 부재에 따른 예외 처리 및 로그 최적화
 
 - 비활성화 포탈 탐색: 씬마다 이름이 다른 포탈(Portal1, Portal2)이 비활성화 상태일 때, Resources.FindObjectsOfTypeAll과 NextStagePortal 스크립트 타입을 조합해 씬에서 정확히 찾아내도록 구현.
 - 게임오버 UI 자동 연결: 꺼져 있는 GameOverPanel UI를 찾고, 그 자식들인 점수 텍스트와 처치 수 텍스트들을 FindChildEx 헬퍼 함수로 굴착해서 연결 성공.
@@ -318,7 +319,19 @@ GameTimer 로직 분리 및 매니저 시스템 구축(GameTimer 싱글톤 매�
    3. 결론적으로, "부모가 꺼져 있어도 자식을 찾는다"는 건 **유니티의 눈(Find)이 아니라 계층 구조의 족보(Transform)를 뒤져서 확실하게 찾아낸다**는 뜻이야!
 
 
-**가시에 밟을때 소리가 안나**
+- PortalManager 스크립트에서 현재 씬을 체크하여 포탈이 없는 GameScene3의 경우 경고 로그(Debug.LogWarning) 생략 로직 추가.
+            if (portalObject != null)//포탈 오브젝트가 연결 됐을때 뜰 로그
+                Debug.Log($"포탈 자동 연결 성공: {portalObject.name}");
+            else//현재 씬 이름을 확인해서 GameScene3가 아닐 때만 경고를 띄움
+            {
+                string sceneName = SceneManager.GetActiveScene().name;
+                if (sceneName != "GameScene3")
+                    Debug.LogWarning($"{sceneName}에서 포탈을 찾지 못했어. 태그와 스크립트를 확인해봐!");
+            }
+- 게임씬1,2에는 다음 씬으로 가는 포탈이 생성되지만 3는 무한모드니 포탈이 없어. 그래서 GameScene3이 아닌 1,2씬에서만 포탈이 연결되지 않았을때 로그워닝을 띄워.
+
+
+**게임씬2에서 등장하는 FireBall, 게임씬3에서 등장하는  FireBall, 가시는 게임 시작 후 5초 후에 생성되게 해보자**
 **매니저 프리팹은 각 씬마다 다르게 조정하는게 있어서(가시,FireBall 생성, 3씬에선 포탈 없음) 매니저 프리팹을 해제 할려고**
 
 **당장 내일 아니더라도 꼭 추가할 것! 조급해하지 말고 하나씩!**
