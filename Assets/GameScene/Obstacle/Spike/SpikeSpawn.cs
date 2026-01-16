@@ -44,6 +44,10 @@ public class SpikeSpawn : MonoBehaviour
 
     void Update()
     {
+        //ObstacleDifficultyManager매니저가 아직 시작 신호를 안 줬으면 아무것도 안 하고 기다림
+        if (ObstacleDifficultyManager.Instance == null || !ObstacleDifficultyManager.Instance.IsObstacleActionReady())
+            return;
+
         //TimeFreeze로 의해 시간이 멈췄다면, 난이도 타이머 증가 로직을 건너뛰고 바로 함수 종료
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
 

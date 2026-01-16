@@ -4,15 +4,14 @@ using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
-//08.03
-//ObstacleDifficultyManager 스크립트를 만들었으니 ObstacleSpawner 스크립트는 이제 난이도를 직접 조절하지 않고,
-//ObstacleDifficultyManager 스크립트에게 현재 스폰 주기, 속도, 데미지 값을 받아와서 사용하게 될 거야.
-//장애물 생성 주기 업데이트
+
 public class ObstacleFireBallSpawner : MonoBehaviour
 {
     [Header("발사체 프리팹, 콜라이더 연결")]
     public GameObject ObstacleFireBall;//발사체 프리팹 참조
     public BoxCollider2D SpawnAreaCollider;//생성할 타일맵 가장자리에 콜라이더를 생성해 이곳을 기준으로 발사체 생성
+
+    private float spawnTimer;
 
     void Start()
     {
@@ -29,15 +28,25 @@ public class ObstacleFireBallSpawner : MonoBehaviour
 
     private void SpawnFireBall()
     {
-        //InvokeRepeating은 계속 타이머를 돌리지만, 여기서 즉시 리턴하여 생성을 막기
+        if (ObstacleDifficultyManager.Instance != null)//첫 생성 시간이 준비 안 됐어도 '다음 소환 예약'은 계속 돌아가야해
+        {                                              //이 코드가 return 위에 있어야 5초 대기 중에도 다음 소환을 계속 예약함
+            CancelInvoke("SpawnFireBall");//CancelInvoke: 기존 예약을 취소하고 새로운 주기로 갱신하기 위함
+            float nextInterval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
+
+            //새로운 주기로 다시 예약(첫 발사 간격과 반복 간격을 모두 currentSpawnInterval로 설정)
+            InvokeRepeating("SpawnFireBall", nextInterval, nextInterval);
+        }
+
+        //ObstacleDifficultyManager매니저에게 "지금 Fireball 소환해도 돼?"라고 물어보고,
+        //아직 안 된다고 하면(5초 전) 생성 로직을 실행하지 않고 기다림
+        if (ObstacleDifficultyManager.Instance == null || !ObstacleDifficultyManager.Instance.IsObstacleActionReady())
+            return;
+
+        //시간 정지 아이템 획득 시 InvokeRepeating은 돌지만, 여기서 즉시 리턴하여 생성을 막음
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
-    
 
-        CancelInvoke("SpawnFireBall");
-        float newInterval = ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval();
-        InvokeRepeating("SpawnFireBall", ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval(), ObstacleDifficultyManager.Instance.GetCurrentSpawnInterval());
-     
 
+        // --- 실제 발사체 생성 로직 시작 ---
         int spawnSide = Random.Range(0, 2);
 
         Vector2 spawnPosition = Vector2.zero;

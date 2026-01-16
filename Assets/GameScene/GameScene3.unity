@@ -13143,9 +13143,44 @@ PrefabInstance:
       objectReference: {fileID: 1254152492}
     - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
+      propertyPath: SpikeSpawnTime
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: FireBallSpeedUp
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: SpikeLifeTimeUp
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: MaxSpikeLifeTime
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: FireBallSpawnTime
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: MinSpikeSpawnTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
       propertyPath: ObstacleLevelText
       value: 
       objectReference: {fileID: 1723841356}
+    - target: {fileID: 3087662218259053803, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
+        type: 3}
+      propertyPath: FireBallDestroyTime
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 3840018250016356365, guid: 27eaa84ada58dd24aafcd97c0e0ba758,
         type: 3}
       propertyPath: EliteKillText
