@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;//TextMeshPro를 사용하기 위해 필요
 
-
 public class CountdownManager : MonoBehaviour
 {
     public static CountdownManager Instance { get; private set; }//싱글톤 선언
@@ -13,7 +12,7 @@ public class CountdownManager : MonoBehaviour
     public static bool isCountdownFinished = false;//기본값은 false
     //혹시라도 게임을 재시작하거나 다른 씬에서 넘어올 때,
     //이전 상태의 true 값이 남아 있을 수 있기 때문에, 확실하게 false 상태로 만들어주는 거야
-
+    
     [Header("UI&사운드 연결(코드에서 자동으로 연결된 상태)")]
     public TextMeshProUGUI CountdownText;//CountdownText UI
     public AudioSource countdownAudioSource;//카운트다운에 나올 사운드

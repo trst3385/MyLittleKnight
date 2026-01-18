@@ -94,12 +94,10 @@ public class ObstacleDifficultyManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);//씬이 바뀌어도 오브젝트를 파괴하지 않고 유지
-
         
         InitializeReferences();//참조 자동 연결
     }
-
+    
     private void InitializeReferences()
     {
         if (ObstacleLevelText == null)//UI 텍스트 자동 찾기

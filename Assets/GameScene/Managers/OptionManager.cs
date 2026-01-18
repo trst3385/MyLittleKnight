@@ -29,9 +29,25 @@ public class OptionsManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);     
+        DontDestroyOnLoad(gameObject);//씬이 바껴도, 다음 씬으로 넘어가도 설정된 상태(BGM,SFX)는 유지   
 
         InitializeReferences();//씬 시작하자마자 드래그 없이 모든 UI 자동 연결
+    }
+
+    void OnEnable()//씬이 로드될 때마다 실행되도록 유니티 시스템에 등록하는 거야
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()//오브젝트가 사라질 때 등록했던 걸 해제해주는 안전장치
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        optionsPanel = null;//이전 씬의 UI 참조를 비워줌으로써 새 씬의 UI를 다시 찾게 함
+        InitializeReferences();//새로운 씬이 열릴 때마다 이 함수가 자동으로 실행
     }
 
     private void InitializeReferences()
