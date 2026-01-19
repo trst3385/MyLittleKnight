@@ -153,34 +153,39 @@ public class OptionsManager : MonoBehaviour
 
     public void ToggleOptionsPanel()//옵션창과 활성화될때 게임의 일시정지 기능을 켜고 끄는 역할
     {
-        //1. 카운트다운 중일 때 처리
+        //카운트다운 중일 때 처리
         if (!CountdownManager.isCountdownFinished)
         {
             if (!optionsPanel.activeSelf)
             {
-                StopAllCoroutines(); // 중복 방지
+                StopAllCoroutines();//중복 방지
                 StartCoroutine(ShowWarningOnly());
                 return;
             }
         }
 
-        //2. 카운트다운 끝난 후 정상 토글 로직
+        //카운트다운 끝난 후 정상 토글 로직
         bool isPanelActive = !optionsPanel.activeSelf;
         optionsPanel.SetActive(isPanelActive);
 
-        if (SoundManager.Instance != null && buttonClickSound != null)
-            SoundManager.Instance.PlaySFX(buttonClickSound);
-
-        if (isPanelActive)
+        //카운트다운이 끝났을 때만 버튼 사운드 재생
+        if (CountdownManager.isCountdownFinished)
         {
-            Time.timeScale = 0f;
+            if (SoundManager.Instance != null && buttonClickSound != null)
+                SoundManager.Instance.PlaySFX(buttonClickSound);
+        }
+
+        if (isPanelActive)//옵션창이 활성화(켜짐) 상태라면 게임 일시정지
+        {
+            Time.timeScale = 0f;//게임의 물리적 시간을 0으로 만들어 일시정지
             if (soundControlPanel != null) soundControlPanel.SetActive(false);
             if (Options != null) Options.SetActive(true);
             if (warningText != null) warningText.gameObject.SetActive(false);
         }
-        else
+        else//옵션창이 비활성화(꺼짐) 상태라면
         {
-            if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;//닫을 때 카운트가 끝난 상태면 시간 재개
+            //카운트다운이 이미 끝난 상태에서만 시간을 다시 흐르게 해(중요한 안전장치!)
+            if (CountdownManager.isCountdownFinished) Time.timeScale = 1f;
         }
     }
 

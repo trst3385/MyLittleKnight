@@ -68,10 +68,10 @@ public class PlayerStatsEffects : MonoBehaviour
             int currentStacks = bowWeapon.GetCurrentStacks();
             if (currentStacks > 0 && currentStacks % 3 == 0)//활 아이템을 3번 획득할때 레벨 UI와 강화 사운드게 들리게
             {
-                // 텍스트 커지는 연출
+                //텍스트 커지는 연출
                 StartCoroutine(PunchScale(ArrowLevelText.GetComponent<RectTransform>()));
 
-                // 강화 사운드 재생
+                //강화 사운드 재생
                 if (effectsAudioSource != null && enhancedArrowReadySound != null)
                     effectsAudioSource.PlayOneShot(enhancedArrowReadySound);
                 else//사운드가 안 나올 때 이유를 알려주는 디버그 로그
