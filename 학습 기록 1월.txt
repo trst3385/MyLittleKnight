@@ -470,6 +470,7 @@ Fireball 강화시 이동속도 증가량 조절 (2 -> 1)
 1/20
 아이템 시스템 최적화 및 프리팹 관리 체계 구축(Item, ItemSpawner)
 Item 스크립트에서 방어적 프로그래밍 적용 (TryGetComponent)
+125회 헌혈
 
 - ItemSpawner 싱글톤(Singleton) 도입.
 - 아이템이 생성될 때마다 FindAnyObjectByType으로 ItemSpawner를 찾느라 CPU에 불필요한 부하가 걸리고, 인스펙터에 일일이 드래그해서 연결해야 하는 번거로움이 있어.
@@ -487,6 +488,7 @@ Item 스크립트에서 방어적 프로그래밍 적용 (TryGetComponent)
 
 
 - TryGetComponent는 유니티에서 성능과 안정성을 동시에 잡기 위해 권장되는 아주 유용한 기능이야. 기존에 쓰던 GetComponent와 null 체크(if != null)를 한 번에 합쳐놓은 '진화형'이라고 생각하면 돼!
+- GetComponent가 실패했을 때 발생하는 'Managed Null' 문제는 유니티 엔진(C++)과 스크립트(C#) 사이의 브릿지 연산 때문에 발생해. TryGetComponent는 이 과정을 생략하고 직접적으로 컴포넌트 유무를 판별하기 때문에 가비지 컬렉터(GC)의 부담을 덜어줘.
 
 - 기존 방식 GetComponent: (보통은 컴포넌트를 가져올 때 이렇게 2단계로 작업했어)
 PlayerStatsEffects stats = other.GetComponent<PlayerStatsEffects>(); //1. 일단 가져와본다
@@ -507,10 +509,11 @@ if (other.TryGetComponent<PlayerStatsEffects>(out var stats)) //가져오기와 
    2. 코드가 짧고 깔끔해져 (가독성): 변수를 미리 선언하고, 할당하고, 다시 if문으로 검사하는 세 줄짜리 코드가 딱 한 줄로 줄어들어. 한 '코드 다이어트'의 핵심 기법 중 하나야
    3. 에러 방지 (안정성): GetComponent를 썼을 때 가끔 NullReferenceException 에러가 나서 게임이 멈추는 경우가 있잖아? TryGetComponent는 성공했을 때만 내부 로직이 돌아가기 때문에 에러로부터 훨씬 안전해
 
-- 코드 안의 out var는 무슨 뜻이야? (other.TryGetComponent<PlayerStatsEffects>(out var stats))
+- 코드 안의 구문 out var는 무슨 뜻이야? (other.TryGetComponent<PlayerStatsEffects>(out var stats))
    1. Try...: "한번 시도해 볼게!" (성공하면 true, 실패하면 false 반환)
-   2. out: "성공하면 이 결과를 밖으로 내보내줄게"라는 뜻
-   3. var stats: "성공해서 나온 그 컴포넌트를 stats라는 이름의 변수에 담아줘"라는 뜻
+   2. out: "성공하면 이 결과를 밖으로 내보내줄게"라는 뜻, 메서드 내부에서 값을 할당하여 호출자에게 반드시 전달하겠다는 약속
+   3. var stats: "성공해서 나온 그 컴포넌트를 stats라는 이름의 변수에 담아줘"라는 뜻, 컴파일러가 타입을 추론하게 하여 코드의 유연성을 높임
+   4. 안정성 확보: if 조건문 안에서 변수 선언과 할당이 동시에 이루어지므로, 스코프(범위)가 명확해지고 실수로 잘못된 변수를 참조할 가능성을 차단
 
 - 오늘 Item 스크립트에 이렇게 들어갔어
 if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))
@@ -520,6 +523,7 @@ if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))
     UseItem(statsEffects, ...);
 }
 
+**오늘 125번쨰 헌혈도 수고했어!**
 
 **당장 내일 아니더라도 꼭 추가할 것! 조급해하지 말고 하나씩!**
 **1. 메인화면에 크레딧으로 사용한 무료 에셋들을 표시하자 (아래에서 위로 글이 올라가는 형식으로)**
