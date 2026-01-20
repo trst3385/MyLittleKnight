@@ -151,14 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b14a79e92aba44a9244a3148a83dd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bowSound: {fileID: 8300000, guid: 4a3c0fc560732844daec9987b96bf1ff, type: 3}
-  swordSound: {fileID: 0}
-  healSound: {fileID: 0}
-  moveSpeedSound: {fileID: 0}
-  shieldSound: {fileID: 0}
-  weaponChangeCtbSound: {fileID: 0}
-  weaponChangeCtsSound: {fileID: 0}
   itemType: 1
+  itemSound: {fileID: 8300000, guid: 4a3c0fc560732844daec9987b96bf1ff, type: 3}
   EffectDamage: 1
   AttackCooldown: 0.2
   Speed: 1

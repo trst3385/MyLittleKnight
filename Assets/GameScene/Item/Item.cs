@@ -6,110 +6,71 @@ using UnityEngine.UI;
 
 public class Item: MonoBehaviour
 {
-    [Header("아이템 획득 사운드")]
-    //[SerializeField] private AudioSource audioSource; 이건 이제 안써!
-    //soundObject라는 새로운 게임 오브젝트를 만들고 거기에 AudioSource 컴포넌트를 동적으로 추가해서 쓰기 때문에,
-    //AudioSource 변수가 필요 없어졌어
-    [SerializeField] private AudioClip bowSound;
-    [SerializeField] private AudioClip swordSound;
-    [SerializeField] private AudioClip healSound;
-    [SerializeField] private AudioClip moveSpeedSound;
-    [SerializeField] private AudioClip shieldSound;
-    [SerializeField] private AudioClip weaponChangeCtbSound;
-    [SerializeField] private AudioClip weaponChangeCtsSound;
-
-    private AudioSource audioSource;//프리팹에 붙어있는 AudioSource 컴포넌트를 저장할 변수
-
-    public enum ItemType//아이템 종류를 쉽게 구분하기 위해 열거형으로
-    {//enum 안에 정의된 각 항목들은 정수(integer) 값을 가져. 가장 위에 있는 항목은 0, 그 다음은 1,
-     //이런 식으로 자동으로 숫자가 매겨지지. 물론 네가 직접 숫자를 지정해줄 수도 있어.
-
-        None,//0 아무것도 아님 (기본값)
-        ArrowPower,//1 활 공격력 증가
-        SwordPower,//2 검 데미지 증가
-        Heal,//3 체력 회복
-        MoveSpeed,//4 이동속도 증가
-        ShieldHeal,//5 방어력 회복
+    //아이템 종류 정의
+    public enum ItemType { None, ArrowPower, SwordPower, Heal, MoveSpeed, ShieldHeal, ChangeToBow, ChangeToSword }
 
 
-        ChangeToBow,//활로 무기 변경 아이템 추가 예시
-        ChangeToSword,//검으로 무기 변경 아이템 추가 예시
-    }
+    [Header("아이템 개별 획득 사운드")]
+    public ItemType itemType;//이 아이템이 무엇인지 인스펙터에서 선택
+    [SerializeField] private AudioClip itemSound;//이 아이템 전용 사운드 하나만 등록
+   
 
-    [Header("아이템의 타입, 각 효과들 변수")]
-    public ItemType itemType;//enum의 이름을 ItemType 대문자를 적어서 참조할 변수인 itemType은 소문자로 했어
+
+    [Header("아이템의 타입, 각 효과들")]
     public float EffectDamage = 1f;//활,검 데미지
     public float AttackCooldown = 0.2f;//활 아이템 획득 시 공격속도 증가 수
     public float Speed = 1f;//이동 속도
     public float Healing = 5f;//체력 회복 효과 값
     public float ShieldAmount = 4f;//방어력 회복 값
     public float DespawnTime = 10f;//아이템이 생성된 후 자동으로 사라지는 시간 (초)
-    private ItemSpawner itemSpawner;//ItemSpawner 스크립트 참조
+
     private bool isUsed = false;//아이템을 획득 했는지 결정하는 bool 타입 변수
 
     void Start()
     {
-        itemSpawner = FindAnyObjectByType<ItemSpawner>();
-        if (itemSpawner == null) Debug.LogWarning("ItemSpawner를 씬에서 찾을 수 없어! 아이템 카운트가 업데이트되지 않을 거야!");
-
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) Debug.LogWarning("아이템 프리팹에 AudioSource 컴포넌트가 없어! SFX 조절이 안 돼!");
-
-        //일정 시간 후에 아이템이 사라지도록
-        Destroy(gameObject, DespawnTime);
+        //ItemSpawner 참조를 찾을 필요 없어 (싱글톤 사용)
+        //AudioSource 컴포넌트를 직접 쓸 필요 없어 (SoundManager 사용)
+        Destroy(gameObject, DespawnTime);//일정 시간 후에 아이템이 사라지도록
     }
 
     private void OnTriggerEnter2D(Collider2D other)//어떤 콜라이더"(other)와 "접촉이 발생했을 때
-    {   
-        if (isUsed) return;
-
+    {
         if (!other.CompareTag("Player")) return;//닿은 오브젝트가 "Player" 태그를 가지고 있는지 확인
-
-        isUsed = true;
-
-        PlayerStatsEffects playerStatsEffects = other.GetComponent<PlayerStatsEffects>();
-        AttackController attackController = other.GetComponent<AttackController>();
-        PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-        PlayerShield playerShield = other.GetComponent<PlayerShield>();
-
-        //셋 중에 하나라도 유효하면 아이템 사용 시도
-        if (playerStatsEffects != null || attackController != null || playerHealth != null)
-            UseItem(playerStatsEffects, attackController, playerHealth, playerShield);
-        else
-            Debug.LogWarning("아이템을 획득했지만 플레이어에게 필요한 컴포넌트(PlayerStatsEffects, AttackController, PlayerHealth)가 없어!");
+        if (isUsed) return;//이 함수가 시작되자마자 이 아이템이 이미 사용된 건지 확인해
+                           //isUsed가 true면 이미 처리된 아이템이니 함수 종료(이미 한번 획득했으니)
+        isUsed = true;//이 아이템은 이미 사용됨! 이라는 표시
 
 
-        if (itemSpawner != null) itemSpawner.ItemDestroyed();//ItemSpawner 스크립트에게 알리는 코드
-
-
-        //UseItem()에서 아이템 타입에 따라 사운드 클립을 결정하고, 여기서 재생.
-        AudioClip soundToPlay = null;
-        switch (itemType)
+        if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))//플레이어 컴포넌트들을 안전하게 가져오기
         {
-            case ItemType.ArrowPower: soundToPlay = bowSound; break;
-            case ItemType.SwordPower: soundToPlay = swordSound; break;
-            case ItemType.Heal: soundToPlay = healSound; break;
-            case ItemType.MoveSpeed: soundToPlay = moveSpeedSound; break;
-            case ItemType.ShieldHeal: soundToPlay = shieldSound; break;
-            case ItemType.ChangeToBow: soundToPlay = weaponChangeCtbSound; break;
-            case ItemType.ChangeToSword: soundToPlay = weaponChangeCtsSound; break;
+            AttackController attackController = other.GetComponent<AttackController>();
+            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+            PlayerShield playerShield = other.GetComponent<PlayerShield>();
+
+            //아이템 효과 적용
+            UseItem(statsEffects, attackController, playerHealth, playerShield);
         }
-        if (soundToPlay != null && SoundManager.Instance != null)
-        {
-            //믹서에 연결된 SoundManager 스크립트에게 소리 재생을 맡김
-            SoundManager.Instance.PlaySFX(soundToPlay);
-        }
+
+        //싱글톤으로 스포너에 알림 (드래그 연결 필요 없음)
+        if (ItemSpawner.Instance != null)
+            ItemSpawner.Instance.ItemDestroyed();
+
+        //인스펙터에 넣은 바로 그 사운드 재생
+        if (itemSound != null && SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(itemSound);
+
+
         //아이템은 한번만 먹고 사라져야해, 이걸 지우면 아이템을 먹어도 사라지지 않아
         Destroy(gameObject);
     }
 
     void UseItem(PlayerStatsEffects statsEffects, AttackController attackController, PlayerHealth playerHealth, PlayerShield playerShield)
-    //실제 아이템 효과를 적용하는 함수. itemType에 따라 다른 효과를 줘.
-    {
-        switch (itemType)//itemType(Inspector에서 설정한 값)에 따라 분기한다.
+    {//실제 아이템 효과를 적용하는 함수. itemType에 따라 다른 효과를 줘.
+
+        switch (itemType)//itemType(Inspector에서 설정한 값)에 따라 분기.
         {
             case ItemType.None:
-                Debug.LogWarning("아이템 타입이 설정되지 않았습니다! Inspector를 확인하세영!");
+                Debug.LogWarning("아이템 타입이 설정되지 않았어! Inspector를 확인해!");
                 break;
 
             case ItemType.ArrowPower://활 데미지 증가
@@ -123,7 +84,7 @@ public class Item: MonoBehaviour
             case ItemType.Heal://힐링
                 if (statsEffects != null) statsEffects.Heal(Healing);
                 break;
-
+            
             case ItemType.ShieldHeal://방어력 회복
                 if (statsEffects != null) playerShield.HealShield(ShieldAmount);//PlayerShield의 HealShield 함수 호출
                 break;

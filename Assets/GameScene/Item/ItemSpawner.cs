@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;//타일맵을 사용하려면 필요
 
 public class ItemSpawner : MonoBehaviour
 {
-    public static ItemSpawner Instance { get; private set; } // 싱글톤 선언
+    public static ItemSpawner Instance { get; private set; }//싱글톤 선언, 어디서든 ItemSpawner.Instance로 접근
 
     [Header("스폰할 아이템 목록 (인스펙터 할당)")]
     public GameObject[] ItemPrefabs;
