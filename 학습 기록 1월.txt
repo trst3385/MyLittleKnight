@@ -463,6 +463,62 @@ Fireball 강화시 이동속도 증가량 조절 (2 -> 1)
 **특정 이벤트(사운드, 시간 정지 등)가 발생할 때는 현재 게임의 상태 `카운트다운 중인지, 일시정지 중인지 등` 를 먼저 체크하는 습관이 게임의 완성도를 높이는거야**
 
 **반복되는 버그 수정처럼 느껴졌지만, 결국은 '프리팹 관리'와 '상태 제어'라는 게임 아키텍처의 기본기를 다지는 중요한 시간이었어. 이제 씬이 아무리 늘어나도 플레이어 설정 때문에 고생할 일은 없을거야**
+**내일은 아이템의 스크립트도 싱글톤, 코드 내 연결 해보자**
+
+
+
+1/20
+아이템 시스템 최적화 및 프리팹 관리 체계 구축(Item, ItemSpawner)
+Item 스크립트에서 방어적 프로그래밍 적용 (TryGetComponent)
+
+- ItemSpawner 싱글톤(Singleton) 도입.
+- 아이템이 생성될 때마다 FindAnyObjectByType으로 ItemSpawner를 찾느라 CPU에 불필요한 부하가 걸리고, 인스펙터에 일일이 드래그해서 연결해야 하는 번거로움이 있어.
+   1. 해결 방법: ItemSpawner를 싱글톤(public static ItemSpawner Instance)으로 만들어 어디서든 즉시 접근 가능하게 했어
+   2. 이렇게 하면 씬 내의 전수 조사가 사라져 성능이 좋아졌고, 인스펙터 연결 없이도 아이템이 알아서 스포너를 찾아가게 돼
+
+- 아이템 프리팹의 인스펙터(Inspector) 다이어트 및 사운드 로직 단순화, 아이템 프리팹 하나당 7개의 사운드 슬롯이 있어(각 아이템별 사운드 등) 관리가 힘들고, switch-case문으로 소리를 찾는 과정이 복잡해.
+- 해결 방법:
+   1. 7개의 AudioClip 변수를 itemSound 하나로 통합, SerializeField로 만든 각 아이템별 사운드 변수 제거(프리팹 하나당 하나의 사운드만 넣기)
+   2. ItemType enum을 한줄로 정리, 
+   3. 아이템 프리팹별로 딱 필요한 소리 하나만 연결하도록 변경
+   4. OnTriggerEnter2D 함수 안에서 복잡한 switch문을 지우고 "아이템 프리팹당 가진 소리를 바로 재생"하는 직관적인 코드로 수정
+   5. UseItem()함수의 Switch문의 첫 case인 ItemType.None 체크 로직을 유지하여, 설정 실수 시 경고를 띄우는 안전장치를 마련
+**배운 점: 모든 데이터를 코드로 처리하려 하기보다, 프리팹의 특성을 활용해 '개별 데이터'는 인스펙터에서 관리하는 것이 훨씬 효율적임을 배웠어, 어짜피 아이템은 효과마다 서로 다른 프리팹이니까**
+
+
+- TryGetComponent는 유니티에서 성능과 안정성을 동시에 잡기 위해 권장되는 아주 유용한 기능이야. 기존에 쓰던 GetComponent와 null 체크(if != null)를 한 번에 합쳐놓은 '진화형'이라고 생각하면 돼!
+
+- 기존 방식 GetComponent: (보통은 컴포넌트를 가져올 때 이렇게 2단계로 작업했어)
+PlayerStatsEffects stats = other.GetComponent<PlayerStatsEffects>(); //1. 일단 가져와본다
+if (stats != null) //2. 비어있는지 확인한다
+{
+    stats.ArrowDamageUp(10, 0.2f);
+}
+
+- 개선된 방식 TryGetComponent:
+if (other.TryGetComponent<PlayerStatsEffects>(out var stats)) //가져오기와 확인을 동시에!
+{
+    stats.ArrowDamageUp(10, 0.2f);
+}
+
+- GetComponent와 이번에 쓴 TryGetComponent의 차이?
+   1. 성능이 더 좋아 (가장 큰 이유): 유니티 내부적으로 GetComponent는 컴포넌트를 찾지 못했을 때 'Managed Null'이라는 가짜 Null 상태를 만드느라 연산 비용이 추가로 발생해,
+   반면에 TryGetComponent는 컴포넌트가 없으면 그냥 false를 뱉고 끝내기 때문에 훨씬 가볍고 빨라
+   2. 코드가 짧고 깔끔해져 (가독성): 변수를 미리 선언하고, 할당하고, 다시 if문으로 검사하는 세 줄짜리 코드가 딱 한 줄로 줄어들어. 한 '코드 다이어트'의 핵심 기법 중 하나야
+   3. 에러 방지 (안정성): GetComponent를 썼을 때 가끔 NullReferenceException 에러가 나서 게임이 멈추는 경우가 있잖아? TryGetComponent는 성공했을 때만 내부 로직이 돌아가기 때문에 에러로부터 훨씬 안전해
+
+- 코드 안의 out var는 무슨 뜻이야? (other.TryGetComponent<PlayerStatsEffects>(out var stats))
+   1. Try...: "한번 시도해 볼게!" (성공하면 true, 실패하면 false 반환)
+   2. out: "성공하면 이 결과를 밖으로 내보내줄게"라는 뜻
+   3. var stats: "성공해서 나온 그 컴포넌트를 stats라는 이름의 변수에 담아줘"라는 뜻
+
+- 오늘 Item 스크립트에 이렇게 들어갔어
+if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))
+{
+    //여기서 statsEffects는 이미 "절대 null이 아님"이 보장된 상태야!
+    //그래서 안심하고 로직을 짤 수 있어.
+    UseItem(statsEffects, ...);
+}
 
 
 **당장 내일 아니더라도 꼭 추가할 것! 조급해하지 말고 하나씩!**
@@ -472,7 +528,5 @@ Fireball 강화시 이동속도 증가량 조절 (2 -> 1)
 **4. 재시작, 메인화면 이동, 게임종료 버튼 클릭시 사운드가 중간에 끊기는 문제(순간 렉으로 인한 끊김)**
 **5. 옵저버 패턴 탐구**
 **6. GetComponent를 Update() 함수에 쓰니까 연산량이 많아지지 Awake나 Start에 쓰면 한번만 작동하니 성능에는 큰 문제가 없어, 다른 UI, 매니저들도 전부 싱글톤으로 바꾸자**
-**7. 시간 정지때 게임 시간이 멈춰도 다음 씬으로 가는 포탈은 1분이 지나지 않아도 생성돼. GameTime UI와 Time. 관련 문제같아**
-**8. 지금까지 계속 하고 있던 매니저 등을 싱글톤으로 바꾼걸 포트폴리오, Git에 적자. 왜 이렇게 썻는지, 장점도 같이**
-**9. 오버라이드를 하면 게임씬2,3의 Fireball의 생성 위치 콜라이더가 게임씬1과 다른 위치**
-**10. 매니저 오브젝트의 위치가 서로 각자 달라. 큰 문제는 없다지만 같은 위치에 있어야 하는게 나을거야**
+**7. 지금까지 계속 하고 있던 매니저 등을 싱글톤으로 바꾼걸 포트폴리오, Git에 적자. 왜 이렇게 썻는지, 장점도 같이**
+**8. 매니저 오브젝트의 위치가 서로 각자 달라. 큰 문제는 없다지만 같은 위치에 있어야 하는게 나을거야**
