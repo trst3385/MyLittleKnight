@@ -4,15 +4,10 @@ using UnityEngine;
 using TMPro;//TextMeshPro를 사용하려면 이 using 문이 필요
 
 
-//이 스크립트는 게임 내 다양한 알림 (아이템 획득, 몬스터 스폰 등)을 통합 관리.
-//장점: 모든 종류의 알림에 일관된 시각적 효과 (페이드 인/아웃)를 적용하고,
-//재사용성이 높아 여러 스크립트에서 쉽게 알림을 띄울 수 있습니다.
-//단점: 간단한 알림에도 코루틴과 페이드 로직이 필요하여 상대적으로 복잡할 수 있어!.
-//(EnemyDifficulty 스크립트와 같은 직접 제어 방식과 비교해봐!)
-
-
 public class TextAlimManager : MonoBehaviour
 {
+    public static TextAlimManager Instance { get; private set; }//싱글톤 선언
+
     [Header("UI 연결")]
     public TextMeshProUGUI NotificationText;//인스펙터에서 UI 텍스트 컴포넌트를 할당할 변수
 
@@ -25,11 +20,19 @@ public class TextAlimManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null) Instance = this;//싱글톤 설정
+        else { Destroy(gameObject); return; }
+
         if (NotificationText == null)
         {
-            Debug.LogError("TextAlimManager: notificationText가 할당되지 않았어! 인스펙터를 확인해!");
-            return;
+            //만약 깜빡하고 연결 안 했다면 씬 전체에서 딱 하나 있는 알림 텍스트를 찾아봄
+            //하지만 가급적 인스펙터에서 직접 드래그해주는 게 성능상 좋아!
+            NotificationText = GameObject.Find("NotificationText")?.GetComponent<TextMeshProUGUI>();
+
+            if (NotificationText == null)
+                Debug.LogError("TextAlimManager: 연결된 UI 텍스트가 없어!");
         }
+
         //시작 시 텍스트를 숨김
         NotificationText.color = new Color(NotificationText.color.r,
         NotificationText.color.g, NotificationText.color.b, 0);

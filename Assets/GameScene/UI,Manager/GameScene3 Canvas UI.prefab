@@ -6287,9 +6287,8 @@ GameObject:
   - component: {fileID: 3046839526881165209}
   - component: {fileID: 8898347448935654992}
   - component: {fileID: 1411278485978569106}
-  - component: {fileID: 5923796649090208538}
   m_Layer: 5
-  m_Name: TextAlimManager
+  m_Name: TextAlim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6414,21 +6413,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5923796649090208538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8711249665741704609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e93f3cad3969ada4db18f87daca34d36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NotificationText: {fileID: 1411278485978569106}
-  DisplayDuration: 2
-  FadeDuration: 0.5
 --- !u!1 &9022447114983817182
 GameObject:
   m_ObjectHideFlags: 0

@@ -53,9 +53,9 @@ public class GameOverManager : MonoBehaviour
         {
             //FindChildEx는 어제 OptionsManager 때 썼던 함수랑 똑같아! 아래에 추가해줄게.
             FinalScoreText = FindChildEx(GameOverPanel.transform, "FinalScoreText")?.GetComponent<TextMeshProUGUI>();
-            NormalKillText = FindChildEx(GameOverPanel.transform, "NormalKillText")?.GetComponent<TextMeshProUGUI>();
-            StrongKillText = FindChildEx(GameOverPanel.transform, "StrongKillText")?.GetComponent<TextMeshProUGUI>();
-            EliteKillText = FindChildEx(GameOverPanel.transform, "EliteKillText")?.GetComponent<TextMeshProUGUI>();
+            NormalKillText = FindChildEx(GameOverPanel.transform, "FinalNormalKillText")?.GetComponent<TextMeshProUGUI>();
+            StrongKillText = FindChildEx(GameOverPanel.transform, "FinalStrongKillText")?.GetComponent<TextMeshProUGUI>();
+            EliteKillText = FindChildEx(GameOverPanel.transform, "FinalEliteKillText")?.GetComponent<TextMeshProUGUI>();
 
             //버튼 자동 연결
             SetupButton("RestartButton", RestartGame);
