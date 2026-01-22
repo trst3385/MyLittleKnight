@@ -20538,7 +20538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortalManager
   targetTime: 60
-  portalObject: {fileID: 0}
+  portalObject: {fileID: 855360424}
 --- !u!114 &7362149614326225452
 MonoBehaviour:
   m_ObjectHideFlags: 0
