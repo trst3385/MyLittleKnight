@@ -7,13 +7,8 @@ using TMPro;
 
 
 //10.27일에 유니티 버전을 2022.3.61f1에서 Unity6.1의 6000.2.9f1로 업데이트해서 한글이 전부 깨져서 주석 대부분을 삭제했어
-public enum WeaponType
-{
-    None,
-    Bow,
-    Sword,
-    Axe
-}
+public enum WeaponType { None, Bow, Sword, Axe }
+
 
 public class Player : MonoBehaviour
 {
@@ -25,60 +20,61 @@ public class Player : MonoBehaviour
 
     [HideInInspector]public bool IsDead = false;//인스펙터 사용하지 않으니 숨김
 
-    [Header("실루엣 연결")]
-    //씬에 있는 Sill_Player 복사본 오브젝트를 인스펙터에 연결
-    [SerializeField] private Sil_Player silplayer;
+    //1.23일. 더 이상 인스펙터에서 드래그하지 않아도 되는 변수들(코드 내 연결로 변경)
+    private Sil_Player silplayer;
+    private Collider2D targetCollider;
+    private TextMeshProUGUI ScoreTextUI;
+    private AudioSource walkingaudioSource;
+    private GameOverManager gameOverManager;
+    [Header("사운드 에셋")]
+    [SerializeField] private AudioClip walkSound;//소리 파일 자체는 드래그가 필요해
 
-
-    [Header("히트박스,몬스터가 쫒을 콜라이더")]
-    [SerializeField] private Collider2D targetCollider;
-
-
-    [Header("ScoreText UI 연결")]
-    [SerializeField] private TextMeshProUGUI ScoreTextUI;
-
-
-    [Header("Walk 사운드")]
-    [SerializeField] private AudioSource walkingaudioSource;
-    [SerializeField] private AudioClip walkSound;
-
-    [Header("gameOverManager 스크립트 연결")]
-    [SerializeField] private GameOverManager gameOverManager;
 
     [HideInInspector] public int CurrentScore = 0;//플레이어의 현재 점수(초기값 0)
-
     //내부변수
     private PlayerHealth playerHealth;
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
 
-    void Awake()//내부 컴포넌트는 Awake에,
-                //Null 체크도 Awake에. Start()보다 먼저 호출되기 때문에, 최대한 일찍 초기화하고 검증할수록 안정성이 높아져!
-    {
+    void Awake()//내부 컴포넌트는 Awake에,              
+    {           //Null 체크도 Awake에. Start()보다 먼저 호출되기 때문에, 최대한 일찍 초기화하고 검증할수록 안정성이 높아져
+
+        //내부 컴포넌트 자동 연결
         rb = GetComponent<Rigidbody2D>();
-        if (rb == null) Debug.LogError("Rigidbody2D 컴포넌트를 찾을 수 없어! 다시 확인해봐!");
-
         animator = GetComponent<Animator>();
-        if (animator == null) Debug.LogError("Animator 컴포넌트를 찾을 수 없어! 플레이어 오브젝트에 Animator 컴포넌트를 확인해!");
-
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null) Debug.LogError("SpriteRenderer 컴포넌트를 찾을수 없어! 다시 확인해봐!");
-        
         playerHealth = GetComponent<PlayerHealth>();
-        if (playerHealth == null) Debug.LogError("PlayerHealth 컴포넌트를 찾을 수 없어! 플레이어 오브젝트에 PlayerHealth 컴포넌트를 확인해!");
 
-        if (walkingaudioSource == null) Debug.LogError("AudioSource 컴포넌트를 찾을 수 없어! 인스펙터 제대로 확인 했어 안했어?!");
-        if (gameOverManager == null) Debug.LogError("Player 스크립트에서 GameOverManager를 찾을 수 없어!");
-        if (ScoreTextUI == null) Debug.LogError("ScoreTextUI가 인스펙터에 연결되지 않았어!");
+        //자식 오브젝트 및 사운드 자동 연결, 자식 중에서 이름으로 찾기
+        var sndFootstep = transform.Find("SND_Footstep");
+        if (sndFootstep != null) walkingaudioSource = sndFootstep.GetComponent<AudioSource>();
+
+        var silObj = transform.Find("Sil_Player");//자식 오브젝트 이름에 맞게!
+        if (silObj != null) silplayer = silObj.GetComponent<Sil_Player>();
+
+        targetCollider = GetComponent<Collider2D>();//플레이어 본인의 콜라이더 사용
+
+        //씬 내 매니저 자동 연결, 이미 싱글톤인 매니저들은 여기서 찾을 필요도 없지만, 캐싱해두면 편해
+        gameOverManager = FindAnyObjectByType<GameOverManager>();
+
+        //UI는 씬 전체에서 하나뿐인 TMP를 찾거나, 전용 UI 매니저를 통하는 게 좋아
+        ScoreTextUI = GameObject.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
+
+        //[방어적 프로그래밍] 검증 로직
+        CheckInitialization();
     }
-    
+
+    private void CheckInitialization()//없거나 제대로 연결이 안되면 뜰 로그 에러
+    {
+        if (walkingaudioSource == null) Debug.LogError("자식 오브젝트 SND_Footstep의 AudioSource를 찾을 수 없어!");
+        if (silplayer == null) Debug.LogWarning("자식 오브젝트 실루엣을 찾을 수 없어!");
+        if (gameOverManager == null) Debug.LogError("씬에 GameOverManager가 없어!");
+    }
+
 
     void Start()//외부 스크립트, 오브젝트는 Start에
     {
-        if (silplayer == null)//실루엣 스크립트가 연결되지 않으면
-            Debug.LogWarning("Player: [실루엣 연결 누락!] sillplayer 변수가 인스펙터에 연결되지 않았어! 실루엣 기능이 작동하지 않을 거야!");
-
         if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore;
         //게임 시작 시 ScoreTextUI에 플레이어의 초기 점수(0)를 표시하여 UI를 초기화
     }
@@ -134,8 +130,13 @@ public class Player : MonoBehaviour
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
     }
 
-    
-    private void CallGameOverManager() => gameOverManager?.OnGameOver();
+
+    private void CallGameOverManager()
+    {
+        if (GameOverManager.Instance != null)//인스펙터 연결 없이 싱글톤으로 게임오버매니저 호출
+            GameOverManager.Instance.OnGameOver();
+        else Debug.LogError("죽는 순간에도 GameOverManager를 찾을 수 없어!");
+    }
     //플레이어가 죽으면 GameOverManager UI 호출, gameOverManager 스크립트의 OnGameOver함수 호출
     //?. (널 조건부 연산자): C# 6.0부터 도입된 문법, 객체가 Null이 아닐 때만 멤버(속성, 메서드)에 접근하도록 해주는 역할
     //"왼쪽 피연산자가 Null이 아닐 때만 오른쪽의 멤버(함수나 변수)에 접근하라" 라는 뜻이야!
