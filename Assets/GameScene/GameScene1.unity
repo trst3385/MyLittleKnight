@@ -133,8 +133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxShield: 20
   CurrentShield: 0
-  ShieldBar: {fileID: 4239068222165933787}
-  playerHealth: {fileID: 7656615749571269999}
 --- !u!61 &25308320
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16695,9 +16693,9 @@ RectTransform:
   - {fileID: 8597165635893589654}
   - {fileID: 599409027371697464}
   - {fileID: 5878962561206981804}
-  - {fileID: 6890535840528710879}
   - {fileID: 7989533729425226719}
   - {fileID: 4172993625591255565}
+  - {fileID: 6890535840528710879}
   - {fileID: 8097117701295534457}
   - {fileID: 7070832248506688405}
   - {fileID: 2541481354812534410}
@@ -17367,7 +17365,7 @@ GameObject:
   - component: {fileID: 6244321253722068042}
   - component: {fileID: 4239068222165933787}
   m_Layer: 5
-  m_Name: 'PlayerShield '
+  m_Name: PlayerShieldBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17882,7 +17880,7 @@ GameObject:
   - component: {fileID: 3744221553281321180}
   - component: {fileID: 7948660116121623494}
   m_Layer: 5
-  m_Name: PlayerHealth
+  m_Name: PlayerHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18883,11 +18881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9eba2785728cd4cb687973f7e6450e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ArrowLevelText: {fileID: 7243086021424965781}
-  SwordLevelText: {fileID: 5804388477424350194}
-  MoveSpeedLevelText: {fileID: 8210138269568038881}
-  MaxLevel: 10
-  effectsAudioSource: {fileID: 1683421627}
+  AttackItemMaxLevel: 10
   enhancedArrowReadySound: {fileID: 8300000, guid: 8be3715ddaebea345b40ad69d3208208,
     type: 3}
 --- !u!114 &5627255625147221279
@@ -21064,9 +21058,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 20
-  healthSlider: {fileID: 7948660116121623494}
   CurrentHealth: 0
-  playerScript: {fileID: 560332295469588394}
 --- !u!82 &7816502122180732042
 AudioSource:
   m_ObjectHideFlags: 0
