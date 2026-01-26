@@ -1,90 +1,72 @@
-﻿using TMPro;//TextMeshPro를 사용하면 추가
-using UnityEngine;
-using UnityEngine.UI;//UI 사용을 위해 추가
-
+﻿using UnityEngine;
 
 
 public class AttackController : MonoBehaviour
 {
-    //외부참조 (인스펙터에서 연결)
-    [Header("스크립트, 컴포넌트 참조")]
-    public Player Player;//Player스크립트 참조
-    public Animator Animator;//Player오브젝트의 Animator 참조
-    public SpriteRenderer SpriteRenderer;//player오브젝트의 SpriteRenderer참조
-    public BowWeapon bowWeapon;
-    public SwordWeapon swordWeapon;
+    //내부 참조 (Awake에서 자동 연결)
+    private Player player;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private BowWeapon bowWeapon;
+    private SwordWeapon swordWeapon;
 
-    //공통 공격 변수
-    private WeaponType CurrentWeaponType = WeaponType.Bow;//현재 장착 무기 타입 (인스펙터 설정)
     private bool isAttacking = false;//현재 공격 중인지 확인하는 변수
-                                     //변수가 처음 만들어질 때의 초기값을 false로 정해주는 거야,
-                                     //게임이 시작하거나 캐릭터가 생성될 때 "현재 공격 중이 아님" 상태로 시작하겠다는 의미지.
 
-   
-    void Start()
+
+    void Awake()
     {
-        Player = GetComponent<Player>();
-        Animator = GetComponent<Animator>();
-        SpriteRenderer = GetComponent<SpriteRenderer>();
-         
-        //참조가 제대로 되었는지 확인하는 Debug.LogError
-        if (Player == null) 
-            Debug.LogError("PlayerAttack: Player 스크립트를 찾을 수 없어! Player 오브젝트에 Player 스크립트가 있는지 확인해!");
-        if (Animator == null) 
-            Debug.LogError("PlayerAttack: Animator 컴포넌트를 찾을 수 없어! Player 오브젝트에 Animator 컴포넌트가 있는지 확인해!");
-        if (SpriteRenderer == null) 
-            Debug.LogError("PlayerAttack: SpriteRenderer 컴포넌트를 찾을 수 없어! Player 오브젝트에 SpriteRenderer 컴포넌트가 있는지 확인해!");
+        //같은 오브젝트 내의 컴포넌트들 자동 연결
+        player = GetComponent<Player>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        bowWeapon = GetComponent<BowWeapon>();
+        swordWeapon = GetComponent<SwordWeapon>();
+
+        //[방어적 프로그래밍] 참조 검증
+        CheckInitialization();
     }
-    
+
+    private void CheckInitialization()
+    {
+        if (player == null) Debug.LogError($"{gameObject.name}: Player 스크립트를 찾을 수 없어!");
+        if (animator == null) Debug.LogError($"{gameObject.name}: Animator를 찾을 수 없어!");
+
+        //무기는 없을 수도 있으니 경고(Warning) 정도로 처리
+        if (bowWeapon == null) Debug.LogWarning($"{gameObject.name}: BowWeapon 미연결! (활 공격 불가)");
+        if (swordWeapon == null) Debug.LogWarning($"{gameObject.name}: SwordWeapon 미연결! (검 공격 불가)");
+    }
+
+
     void Update()
     {
-        //플레이어가 죽었으면 공격 입력 받지 않음
-        if (Player != null && Player.IsDead) return;
+        //플레이어가 죽었으면 모든 공격 입력 차단
+        if (player != null && player.IsDead) return;
 
         AttackInput();//공격 입력 처리 함수 호출        
     }
 
     void AttackInput()//각 공격 입력 처리 함수
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)//활 공격은 스페이스 바
+        //활 공격 (Space)
+        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
         {
-            if (CurrentWeaponType == WeaponType.Bow)
-            {
-                //활 공격 쿨타임 체크를 BowWeapon에 위임
-                if (bowWeapon != null && bowWeapon.CanAttack())
-                {
-                    weaponAnimator(WeaponType.Bow);//활 애니메이션 호출
-                    isAttacking = true;
-                }
-            }               
+            if (bowWeapon != null && bowWeapon.CanAttack()) ExecuteAttack("Attack(Bow)");
         }
 
+        //검 공격 (Q)
         if (Input.GetKeyDown(KeyCode.Q) && !isAttacking)
         {
-            if (swordWeapon != null && swordWeapon.CanAttack())
-            {
-                weaponAnimator(WeaponType.Sword);//검 애니메이션 호출
-                isAttacking = true;
-            }
+            if (swordWeapon != null && swordWeapon.CanAttack()) ExecuteAttack("Attack(Sword)");
         }
     }
 
-    void weaponAnimator(WeaponType weaponType)//무기 타입에 따라 애니메이션 발동 함수
+    //공격 실행 및 상태 관리 집중화
+    private void ExecuteAttack(string triggerName)
     {
-        if (Animator == null)
+        isAttacking = true;
+        if (animator != null)
         {
-            Debug.Log("weaponAnimator: Animator가 null이야!. 공격 애니메이션 발동 못해!");
-            return;
-        }
-
-        switch (weaponType)
-        {
-            case WeaponType.Bow://현재 무기가 활이면
-                Animator.SetTrigger("Attack(Bow)");
-                break;
-            case WeaponType.Sword://현재 무기가 검이면
-                Animator.SetTrigger("Attack(Sword)");
-                break;
+            animator.SetTrigger(triggerName);
         }
     }
 
