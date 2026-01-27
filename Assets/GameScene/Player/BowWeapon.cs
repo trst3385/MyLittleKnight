@@ -6,31 +6,56 @@ using UnityEngine.UI;
 
 public class BowWeapon : MonoBehaviour
 {
-    [Header("활 공격,방향,프리팹,오브젝트")]
-    //활 공격 설정
-    public GameObject ArrowPrefab;//화살 프리팹을 보관할 변수 (인스펙터 설정)
-    public Transform ArrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
-    public float ArrowSpeed = 10f;//발사 속도
-    public float ArrowDamage = 1f;//화살 데미지
+    [Header("활 설정 (데이터 & 에셋)")]
+    public GameObject ArrowPrefab;//화살 프리팹
+    public GameObject EnhancedArrowPrefab;//강화 화살 프리팹
+    public AudioClip bowAttackSound;//화살 발사 사운드
+    public float ArrowSpeed = 10f;//발사속도
+    public float ArrowDamage = 1f;//데미지
     public int NumberOfArrows360 = 8;//360도 회전 시 발사할 화살의 수 (예: 8방향)
-
-    [Header("강화 공격 설정")]//활 아이템 3회 획득시 강화
-    public GameObject EnhancedArrowPrefab;//강화 화살 프리팹 (인스펙터 연결)
-    public float SlowFactor = 0.5f;//몬스터 이동 속도 감소 비율 (0.5f = 50% 느려짐)
-    private int currentEnhanceStacks = 0;//현재 강화 횟수 누적 (3번 획득 시 발동)
-    private const int MAX_ENHANCE_STACKS = 3;//강화 발동에 필요한 횟수
-
-    [Header("공격 속도")]
+    public float SlowFactor = 0.5f;//강화 화살에맞은 몬스터의 이동 속도 감소 비율(0.5f = 50% 느려짐)
     public float BaseArrowCooldown = 2f;//활의 초기/최대 공격 쿨타임 (아이템 효과 미적용 원본)
-    [SerializeField]private float lastArrowAttackTime = -1f;//마지막으로 화살을 발사한 유니티 시간 (쿨타임 계산 시작점)
-    private float currentArrowCooldown;//아이템,스킬 효과가 적용된 현재 활의 공격 쿨타임(이 값으로 공격 주기 결정)
 
-    [Header("사운드")]//사운드 설정.하나의 AudioSource 컴포넌트에 여러 AudioClip을 사용할 수 있음.
-    [SerializeField] private AudioSource bowAudioSource;
-    [SerializeField] private AudioClip bowAttackSound;
+    //--- 내부 참조 (자동 연결) ---
+    private Transform arrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
+    private AudioSource bowAudioSource;//화살 사운드 오디오소스
+    private Slider bowCooldownBar;//UI의 BowCooldownBar UI
+    private PlayerStatsEffects statsEffects;//PlayerStatsEffects 스크립트 참조
 
-    [Header("쿨타임 UI바 연결")]
-    public Slider BowCooldownBar;
+    private float currentArrowCooldown;
+    private float lastArrowAttackTime = -1f;
+    private int currentEnhanceStacks = 0;
+    private const int MAX_ENHANCE_STACKS = 3;//활 아이템 3회 획득시 강화
+
+    void Awake()
+    {
+
+        arrowSpawnPoint = transform.Find("ArrowSpawnPoint");//플레이어의 자식 오브젝트에서 "ArrowSpawnPoint" 찾기
+
+        //같은 오브젝트의 컴포넌트,스크립트
+        Transform sndBowTransform = transform.Find("SND_Bow");//자식 오브젝트 중 "SND_Bow"를 찾아서 거기 있는 AudioSource를 가져옴
+        if (sndBowTransform != null)
+            bowAudioSource = sndBowTransform.GetComponent<AudioSource>();
+
+        statsEffects = GetComponent<PlayerStatsEffects>();
+
+        //하이어라키에서 이름으로 UI 찾기
+        GameObject uiObj = GameObject.Find("BowCooldownBar");
+        if (uiObj != null) bowCooldownBar = uiObj.GetComponent<Slider>();
+
+        CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
+    }
+
+    private void CheckInitialization()
+    {
+        if (arrowSpawnPoint == null) Debug.LogWarning($"{gameObject.name}: ArrowSpawnPoint를 자식에서 찾을 수 없어!");
+        if (bowAudioSource == null) Debug.LogWarning($"{gameObject.name}: AudioSource 미연결!");
+        if (bowCooldownBar == null) Debug.LogWarning($"{gameObject.name}: BowCooldownBar UI 미연결!");
+
+        //에셋 체크 (드래그 필수 항목)
+        if (ArrowPrefab == null) Debug.LogError($"{gameObject.name}: ArrowPrefab이 비어있어!");
+        if (bowAttackSound == null) Debug.LogWarning($"{gameObject.name}: bowAttackSound 클립이 비어있어!");
+    }
 
     void Start()
     {
@@ -62,11 +87,9 @@ public class BowWeapon : MonoBehaviour
             Debug.LogError("사용할 화살 Prefab이 설정되지 않았어!");
             return;
         }
-        //화살을 발사할 때 로그에 알림
-        Debug.Log("화살 발사! 설정된 데미지: " + activeArrowDamage);
+        Debug.Log("화살 발사! 설정된 데미지: " + activeArrowDamage);//화살을 발사할 때 로그에 알림
 
-        //각 화살의 각도 계산
-        float angleStep = 360f / NumberOfArrows360;
+        float angleStep = 360f / NumberOfArrows360;//각 화살의 각도 계산
 
         for (int i = 0; i < NumberOfArrows360; i++)
         {
@@ -79,7 +102,7 @@ public class BowWeapon : MonoBehaviour
             Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
 
             //화살 생성 (플레이어의 중앙에서 발사되도록 ArrowSpawnPoint 오브젝트 사용)                  
-            GameObject arrow = Instantiate(activeArrowPrefab, ArrowSpawnPoint.position, Quaternion.identity);
+            GameObject arrow = Instantiate(activeArrowPrefab, arrowSpawnPoint.position, Quaternion.identity);
             
             Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
             if (arrowRb != null)
@@ -90,14 +113,12 @@ public class BowWeapon : MonoBehaviour
                 angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-                //화살의 Arrow 스크립트에 데미지 설정
-                Arrow arrowScript = arrow.GetComponent<Arrow>();
+                Arrow arrowScript = arrow.GetComponent<Arrow>();//화살의 Arrow 스크립트에 데미지 설정
                 if (arrowScript != null)
                 {
                     arrowScript.ArrowDamage = activeArrowDamage;//현재 ArrowDamage 값 
 
-                    //강화 화살에 슬로우 및 관통 정보 전달
-                    if (isEnhanced)
+                    if (isEnhanced)//강화 화살에 슬로우 및 관통 정보 전달
                     {
                         arrowScript.IsEnhanced = true;//Arrow 스크립트에서 IsEnhanced 변수를 추가해야 해.
                         arrowScript.SlowFactor = SlowFactor;
@@ -113,9 +134,6 @@ public class BowWeapon : MonoBehaviour
         {
             //예시로 아이템 6회 획득 때 강화 공격 후, 3이 남아서 다음 발사도 강화가 됨.
             currentEnhanceStacks -= MAX_ENHANCE_STACKS;
-
-            //PlayerStatsEffects 컴포넌트를 가져와서 UI를 다시 그려달라고 명령.
-            PlayerStatsEffects statsEffects = GetComponent<PlayerStatsEffects>();
             if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
         } 
     }
@@ -132,7 +150,6 @@ public class BowWeapon : MonoBehaviour
         Debug.Log($"활 강화 아이템 획득! 현재 누적 스택: {currentEnhanceStacks}");
 
         //2.PlayerStatsEffects 스크립트를 찾아가서 "바뀐 스택 확인해서 활 레벨 UI 다시 그려!"라고 시켜
-        PlayerStatsEffects statsEffects = GetComponent<PlayerStatsEffects>();
         if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
     }
 
@@ -168,20 +185,18 @@ public class BowWeapon : MonoBehaviour
         //아직 공격 전, 쿨타임이 끝난 상태라면 UI를 바로 비활성화
         if (lastArrowAttackTime < 0f)
         {
-            BowCooldownBar.gameObject.SetActive(false);
+            bowCooldownBar.gameObject.SetActive(false);
             return;//함수 종료
         }
 
-        //현재 남은 쿨타임 계산
-        float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
+        float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;//현재 남은 쿨타임 계산
 
-        //쿨타임이 남아 있다면
-        if (timeRemaining > 0)
+        if (timeRemaining > 0)//쿨타임이 남아 있다면
         {
-            BowCooldownBar.gameObject.SetActive(true);
-            BowCooldownBar.maxValue = currentArrowCooldown;//슬라이더의 최댓값을 총 쿨타임으로 설정
-            BowCooldownBar.value = timeRemaining;//슬라이더 값은 남은 시간으로 설정
+            bowCooldownBar.gameObject.SetActive(true);
+            bowCooldownBar.maxValue = currentArrowCooldown;//슬라이더의 최댓값을 총 쿨타임으로 설정
+            bowCooldownBar.value = timeRemaining;//슬라이더 값은 남은 시간으로 설정
         }
-        else BowCooldownBar.gameObject.SetActive(false);//쿨타임이 끝났을 경우 (UI 비활성화)        
+        else bowCooldownBar.gameObject.SetActive(false);//쿨타임이 끝났을 경우 (UI 비활성화)        
     }
 }
