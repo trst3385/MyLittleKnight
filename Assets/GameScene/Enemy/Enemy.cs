@@ -22,8 +22,7 @@ public class Enemy : MonoBehaviour
     }
 
 
-    public enum EnemyType { Normal, Strong, Elite }
-    //인스펙터창에 드롭다운으로 Normal, Strong, Elite표시
+    public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 드롭다운으로 Normal, Strong, Elite표시
 
     public EnemyType enemyType = EnemyType.Normal;//인스펙터에서 설정할 몬스터 기본 타입
 
@@ -35,7 +34,7 @@ public class Enemy : MonoBehaviour
     //인스펙터에서 이 덩어리들(NormalStats 등)을 펼쳐서 MoveSpeed 등을 수정하고 저장할 수 있어
 
 
-    [Header("스크립트 연결")]
+    [Header("스크립트 연결(코드 내 자동 연결)")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
 
 
@@ -48,7 +47,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private AudioClip deathSound;
 
 
-    //-----내부변수-----
+    //-----내부변수-----//
     //내부 컴포넌트(Awake에서 초기화)
     private Rigidbody2D rb;
     private Animator animator;
@@ -56,7 +55,8 @@ public class Enemy : MonoBehaviour
     //외부 스크립트(Start에서 초기화)
     private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
     private PlayerShield playerShield;//선언(보관함)은 저장 공간이고, Start()의 GetComponent는 그 공간에 값을 넣어주는 역할
-    //런타임 스탯
+    private TimeFreeze timeFreeze;//캐싱용
+    //런타임 스탯 및 상태
     private float currentMoveSpeed;//이동속도
     private float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
     private float currentAttackCooldown;//공격 쿨타임
@@ -80,29 +80,45 @@ public class Enemy : MonoBehaviour
 
     void Start()//외부 스크립트는 Start에
     {
-        //몬스터가 씬에 생성될 때, "Player" 태그를 가진 오브젝트를 찾아서 연결
-        GameObject playerGameObject = GameObject.FindWithTag("Player");
-        if (playerGameObject != null)
-        {
-            playerScript = playerGameObject.GetComponent<Player>();
+        InitializeReferences();//참조 연결 통합
+        CheckInitialization();//검수 함수 호출
 
-            //PlayerShield 스크립트 내부에서 방어력이 0이면 playerHealth. 플레이어 체력으로 넘겨주기에,
-            //playerHealth 스크립트를 선언할 필요는 없어
-            if (playerScript != null) playerShield = playerGameObject.GetComponent<PlayerShield>();
-              
-        }
-        else { playerScript = null; Debug.LogWarning("Enemy: Player 오브젝트를 찾을 수 없어! 'Player' 태그를 확인해!"); }
+
+        timeFreeze = TimeFreeze.Instance;//시간정지 스크립트 캐싱 (매번 Instance 찾지 않게)
 
         SetEnmeyStats();//몬스터 시작 시 능력치와 외형을 설정하는 함수 호출
         lastAttackTime = Time.time - currentAttackCooldown;//시작하자마자 공격가능, 실행되고 쿨타임 기다리지 않고 바로 공격
     }
-    
+
+    private void InitializeReferences()//참조 연결 로직 분리
+    {
+        GameObject playerGameObject = GameObject.FindWithTag("Player");//플레이어 관련 연결(태그로 찾기)
+        if (playerGameObject != null)
+        {
+            playerScript = playerGameObject.GetComponent<Player>();
+            playerShield = playerGameObject.GetComponent<PlayerShield>();
+        }
+
+        //스포너 자동 연결 (최신 문법 적용)
+        if (EnemySpawner == null)
+            EnemySpawner = UnityEngine.Object.FindFirstObjectByType<EnemySpawn>();
+    }
+
+    private void CheckInitialization()//검수 함수
+    {
+        if (playerScript == null) Debug.LogWarning($"{gameObject.name}: Player를 찾을 수 없어! 태그를 확인해!");
+        if (EnemySpawner == null) Debug.LogWarning($"{gameObject.name}: EnemySpawn 스파너가 씬에 없어!");
+        if (rb == null) Debug.LogError($"{gameObject.name}: Rigidbody2D가 누락됐어!");
+        if (animator == null) Debug.LogError($"{gameObject.name}: Animator가 누락됐어!");
+        if (spriteRenderer == null) Debug.LogError($"{gameObject.name}: SpriteRenderer가 누락됐어!");
+    }
+
     void FixedUpdate()//FixedUpdate에선 Time.deltaTime보단 Time.fixedDeltaTime(정확한 물리 계산과 일관된 이동 속도를 보장)
     {
-        if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
+        if (timeFreeze != null && timeFreeze.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
         {
-            if (animator.enabled) animator.enabled = false;//애니메이터가 활성화되어 있다면
-                                                           //애니메이터 비활성화: 몬스터가 그 상태 그대로 얼어붙음
+            animator.enabled = false;//애니메이터가 활성화되어 있다면
+                                     //애니메이터 비활성화: 몬스터가 그 상태 그대로 얼어붙음
 
             if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
             {
@@ -111,9 +127,8 @@ public class Enemy : MonoBehaviour
             }
             return;//시간 정지 상태이니 FixedUpdate의 나머지 모든 추적/공격 로직을 건너뛰고 함수 종료
         }
-        if (animator != null && !animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
+        if (!animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
 
-        
         //시간이 풀렸을 때, 대기 중인 사망이 있다면 실행, 사망 모션이 아니여도 여기서 몬스터 사망시 행동 발동
         if (isPendingDeath) ExecuteDeathSequence();//지연된 사망 시퀀스 실행 (사망 사운드/모션 발동)
 
@@ -195,7 +210,7 @@ public class Enemy : MonoBehaviour
     }
     
     void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
-    {   //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
+    {                        //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
 
         if (playerScript == null || playerScript.IsDead)//플레이어 생존/연결 체크
         {
