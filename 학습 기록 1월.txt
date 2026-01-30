@@ -826,3 +826,30 @@ Enemy 스크립트 AI 구조 개선 및 최적화
 **5. GetComponent를 Update() 함수에 쓰니까 연산량이 많아지지 Awake나 Start에 쓰면 한번만 작동하니 성능에는 큰 문제가 없어, 다른 UI, 매니저들도 전부 싱글톤으로 바꾸자**
 **6. 지금까지 계속 하고 있던 매니저 등을 싱글톤으로 바꾼걸 오늘과 같이 내일은 Git에도 적자. 왜 이렇게 썻는지, 장점도 같이**
 **7. ScriptableObject는 지금 내 작품에선 사용을 안해. 하지만 언젠간 작업량이 많아질때 추가 해보도록 하자**
+
+
+
+1/30
+무적 아이템 구현 및 플레이어 무적 상태 시스템 구축 (몬스터 스크립트 수정 없이 구현하기)
+
+- 무적 아이템 (InvinciblCoinItem) 생성
+   1. 에셋 중에 아이템을 하나 골라 Item_InvinciblCoin이라는 이름으로 복사
+   2. 그 아이템에 InvinciblCoinItem 스크립트를 추가
+   3. 플레이어와 충돌 시 Player 스크립트의 무적 활성화 함수를 호출하고 즉시 파괴되도록 구현
+   4. 아이템은 '전달'의 책임만 갖도록 SRP 준수!
+
+- 플레이어 상태 제어 (Player 스크립트)
+   1. isInvincible = false; 변수와(무적 판정) 코루틴을 활용해 5초간 무적 상태 유지 기능 추가
+   2. ActivateInvincibility() 무적 판정 함수를 추가해 InvincibilityRoutine 코루틴 함수를 호출과 중지를 선언
+   3. InvincibilityRoutine() 코루틴 함수에서 아이템을 획득시 5초간 무적 판정
+   4. OnTriggerEnter2D를 이용해 무적 상태일 때 닿는 몬스터를 즉사(EnemyDie())시키는 접촉 공격 로직 구현
+
+- 데미지 시스템 예외 처리 (PlayerShield 스크립트)
+   1. 최상단에 플레이어 스크립트 참조 변수 선언(Awake에서 GetComponent로 한번만 연결해 부하 줄임)
+   2. 무적일 경우 함수를 즉시 종료시켜 방어력 감소는 물론, 체력으로 데미지가 넘어가는 것까지 원천 차단
+      2-1. TakeShieldDamage() 함수에서 if (playerScript != null && playerScript.isInvincible) if문을 추가해서 무적 상태 체크 (체력도 당연히 무적 상태가 돼)
+      2-2. 이 if 밑에 return을 추가해, 무적 상태동안 데미지를 받지 않게 데미지를 계산하지 않고, 5초가 지나 무적 상태가 끝나면 플레이어 스크립트의 isInvincible 변수가 꺼져서(false) 더 이상 return에 걸리지 않아 데미지를 받게해
+   3. PlayerShield 스크립트에서 방어력이 0이 되면 자동으로 참조한 PlayerHealth 스크립트로 보내져서 이곳에서 로직을 수정만 하면 돼!
+
+- 오늘은 어제 알바 다녀와서 피곤해서 아이템 생성, 핵심 로직만 추가했어, 내일은 이걸 어떻게 스폰하게 만들까 고민해보자.
+**Player 스크립트 내에서 InvincibilityRoutine() 코루틴에 yield return new WaitForSeconds(5f);으로 무적 상태가 돼. 가능하면 인스펙터에서도 설정이 가능하게 변경도 해보자**
