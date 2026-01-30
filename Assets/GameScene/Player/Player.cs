@@ -5,10 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 //10.27일에 유니티 버전을 2022.3.61f1에서 Unity6.1의 6000.2.9f1로 업데이트해서 한글이 전부 깨져서 주석 대부분을 삭제했어
 public enum WeaponType { None, Bow, Sword, Axe }
-
 
 public class Player : MonoBehaviour
 {
@@ -19,6 +17,9 @@ public class Player : MonoBehaviour
     private Vector2 movement;
 
     [HideInInspector]public bool IsDead = false;//인스펙터 사용하지 않으니 숨김
+
+    [Header("무적 상태")]
+    public bool isInvincible = false;//InvinciblCoinItem 획득 후, 무적 판정.
 
     //1.23일. 더 이상 인스펙터에서 드래그하지 않아도 되는 변수들(코드 내 연결로 변경)
     private Sil_Player silplayer;
@@ -167,6 +168,41 @@ public class Player : MonoBehaviour
             if (walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();
         }
     }
+
+    public void ActivateInvincibility()//InvinciblCoinItem 무적 아이템을 획득하면 시작될 무적 효과 코루틴
+    {
+        //이미 무적 코루틴이 돌고 있다면 중지시키고 새로 시작 (시간 초기화 효과)
+        StopCoroutine("InvincibilityRoutine");
+        StartCoroutine("InvincibilityRoutine");
+    }
+    private IEnumerator InvincibilityRoutine()
+    {
+        isInvincible = true;
+        Debug.Log("무적 모드 활성화! (5초)");
+
+        //획득시 시각적 효과로 캐릭터를 약간 노란색이나 투명하게 변경
+        if (spriteRenderer != null) spriteRenderer.color = new Color(1f, 1f, 0.5f, 0.8f);
+
+        yield return new WaitForSeconds(5f);//5초 동안 무적
+
+        isInvincible = false;
+        if (spriteRenderer != null) spriteRenderer.color = Color.white;//원래대로 복구
+        Debug.Log("무적 모드 종료");
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //플레이어가 무적 아이템 획득 후 무적 상태인지 확인, 부딪힌 상대가 몬스터(Enemy)인지 확인
+        if (isInvincible && collision.CompareTag("Enemy"))
+        {
+            Enemy enemy = collision.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                Debug.Log("무적 상태로 몬스터 처단!");
+                enemy.EnemyDie();//몬스터의 사망 함수 호출(즉사 효과)
+            }
+        }
+    }
+
 
     public void AddScore(int amount)//점수를 추가하는 함수
     {

@@ -12,13 +12,15 @@ public class PlayerShield : MonoBehaviour
     //인스펙터에서 드래그하지 않고 코드가 스스로 찾을 오브젝트, UI들
     private Slider shieldBar;
     private PlayerHealth playerHealth;
+    private Player playerScript;
 
 
     void Awake()    
     {
         playerHealth = GetComponent<PlayerHealth>();//같은 오브젝트에 붙어있는 PlayerHealth스크립트 자동 연결
+        playerScript = GetComponent<Player>();//플레이어 스크립트도 같이(무적 아이템 효과로 인해 데미지를 받지 않게)
 
-        //씬 내의 방어력바 UI 자동 연결 (이름은 PlayerShieldBar라고 가정)
+        //씬 내의 방어력바 UI 자동 연결 (UI 이름은 PlayerShieldBar)
         GameObject sbObj = GameObject.Find("PlayerShieldBar");
         if (sbObj != null)
             shieldBar = sbObj.GetComponent<Slider>();
@@ -45,7 +47,14 @@ public class PlayerShield : MonoBehaviour
 
     public void TakeShieldDamage(float damage)//피해를 받아 방어력 감소를 요청할 때
     {
-        if(CurrentShield > 0)//방어력이 0 이상이면 받는 데미지는 방어력을 감소시켜
+        //무적 상태 체크. 데미지는 입구 컷(무적 아이템을 획득하면 방어력, 체력 상관없이 무적 상태가 돼)
+        if (playerScript != null && playerScript.isInvincible)
+        {
+            Debug.Log("무적 상태: 모든 데미지를 무시합니다.");
+            return;//여기서 함수를 끝내버림. 아래의 방어력/체력 감소 로직은 실행 안 됨!
+        }
+
+        if (CurrentShield > 0)//방어력이 0 이상이면 받는 데미지는 방어력을 감소시켜
         {
             CurrentShield -= damage;
 
