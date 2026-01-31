@@ -20,6 +20,12 @@ public class Player : MonoBehaviour
 
     [Header("무적 상태")]
     public bool isInvincible = false;//InvinciblCoinItem 획득 후, 무적 판정.
+    [Tooltip("무적 아이템 지속 시간")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
+    public float invincibilityDuration = 5f;//무적시간
+    [Tooltip("무적 상태일 때 몬스터에게 주는 데미지(사실상 즉사기)")]//헤더와 툴팁은 각자 따로라서 헤더에 없는 public, [SerializeField]로,
+    public float contactDamage = 9999f;                              //인스펙터에 보여지는 변수도 설명을 볼 수 있어.
+    [Tooltip("무적 상태일 때 플레이어의 색상")]
+    public Color invincibilityColor = new Color(1f, 1f, 0.5f, 0.8f);//무적 색상 설정
 
     //1.23일. 더 이상 인스펙터에서 드래그하지 않아도 되는 변수들(코드 내 연결로 변경)
     private Sil_Player silplayer;
@@ -181,12 +187,12 @@ public class Player : MonoBehaviour
         Debug.Log("무적 모드 활성화! (5초)");
 
         //획득시 시각적 효과로 캐릭터를 약간 노란색이나 투명하게 변경
-        if (spriteRenderer != null) spriteRenderer.color = new Color(1f, 1f, 0.5f, 0.8f);
+        if (spriteRenderer != null) spriteRenderer.color = invincibilityColor;//invincibilityColor 변수를 사용해 무적 시 색상 조절
 
-        yield return new WaitForSeconds(5f);//5초 동안 무적
+        yield return new WaitForSeconds(invincibilityDuration);//5초 동안 무적(invincibilityDuration 변수의 값)
 
         isInvincible = false;
-        if (spriteRenderer != null) spriteRenderer.color = Color.white;//원래대로 복구
+        if (spriteRenderer != null) spriteRenderer.color = Color.white;//무적 시간 후, 원래대로 복구
         Debug.Log("무적 모드 종료");
     }
     private void OnTriggerEnter2D(Collider2D collision)

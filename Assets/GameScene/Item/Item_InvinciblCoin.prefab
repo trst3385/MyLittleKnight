@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3302490961693406374}
   - component: {fileID: 7790099794957069940}
   - component: {fileID: 9003251878445970847}
+  - component: {fileID: 4664721182483449799}
   m_Layer: 0
   m_Name: Item_InvinciblCoin
   m_TagString: Untagged
@@ -103,3 +104,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839553dcf4520af4697b647199e0f3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InvinciblCoinItem
+--- !u!60 &4664721182483449799
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5043341580745622337}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.13991594, y: 0.42701435}
+      - {x: -0.40614653, y: 0.2116909}
+      - {x: -0.4131024, y: -0.20715666}
+      - {x: -0.20926857, y: -0.4397154}
+      - {x: 0.20362711, y: -0.4397149}
+      - {x: 0.33404803, y: -0.3270216}
+      - {x: 0.38174915, y: -0.2823577}
+      - {x: 0.44603753, y: -0.23909998}
+      - {x: 0.4443524, y: 0.16895056}
+      - {x: 0.18023396, y: 0.4223771}
+  m_UseDelaunayMesh: 0

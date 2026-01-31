@@ -1328,6 +1328,74 @@ SpriteMask:
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
   m_MaskSource: 0
+--- !u!1001 &478639858
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.5831003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -12.571414
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302490961693406374, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5043341580745622337, guid: 556d305e4b8d296489e719800fd4e00f,
+        type: 3}
+      propertyPath: m_Name
+      value: Item_InvinciblCoin
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 556d305e4b8d296489e719800fd4e00f, type: 3}
 --- !u!1001 &503108961
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18413,6 +18481,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4716031735929635320, guid: d2e2bfe462c5ab54aa6a160157960a97,
+        type: 3}
+      propertyPath: invincibilityDuration
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8257849298911782875, guid: d2e2bfe462c5ab54aa6a160157960a97,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21638,3 +21711,4 @@ SceneRoots:
   - {fileID: 2002080437}
   - {fileID: 855360423}
   - {fileID: 899266145}
+  - {fileID: 478639858}
