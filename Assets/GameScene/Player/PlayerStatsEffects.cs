@@ -49,12 +49,15 @@ public class PlayerStatsEffects : MonoBehaviour
         bowWeapon = GetComponent<BowWeapon>();
         playerShield = GetComponent<PlayerShield>();
         swordWeapon = GetComponent<SwordWeapon>();
-        effectsAudioSource = GetComponent<AudioSource>();
 
         //UI 텍스트 자동 연결 (이름으로 찾기)
         ArrowLevelText = GameObject.Find("ArrowLevelText")?.GetComponent<TextMeshProUGUI>();
         SwordLevelText = GameObject.Find("SwordLevelText")?.GetComponent<TextMeshProUGUI>();
         MoveSpeedLevelText = GameObject.Find("MoveSpeedLevelText")?.GetComponent<TextMeshProUGUI>();
+
+        //활 강화 사운드 오브젝트 연결 (이름으로 찾기)
+        Transform soundChild = transform.Find("SND_EnhancedArrowReady");
+        if (soundChild != null) effectsAudioSource = soundChild.GetComponent<AudioSource>();
 
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
@@ -67,6 +70,10 @@ public class PlayerStatsEffects : MonoBehaviour
 
         //UI 체크
         if (ArrowLevelText == null) Debug.LogWarning("Stats: ArrowLevelText UI를 찾을 수 없어!");
+
+        //활 강화 사운드 체크
+        if (effectsAudioSource == null)
+            Debug.LogWarning("Stats: 'SND_EnhancedArrowReady' 자식 오브젝트나 그 안의 AudioSource를 찾을 수 없어!");
 
         //사운드 에셋 체크 (예외 사례: 인스펙터 할당 필요)
         if (enhancedArrowReadySound == null) Debug.LogWarning("Stats: 강화 사운드 클립이 할당되지 않았어!");

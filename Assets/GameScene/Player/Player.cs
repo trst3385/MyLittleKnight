@@ -22,8 +22,6 @@ public class Player : MonoBehaviour
     public bool isInvincible = false;//InvinciblCoinItem 획득 후, 무적 판정.
     [Tooltip("무적 아이템 지속 시간")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
     public float invincibilityDuration = 5f;//무적시간
-    [Tooltip("무적 상태일 때 몬스터에게 주는 데미지(사실상 즉사기)")]//헤더와 툴팁은 각자 따로라서 헤더에 없는 public, [SerializeField]로,
-    public float contactDamage = 9999f;                              //인스펙터에 보여지는 변수도 설명을 볼 수 있어.
     [Tooltip("무적 상태일 때 플레이어의 색상")]
     public Color invincibilityColor = new Color(1f, 1f, 0.5f, 0.8f);//무적 색상 설정
 
@@ -195,21 +193,7 @@ public class Player : MonoBehaviour
         if (spriteRenderer != null) spriteRenderer.color = Color.white;//무적 시간 후, 원래대로 복구
         Debug.Log("무적 모드 종료");
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        //플레이어가 무적 아이템 획득 후 무적 상태인지 확인, 부딪힌 상대가 몬스터(Enemy)인지 확인
-        if (isInvincible && collision.CompareTag("Enemy"))
-        {
-            Enemy enemy = collision.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                Debug.Log("무적 상태로 몬스터 처단!");
-                enemy.EnemyDie();//몬스터의 사망 함수 호출(즉사 효과)
-            }
-        }
-    }
-
-
+    
     public void AddScore(int amount)//점수를 추가하는 함수
     {
         CurrentScore += amount;//전달받은 amount(점수)만큼 점수를 더해줌

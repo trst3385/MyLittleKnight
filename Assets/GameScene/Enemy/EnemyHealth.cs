@@ -51,7 +51,6 @@ public class EnemyHealth : MonoBehaviour
         if (enemyScript != null) enemyScript.EnemyDie();//Enemy스크립트의 PlayerDie 함수 호출
         else Debug.LogError("EnemyHealth: Enemy 스크립트 컴포넌트를 찾을 수 없어!");
     }
-
 }
 
 

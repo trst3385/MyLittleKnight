@@ -277,10 +277,7 @@ public class Enemy : MonoBehaviour
 
             MoveTowardsPlayer(playerCenterPosition);
         }
-
-
     }
-
 
     public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
     {
