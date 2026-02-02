@@ -50,12 +50,17 @@ public class SwordWeapon : MonoBehaviour
 
         swordEnergySpawnPoint = transform.Find("SwordEnergySpawnPoint");
 
-        //UI 컴포넌트 하이어라키에서 찾기
-        GameObject overlayObj = GameObject.Find("CooldownOverlay");
-        if (overlayObj != null) cooldownOverlay = overlayObj.GetComponent<Image>();
+        //씬 전체에서 찾지 말고 'SwordSkillIcon' 안에서 찾기 ---
+        GameObject swordIconObj = GameObject.Find("SwordSkillIcon");//검 스킬아이콘 부모 오브젝트 이름
+        if (swordIconObj != null)
+        {
+            //부모(swordIconObj)의 자식들 중에서 찾기
+            Transform overlay = swordIconObj.transform.Find("CooldownOverlay");
+            if (overlay != null) cooldownOverlay = overlay.GetComponent<Image>();
 
-        GameObject textObj = GameObject.Find("CooldownText");
-        if (textObj != null) cooldownText = textObj.GetComponent<TextMeshProUGUI>();
+            Transform text = swordIconObj.transform.Find("CooldownText");
+            if (text != null) cooldownText = text.GetComponent<TextMeshProUGUI>();
+        }
 
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }

@@ -18,12 +18,10 @@ public class Player : MonoBehaviour
 
     [HideInInspector]public bool IsDead = false;//인스펙터 사용하지 않으니 숨김
 
-    [Header("무적 상태")]
-    public bool isInvincible = false;//InvinciblCoinItem 획득 후, 무적 판정.
-    [Tooltip("무적 아이템 지속 시간")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
-    public float invincibilityDuration = 5f;//무적시간
-    [Tooltip("무적 상태일 때 플레이어의 색상")]
-    public Color invincibilityColor = new Color(1f, 1f, 0.5f, 0.8f);//무적 색상 설정
+    [Header("무적 상태")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
+    [Tooltip("체력 감소가 되지 않는 무적 상태인지 여부")]
+    public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인
+    
 
     //1.23일. 더 이상 인스펙터에서 드래그하지 않아도 되는 변수들(코드 내 연결로 변경)
     private Sil_Player silplayer;
@@ -173,27 +171,16 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void ActivateInvincibility()//InvinciblCoinItem 무적 아이템을 획득하면 시작될 무적 효과 코루틴
+
+    public void SetInvincible(bool active)//무적 효과 발동시
     {
-        //이미 무적 코루틴이 돌고 있다면 중지시키고 새로 시작 (시간 초기화 효과)
-        StopCoroutine("InvincibilityRoutine");
-        StartCoroutine("InvincibilityRoutine");
+        isInvincible = active;
+
+        //시각적 피드백 (스킬 스크립트에서 직접 해도 되지만 여기서 하면 관리가 편해)
+        if (spriteRenderer != null)
+            spriteRenderer.color = active ? new Color(1f, 1f, 0.5f, 0.8f) : Color.white;
     }
-    private IEnumerator InvincibilityRoutine()
-    {
-        isInvincible = true;
-        Debug.Log("무적 모드 활성화! (5초)");
 
-        //획득시 시각적 효과로 캐릭터를 약간 노란색이나 투명하게 변경
-        if (spriteRenderer != null) spriteRenderer.color = invincibilityColor;//invincibilityColor 변수를 사용해 무적 시 색상 조절
-
-        yield return new WaitForSeconds(invincibilityDuration);//5초 동안 무적(invincibilityDuration 변수의 값)
-
-        isInvincible = false;
-        if (spriteRenderer != null) spriteRenderer.color = Color.white;//무적 시간 후, 원래대로 복구
-        Debug.Log("무적 모드 종료");
-    }
-    
     public void AddScore(int amount)//점수를 추가하는 함수
     {
         CurrentScore += amount;//전달받은 amount(점수)만큼 점수를 더해줌

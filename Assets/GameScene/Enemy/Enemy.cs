@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
         public int ScoreValue = 10;//몬스터 처치 시 얻을 점수 (기본값 10점, 인스펙터에서 수정 가능)
     }
 
-
+    
     public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 드롭다운으로 Normal, Strong, Elite표시
 
     public EnemyType enemyType = EnemyType.Normal;//인스펙터에서 설정할 몬스터 기본 타입

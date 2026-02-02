@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9003251878445970847}
   - component: {fileID: 4664721182483449799}
   m_Layer: 0
-  m_Name: Item_InvinciblCoin
+  m_Name: InvincibleCoin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
