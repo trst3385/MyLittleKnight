@@ -39,8 +39,9 @@ public class AttackController : MonoBehaviour
 
     void Update()
     {
-        //플레이어가 죽었으면 모든 공격 입력 차단
-        if (player != null && player.IsDead) return;
+        //플레이어가 죽었거나, 카운트다운이 아직 안 끝났으면 공격 입력 무시!
+        if ((player != null && player.IsDead) || !CountdownManager.isCountdownFinished)
+            return;
 
         AttackInput();//공격 입력 처리 함수 호출        
     }

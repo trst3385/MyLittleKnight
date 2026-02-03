@@ -13,17 +13,20 @@ public class InvincibilitySkill : MonoBehaviour
     [Tooltip("스킬을 다시 사용하기까지 필요한 대기 시간 (초 단위)")]
     public float skillCooldown = 30f;//무적 스킬 쿨타임
 
+    [Header("무적 상태 시 색상 변화")]
     [Tooltip("무적 상태일 때 플레이어 캐릭터의 색상")]
     public Color invincibilityColor = new Color(1f, 1f, 0.5f, 0.8f);//무적 시 색상
-    public AudioClip activationSound;//스킬 발동 사운드
+
+    [Header("무적 시 사운드")]
+    public AudioClip invincibilitySound;//발동 사운드
 
     //--- 내부 참조 (자동 연결) ---
     private AudioSource audioSource;
     private Player player;
     private SpriteRenderer spriteRenderer;
-    //UI관련
-    public Image cooldownOverlay;
-    public TextMeshProUGUI cooldownText;
+    //UI관련(외부에서 접근할 필요 없고, 코드에서 자동 할당하므로 private으로 변경)
+    private Image cooldownOverlay;
+    private TextMeshProUGUI cooldownText;
 
     private float lastUsedTime = -100f;//마지막 사용 시간 (처음에 바로 쓸 수 있게 넉넉히 과거로 설정)
     private bool isEffectActive = false;//현재 무적 효과가 사용 중인지
@@ -69,9 +72,12 @@ public class InvincibilitySkill : MonoBehaviour
 
     void Update()
     {
-        //E 키로 발동
-        if (Input.GetKeyDown(KeyCode.E) && CanUse())
+        //카운트다운이 끝났을 때만 입력을 확인하도록 조건 추가
+        //CountdownManager.isCountdownFinished 가 true일 때만 실행돼.
+        if (CountdownManager.isCountdownFinished && Input.GetKeyDown(KeyCode.E) && CanUse())
+        {
             ActivateSkill();
+        }
 
         UpdateSkillUI();//UI 업데이트
     }
@@ -84,8 +90,8 @@ public class InvincibilitySkill : MonoBehaviour
         lastUsedTime = Time.time;
 
         //사운드 재생
-        if (audioSource != null && activationSound != null)
-            audioSource.PlayOneShot(activationSound);
+        if (audioSource != null && invincibilitySound != null)
+            audioSource.PlayOneShot(invincibilitySound);
 
         //무적 코루틴 시작
         StartCoroutine(InvincibilityRoutine());
