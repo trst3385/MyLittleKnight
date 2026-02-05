@@ -8,12 +8,13 @@
 
 <p align="center">
   **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
-</p>  
+ 
 <p align="center">
-  <a href= "https://youtu.be/kcR9PTpgw6Y">
-    <img src= "https://private-user-images.githubusercontent.com/194064418/533162546-8607194c-a14f-4005-91ba-ab9a8800bd5a.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjgyODEzOTUsIm5iZiI6MTc2ODI4MTA5NSwicGF0aCI6Ii8xOTQwNjQ0MTgvNTMzMTYyNTQ2LTg2MDcxOTRjLWExNGYtNDAwNS05MWJhLWFiOWE4ODAwYmQ1YS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDExM1QwNTExMzVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0wNTdiNjY3MDJmYmNjYTNkN2UzNGIwYmQzMDgwOWQ3NTUzOTgxMmE1NjQ3MjdlYTgyOWFiNGMwM2M4NTNkM2E5JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.gFfE--ULwIk_VBonwWbZMAxnR5uqQXeEoJk-6AA2HZ4" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+  <a href="https://youtu.be/HF-dHS-i6Ew">
+    <img src="https://img.youtube.com/vi/kcR9PTpgw6Y/0.jpg" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
+
 
 ---
 ## 🎮 게임 플레이 & 특징
@@ -56,12 +57,6 @@
   - **1단계**: 몬스터만 등장.
   - **2단계**: 발사체 장애물(FireBall) 등장.
   - **3단계**: 가시함정 장애물(Spike) 등장.
-
-<br/>
-
-- **UI 프리팹(Prefab) 시스템 도입**
-  - 반복적인 UI 수정 작업을 최소화하기 위해 옵션창을 프리팹화하여 관리합니다.
-  - 한 번의 수정으로 모든 씬에 동일한 UI 디자인과 로직을 일괄 적용(Apply All)할 수 있어 유지보수 효율성을 극대화했습니다. 
 
 <br/>
 
