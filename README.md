@@ -8,10 +8,10 @@
 
 <p align="center">
   **👇 클릭해서 핵심 기능 시연 영상 보기 (유튜브 링크)**
-</p>
+ 
 <p align="center">
   <a href="https://youtu.be/kcR9PTpgw6Y">
-    <img src="https://img.youtube.com/vi/kcR9PTpgw6Y/maxresdefault.jpg" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
+    <img src="https://img.youtube.com/vi/kcR9PTpgw6Y/0.jpg" alt="My Little Knight 게임 플레이 영상 썸네일" width="700">
   </a>
 </p>
 
