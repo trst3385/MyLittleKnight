@@ -5,10 +5,8 @@ using static EnemyDifficulty;//Enemy 스크립트에서 EnemyDifficulty 클래�
 
 public class Enemy : MonoBehaviour
 {
-    //[Serializable]의 역할:
-    //유니티 엔진에게 이 클래스(EnemyStats)가 MonoBehaviour를 상속받지 않은 '일반 C# 클래스'임에도 불구하고,
-    //인스펙터 창에 필드들을 표시하고, 그 데이터를 씬 또는 프리팹 파일에 영구적으로 저장(직렬화)할 수 있도록
-    //유니티 엔진에게 공식적으로 허가하는 태그. (이 태그가 없으면 인스펙터에 나타나지 않음)
+    //Step 1: 템플릿 만들기 ([Serializable])
+    //[Serializable]의 역할: "몬스터마다 스피드, 공격력 변수 하나하나 선언하기 귀찮아. '스탯 세트'라는 템플릿을 하나 만들자!"
     [Serializable]
     public class EnemyStats//EnemyStats라는 이름으로 MoveSpeed, AttackDamage 등의 항목이 포함된 스탯 템플릿(설계도)
     {
@@ -21,11 +19,12 @@ public class Enemy : MonoBehaviour
         public int ScoreValue = 10;//몬스터 처치 시 얻을 점수 (기본값 10점, 인스펙터에서 수정 가능)
     }
 
-    
-    public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 드롭다운으로 Normal, Strong, Elite표시
-
+    //Step 2: 카테고리 나누기 (enum)
+    public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
     public EnemyType enemyType = EnemyType.Normal;//인스펙터에서 설정할 몬스터 기본 타입
 
+
+    //Step 3: 데이터와 이름표 연결하기
     [Header("몬스터 타입별 스텟")]
     public EnemyStats NormalStats = new EnemyStats();//템플릿(EnemyStats)을 기반으로 실제 데이터 덩어리(인스턴스)를 세 개 만들어내는 단계
     public EnemyStats StrongStats = new EnemyStats();//Strong과 Elite도 동일
