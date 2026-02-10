@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
 
     //Step 2: 카테고리 나누기 (enum)
     public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
-    public EnemyType enemyType = EnemyType.Normal;//인스펙터에서 설정할 몬스터 기본 타입
+    public EnemyType enemyType = EnemyType.Normal;//enum을 담을 변수 선언, 인스펙터에서 설정할 몬스터 기본 타입
 
 
     //Step 3: 데이터와 이름표 연결하기

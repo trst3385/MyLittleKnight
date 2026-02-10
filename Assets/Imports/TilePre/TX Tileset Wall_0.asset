@@ -11,8 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: TX Tileset Wall_0
-  m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 9f8f114589864b6489859a58fbb6baf9, type: 3}
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
+  m_Sprite: {fileID: 21300000, guid: 81385674a1c495a47951f6e07feecfc4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
