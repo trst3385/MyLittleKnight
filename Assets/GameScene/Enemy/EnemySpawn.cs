@@ -15,7 +15,9 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     public Tilemap TargetTilemap;//몬스터를 스폰할 타일맵을 할당 (플레이 가능한 영역)
     public LayerMask SpawnableLayer;//몬스터가 스폰될 수 있는 영역 (바닥, 벽 등)의 레이어 마스크
     public Player PlayerScript;//플레이어 스크립트 참조
-    
+
+    [Header("스폰 범위 설정(코드 내에서 자동 연결")]
+    public BoxCollider2D EnemySpawnCollider;
 
     [Header("Strong 몬스터 스폰 설정:몇명을 잡아야 스폰,몇번째 프리팹의 몬스터를")]//Inspector에서 시각적으로 구분
     public int NormalKillsForStrongEnemy = 3;//강한 몬스터 스폰을 위해 잡아야 할 Normal 몬스터 수
@@ -41,11 +43,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     {
         if (Instance == null)//싱글톤 초기화 (중복 방지)
             Instance = this;
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        else { Destroy(gameObject); return; }
 
         InitializeReferences();//자동 참조 연결
     }
@@ -55,6 +53,15 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         //타일맵 찾기
         if (TargetTilemap == null)
             TargetTilemap = FindFirstObjectByType<Tilemap>();
+
+        //코드 내에서 자식 콜라이더 자동 연결 (오늘의 핵심!)
+        if (EnemySpawnCollider == null)
+        {
+            EnemySpawnCollider = GetComponentInChildren<BoxCollider2D>();
+            if (EnemySpawnCollider != null)
+                Debug.Log($"{EnemySpawnCollider.gameObject.name}을 스폰 범위로 자동 연결했어!");
+            else Debug.LogError("자식 오브젝트에서 BoxCollider2D를 찾을 수 없어!");
+        }
 
         //플레이어 찾기
         if (PlayerScript == null)
@@ -232,33 +239,35 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         newEnemy.name = prefab.name + "_" + currentEnemyCount;
         currentEnemyCount++;//총 몬스터 수 증가, ++ 연산자는 변수의 값을 1씩 더해
     }
-    
-    Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 공통 함수(코드가 길어지니 함수로 분리)
-    {//GetValidSpawnPosition라는 함수 안에 Vector3로 설정한 값이 들어있어!
-        int maxAttempts = 100;//최대 100번
-        for(int a = 0; a < maxAttempts; a++)
-        {
-            if(TargetTilemap == null)
-            {
-                Debug.LogError("TargetTilemap이 할당되지 않았어!");
-                return Vector3.zero;//유효한 위치 못 찾으면 Vector3.zero 반환
-            }
-            
-            BoundsInt bounds = TargetTilemap.cellBounds;
-            int randomX = Random.Range(bounds.xMin, bounds.xMax);
-            int randomY = Random.Range(bounds.yMin, bounds.yMax);
-            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
 
-            if (TargetTilemap.HasTile(randomCell))
+    Vector3 GetValidSpawnPosition()
+    {   
+        if (EnemySpawnCollider == null) return Vector3.zero;//스폰 범위(콜라이더)가 없으면 0 좌표 반환 (에러 방지)
+
+        int maxAttempts = 100;//무한 루프 방지를 위한 최대 시도 횟수 (100번 안에 못 찾으면 이번 스폰은 포기)
+
+        Bounds bounds = EnemySpawnCollider.bounds;//콜라이더의 사각형 경계값(최소/최대 좌표) 추출
+
+        for (int a = 0; a < maxAttempts; a++)
+        {
+            //콜러이더 박스 범위 내의 랜덤한 지점 하나를 뽑음
+            float randomX = Random.Range(bounds.min.x, bounds.max.x);
+            float randomY = Random.Range(bounds.min.y, bounds.max.y);
+            Vector3 randomPos = new Vector3(randomX, randomY, 0);
+
+            //뽑은 곳이 실제로 콜라이더 영역 내부인지 확인
+            if (EnemySpawnCollider.OverlapPoint(randomPos))
             {
-                Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
-                if (colliders.Length == 0) return cellCenterWorld;//유효한 위치 찾으면 반환
+                //해당 위치에 장애물(벽 등)이 없는지 최종 확인
+                Collider2D hit = Physics2D.OverlapCircle(randomPos, 0.3f, SpawnableLayer);
+
+                if (hit == null)
+                    return randomPos;//모든 검사를 통과하면 이 좌표를 스폰 위치로 확정
             }
         }
-        return Vector3.zero;//100번 시도해도 못 찾으면 Vector3.zero 반환,void로 된 클래스가 아니니 return사용
+        return Vector3.zero;//100번 시도해도 적절한 위치를 못 찾았을 때 안전하게 0 반환
     }
-    
+
     public void EnemyDied(bool isStrongOrEliteEnemyDied)//몬스터가 죽었을 때 호출될 함수(Enemy 스크립트에서 호출해야 함)
     {   //-- 연산자는 변수의 값을 1씩 빼는 역할을 해
         currentEnemyCount--;
