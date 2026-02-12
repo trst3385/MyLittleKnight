@@ -12,6 +12,9 @@ public class ItemSpawner : MonoBehaviour
     [Header("스폰할 아이템 목록 (인스펙터 할당)")]
     public GameObject[] ItemPrefabs;
 
+    [Header("스폰 범위 설정(코드 내에서 자동 연결)")]
+    public BoxCollider2D ItemSpawnCollider;
+
     [Header("자동 연결될 참조들")]
     [SerializeField] private Tilemap TargetTilemap;
     [SerializeField] private LayerMask SpawnableLayer;
@@ -41,6 +44,14 @@ public class ItemSpawner : MonoBehaviour
         {
             TargetTilemap = FindFirstObjectByType<Tilemap>();
             if (TargetTilemap == null) Debug.LogError("ItemSpawner: 타일맵을 찾을 수 없어!");
+        }
+
+        //스폰 위치 ItemSpawnCollider 자식 콜라이더 자동 연결
+        if (ItemSpawnCollider == null)
+        {
+            ItemSpawnCollider = GetComponentInChildren<BoxCollider2D>();
+            if (ItemSpawnCollider != null)
+                Debug.Log($"{ItemSpawnCollider.gameObject.name}을 일반 아이템 스폰 범위로 연결했어!");
         }
 
         //알림 매니저 자동 연결
@@ -73,7 +84,7 @@ public class ItemSpawner : MonoBehaviour
         if (ItemPrefabs == null || ItemPrefabs.Length == 0) return;
 
         Vector3 spawnPosition = GetValidSpawnPosition();//GetValidSpawnPosition함수 호출
-        if (spawnPosition == Vector3.zero) return;//생성할 자리가 없으면 스폰 중단
+        if (spawnPosition == Vector3.zero) return;//생성할 자리가 없으면 스폰 중단, 여기서 "0,0,0"이면 함수를 바로 종료해버림
 
         int randomIndex = Random.Range(0, ItemPrefabs.Length);
         GameObject itemToSpawn = ItemPrefabs[randomIndex];
@@ -82,29 +93,31 @@ public class ItemSpawner : MonoBehaviour
         currentItemCount++;
     }
 
-    Vector3 GetValidSpawnPosition()//아이템의 생성 위치를 정하는 함수, 랜덤으로 세 위치중에서 선택
+    //maxAttempts = 100으로 횟수를 제한했기 때문에, 100번의 for문이 다 돌아갈 동안 return randomPos;를 한 번도 만나지 못하면,
+    //결국 가장 밑바닥에 있는 return Vector3.zero;까지 내려오게 되는 거야.
+    Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 함수(아이템상자, 몬스터 스폰 스크립트와 동일)
     {
-        int maxAttempts = 100;
+        if (ItemSpawnCollider == null) return Vector3.zero;
+
+        int maxAttempts = 100;//무한 루프 방지를 위한 최대 시도 횟수 (100번 안에 못 찾으면 이번 스폰은 포기)
+        Bounds bounds = ItemSpawnCollider.bounds;//자식 콜라이더의 범위를 사용
 
         for (int i = 0; i < maxAttempts; i++)
-        {
-            BoundsInt bounds = TargetTilemap.cellBounds;
-            int randomX = Random.Range(bounds.xMin, bounds.xMax);
-            int randomY = Random.Range(bounds.yMin, bounds.yMax);
-            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
+        {   //콜라이더 범위 내 랜덤 좌표
+            float randomX = Random.Range(bounds.min.x, bounds.max.x);
+            float randomY = Random.Range(bounds.min.y, bounds.max.y);
+            Vector3 randomPos = new Vector3(randomX, randomY, 0);
 
-            if (TargetTilemap.HasTile(randomCell))
+            ////해당 지점이 콜라이더 안쪽인지 확인
+            if (ItemSpawnCollider.OverlapPoint(randomPos))
             {
-                Vector3 cellCenterTile = TargetTilemap.GetCellCenterWorld(randomCell);
+                //주변에 장애물(Ground, Wall 등)이 없는지 체크
+                Collider2D hit = Physics2D.OverlapCircle(randomPos, 0.3f, SpawnableLayer);
 
-                //주변에 다른 콜라이더(오브젝트)가 없는지 확인
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterTile, 0.5f, SpawnableLayer);
-
-                //다른 콜라이더가 없으면 유효한 위치
-                if (colliders.Length == 0) return cellCenterTile;
+                if (hit == null) return randomPos;//모든 검사를 통과하면 이 좌표를 스폰 위치로 확정
             }
         }
-        return Vector3.zero;
+        return Vector3.zero;//100번 시도해도 적절한 위치를 못 찾았을 때 안전하게 0 반환
     }
 
     //아이템을 먹고 사라질때 호출될 함수

@@ -11,10 +11,12 @@ public class ItemChestSpawner : MonoBehaviour
     public GameObject ItemChestPrefab;
     public float ItemChestSpawnTime = 10f;//아이템 상자가 스폰되는 주기 (초)
 
+    [Header("스폰 범위 설정(코드 내에서 자동 연결)")]
+    public BoxCollider2D ItemChestSpawnCollider;
 
     [Header("자동 할당 변수 (인스펙터 확인용)")]
     [SerializeField] private Tilemap TargetTilemap;
-    [SerializeField] private LayerMask SpawnableLayer;
+    [SerializeField] private LayerMask SpawnableLayer;//아이템 스폰할때 "Ground"라는 레이어가 설정된 곳만 안전하게 골라내기 위한 역할
     [SerializeField] private AudioClip spawnSound;
 
 
@@ -39,10 +41,17 @@ public class ItemChestSpawner : MonoBehaviour
             if (TargetTilemap == null) Debug.LogError("ItemChestSpawner: 타일맵을 찾을 수 없어!");
         }
 
+        //ItemChestSpawner_OBJ 오브젝트 자식 중에서 아이템 스폰 구역 콜라이더 찾기
+        if (ItemChestSpawnCollider == null)
+        {
+            ItemChestSpawnCollider = GetComponentInChildren<BoxCollider2D>();
+            if (ItemChestSpawnCollider != null)
+                Debug.Log($"{ItemChestSpawnCollider.gameObject.name}을 아이템 스폰 범위로 연결했어!");
+        }
+
         //레이어마스크 자동 설정
         //인스펙터에서 Nothing(0)으로 되어 있다면 "Ground" 레이어를 자동으로 가져옴
-        if (SpawnableLayer == 0)
-            SpawnableLayer = LayerMask.GetMask("Ground");
+        if (SpawnableLayer == 0) SpawnableLayer = LayerMask.GetMask("Ground");
 
         textalimManager = FindFirstObjectByType<TextAlimManager>();//알림 매니저 싱글톤/찾기
     }
@@ -72,9 +81,12 @@ public class ItemChestSpawner : MonoBehaviour
         if (ItemChestPrefab == null) return;
 
         Vector3 spawnPosition = GetValidSpawnPosition();//유효한 스폰 위치 찾기
-        if (spawnPosition == Vector3.zero) return;//유효한 자리를 차지 못하면 종료
-
-        Instantiate(ItemChestPrefab, spawnPosition, Quaternion.identity);
+        if (spawnPosition == Vector3.zero)//만약 결과가 (0,0,0)이라면? -> "실패했구나!" 하고 그냥 종료(return)
+        {
+            Debug.LogWarning("아이템 상자 스폰 실패: 자리가 없어!");
+            return;
+        }
+        Instantiate(ItemChestPrefab, spawnPosition, Quaternion.identity);//(0,0,0)이 아닐 때만 진짜로 상자를 만듦
 
         //SoundManager 싱글톤을 활용해 오디오 소스 없이 바로 재생
         if (spawnSound != null && SoundManager.Instance != null)
@@ -83,32 +95,33 @@ public class ItemChestSpawner : MonoBehaviour
 
         if (TextAlimManager.Instance != null)//TextAlimManager에게 아이템 상자가 등장했다는 텍스트를 보내
             TextAlimManager.Instance.ShowNotification("<color=yellow>아이템 상자 발견!</color>");
-
-
     }
 
-    Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 공통 함수 (EnemySpawn 스크립트와 동일)
+    Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 함수 (EnemySpawn 스크립트와 동일)
     {
-        int maxAttempts = 100;//유효한 스폰 위치를 찾기 위한 최대 시도 횟수
-        if (TargetTilemap == null) return Vector3.zero;//유효한 위치 못 찾으면 Vector3.zero 반환
+        //이 코드 덕분에, 설령 0,0,0이 맵의 중앙이 아니라도 그 위치에 상자가 생성되는 일은 없어. 그냥 "이번 스폰은 건너뛰기"가 될 뿐이야
+        if (ItemChestSpawnCollider == null) return Vector3.zero;
+
+        int maxAttempts = 100;//무한 루프 방지를 위한 최대 시도 횟수 (100번 안에 못 찾으면 이번 스폰은 포기)
+        Bounds bounds = ItemChestSpawnCollider.bounds;//자식 콜라이더의 범위를 가져옴
+
         for (int i = 0; i < maxAttempts; i++)
         {
-            BoundsInt bounds = TargetTilemap.cellBounds;//타일맵의 유효한 셀 범위 가져오기
-            int randomX = Random.Range(bounds.xMin, bounds.xMax);
-            int randomY = Random.Range(bounds.yMin, bounds.yMax);
-            Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);//랜덤 셀 위치
-            
-            if(TargetTilemap.HasTile(randomCell))//선택된 셀에 타일이 있는지 확인
+            //콜라이더 범위 내 랜덤 좌표
+            float randomX = Random.Range(bounds.min.x, bounds.max.x);
+            float randomY = Random.Range(bounds.min.y, bounds.max.y);
+            Vector3 randomPos = new Vector3(randomX, randomY, 0);
+
+            //해당 지점이 콜라이더 안쪽인지 확인
+            if (ItemChestSpawnCollider.OverlapPoint(randomPos))
             {
-                Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);//셀 위치를 월드 좌표로 변환
+                //주변에 장애물(Ground, Wall 등)이 없는지 체크
+                Collider2D hit = Physics2D.OverlapCircle(randomPos, 0.4f, SpawnableLayer);
 
-                //상자가 겹치지 않게 체크 (상자끼리 혹은 다른 장애물과)
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
-
-                if (colliders.Length == 0) return cellCenterWorld;//주변에 콜라이더가 없다면 유효한 위치
+                if (hit == null) return randomPos;//모든 검사를 통과하면 이 좌표를 스폰 위치로 확정
             }
         }
-        return Vector3.zero;//100번 시도해도 못 찾으면 Vector3.zero 반환
+        return Vector3.zero;//100번 시도해도 적절한 위치를 못 찾았을 때 안전하게 0 반환
     }
 }
 

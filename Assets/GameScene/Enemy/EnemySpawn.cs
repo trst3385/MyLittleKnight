@@ -250,7 +250,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
         for (int a = 0; a < maxAttempts; a++)
         {
-            //콜러이더 박스 범위 내의 랜덤한 지점 하나를 뽑음
+            //콜라이더 박스 범위 내의 랜덤한 지점 하나를 뽑음
             float randomX = Random.Range(bounds.min.x, bounds.max.x);
             float randomY = Random.Range(bounds.min.y, bounds.max.y);
             Vector3 randomPos = new Vector3(randomX, randomY, 0);
@@ -261,8 +261,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
                 //해당 위치에 장애물(벽 등)이 없는지 최종 확인
                 Collider2D hit = Physics2D.OverlapCircle(randomPos, 0.3f, SpawnableLayer);
 
-                if (hit == null)
-                    return randomPos;//모든 검사를 통과하면 이 좌표를 스폰 위치로 확정
+                if (hit == null) return randomPos;//모든 검사를 통과하면 이 좌표를 스폰 위치로 확정
             }
         }
         return Vector3.zero;//100번 시도해도 적절한 위치를 못 찾았을 때 안전하게 0 반환
