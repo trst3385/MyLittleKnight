@@ -334,7 +334,7 @@ Vector3 GetValidSpawnPosition()
     return Vector3.zero;//100번 시도 실패 시 안전하게 스폰 취소 (방어적 설계)
 }
 ```
-[GetValidSpawnPosition 함수의 작동 과정(아이템, 아이텝상자 스폰 로직과 동일)]
+**[GetValidSpawnPosition 함수의 작동 과정(아이템, 아이텝상자 스폰 로직과 동일)]**
 1. 영역 내 좌표 추출: 설정한 스폰 전용 콜라이더(BoxCollider2D)의 경계 내에서 무작위 좌표(Vector3)를 생성한다.
 2. 영역 내부 판정: 추출된 좌표가 실제 콜라이더 영역(OverlapPoint) 안에 포함되는지 확인하여 부정확한 스폰을 방지한다.
 3. 장애물 및 바닥 검증: 해당 위치에 OverlapCircle을 생성하여, 'Ground' 레이어가 존재하는지 확인하고 동시에 다른 장애물과 겹치지 않는지 최종 검사한다.
