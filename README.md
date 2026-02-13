@@ -17,15 +17,16 @@
 
 ---
 ## Build History
-* **v1.1.0**: 게임 종료 후에도 저장된 사운드 값 유지, SFX 볼륨으로 카운트다운 사운드도 조절 가능.
-* **v1.2.0**: Time Freeze 시스템, 시간 정지 중 몬스터 사망 시 사운드/모션 지연 처리 로직 구현 완료, 몬스터는 정지 중 사망 시 얼어붙은 채 있다가 시간이 풀리면 사망 모션 발동.
-* **v1.3.0**: 검,활 아이템 3회 획득시 강화, UI 바 개선, 화살 RigidBody 개선.(Interpolate으로 변경)
-* **v1.4.0**: GameScene1,2 는 특정 몬스터 수를 처치해야 다음 스테이지로 이동, GameScene3를 목표 제한 없는 무한 모드 시스템 구축, 한글 폰트 변경, 포탈 프리팹 변경.
-* **v1.5.0**: 게임오버 UI에 메인화면 이동버튼 추가, 게임씬3에서 처치한 몬스터 수 표시, 타일맵 밖에 생성되는 몬스터 버그 수정.
-* **v1.5.1**: 이동모션 중에도 즐각 공격 가능하게 수정.
-* **v1.5.2**: 다음 씬으로 가는 포탈 생성시, 상호작용시 사운드 추가, 옵션UI 버튼 클릭시 사운드 추가.
-* **v1.5.3**: 이동속도, 활, 검 강화 레벨 UI텍스트 Width 길이 수정 (250 -> 300), 활 공격속도 강화 레벨 UI 텍스트 삭제.
 * **v1.6.0**: 20초 마다 재사용이 가능한 무적 아이템 추가(E키), 메인화면 UI 업데이트(조작키 힌트 수정), 카운트다운 중에 공격이 입력되던 문제 해결, 주요 매니저 스크립트를 싱글톤 패턴으로 적용.
+* **v1.5.3**: 이동속도, 활, 검 강화 레벨 UI텍스트 Width 길이 수정 (250 -> 300), 활 공격속도 강화 레벨 UI 텍스트 삭제.
+* **v1.5.2**: 다음 씬으로 가는 포탈 생성시, 상호작용시 사운드 추가, 옵션UI 버튼 클릭시 사운드 추가.
+* **v1.5.1**: 이동모션 중에도 즐각 공격 가능하게 수정.
+* **v1.5.0**: 게임오버 UI에 메인화면 이동버튼 추가, 게임씬3에서 처치한 몬스터 수 표시, 타일맵 밖에 생성되는 몬스터 버그 수정.
+* **v1.4.0**: GameScene1,2 는 특정 몬스터 수를 처치해야 다음 스테이지로 이동, GameScene3를 목표 제한 없는 무한 모드 시스템 구축, 한글 폰트 변경, 포탈 프리팹 변경.
+* **v1.3.0**: 검,활 아이템 3회 획득시 강화, UI 바 개선, 화살 RigidBody 개선.(Interpolate으로 변경)
+* **v1.2.0**: Time Freeze 시스템, 시간 정지 중 몬스터 사망 시 사운드/모션 지연 처리 로직 구현 완료, 몬스터는 정지 중 사망 시 얼어붙은 채 있다가 시간이 풀리면 사망 모션 발동.
+* **v1.1.0**: 게임 종료 후에도 저장된 사운드 값 유지, SFX 볼륨으로 카운트다운 사운드도 조절 가능.
+
   
 ---
 ## 🎮 게임 플레이 & 특징
@@ -279,68 +280,66 @@ MainScene 폴더: 메인화면의 스크립트와 프리팹, 배경음악 사운
 
 
 <details>
-<summary><b>몬스터 스폰 시스템</b></summary>
+<summary><b>몬스터,아이템 스폰 시스템</b></summary>
 <br/>
 
 
 ### 문제점
 
-- 몬스터가 맵의 유효하지 않은 위치(벽이나 장애물)에 스폰되거나, 스폰 위치를 찾지 못하는 문제가 있었습니다.
-- 게임 진행 상황에 따라 몬스터의 종류나 수가 자동으로 변하지 않아 게임 난이도 조절에 한계가 있었습니다.
+- 몬스터와 아이템이 타일맵 외부(배경, 허공)나 벽 내부에 생성되는 현상 발생.
+- 씬마다 타일맵의 위치(Position) 미세하게 달라 매번 스폰 구역을 수동으로 좌표를 찍어 설정해야 하는 번거로움이 있었습니다.
 
 ### 원인 분석
 
-- 몬스터를 단순히 무작위 위치에 스폰할 경우, **맵의 경계나 오브젝트에 겹쳐서** 스폰될 수 있었습니다.
-- 모든 몬스터를 동일한 방식으로 스폰하면, **플레이어의 성장(점수, 킬 수)에 반응하는 역동적인 게임 플레이를 구현하기 어려웠습니다**
+- 기존 `TargetTilemap.cellBounds` 방식은 타일맵의 사각형 외곽 전체를 스폰 범위로 잡기 때문에, 타일이 없는 빈 공간이나 장애물 영역을 구분하지 못함.
 
 ### 해결 과정
 
-1. **타일맵 기반 유효 스폰 위치 탐색**:
-    - `EnemySpawn` 스크립트에 `GetValidSpawnPosition()` 함수를 구현하여 몬스터가 타일맵 `(Tilemap)` 내에서만 스폰되도록 했습니다.
-    - `TargetTilemap.cellBounds` 를 이용해 타일맵의 경계 내에서 무작위 좌표를 찾고, `TargetTilemap.HasTile()` 로 해당 위치에 타일이 있는지 확인했습니다.
-    - `Physics2D.OverlapCircleAll`을 사용해 스폰 위치에 이미 다른 오브젝트(예: 플레이어, 다른 몬스터)가 있는지 확인하여 겹침을 방지했습니다.  
+1. **콜라이더 기반 스폰 구역 설정 (규격화)**:
+   - 각 스포너(`Enemyspawn/Itemspawner/ItemChestspawner`)의 자식 오브젝트로 `BoxCollider2D`를 추가하여 시각적으로 스폰 구역을 직접 설정하도록 개선했습니다.
+   - `GetComponentInChildren<BoxCollider2D>()`를 사용해서 인스펙터 드래그 없이 **참조 자동화** 구현. (하지만 안전하게 인스펙터에서 드래그 연결도 가능하게 유지)
         
-2. **종합적인 GetValidSpawnPosition()** 함수의 작동과정 <br/>
-이 함수는 타일맵의 범위를 계산하여 **장애물이 없는 빈 타일**을 찾아 몬스터 스폰 위치를 반환합니다.
+2. **정밀 위치 검증 알고리즘 적용**:
+   - `Bounds` 범위를 활용한 무작위 좌표 추출 후 `OverlapPoint`로 실제 콜라이더 내부인지 1차 검증.
+   - `Physics2D.OverlapCircle` 필터링을 통해 해당 위치에 `Ground` 레이어가 있는지, 혹은 다른 장애물과 겹치는지 2차 물리 검증 수행.
+
+3. **무한 루프 방지 및 안전장치**:
+   - `maxAttempts = 100` 설정을 통해 유효한 위치를 찾지 못할 경우 연산을 중단하고 `Vector3.zero`를 반환하도록 설계하여 게임 프리징(Freezing) 방지.
+     
 ```csharp
+//[핵심 로직] 유효한 스폰 위치를 찾는 공통 검증 함수
 Vector3 GetValidSpawnPosition()
-{
-    int maxAttempts = 100;
-    for(int a = 0; a < maxAttempts; a++)
+{   
+    if (SpawnCollider == null) return Vector3.zero;
+
+    int maxAttempts = 100;//무한 루프 방지 및 성능 최적화를 위한 최대 시도 횟수
+    Bounds bounds = SpawnCollider.bounds; 
+
+    for (int i = 0; i < maxAttempts; i++)
     {
-        if(TargetTilemap == null)
-        {
-            Debug.LogError("TargetTilemap이 할당되지 않았어!");
-            return Vector3.zero;
-        }
+        //1단계: 설정한 콜라이더 박스 범위 내 랜덤 좌표 추출
+        float randomX = Random.Range(bounds.min.x, bounds.max.x);
+        float randomY = Random.Range(bounds.min.y, bounds.max.y);
+        Vector3 randomPos = new Vector3(randomX, randomY, 0);
 
-        BoundsInt bounds = TargetTilemap.cellBounds;
-        int randomX = Random.Range(bounds.xMin, bounds.xMax);
-        int randomY = Random.Range(bounds.yMin, bounds.yMax);
-        Vector3Int randomCell = new Vector3Int(randomX, randomY, 0);
-
-        if (TargetTilemap.HasTile(randomCell))
+        //2단계: 해당 지점이 실제 콜라이더 영역 내부인지 정밀 확인
+        if (SpawnCollider.OverlapPoint(randomPos))
         {
-            Vector3 cellCenterWorld = TargetTilemap.GetCellCenterWorld(randomCell);
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(cellCenterWorld, 0.5f, SpawnableLayer);
-            if (colliders.Length == 0)
-                return cellCenterWorld;
+            //3단계: 주변에 장애물(Ground, Wall 등)이 없는지 최종 체크
+            Collider2D hit = Physics2D.OverlapCircle(randomPos, 0.3f, SpawnableLayer);
+
+            if (hit == null) return randomPos;// 모든 검사 통과 시 좌표 확정
         }
     }
-    return Vector3.zero;
+    return Vector3.zero;//100번 시도 실패 시 안전하게 스폰 취소 (방어적 설계)
 }
 ```
- - 타일맵의 경계 안에서 무작위 셀(타일) 하나를 고른다.  
- - 그 셀의 위치에 타일이 존재하는지 확인한다. (벽이나 빈 공간이 아닌지))  
- - 타일이 있다면, 그 위치 근처에 다른 오브젝트(플레이어나 다른 몬스터)가 없는지 원형 탐지(OverlapCircleAll)로 확인.      
- - 만약 장애물이 없다면, **그 위치를 유효한 스폰 위치로 반환(return)**하고 함수를 끝낸다.    
- - 100번을 시도했는데도 유효한 위치를 찾지 못하면, Vector3.zero를 반환해서 실패했음을 알린다   . 
-
-      
-3. **플레이어 반응형 스폰 로직 구현**:
-    - **타이머 스폰**: `Update()` 함수에서 `spawnTimer`를 사용해 일정 시간마다 `Normal` **몬스터**를 생성하도록 했습니다. 이는 게임의 기본적인 흐름을 담당합니다.
-    - **킬 기반 스폰**: `Normal` **몬스터**가 죽을 때마다 `normalEnemyKilledSinceLastStrong` 변수를 증가시켜 **`Normal` 몬스터 3마리를 잡으면 Strong 몬스터가 스폰되도록 했습니다**. 이는 플레이어의 전투 성과에 따라 새로운 위협을 제공하는 동적 난이도 조절 시스템입니다.
-    - **점수 기반 스폰**: 플레이어의 점수가 특정 점수`(EliteSpawnScoreThreshold)` 에 도달할 때마다 `Elite` **몬스터**가 스폰되도록 했습니다. `nextEliteSpawnScore` 를 갱신하여 점진적으로 난이도가 상승하도록 설계했습니다.
+[GetValidSpawnPosition 함수의 작동 과정(아이템, 아이텝상자 스폰 로직과 동일)]
+1. 영역 내 좌표 추출: 설정한 스폰 전용 콜라이더(BoxCollider2D)의 경계 내에서 무작위 좌표(Vector3)를 생성한다.
+2. 영역 내부 판정: 추출된 좌표가 실제 콜라이더 영역(OverlapPoint) 안에 포함되는지 확인하여 부정확한 스폰을 방지한다.
+3. 장애물 및 바닥 검증: 해당 위치에 OverlapCircle을 생성하여, 'Ground' 레이어가 존재하는지 확인하고 동시에 다른 장애물과 겹치지 않는지 최종 검사한다.
+4. 좌표 반환: 모든 검사를 통과한 안전한 위치라면 해당 좌표를 반환(return)하고 함수를 종료한다.
+5. 안전 장치: 100번의 시도 후에도 유효한 위치를 찾지 못하면 Vector3.zero를 반환하여 해당 프레임의 스폰을 안전하게 건너뛴다.
 
 
 ### 배운 점
