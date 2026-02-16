@@ -70,7 +70,7 @@ public class OptionsManager : MonoBehaviour
 
         if (optionsPanel != null)//패널 안의 자식들 이름으로 자동 찾기 및 버튼 함수 연결
         {
-            //WarningText도 이제 패널 안에 있으니 FindChildEx로 한 번만 찾으면 돼
+            //WarningText도 이제 패널 안에 있으니 FindChildEx함수 호출로 한 번만 찾으면 돼
             warningText = FindChildEx(optionsPanel.transform, "WarningText")?.GetComponent<TextMeshProUGUI>();
 
             //하위 그룹 오브젝트 찾기
@@ -80,7 +80,6 @@ public class OptionsManager : MonoBehaviour
             //슬라이더 및 텍스트 찾기
             bgmSlider = FindChildEx(optionsPanel.transform, "BGMSlider")?.GetComponent<Slider>();
             sfxSlider = FindChildEx(optionsPanel.transform, "SFXSlider")?.GetComponent<Slider>();
-            warningText = FindChildEx(optionsPanel.transform, "WarningText")?.GetComponent<TextMeshProUGUI>();
 
             //버튼 자동 연결. 인스펙터 OnClick()에 수동 연결할 필요 없음!
             SetupButton("ReStartButton", RestartGame);
@@ -108,12 +107,12 @@ public class OptionsManager : MonoBehaviour
 
     private GameObject FindChildEx(Transform parent, string name)//이름만으로 자식을 뒤져서 찾아주는 헬퍼 함수
     {
+        //1. 부모 아래에 있는 모든 자식/손자들의 Transform 정보를 배열로 가져옴 (비활성화 오브젝트도 포함)
         Transform[] children = parent.GetComponentsInChildren<Transform>(true);
-        foreach (Transform child in children)
-        {
-            if (child.name == name) return child.gameObject;
-        }
-        return null;
+
+        foreach (Transform child in children)//2. 배열에 담긴 모든 자식을 하나하나 순회하며 확인
+            if (child.name == name) return child.gameObject;//3. 현재 확인 중인 자식의 이름이 내가 찾는 이름(name)과 일치하면 즉시 반환
+        return null;//4. 반복문이 끝날 때까지 오브젝트의 이름을 못 찾았으면 null(없음)을 반환
     }
 
     private void SetupButton(string btnName, UnityEngine.Events.UnityAction action)//버튼을 찾아 함수(리스너)를 직접 달아주는 함수
