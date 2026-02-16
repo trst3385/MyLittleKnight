@@ -259,7 +259,7 @@ public class OptionsManager : MonoBehaviour
     {
         PlayClickSound();//Quit Game 버튼 누를때 사운드
         Time.timeScale = 1f;//옵션창을 켜서 멈춘 시간을 정상으로 돌려놓음
-        StartCoroutine(QuitWithTinyDelay(0.1f));//바로 종료하지 않고 코루틴 호출(사운드가 발동되고 0.1초 후 종료)
+        StartCoroutine(QuitWithTinyDelay(0.15f));//바로 종료하지 않고 코루틴 호출(사운드가 발동되고 0.1초 후 종료)
     }
     //재시작, 메인화면 이동 버튼 사운드는 SoundManager와 OptionsManager는 DontDestroyOnLoad 덕분에,
     //씬이 바뀌는 와중에도 AudioSource가 소리를 끝까지 낼 수 있었던 거야. Quit은 아예 프로세스 자체를 종료시키니 예외였던 거지
