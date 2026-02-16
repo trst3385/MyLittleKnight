@@ -254,17 +254,26 @@ public class OptionsManager : MonoBehaviour
         Time.timeScale = 1f;//게임 재시작과 마찬가지로, 메인화면으로 돌아갈 때도 시간을 정상으로 돌려놔.
         SceneManager.LoadScene("MainMenuScene");//MainMenuScene 이름의 씬을 로드해서 다시 메인화면 씬으로 돌아가게 해
     }
-
-    public void  QuitGame()//게임을 완전히 끄는 함수
+    
+    public void QuitGame()//게임을 완전히 끄는 함수
     {
         PlayClickSound();//Quit Game 버튼 누를때 사운드
-        Time.timeScale = 1f;
+        Time.timeScale = 1f;//옵션창을 켜서 멈춘 시간을 정상으로 돌려놓음
+        StartCoroutine(QuitWithTinyDelay(0.1f));//바로 종료하지 않고 코루틴 호출(사운드가 발동되고 0.1초 후 종료)
+    }
+    //재시작, 메인화면 이동 버튼 사운드는 SoundManager와 OptionsManager는 DontDestroyOnLoad 덕분에,
+    //씬이 바뀌는 와중에도 AudioSource가 소리를 끝까지 낼 수 있었던 거야. Quit은 아예 프로세스 자체를 종료시키니 예외였던 거지
+    private IEnumerator QuitWithTinyDelay(float delay)//Quit 버튼을 누를때 사운드가 들리게 한 후 게임 종료 코루틴.
+    {                                                 //delay 매개변수로 쓰는 이유는 나중에 시간을 QuitGame 함수에서,
+                                                      //숫자 하나만 고치면 되니까 관리가 훨씬 편해지지. 
 
-        #if UNITY_EDITOR
+        yield return new WaitForSecondsRealtime(delay);//WaitForSecondsRealtime을 써야 Time.timeScale 영향 없이 정확히 기다려
+
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
-        Application.Quit();
-        #endif
+#else
+    Application.Quit();
+#endif
     }
 
     private void PlayClickSound()
