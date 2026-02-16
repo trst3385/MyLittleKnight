@@ -109,6 +109,8 @@ public class OptionsManager : MonoBehaviour
     {
         //1. 부모 아래에 있는 모든 자식/손자들의 Transform 정보를 배열로 가져옴 (비활성화 오브젝트도 포함)
         Transform[] children = parent.GetComponentsInChildren<Transform>(true);
+        //GetComponentsInChildren<T>: 나를 포함해서 내 밑에 매달린 모든 세대의 'T' 부품을 싹 다 수집하라는 명령
+        //모든 오브젝트 (하이어라키에 담긴 모든건)는 Transform을 가지고 있으므로, 사실상 모든 자식 오브젝트를 다 리스트업하겠다는 뜻
 
         foreach (Transform child in children)//2. 배열에 담긴 모든 자식을 하나하나 순회하며 확인
             if (child.name == name) return child.gameObject;//3. 현재 확인 중인 자식의 이름이 내가 찾는 이름(name)과 일치하면 즉시 반환
