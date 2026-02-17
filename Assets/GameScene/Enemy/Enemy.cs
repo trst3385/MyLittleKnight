@@ -360,6 +360,12 @@ public class Enemy : MonoBehaviour
         if (isDead) return;//이미 죽은 상태라면, 더 이상 아무것도 하지 않고 함수를 종료
 
         isDead = true;
+
+        //모든 콜라이더 비활성화, 이 몬스터 오브젝트에 붙은 모든 Collider2D(Trigger 포함)를 가져와서 꺼버려
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders)
+            col.enabled = false;
+
         Debug.Log(enemyType + "몬스터 컷!");
 
 

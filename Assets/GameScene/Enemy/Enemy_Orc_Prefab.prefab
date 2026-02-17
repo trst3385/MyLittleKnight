@@ -188,7 +188,6 @@ MonoBehaviour:
     ScoreValue: 10
   EnemySpawner: {fileID: 0}
   playerTargetOffsetY: -2.7
-  deathAudioSource: {fileID: -5303039242034864229}
   deathSound: {fileID: 8300000, guid: 088b5f5e362632d4e821abffa8f50b0e, type: 3}
 --- !u!114 &5803444509944095190
 MonoBehaviour:
