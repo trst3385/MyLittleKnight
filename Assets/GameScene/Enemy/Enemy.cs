@@ -51,6 +51,7 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private Collider2D[] colliders;
     //외부 스크립트(Start에서 초기화)
     private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
     private PlayerShield playerShield;//선언(보관함)은 저장 공간이고, Start()의 GetComponent는 그 공간에 값을 넣어주는 역할
@@ -75,6 +76,7 @@ public class Enemy : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        colliders = GetComponents<Collider2D>();
     }
 
     void Start()//외부 스크립트는 Start에
@@ -358,13 +360,11 @@ public class Enemy : MonoBehaviour
     public void EnemyDie()//몬스터 사망
     {
         if (isDead) return;//이미 죽은 상태라면, 더 이상 아무것도 하지 않고 함수를 종료
-
         isDead = true;
 
         //모든 콜라이더 비활성화, 이 몬스터 오브젝트에 붙은 모든 Collider2D(Trigger 포함)를 가져와서 꺼버려
-        Collider2D[] colliders = GetComponents<Collider2D>();
         foreach (Collider2D col in colliders)
-            col.enabled = false;
+            if (col != null) col.enabled = false;
 
         Debug.Log(enemyType + "몬스터 컷!");
 

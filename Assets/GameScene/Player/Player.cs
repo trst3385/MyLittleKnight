@@ -11,34 +11,36 @@ public enum WeaponType { None, Bow, Sword, Axe }
 public class Player : MonoBehaviour
 {
     [Header("이동 관련 변수")]
-    public float MoveSpeed = 5f;    
-    private float horizontalInput;
-    private float verticalInput;
-    private Vector2 movement;
-
-    [HideInInspector]public bool IsDead = false;//인스펙터 사용하지 않으니 숨김
+    public float MoveSpeed = 5f;
 
     [Header("무적 상태")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
     [Tooltip("체력 감소가 되지 않는 무적 상태인지 여부")]
     public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인
-    
 
-    //1.23일. 더 이상 인스펙터에서 드래그하지 않아도 되는 변수들(코드 내 연결로 변경)
+    [Header("사운드 에셋")]
+    [SerializeField] private AudioClip walkSound;//소리 파일 자체는 드래그가 필요해
+
+
+    //외부 참조 변수 (캐싱용)
     private Sil_Player silplayer;
     private Collider2D targetCollider;
     private TextMeshProUGUI ScoreTextUI;
     private AudioSource walkingaudioSource;
     private GameOverManager gameOverManager;
-    [Header("사운드 에셋")]
-    [SerializeField] private AudioClip walkSound;//소리 파일 자체는 드래그가 필요해
 
-
-    [HideInInspector] public int CurrentScore = 0;//플레이어의 현재 점수(초기값 0)
-    //내부변수
-    private PlayerHealth playerHealth;
+    //내부 컴포넌트 변수 (캐싱용)
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+
+    //상태 및 내부 데이터 변수
+    [HideInInspector] public bool IsDead = false;
+    [HideInInspector] public int CurrentScore = 0;
+
+    private float horizontalInput;
+    private float verticalInput;
+    private Vector2 movement;
+
 
     void Awake()//내부 컴포넌트는 Awake에,              
     {           //Null 체크도 Awake에. Start()보다 먼저 호출되기 때문에, 최대한 일찍 초기화하고 검증할수록 안정성이 높아져
@@ -47,7 +49,6 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        playerHealth = GetComponent<PlayerHealth>();
 
         //자식 오브젝트 및 사운드 자동 연결, 자식 중에서 이름으로 찾기
         var sndFootstep = transform.Find("SND_Footstep");
