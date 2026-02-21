@@ -126,24 +126,27 @@ public class Player : MonoBehaviour
         {
             animator.SetTrigger("Die");
 
-            float DieTime = 1.5f;//사망 후 사라지는 시간
+            float DieTime = 1.5f;//사망 후 사라지는 시간1.5초 (플레이어 오브젝트 파괴)
             Destroy(gameObject, DieTime);
 
-            Invoke("CallGameOverManager", 1f);//1.5초 뒤에 CallGameOverManager함수를 호출, 플레이어가 죽으면 뜰 UI
+            StartCoroutine(GameOverSequence(1.0f));//1초 뒤에 CallGameOverManager함수를 호출, 플레이어가 죽으면 뜰 UI
+            //02.21 invoke에서 코루틴으로 변경, 문자열 기반의 불안정한 방식에서 안정적이고 확장성 있는 코드(코루틴)으로 변경,
         }
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
     }
 
+    private IEnumerator GameOverSequence(float delay)//플레이어가 죽으면 GameOverManager UI 호출,                                                 
+    {                                                //gameOverManager 스크립트의 OnGameOver함수 호출
 
-    private void CallGameOverManager()
-    {
-        if (GameOverManager.Instance != null)//인스펙터 연결 없이 싱글톤으로 게임오버매니저 호출
+        yield return new WaitForSeconds(delay);//플레이어가 죽은 후 지정된 시간(1.0f)만큼 대기 후 게임오버창 생성
+
+        //게임오버 매니저 호출
+        if (GameOverManager.Instance != null)
             GameOverManager.Instance.OnGameOver();
-        else Debug.LogError("죽는 순간에도 GameOverManager를 찾을 수 없어!");
+        else
+            Debug.LogError("죽는 순간에도 GameOverManager를 찾을 수 없어!");
     }
-    //플레이어가 죽으면 GameOverManager UI 호출, gameOverManager 스크립트의 OnGameOver함수 호출
-    //?. (널 조건부 연산자): C# 6.0부터 도입된 문법, 객체가 Null이 아닐 때만 멤버(속성, 메서드)에 접근하도록 해주는 역할
-    //"왼쪽 피연산자가 Null이 아닐 때만 오른쪽의 멤버(함수나 변수)에 접근하라" 라는 뜻이야!
+    
 
     public Vector3 GetCenterPosition()//몬스터들이 플레이어의 '중앙'이라고 인식하고 추적/공격할 위치, Enemy 스크립트에서 이 함수를 참조
     {                             
