@@ -6,8 +6,7 @@ using UnityEngine.SceneManagement;
 
 
 public class GameOverManager : MonoBehaviour
-{//플레이어가 죽으면 실행될 UI 스크립트.
-
+{
     public static GameOverManager Instance { get; private set; }
 
 
@@ -21,6 +20,8 @@ public class GameOverManager : MonoBehaviour
 
     [Header("자동 연결될 외부 참조")]
     [SerializeField] private Player PlayerScript;//Player스크립트
+    //옵저버 패턴으로 이제 직접적인 PlayerScript 참조가 없어도 게임오버는 띄울 수 있어!
+    //다만! 플레이어가 몬스터 처치로 받은 점수를 게임오버 창에 가져와 띄워야 하니 일단 '점수용'으로만 남겨두자.
 
 
     void Awake()
@@ -31,25 +32,23 @@ public class GameOverManager : MonoBehaviour
 
         InitializeReferences();//수동 드래그 대신 자동 참조 실행
     }
-    
+
+    //옵저버 패턴: 구독 로직 추가
+    private void OnEnable()//OnEnable (+=): "지금부터 방송을 듣겠다!" (안테나 ON)
+    {
+        Player.OnPlayerDead += OnGameOver;//Player의 사망 제보(OnPlayerDead)를 받으면 OnGameOver를 실행해!
+    }
+    //람다 방식으로 하면 한 줄이라 편해 보이지만, 컴퓨터 입장에서는 "이름 없는 새로운 일회용 함수"를 만들어서 등록하는 거야,
+    //문제는 -=를 할 때 발생해. 새로 만든 일회용 함수는 이름이 없어서 나중에 취소(-=)하고 싶어도 어떤 놈을 빼야 할지 찾을 수가 없어.
+    private void OnDisable()//OnDisable (-=): "이제 방송 안 듣겠다!" (안테나 OFF)
+    {
+        Player.OnPlayerDead -= OnGameOver;//오브젝트가 꺼질 때 해지(오브젝트가 비활성화)
+    }
+
+
     private void InitializeReferences()
     {
-        if (GameOverPanel == null)//1. 비활성화된 GameOverPanel 찾기
-        {
-            //씬 내의 모든 오브젝트를 뒤져서 이름이 "GameOverPanel"인 놈을 찾음
-            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-            foreach (GameObject obj in allObjects)
-            {
-                //실제 씬에 있는 오브젝트인지 확인 (프리팹 제외)
-                if (obj.hideFlags == HideFlags.None && obj.scene.name != null && obj.name == "GameOverPanel")
-                {
-                    GameOverPanel = obj;
-                    break;
-                }
-            }
-        }
-
-        if (GameOverPanel != null)//2. 패널을 찾았다면 그 자식 텍스트들을 연결
+        if (GameOverPanel != null)//게임오버 UI의 패널을 찾았다면 그 자식 텍스트들을 연결
         {
             //FindChildEx는 어제 OptionsManager 때 썼던 함수랑 똑같아! 아래에 추가해줄게.
             FinalScoreText = FindChildEx(GameOverPanel.transform, "FinalScoreText")?.GetComponent<TextMeshProUGUI>();
@@ -60,13 +59,7 @@ public class GameOverManager : MonoBehaviour
             //버튼 자동 연결
             SetupButton("RestartButton", RestartGame);
             SetupButton("MainMenuButton", GoToMainMenu);
-        }
-
-        if (PlayerScript == null)//3. 플레이어 찾기
-        {
-            GameObject playerObj = GameObject.FindWithTag("Player");
-            if (playerObj != null) PlayerScript = playerObj.GetComponent<Player>();
-        }
+        } 
     }
 
     private void SetupButton(string btnName, UnityEngine.Events.UnityAction action)//버튼 리스너를 달아주는 헬퍼 함수
@@ -96,14 +89,13 @@ public class GameOverManager : MonoBehaviour
 
     void Start()//Start 함수는 오브젝트가 활성화될 때 한 번 실행
     {
-        //게임 시작 시 게임 오버 패널은 비활성화, 케릭터가 죽어야만 생성
-        if (GameOverPanel != null) GameOverPanel.SetActive(false);
+        if (GameOverPanel != null) GameOverPanel.SetActive(false);//게임 시작 시 게임 오버 패널은 비활성화, 케릭터가 죽어야만 생성
     }
 
     public void OnGameOver()//게임 오버 상태가 되면 호출될 함수
-    {
-        //게임 오버 패널 활성화 (화면에 보이게 함)
-        if (GameOverPanel != null)
+    {                       //이제 이 함수는 Player가 방송(Invoke)하면 자동으로 실행돼!
+
+        if (GameOverPanel != null)//게임 오버 패널 활성화 (화면에 보이게 함)
             GameOverPanel.SetActive(true);
         //SetActive는 유니티에서 게임 오브젝트를 활성화하거나 비활성화하는 기능이야
         //true를 넣으면 체크박스를 켜서 오브젝트를 보이게(활성화) 하고,false는 반대로 숨기게(비활성화) 해
@@ -113,8 +105,11 @@ public class GameOverManager : MonoBehaviour
         //Time.timeScale = 1f는 게임이 보통 속도로 돌아가고 있는 상태고,
         //Time.timeScale = 0f는 게임의 시간이 완전히 멈춘 상태를 의미해.
 
-        //게임 시간 멈추기
-        Time.timeScale = 0f;
+        Time.timeScale = 0f;//게임 시간 멈추기
+
+        if (PlayerScript == null)//만약 위에서 PlayerScript 찾는 걸 지웠다면, 여기서 점수용으로 한 번만 찾아줘.
+            PlayerScript = FindAnyObjectByType<Player>();
+
         //최종 점수를 UI에 표시
         DisplayFinalScore();//이제 이 스크립트 안에 있는 DisplayFinalScore 호출
     } 

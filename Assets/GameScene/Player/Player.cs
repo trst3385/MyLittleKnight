@@ -10,6 +10,12 @@ public enum WeaponType { None, Bow, Sword, Axe }
 
 public class Player : MonoBehaviour
 {
+    //---------옵저버 패턴----------//
+    //static으로 선언하면 어디서든 'Player. ...'로 접근할 수 있어 편리해.
+    public static event Action OnPlayerDead;//방송 채널 개설: "플레이어가 죽으면 송출되는 채널", 옵저버 패턴의 시작이야.
+    public static event Action<int> OnScoreChanged;//점수 갱신 방송 채널(이벤트)
+    //-----------------------------//
+
     [Header("이동 관련 변수")]
     public float MoveSpeed = 5f;
 
@@ -24,9 +30,7 @@ public class Player : MonoBehaviour
     //외부 참조 변수 (캐싱용)
     private Sil_Player silplayer;
     private Collider2D targetCollider;
-    private TextMeshProUGUI ScoreTextUI;
     private AudioSource walkingaudioSource;
-    private GameOverManager gameOverManager;
 
     //내부 컴포넌트 변수 (캐싱용)
     private Rigidbody2D rb;
@@ -59,11 +63,6 @@ public class Player : MonoBehaviour
 
         targetCollider = GetComponent<Collider2D>();//플레이어 본인의 콜라이더 사용
 
-        //씬 내 매니저 자동 연결, 이미 싱글톤인 매니저들은 여기서 찾을 필요도 없지만, 캐싱해두면 편해
-        gameOverManager = FindAnyObjectByType<GameOverManager>();
-
-        //UI는 씬 전체에서 하나뿐인 TMP를 찾거나, 전용 UI 매니저를 통하는 게 좋아
-        ScoreTextUI = GameObject.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
 
         //[방어적 프로그래밍] 검증 로직
         CheckInitialization();
@@ -73,14 +72,6 @@ public class Player : MonoBehaviour
     {
         if (walkingaudioSource == null) Debug.LogError("자식 오브젝트 SND_Footstep의 AudioSource를 찾을 수 없어!");
         if (silplayer == null) Debug.LogWarning("자식 오브젝트 실루엣을 찾을 수 없어!");
-        if (gameOverManager == null) Debug.LogError("씬에 GameOverManager가 없어!");
-    }
-
-
-    void Start()//외부 스크립트, 오브젝트는 Start에
-    {
-        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore;
-        //게임 시작 시 ScoreTextUI에 플레이어의 초기 점수(0)를 표시하여 UI를 초기화
     }
 
 
@@ -120,7 +111,7 @@ public class Player : MonoBehaviour
         IsDead = true;//죽으면 IsDead 실행
         Debug.Log("플레이어 사망!");
 
-        if(walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();//걷기 사운드를 즉시 중지
+        if (walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();//걷기 사운드를 즉시 중지
 
         if (animator != null)
         {
@@ -129,22 +120,20 @@ public class Player : MonoBehaviour
             float DieTime = 1.5f;//사망 후 사라지는 시간1.5초 (플레이어 오브젝트 파괴)
             Destroy(gameObject, DieTime);
 
-            StartCoroutine(GameOverSequence(1.0f));//1초 뒤에 CallGameOverManager함수를 호출, 플레이어가 죽으면 뜰 UI
+            StartCoroutine(GameOverSequence(1.0f));//1초 뒤에 CallGameOverManager의 게임오버 UI창을 호출
             //02.21 invoke에서 코루틴으로 변경, 문자열 기반의 불안정한 방식에서 안정적이고 확장성 있는 코드(코루틴)으로 변경,
         }
         if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
     }
-
-    private IEnumerator GameOverSequence(float delay)//플레이어가 죽으면 GameOverManager UI 호출,                                                 
-    {                                                //gameOverManager 스크립트의 OnGameOver함수 호출
+    private IEnumerator GameOverSequence(float delay)//플레이어가 죽으면 1초 뒤 게임오버창이 뜰 코루틴
+    {
 
         yield return new WaitForSeconds(delay);//플레이어가 죽은 후 지정된 시간(1.0f)만큼 대기 후 게임오버창 생성
 
-        //게임오버 매니저 호출
-        if (GameOverManager.Instance != null)
-            GameOverManager.Instance.OnGameOver();
-        else
-            Debug.LogError("죽는 순간에도 GameOverManager를 찾을 수 없어!");
+        Debug.Log("1초 지남: 사망 방송 송출!");
+        //2. 방송 송출 (Invoke): 이 채널을 구독 중인 모든 시청자(스크립트)에게 신호를 보내.
+        //?. 은 "만약 구독자가 한 명도 없으면 송출하지마!"라는 안전장치야.
+        Player.OnPlayerDead?.Invoke();
     }
     
 
@@ -190,11 +179,13 @@ public class Player : MonoBehaviour
         CurrentScore += amount;//전달받은 amount(점수)만큼 점수를 더해줌
         Debug.Log("현재 점수: " + CurrentScore);
 
-        if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();                             
+        OnScoreChanged?.Invoke(CurrentScore);//기존의 UI 업데이트하던 코드는 지우고, 이 한 줄만 넣어! 옵저버 패턴으로 점수를 UI로 보내.
+        //if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();                             
     }
     public void ResetScore()//점수를 초기화하는 함수
     {
         CurrentScore = 0;
-        if (ScoreTextUI != null) ScoreTextUI.text = "Score: 0";
+        OnScoreChanged?.Invoke(0);//옵저버 패턴으로 변경 02.22
+        //if (ScoreTextUI != null) ScoreTextUI.text = "Score: 0";
     }
 }
