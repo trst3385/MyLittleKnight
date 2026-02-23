@@ -132,6 +132,7 @@ public class Player : MonoBehaviour
 
         Debug.Log("1초 지남: 사망 방송 송출!");
         //2. 방송 송출 (Invoke): 이 채널을 구독 중인 모든 시청자(스크립트)에게 신호를 보내.
+
         //?. 은 "만약 구독자가 한 명도 없으면 송출하지마!"라는 안전장치야.
         Player.OnPlayerDead?.Invoke();
     }

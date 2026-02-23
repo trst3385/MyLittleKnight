@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;//옵저버 패턴의 Action을 위해 추가
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,10 @@ using UnityEngine.UI;
 
 public class BowWeapon : MonoBehaviour
 {
+    //---------옵저버 패턴----------//
+    public static event Action<float, float> OnBowCooldownChanged;//[옵저버] 쿨타임바 방송국 (남은 시간, 총 쿨타임)
+    //------------------------------//
+
     [Header("활 설정 (데이터 & 에셋)")]
     public GameObject ArrowPrefab;//화살 프리팹
     public GameObject EnhancedArrowPrefab;//강화 화살 프리팹
@@ -19,7 +24,6 @@ public class BowWeapon : MonoBehaviour
     //--- 내부 참조 (자동 연결) ---
     private Transform arrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
     private AudioSource bowAudioSource;//화살 사운드 오디오소스
-    private Slider bowCooldownBar;//UI의 BowCooldownBar UI
     private PlayerStatsEffects statsEffects;//PlayerStatsEffects 스크립트 참조
 
     private float currentArrowCooldown;
@@ -29,7 +33,6 @@ public class BowWeapon : MonoBehaviour
 
     void Awake()
     {
-
         arrowSpawnPoint = transform.Find("ArrowSpawnPoint");//플레이어의 자식 오브젝트에서 "ArrowSpawnPoint" 찾기
 
         //같은 오브젝트의 컴포넌트,스크립트
@@ -39,10 +42,6 @@ public class BowWeapon : MonoBehaviour
 
         statsEffects = GetComponent<PlayerStatsEffects>();
 
-        //하이어라키에서 이름으로 UI 찾기
-        GameObject uiObj = GameObject.Find("BowCooldownBar");
-        if (uiObj != null) bowCooldownBar = uiObj.GetComponent<Slider>();
-
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
 
@@ -50,7 +49,6 @@ public class BowWeapon : MonoBehaviour
     {
         if (arrowSpawnPoint == null) Debug.LogWarning($"{gameObject.name}: ArrowSpawnPoint를 자식에서 찾을 수 없어!");
         if (bowAudioSource == null) Debug.LogWarning($"{gameObject.name}: AudioSource 미연결!");
-        if (bowCooldownBar == null) Debug.LogWarning($"{gameObject.name}: BowCooldownBar UI 미연결!");
 
         //에셋 체크 (드래그 필수 항목)
         if (ArrowPrefab == null) Debug.LogError($"{gameObject.name}: ArrowPrefab이 비어있어!");
@@ -63,7 +61,19 @@ public class BowWeapon : MonoBehaviour
     }
     void Update()
     {
-        UpdateBowUI();
+        if (lastArrowAttackTime > 0)//[옵저버] 매 프레임 UI 함수를 부르는 대신, 방송만 쏜다! 
+        {
+            float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
+
+            if (timeRemaining > 0)
+                OnBowCooldownChanged?.Invoke(timeRemaining, currentArrowCooldown);//방송: "아직 쿨타임 중이야! 남은 시간은 이만큼이야!"
+            else
+            {
+                //방송: "쿨타임 끝! 이제 UI 꺼도 돼!"
+                OnBowCooldownChanged?.Invoke(0, currentArrowCooldown);
+                lastArrowAttackTime = -1f;//방송 한 번만 하고 멈추기 위해
+            }
+        }
     }
 
     public void ShootArrow()//360도 화살 발사
@@ -178,25 +188,5 @@ public class BowWeapon : MonoBehaviour
             Debug.Log("활 공격 쿨타임 중. 남은 시간: " + timeRemaining.ToString("F1") + "초");
             return false;
         }
-    }
-
-    private void UpdateBowUI()//활 공격 쿨타임 UI 업데이트
-    {
-        //아직 공격 전, 쿨타임이 끝난 상태라면 UI를 바로 비활성화
-        if (lastArrowAttackTime < 0f)
-        {
-            bowCooldownBar.gameObject.SetActive(false);
-            return;//함수 종료
-        }
-
-        float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;//현재 남은 쿨타임 계산
-
-        if (timeRemaining > 0)//쿨타임이 남아 있다면
-        {
-            bowCooldownBar.gameObject.SetActive(true);
-            bowCooldownBar.maxValue = currentArrowCooldown;//슬라이더의 최댓값을 총 쿨타임으로 설정
-            bowCooldownBar.value = timeRemaining;//슬라이더 값은 남은 시간으로 설정
-        }
-        else bowCooldownBar.gameObject.SetActive(false);//쿨타임이 끝났을 경우 (UI 비활성화)        
     }
 }
