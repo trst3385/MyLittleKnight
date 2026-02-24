@@ -136,14 +136,6 @@ public class SwordWeapon : MonoBehaviour
         }
         LaunchSwordEnergy();//검기 에너지 발사
         lastSwordSkillTime = Time.time;//공격 후 다시 쿨타임 시작
-
-        if (isEnhanced)//강화 효과 적용 및 스택 초기화
-        {
-            SwordSkillCooldown -= EnhancedCooldownDecrease;//쿨타임 감소
-            if (SwordSkillCooldown < 5f) SwordSkillCooldown = 5f;//최소 쿨타임을 설정 (5초 이하로 내려가지 않도록)
-
-            currentEnhanceStacks = 0;//강화 발동 후 스택 초기화
-        }
     }
     
     private void LaunchSwordEnergy()//검 에너지를 생성하고 초기 속도 및 방향을 설정하는 함수
@@ -180,9 +172,17 @@ public class SwordWeapon : MonoBehaviour
     ///</summary>
     public void AcquireSwordEnhanceItem()//외부(Item스크립트)에서 호출되어 검 강화 스택을 1 증가시키는 함수
     {
-        //최대 스택을 초과하지 않도록 Min 함수 사용
-        currentEnhanceStacks = Mathf.Min(currentEnhanceStacks + 1, MAX_ENHANCE_STACKS);
-        Debug.Log($"검 강화 아이템 획득! 현재 스택: {currentEnhanceStacks}/{MAX_ENHANCE_STACKS}");
+        currentEnhanceStacks++; // 누적 스택 증가 (초기화 안 함)
+
+        // 3개 쌓일 때마다 쿨타임 감소 (3, 6, 9... 번째에 발동)
+        if (currentEnhanceStacks > 0 && currentEnhanceStacks % 3 == 0)
+        {
+            SwordSkillCooldown -= EnhancedCooldownDecrease;
+            if (SwordSkillCooldown < 5f) SwordSkillCooldown = 5f;
+
+            Debug.Log($"[강화 발동] 현재 쿨타임: {SwordSkillCooldown}초");
+        }
+        Debug.Log($"검 강화 아이템 획득! 누적 스택: {currentEnhanceStacks}");
     }
 
     private void UpdateSwordSkillUI()//검 스킬의 쿨타임을 계산하고 UI를 업데이트하는 함수, Update 함수로 호출했으니 매 프레임마다 호출
@@ -196,7 +196,7 @@ public class SwordWeapon : MonoBehaviour
         if (timeRemaining > 0)
         {
             cooldownText.gameObject.SetActive(true);//쿨타임 숫자(텍스트)를 보이게 해
-            cooldownText.text = Mathf.CeilToInt(timeRemaining).ToString();
+            cooldownText.text = timeRemaining.ToString("F1");//0.5초 단위까지 보여주고 싶을 때. 예: 1.5, 1.4... 0.1
 
             //오버레이 이미지의 fillAmount를 조절해서 시각적으로 보여줌
             cooldownOverlay.gameObject.SetActive(true);//검은색 오버레이를 보이게 해

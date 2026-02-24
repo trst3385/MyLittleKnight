@@ -136,7 +136,7 @@ public class PlayerStatsEffects : MonoBehaviour
                 swordWeapon.SwordDamage += ItemCSdamage;
                 swordWeapon.SwordEnergyDamage += ItemCSdamage;
 
-                if (swordWeapon != null) swordWeapon.AcquireSwordEnhanceItem();//스택 증가 함수 호출
+                swordWeapon.AcquireSwordEnhanceItem();//쿨타임 감소 및 누적 스택 처리는 여기서 한 번만 호출!
 
                 currentSwordLevel++;//검 강화 숫자 증가
                 UpdateWeaponLevelUI();//UI 업데이트
