@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,7 +7,10 @@ using UnityEngine.UI;
 
 
 public class SwordWeapon : MonoBehaviour
-{
+{   //---------옵저버 패턴----------//
+    public static event Action<float, float> OnSwordCooldownChanged;//(남은 시간, 총 시간)
+    //---------옵저버 패턴----------//
+
     [Header("에셋 설정 (프리팹 & 사운드)")]
     public GameObject SwordEnergy;//검기 프리팹(인스펙터 연결)
     public AudioClip swordAttackSound;//검 공격 사운드
@@ -27,10 +31,7 @@ public class SwordWeapon : MonoBehaviour
     private AudioSource swordAudioSource;
     private BoxCollider2D swordAttackCollider;//검 공격 판정 오브젝트 콜라이더(SwordAttackPoint)
     private Transform swordEnergySpawnPoint;//검기 발사체 생성 오브젝트 위치(SwordEnergySpawnPoint)
-
     //UI 관련
-    private Image cooldownOverlay;//SwordSkillIcon UI의 자식인 "CooldownOverlay"
-    private TextMeshProUGUI cooldownText;//SwordSkillIcon UI의 자식인"CooldownText"
     [HideInInspector] public int currentEnhanceStacks = 0;//현재 검 강화 스택
     public float lastSwordSkillTime = -10f;//마지막으로 검공격을 한 시간,
 
@@ -50,18 +51,6 @@ public class SwordWeapon : MonoBehaviour
 
         swordEnergySpawnPoint = transform.Find("SwordEnergySpawnPoint");
 
-        //씬 전체에서 찾지 말고 'SwordSkillIcon' 안에서 찾기 ---
-        GameObject swordIconObj = GameObject.Find("SwordSkillIcon");//검 스킬아이콘 부모 오브젝트 이름
-        if (swordIconObj != null)
-        {
-            //부모(swordIconObj)의 자식들 중에서 찾기
-            Transform overlay = swordIconObj.transform.Find("CooldownOverlay");
-            if (overlay != null) cooldownOverlay = overlay.GetComponent<Image>();
-
-            Transform text = swordIconObj.transform.Find("CooldownText");
-            if (text != null) cooldownText = text.GetComponent<TextMeshProUGUI>();
-        }
-
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
 
@@ -70,15 +59,15 @@ public class SwordWeapon : MonoBehaviour
         if (spriteRenderer == null) Debug.LogError($"{gameObject.name}: SpriteRenderer가 없어!");
         if (swordAttackCollider == null) Debug.LogWarning($"{gameObject.name}: SwordPoint(BoxCollider2D)를 찾을 수 없어!");
         if (swordEnergySpawnPoint == null) Debug.LogWarning($"{gameObject.name}: SwordEnergySpawnPoint가 없어!");
-        if (cooldownOverlay == null) Debug.LogWarning($"{gameObject.name}: CooldownOverlay UI가 없어!");
-        if (cooldownText == null) Debug.LogWarning($"{gameObject.name}: CooldownText UI가 없어!");
         if (SwordEnergy == null) Debug.LogError($"{gameObject.name}: SwordEnergy 프리팹이 비어있어!");//에셋(프리팹) 체크
     }
 
 
     void Update()
     {
-        UpdateSwordSkillUI();//검 UI Update 함수가 매 프레임마다 호출되고 있는지 확인
+        float timeRemaining = lastSwordSkillTime + SwordSkillCooldown - Time.time;//매 프레임 UI를 직접 업데이트하는 대신 방송만 보냄
+        //이벤트를 구독 중인 UI 매니저에게 값 전달 (값이 0보다 작아져도 종료 알림을 위해 보냄)
+        OnSwordCooldownChanged?.Invoke(Mathf.Max(0, timeRemaining), SwordSkillCooldown);
     }
 
     public void SwordAttack()//검 공격 함수(애니메이션 이벤트로 호출될 함수)
@@ -183,31 +172,5 @@ public class SwordWeapon : MonoBehaviour
             Debug.Log($"[강화 발동] 현재 쿨타임: {SwordSkillCooldown}초");
         }
         Debug.Log($"검 강화 아이템 획득! 누적 스택: {currentEnhanceStacks}");
-    }
-
-    private void UpdateSwordSkillUI()//검 스킬의 쿨타임을 계산하고 UI를 업데이트하는 함수, Update 함수로 호출했으니 매 프레임마다 호출
-    {                               
-        if (cooldownOverlay == null || cooldownText == null) return;
-
-        //남은 쿨타임 계산
-        float timeRemaining = lastSwordSkillTime + SwordSkillCooldown - Time.time;//마지막 스킬 사용 시점 + 총 쿨타임 시간 - 현재 시간
-
-        //쿨타임이 남아있다면, timeRemaining이 0보다 크다는 것은 아직 쿨타임이 진행 중이라는 뜻이잖아.
-        if (timeRemaining > 0)
-        {
-            cooldownText.gameObject.SetActive(true);//쿨타임 숫자(텍스트)를 보이게 해
-            cooldownText.text = timeRemaining.ToString("F1");//0.5초 단위까지 보여주고 싶을 때. 예: 1.5, 1.4... 0.1
-
-            //오버레이 이미지의 fillAmount를 조절해서 시각적으로 보여줌
-            cooldownOverlay.gameObject.SetActive(true);//검은색 오버레이를 보이게 해
-            cooldownOverlay.fillAmount = timeRemaining / SwordSkillCooldown;
-            //남은 쿨타임 비율에 맞춰 검은색 오버레이가 서서히 사라지도록 만들어
-        }
-        else//timeRemaining이 0보다 작거나 같을 경우(쿨타임이 끝난 경우) else 문 안의 코드가 실행
-        {
-            //쿨타임이 끝나면
-            cooldownText.gameObject.SetActive(false);//쿨타임 숫자를 숨김
-            cooldownOverlay.gameObject.SetActive(false);//검은색 오버레이를 숨겨(비활성화)
-        }
     }
 }
