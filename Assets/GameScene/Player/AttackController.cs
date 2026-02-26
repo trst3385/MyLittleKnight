@@ -9,6 +9,7 @@ public class AttackController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private BowWeapon bowWeapon;
     private SwordWeapon swordWeapon;
+    private InvincibilitySkill invincSkill;//무적 아이템 사용(E 버튼입력)을 위해 추가
 
     private bool isAttacking = false;//현재 공격 중인지 확인하는 변수
 
@@ -21,6 +22,7 @@ public class AttackController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         bowWeapon = GetComponent<BowWeapon>();
         swordWeapon = GetComponent<SwordWeapon>();
+        invincSkill = GetComponent<InvincibilitySkill>();
 
         //[방어적 프로그래밍] 참조 검증
         CheckInitialization();
@@ -34,6 +36,7 @@ public class AttackController : MonoBehaviour
         //무기는 없을 수도 있으니 경고(Warning) 정도로 처리
         if (bowWeapon == null) Debug.LogWarning($"{gameObject.name}: BowWeapon 미연결! (활 공격 불가)");
         if (swordWeapon == null) Debug.LogWarning($"{gameObject.name}: SwordWeapon 미연결! (검 공격 불가)");
+        if (invincSkill == null) Debug.LogWarning($"{gameObject.name}: InvincibilitySkill 미연결!");
     }
 
 
@@ -43,10 +46,10 @@ public class AttackController : MonoBehaviour
         if ((player != null && player.IsDead) || !CountdownManager.isCountdownFinished)
             return;
 
-        AttackInput();//공격 입력 처리 함수 호출        
+        HandleInputs();//공격 입력 처리 함수 호출
     }
 
-    void AttackInput()//각 공격 입력 처리 함수
+    void HandleInputs()//각 공격 입력 처리 함수
     {
         //활 공격 (Space)
         if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
@@ -59,10 +62,18 @@ public class AttackController : MonoBehaviour
         {
             if (swordWeapon != null && swordWeapon.CanAttack()) ExecuteAttack("Attack(Sword)");
         }
+
+        //무적 스킬 (E)
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (invincSkill != null && invincSkill.CanUse())
+            {
+                invincSkill.ActivateSkill();
+            }
+        }
     }
 
-    //공격 실행 및 상태 관리 집중화
-    private void ExecuteAttack(string triggerName)
+    private void ExecuteAttack(string triggerName)//공격 실행 및 상태 관리 집중화
     {
         isAttacking = true;
         if (animator != null)

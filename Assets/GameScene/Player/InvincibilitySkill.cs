@@ -60,12 +60,7 @@ public class InvincibilitySkill : MonoBehaviour
 
     void Update()
     {
-        //카운트다운이 끝났을 때만 입력을 확인하도록 조건 추가
-        //CountdownManager.isCountdownFinished 가 true일 때만 실행돼.
-        if (CountdownManager.isCountdownFinished && Input.GetKeyDown(KeyCode.E) && CanUse())
-        {
-            ActivateSkill();
-        }
+        //입력 확인 로직 삭제(AttackController에서 관리할 거니까)
 
         //[옵저버] 매 프레임 UI 매니저에게 쿨타임 정보 방송
         float timeRemaining = lastUsedTime + skillCooldown - Time.time;
@@ -75,7 +70,7 @@ public class InvincibilitySkill : MonoBehaviour
     public bool CanUse() => Time.time >= lastUsedTime + skillCooldown && !isEffectActive;//지금 이 스킬을 써도 되는 상태인가? 확인.
     //`쿨타임도 다 찼고(&&), 현재 무적 상태도 아닐 때` 에만 스킬을 발동시킴
 
-    private void ActivateSkill()//무적 아이템 사용시
+    public void ActivateSkill()//무적 아이템 사용시
     {
         lastUsedTime = Time.time;
 
