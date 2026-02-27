@@ -68,7 +68,7 @@ public class WeaponCooldownUIManager : MonoBehaviour
         InvincibilitySkill.OnInvincibleCooldownChanged -= UpdateInvincibleUI;
     }
 
-    private void UpdateBowSlider(float remaining, float total)// 4. 방송 수신(활 공격 감시) 시 실행될 로직
+    private void UpdateBowSlider(float remaining, float total)//방송 수신(활 공격 감시) 시 실행될 로직
     {
         if (bowSlider == null) return;
 

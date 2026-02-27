@@ -1,46 +1,45 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 
-///<summary>
-///플레이어의 능력치 강화 및 UI 업데이트를 관리하는 스크립트야.
-///</summary> 
-//이렇게 중간에 PlayerStatsEffects 스크립트를 두면, Item 스크립트는 "나는 이런 아이템이야"라고만 알려주고,
-//실제로 능력치를 바꾸는 복잡한 일은 PlayerStatsEffects가 담당하게 되니 코드가 훨씬 깔끔해지는 거지. ///주석이 이런 용도야
+/// <summary>
+/// 플레이어의 실제 능력치(수치)와 강화 로직을 관리하는 핵심 스크립트.
+/// UI 연출은 직접 하지 않고 이벤트를 통해 '방송'만 한다.
+/// </summary>
 
 
 public class PlayerStatsEffects : MonoBehaviour
 {
+    //---------옵저버 패턴: UI 및 무기를 위한 방송국-----//
+    public static event Action<int, int> OnArrowLevelChanged;
+    public static event Action<int, int> OnSwordLevelChanged;
+    public static event Action<int, int> OnMoveSpeedLevelChanged;
+
+    //활 강화 연출을 위한 전용 이벤트
+    public static event Action OnArrowEnhancedEffect;//소리 내고 커져라!
+    public static event Action<bool> OnArrowColorStateChanged;//색깔 바꿔라!
+    //---------------------------------------------------//
+
     [Header("공격 아이템 최대치 레벨 설정")]
     public int AttackItemMaxLevel = 10;//모든 이속,활,검 레벨에 적용할 최대치
 
-    [Header("활 강화 시 사운드 (수동 할당)")]
-    public AudioClip enhancedArrowReadySound;//재생할 'EnhancedArrowReady' 사운드파일
 
-    [Header("활 강화시 텍스트 변화 설정")]
-    [SerializeField] private Color levelUpColor = new Color(1f, 0.84f, 0f);//기본값은 금색
-    [SerializeField] private Color defaultColor = Color.white;//기본 텍스트 색상
+    //내부 데이터 변수
+    private int currentArrowLevel = 0;//활, 검, 이동속도의 강화 횟수를 저장할 변수
+    private int currentSwordLevel = 0;
+    private int currentMoveSpeedLevel = 0;
 
-    //---내부 참조 변수들---//
-    private TextMeshProUGUI ArrowLevelText;
-    private TextMeshProUGUI SwordLevelText;
-    private TextMeshProUGUI MoveSpeedLevelText;
-    private AudioSource effectsAudioSource;
-
+    //참조 컴포넌트
     private Player player;
     private PlayerHealth playerHealth;
     private BowWeapon bowWeapon;
     private PlayerShield playerShield;
     private SwordWeapon swordWeapon;
 
-    private int currentArrowLevel = 0;//활, 검, 이동속도의 강화 횟수를 저장할 변수
-    private int currentSwordLevel = 0;
-    private int currentMoveSpeedLevel = 0;
-
     
-
     void Awake()
     {
         //플레이어 내부 컴포넌트 자동 연결
@@ -50,15 +49,6 @@ public class PlayerStatsEffects : MonoBehaviour
         playerShield = GetComponent<PlayerShield>();
         swordWeapon = GetComponent<SwordWeapon>();
 
-        //UI 텍스트 자동 연결 (이름으로 찾기)
-        ArrowLevelText = GameObject.Find("ArrowLevelText")?.GetComponent<TextMeshProUGUI>();
-        SwordLevelText = GameObject.Find("SwordLevelText")?.GetComponent<TextMeshProUGUI>();
-        MoveSpeedLevelText = GameObject.Find("MoveSpeedLevelText")?.GetComponent<TextMeshProUGUI>();
-
-        //활 강화 사운드 오브젝트 연결 (이름으로 찾기)
-        Transform soundChild = transform.Find("SND_EnhancedArrowReady");
-        if (soundChild != null) effectsAudioSource = soundChild.GetComponent<AudioSource>();
-
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
 
@@ -67,67 +57,59 @@ public class PlayerStatsEffects : MonoBehaviour
         //필수 컴포넌트 체크
         if (player == null) Debug.LogWarning("Stats: Player 미연결!");
         if (bowWeapon == null) Debug.LogWarning("Stats: BowWeapon 미연결!");
-
-        //UI 체크
-        if (ArrowLevelText == null) Debug.LogWarning("Stats: ArrowLevelText UI를 찾을 수 없어!");
-
-        //활 강화 사운드 체크
-        if (effectsAudioSource == null)
-            Debug.LogWarning("Stats: 'SND_EnhancedArrowReady' 자식 오브젝트나 그 안의 AudioSource를 찾을 수 없어!");
-
-        //사운드 에셋 체크 (예외 사례: 인스펙터 할당 필요)
-        if (enhancedArrowReadySound == null) Debug.LogWarning("Stats: 강화 사운드 클립이 할당되지 않았어!");
+        if (playerShield == null) Debug.LogWarning("Stats: playerShield 미연결!");
+        if (swordWeapon == null) Debug.LogWarning("Stats: swordWeapon 미연결!");
     }
 
     void Start()
     {
-        UpdateWeaponLevelUI();//게임 시작 시 현재 레벨(0)을 UI 텍스트에 반영 (UI 초기 설정)
-        //UI의 초기 상태(Lv 0)를 설정. 이후 업데이트는 해당 함수(ArrowDamageUp 등)에서 직접 호출해 성능 낭비 방지
+        BroadcastAllLevels();//게임 시작 시 초기 UI 상태 방송
+    }
+
+    private void BroadcastAllLevels()//게임이 시작되자마자 UI 텍스트들을 0으로 초기화해주는 첫 방송
+    {
+        OnArrowLevelChanged?.Invoke(currentArrowLevel, AttackItemMaxLevel);
+        OnSwordLevelChanged?.Invoke(currentSwordLevel, AttackItemMaxLevel);
+        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, AttackItemMaxLevel);
     }
 
 
     public void ArrowDamageUp(float ItemCSdamage, float coolDown)//아이템 효과 함수들
     {
-        //활 레벨과 상관없이 아이템을 먹으면 강화 스택은 무조건 쌓여야 함
-        if (bowWeapon != null)
+        if (bowWeapon != null)//활 레벨과 상관없이 아이템을 먹으면 강화 스택은 무조건 쌓여야 함
         {
-            bowWeapon.AcquireBowEnhanceItem();//스택 증가 및 UI 업데이트 호출
-
+            bowWeapon.AcquireBowEnhanceItem();//활 강화 스택 쌓기 로직
             int currentStacks = bowWeapon.GetCurrentStacks();
-            if (currentStacks > 0 && currentStacks % 3 == 0)//활 아이템을 3번 획득할때 레벨 UI와 강화 사운드게 들리게
-            {
-                //텍스트 커지는 연출
-                StartCoroutine(PunchScale(ArrowLevelText.GetComponent<RectTransform>()));
 
-                //강화 사운드 재생
-                if (effectsAudioSource != null && enhancedArrowReadySound != null)
-                    effectsAudioSource.PlayOneShot(enhancedArrowReadySound);
-                else//사운드가 안 나올 때 이유를 알려주는 디버그 로그
-                {
-                    if (effectsAudioSource == null)
-                        Debug.LogWarning("PlayerStatsEffects: effectsAudioSource가 인스펙터에 연결되지 않았어!");
-                    if (enhancedArrowReadySound == null)
-                        Debug.LogWarning("PlayerStatsEffects: enhancedArrowReadySound(클립)이 할당되지 않았어!");
-                }
-            }
+            if (currentStacks > 0 && currentStacks % 3 == 0)//로직 판단. 3스택마다 UI에게 연출하라고 방송
+                OnArrowEnhancedEffect?.Invoke();
+
+            OnArrowColorStateChanged?.Invoke(currentStacks >= 3);//로직 판단. 3스택 이상 여부에 따라 색상 변경 방송
         }
 
-        if (currentArrowLevel < AttackItemMaxLevel)//레벨 상승 및 공격력 증가는 MaxLevel 미만일 때만 실행
+        if (currentArrowLevel < AttackItemMaxLevel)//실제 레벨 및 수치 증가 로직
         {
             if (bowWeapon != null)
             {
                 bowWeapon.ArrowDamage += ItemCSdamage;
                 bowWeapon.DecreaseAttackCooldown(coolDown, WeaponType.Bow);
                 currentArrowLevel++;
-                Debug.Log("PlayerStatsEffects: 화살 공격력이 " + ItemCSdamage + " 증가! 현재 공격력: " + bowWeapon.ArrowDamage);
+
+                //레벨 변경 방송
+                OnArrowLevelChanged?.Invoke(currentArrowLevel, AttackItemMaxLevel);
+                Debug.Log($"[Stats] 활 공격력 증가: {bowWeapon.ArrowDamage}");
             }
         }
         else Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 메시지
-
-        UpdateWeaponLevelUI();//UI 업데이트
+    }
+    public void RefreshArrowStackStatus()
+    {
+        if (bowWeapon != null)//현재 스택이 3으로 강화가 되면 true(금색), 아니면 false(흰색)를 보냄
+            OnArrowColorStateChanged?.Invoke(bowWeapon.GetCurrentStacks() >= 3);
     }
 
-    public void SwordDamageUp(float ItemCSdamage)
+
+    public void SwordDamageUp(float ItemCSdamage)//검 강화
     {
         if (currentSwordLevel < AttackItemMaxLevel)//현재 레벨이 MaxLevel보다 작을 때만 실행
         {
@@ -139,14 +121,14 @@ public class PlayerStatsEffects : MonoBehaviour
                 swordWeapon.AcquireSwordEnhanceItem();//쿨타임 감소 및 누적 스택 처리는 여기서 한 번만 호출!
 
                 currentSwordLevel++;//검 강화 숫자 증가
-                UpdateWeaponLevelUI();//UI 업데이트
-                Debug.Log("PlayerStatsEffects: 검 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);
-                Debug.Log("PlayerStatsEffects: 검기 발사체 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordEnergyDamage);            
+                OnSwordLevelChanged?.Invoke(currentSwordLevel, AttackItemMaxLevel);
+                Debug.Log("PlayerStatsEffects: 검+검기 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);
             }
         }
         else Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 로그
     }
-    public void MoveSpeedUp(float amount)
+
+    public void MoveSpeedUp(float amount)//이동속도 강화
     {
         if (currentMoveSpeedLevel < AttackItemMaxLevel)//현재 레벨이 MaxLevel보다 작을 때만 실행
         {
@@ -154,11 +136,7 @@ public class PlayerStatsEffects : MonoBehaviour
             {
                 player.MoveSpeed += amount;//Player 스크립트의 이동 속도 증가
                 currentMoveSpeedLevel++;//이동 속도 횟수 증가
-                UpdateWeaponLevelUI();//UI 업데이트
-                                      //코드는 항상 위에서 아래 순서로 실행되니까 순서를 잘 지켜야해!
-                                      //위의 currentMoveSpeedLevel++랑 UpdateWeaponLevelUI()의 순서가 만약 서로 달라졌으면
-                                      //결국 UI는 currentMoveSpeedLevel이 0일 때 이미 업데이트를 마쳤기 때문에,
-                                      //나중에 currentMoveSpeedLevel이 1로 바뀌더라도 UI에는 반영되지 않는 거야.
+                OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, AttackItemMaxLevel);
                 Debug.Log("PlayerStatsEffects: 이동 속도가 " + amount + " 증가했다! 현재 속도: " + player.MoveSpeed);
             }
         }
@@ -180,62 +158,6 @@ public class PlayerStatsEffects : MonoBehaviour
             playerShield.HealShield(amount);//PlayerShield 스크립트의 HealShield 함수 호출
             Debug.Log("PlayerStatsEffects: 방어력이 " + amount + " 회복되었다! 현재 방어력: " + playerShield.CurrentShield);
         }
-    }
-
-    //?와 :는 C# 언어의 삼항 연산자, 간단한 if-else 구문을 한 줄로 간결하게 표현할 수 있어
-    //?은 참(if문의 내용), :은 거짓(else 내용)
-    public void UpdateWeaponLevelUI()//무기 강화 횟수 UI를 업데이트하는 함수
-    {
-        if (ArrowLevelText != null)//활 공격이 강화 됐다고 ArrowLevelText UI에 보내
-        {
-            ArrowLevelText.text = (currentArrowLevel >= AttackItemMaxLevel)//강화 숫자가 MaxLevel보다 낮으면
-            ? "B Level: Max"
-            : $"B Level: {currentArrowLevel}";//MaxLevel과 같다면  
-
-            //변수를 사용하여 텍스트 색상 적용
-            if (bowWeapon != null && bowWeapon.GetCurrentStacks() >= 3)
-                ArrowLevelText.color = levelUpColor;//인스펙터에서 설정한 색상
-            else
-                ArrowLevelText.color = defaultColor;//기본 하얀색
-        }
-        else Debug.LogWarning("PlayerStatsEffects: ArrowLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");
-
-        if (SwordLevelText != null)//검 공격이 강화됐다고 SwordLevelText UI에 보내 
-        {
-            SwordLevelText.text = (currentSwordLevel >= AttackItemMaxLevel)
-            ? "S Level: Max"
-            : $"S Level: {currentSwordLevel}";
-        }
-        else Debug.LogWarning("PlayerStatsEffects: SwordLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");
-        
-
-        if(MoveSpeedLevelText != null)//이동속도가 강화됐다고 MoveSpeedLevelText UI에 보내
-        {
-            MoveSpeedLevelText.text = (currentMoveSpeedLevel >= AttackItemMaxLevel)
-            ? "M Level: Max"
-            : $"M Level: {currentMoveSpeedLevel}";
-        }
-        else Debug.LogWarning("PlayerStatsEffects: MoveSpeedLevelText UI가 할당되지 않았어! 인스펙터를 확인해!");      
-    }
-
-
-    IEnumerator PunchScale(RectTransform rect)//텍스트를 순간적으로 키웠다 원래대로 돌리는 연출
-    {
-        Vector3 originalScale = Vector3.one;//기본 크기 (1, 1, 1)
-        rect.localScale = originalScale * 1.5f;//1.5배로 커짐
-
-        float duration = 0.2f;//연출 시간
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-
-            //부드럽게 원래 크기로 돌아오게 함
-            rect.localScale = Vector3.Lerp(originalScale * 1.5f, originalScale, elapsed / duration);
-            yield return null;
-        }
-        rect.localScale = originalScale;//마지막에 확실히 1로 고정
     }
 }
 

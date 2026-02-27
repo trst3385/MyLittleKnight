@@ -140,12 +140,13 @@ public class BowWeapon : MonoBehaviour
         }
         lastArrowAttackTime = Time.time;
 
-        if (isEnhanced)//강화공격을 하면 강화 스택3 감소
+        if (isEnhanced)//강화공격을 했다면
         {
-            //예시로 아이템 6회 획득 때 강화 공격 후, 3이 남아서 다음 발사도 강화가 됨.
             currentEnhanceStacks -= MAX_ENHANCE_STACKS;
-            if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
-        } 
+
+            if (statsEffects != null)
+                statsEffects.RefreshArrowStackStatus();
+        }
     }
 
     //활 강화 스택을 알려주는 함수(람다식)
@@ -158,9 +159,6 @@ public class BowWeapon : MonoBehaviour
         //1. 강화 스택 숫자를 1 증가 (3, 6, 9... 계속 쌓임)
         currentEnhanceStacks++;
         Debug.Log($"활 강화 아이템 획득! 현재 누적 스택: {currentEnhanceStacks}");
-
-        //2.PlayerStatsEffects 스크립트를 찾아가서 "바뀐 스택 확인해서 활 레벨 UI 다시 그려!"라고 시켜
-        if (statsEffects != null) statsEffects.UpdateWeaponLevelUI();
     }
 
     public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//활 공격력 강화(아이템 획득) 시 쿨타임 감소 함수

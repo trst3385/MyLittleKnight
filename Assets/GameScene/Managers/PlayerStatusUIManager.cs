@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;//체력, 방어력 슬라이더 조작을 위해 필요!
+﻿using TMPro;
+using UnityEngine;
+using UnityEngine.UI;//체력, 방어력 슬라이더 조작을 위해 필요
+using System.Collections;
 
 public class PlayerStatusUIManager : MonoBehaviour
 {
@@ -7,18 +9,34 @@ public class PlayerStatusUIManager : MonoBehaviour
     private Slider hpBar;
     private Slider shieldBar;
 
+    [Header("레벨 UI (TextMeshPro)")]
+    private TextMeshProUGUI arrowLevelText;
+    private TextMeshProUGUI swordLevelText;
+    private TextMeshProUGUI moveSpeedLevelText;
+    [Header("레벨업 연출 설정")]
+    [SerializeField] private Color levelUpColor = new Color(1f, 0.84f, 0f);//활 강회 시 텍스트 금색
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private AudioSource effectsAudioSource;
+    [SerializeField] private AudioClip enhancedArrowReadySound;
+
+
     void Awake()
     {
-        //1. [자동 연결] 씬에서 이름으로 UI 오브젝트를 찾아 Slider 컴포넌트 연결
-        GameObject hpObj = GameObject.Find("PlayerHealthBar");
-        if (hpObj != null) hpBar = hpObj.GetComponent<Slider>();
+        //체력/방패 슬라이더 자동 연결
+        hpBar = GameObject.Find("PlayerHealthBar")?.GetComponent<Slider>();
+        shieldBar = GameObject.Find("PlayerShieldBar")?.GetComponent<Slider>();
 
-        GameObject sdObj = GameObject.Find("PlayerShieldBar");
-        if (sdObj != null) shieldBar = sdObj.GetComponent<Slider>();
+        //무기 강화 레벨 텍스트 자동 연결
+        arrowLevelText = GameObject.Find("ArrowLevelText")?.GetComponent<TextMeshProUGUI>();
+        swordLevelText = GameObject.Find("SwordLevelText")?.GetComponent<TextMeshProUGUI>();
+        moveSpeedLevelText = GameObject.Find("MoveSpeedLevelText")?.GetComponent<TextMeshProUGUI>();
 
-        //방어적 프로그래밍: 못 찾았으면 로그로 알려주기
-        if (hpBar == null) Debug.LogWarning("PlayerStatusUIManager: 'PlayerHealthBar'를 찾을 수 없어!");
-        if (shieldBar == null) Debug.LogWarning("PlayerStatusUIManager: 'PlayerShieldBar'를 찾을 수 없어!");
+        CheckInitialization();
+    }
+    private void CheckInitialization()
+    {
+        if (shieldBar == null) Debug.LogWarning("UI: PlayerShieldBar 못 찾았어!");
+        if (arrowLevelText == null) Debug.LogWarning("UI: ArrowLevelText 못 찾았어!");
     }
 
     private void OnEnable()
@@ -27,6 +45,14 @@ public class PlayerStatusUIManager : MonoBehaviour
         //Action<float, float> 형태이므로 받는 함수도 인자가 두 개(current, max)여야 해.
         PlayerHealth.OnHealthChanged += UpdateHealthUI;
         PlayerShield.OnShieldChanged += UpdateShieldUI;
+
+        //이벤트 구독 (무기 능력치 레벨 - PlayerStatsEffects에서 방송하는 것들)
+        PlayerStatsEffects.OnArrowLevelChanged += UpdateArrowUI;
+        PlayerStatsEffects.OnSwordLevelChanged += UpdateSwordUI;
+        PlayerStatsEffects.OnMoveSpeedLevelChanged += UpdateMoveSpeedUI;
+        //활 강화 연출 구독
+        PlayerStatsEffects.OnArrowEnhancedEffect += PlayArrowEnhancedFX;
+        PlayerStatsEffects.OnArrowColorStateChanged += SetArrowTextColor;
     }
 
     private void OnDisable()
@@ -35,22 +61,48 @@ public class PlayerStatusUIManager : MonoBehaviour
         //연결이 끊어졌을 때(정확히는 오브젝트가 비활성화되거나 파괴될 때)
         PlayerHealth.OnHealthChanged -= UpdateHealthUI;
         PlayerShield.OnShieldChanged -= UpdateShieldUI;
+
+        PlayerStatsEffects.OnArrowLevelChanged -= UpdateArrowUI;
+        PlayerStatsEffects.OnSwordLevelChanged -= UpdateSwordUI;
+        PlayerStatsEffects.OnMoveSpeedLevelChanged -= UpdateMoveSpeedUI;
+
+        PlayerStatsEffects.OnArrowEnhancedEffect -= PlayArrowEnhancedFX;
+        PlayerStatsEffects.OnArrowColorStateChanged -= SetArrowTextColor;
     }
 
-    private void UpdateHealthUI(float currentHealth, float maxHealth)//5. [Callback] 이벤트 발생 시 체력UI 업데이트를 수행하는 콜백 함수
+    //콜백 함수: 체력/방패
+    private void UpdateHealthUI(float current, float max) { if (hpBar) { hpBar.maxValue = max; hpBar.value = current; } }
+    private void UpdateShieldUI(float current, float max) { if (shieldBar) { shieldBar.maxValue = max; shieldBar.value = current; } }
+
+    //콜백 함수: 능력치 레벨
+    private void UpdateArrowUI(int current, int max) => arrowLevelText.text = (current >= max) ? "B Level: Max" : $"B Level: {current}";
+    private void UpdateSwordUI(int current, int max) => swordLevelText.text = (current >= max) ? "S Level: Max" : $"S Level: {current}";
+    private void UpdateMoveSpeedUI(int current, int max) => moveSpeedLevelText.text = (current >= max) ? "M Level: Max" : $"M Level: {current}";
+
+    private void PlayArrowEnhancedFX()//활 강화시 텍스트 연출 함수
     {
-        if (hpBar != null)
-        {
-            hpBar.maxValue = maxHealth;//최대치 동기화
-            hpBar.value = currentHealth;//현재치 반영
-        }
+        if (effectsAudioSource && enhancedArrowReadySound)
+            effectsAudioSource.PlayOneShot(enhancedArrowReadySound);
+
+        if (arrowLevelText) StartCoroutine(PunchScale(arrowLevelText.rectTransform));
     }
-    private void UpdateShieldUI(float currentShield, float maxShield)//5. [Callback] 이벤트 발생 시 방어력UI 업데이트를 수행하는 콜백 함수
+    private void SetArrowTextColor(bool isEnhanced)//강화시 텍스트 색 변경
     {
-        if (shieldBar != null)
+        if (arrowLevelText) arrowLevelText.color = isEnhanced ? levelUpColor : defaultColor;
+    }
+
+
+    private IEnumerator PunchScale(RectTransform rect)
+    {
+        Vector3 originalScale = Vector3.one;
+        rect.localScale = originalScale * 1.5f;
+        float elapsed = 0f;
+        while (elapsed < 0.2f)
         {
-            shieldBar.maxValue = maxShield;
-            shieldBar.value = currentShield;
+            elapsed += Time.deltaTime;
+            rect.localScale = Vector3.Lerp(originalScale * 1.5f, originalScale, elapsed / 0.2f);
+            yield return null;
         }
+        rect.localScale = originalScale;
     }
 }
