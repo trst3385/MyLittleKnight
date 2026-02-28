@@ -15,7 +15,7 @@ public class MonsterCountManager : MonoBehaviour
     public int reqNormal;
     public int reqStrong;
     public int reqElite;
-
+    
     [Header("자동 연결될 MonsterCounterText UI")]
     [SerializeField] private TextMeshProUGUI counterText;//화면에 표시될 텍스트
 

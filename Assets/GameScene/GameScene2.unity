@@ -2830,6 +2830,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91f699a48a7b026428fe995ed1e7d42e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatusUIManager
+  levelUpColor: {r: 1, g: 0.84, b: 0, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  effectsAudioSource: {fileID: 0}
+  enhancedArrowReadySound: {fileID: 0}
 --- !u!1 &995498137 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7508116785346154267, guid: 9e7797bb065982d4497d030f065d6e2f,
@@ -23653,9 +23657,9 @@ MonoBehaviour:
   normalKills: 0
   strongKills: 0
   eliteKills: 0
-  reqNormal: 30
-  reqStrong: 8
-  reqElite: 5
+  reqNormal: 40
+  reqStrong: 12
+  reqElite: 8
   counterText: {fileID: 0}
 --- !u!1 &8552823992516616748
 GameObject:

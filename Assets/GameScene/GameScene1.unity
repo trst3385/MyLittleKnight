@@ -15822,9 +15822,9 @@ MonoBehaviour:
   normalKills: 0
   strongKills: 0
   eliteKills: 0
-  reqNormal: 20
-  reqStrong: 5
-  reqElite: 2
+  reqNormal: 30
+  reqStrong: 8
+  reqElite: 5
   counterText: {fileID: 8116834672346040560}
 --- !u!114 &2431500438855843382
 MonoBehaviour:
