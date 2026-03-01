@@ -6,7 +6,7 @@ public class PortalManager : MonoBehaviour
     public static PortalManager Instance { get; private set; }//어디서든 접근 가능한 싱글톤
 
     [Header("포탈 활성화 조건")]
-    public float targetTime = 60f;
+    public float targetTime;//현재 1씬에선 60초, 2씬에선 90초야(인스펙터에서 수정)
 
     [Header("포탈 오브젝트(이미 코드 내에서 연결된 상태야")]
     public GameObject portalObject;//씬에 비활성화된 포탈을 연결

@@ -13282,7 +13282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93f3cad3969ada4db18f87daca34d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextAlimManager
-  NotificationText: {fileID: 1411278485817935057}
+  TextAlim: {fileID: 1411278485817935057}
   DisplayDuration: 2
   FadeDuration: 0.5
 --- !u!1 &1662352688
