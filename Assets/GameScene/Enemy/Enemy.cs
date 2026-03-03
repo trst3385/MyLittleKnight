@@ -5,18 +5,19 @@ using static EnemyDifficulty;//Enemy 스크립트에서 EnemyDifficulty 클래�
 
 public class Enemy : MonoBehaviour
 {
-    //Step 1: 템플릿 만들기 ([Serializable])
+    //Step 1: 템플릿 만들기 (struct + Serializable)
     //[Serializable]의 역할: "몬스터마다 스피드, 공격력 변수 하나하나 선언하기 귀찮아. '스탯 세트'라는 템플릿을 하나 만들자!"
+    //struct은 그저 데이터 묶음이야 (3/3일. struct, class 둘 다 가능한데, 지금은 순수 데이터 묶음이라 struct로 바꿨어(값 타입))
     [Serializable]
-    public class EnemyStats//EnemyStats라는 이름으로 MoveSpeed, AttackDamage 등의 항목이 포함된 스탯 템플릿(설계도)
+    public struct EnemyStats//값은 인스펙터에서 설정
     {
-        public float MoveSpeed = 4f;
-        public float StopDistance = 0.5f;
-        public float AttackCooldown = 1f;
-        public float AttackDamage = 2f;
-        public float DetectionRange = 100f;
-        public Color SpriteColor = Color.white;
-        public int ScoreValue = 10;//몬스터 처치 시 얻을 점수 (기본값 10점, 인스펙터에서 수정 가능)
+        public float MoveSpeed;
+        public float StopDistance;
+        public float AttackCooldown;
+        public float AttackDamage;
+        public float DetectionRange;
+        public Color SpriteColor;//몬스터 색
+        public int ScoreValue;//몬스터 처치 시 얻을 점수 (기본값 10점, 인스펙터에서 수정 가능)
     }
 
     //Step 2: 카테고리 나누기 (enum)
@@ -25,12 +26,10 @@ public class Enemy : MonoBehaviour
 
 
     //Step 3: 데이터와 이름표 연결하기
-    [Header("몬스터 타입별 스텟")]
-    public EnemyStats NormalStats = new EnemyStats();//템플릿(EnemyStats)을 기반으로 실제 데이터 덩어리(인스턴스)를 세 개 만들어내는 단계
-    public EnemyStats StrongStats = new EnemyStats();//Strong과 Elite도 동일
-    public EnemyStats EliteStats = new EnemyStats();
-    //[Serializable] 덕분에 이 세 개의 덩어리가 유니티 인스펙터에 나타나,
-    //인스펙터에서 이 덩어리들(NormalStats 등)을 펼쳐서 MoveSpeed 등을 수정하고 저장할 수 있어
+    [Header("몬스터 타입별 스텟")]//struct는 기본 생성자를 직접 정의 못 하기 때문에 굳이 = new EnemyStats() 안 써도 돼.
+    public EnemyStats NormalStats;
+    public EnemyStats StrongStats;//Strong과 Elite도 동일
+    public EnemyStats EliteStats;
 
 
     [Header("스크립트 연결(코드 내 자동 연결)")]
