@@ -62,6 +62,45 @@ Enemy 스크립트의 EnemyStats를 class → struct로 리팩토링
    3. 그래서 내일은 한번에 조정 할 수 있게 ScriptableObject를 추가해보는거야
 
 **몬스터의 각 타입별 스텟을 보다 편히 조정을 할 수 있게 ScriptableObject 방식을 사용해보자. 지금은 타입을 나누는게 너무 번거로우니**
+
+
+
+
+3/4
+ScriptableObject 사용 방법 학습 및 몬스터 스탯 관리 구조 개선
+
+- 기존에는 몬스터 스탯을 Enemy 스크립트 내부 변수 + 인스펙터 설정으로 관리했어, 그래서 어제도 struct으로 변경만 했지 결과는 똑같거든. 이 방식은 몬스터 타입이 늘어나면 관리가 번거롭고 수정이 어려웠어,
+  그래서 결국! ScriptableObject 기반으로 몬스터 스탯 데이터를 분리하기로 했지.
+
+- EnemyStatsSO ScriptableObject 클래스 생성.
+   1. 몬스터 스탯 데이터 정의: 기존의 이속, 플레이어 바로 앞에 도착하는 거리, 공격쿨타임, 데미지, 감지거리, 몬스터 색, 처치 시 점수를 ScriptableObject 클래스로 이동
+   2. MoveSpeed, StopDistance, AttackCooldown, AttackDamage, DetectionRange, SpriteColor, ScoreValue
+
+- 몬스터 타입별 스탯 에셋 생성.
+   1. ScriptableObject 에셋 생성
+   2. EnemyStats_Normal, EnemyStats_Strong, EnemyStats_Elite
+   3. 각 몬스터의 이동속도, 공격력, 감지거리, 색상, 점수 등을 에셋에서 관리하도록 설정
+
+- Enemy 스크립트 구조 변경.
+- Enemy 스크립트에서:
+   1. ScriptableObject(statsData)를 참조하도록 변경
+   2. 기존 인스펙터 기반 타입별 스탯 변수 제거
+   3. SetEnemyStats()에서 SO 값을 읽어 적용하도록 수정
+      3-1. currentMoveSpeed = statsData.MoveSpeed;
+      3-2. currentAttackDamage = statsData.AttackDamage;
+   4. 또한 난이도 시스템(EnemyDifficulty)과 함께 동작하도록 using은 그대로 유지
+- 이제 완성된 EnemyStatsSO 에셋을 각 몬스터 프리팹의 인스펙터에(Enemy 스크립트) 드래그 연결, 이를 통해 프리팹마다 다른 스탯을 간단하게 설정 가능해졌어.
+
+
+- ScriptableObject는 단순히 데이터만 있는 스크립트라고 생각했는데 실제로는 게임 데이터를 관리하기 위한 매우 중요한 구조라는 걸 재확인.
+- 특히:
+   1. 데이터와 로직을 분리할 수 있음
+   2. 밸런싱 작업이 쉬워짐
+   3. 프리팹 설정이 단순해짐
+- 처음에는 내 프로젝트에서 ScriptableObject가 굳이 필요한지 의문이 있었지만 실제로 적용해보니 왜 많은 유니티 프로젝트에서 사용하는지 이해했어.
+- 결론: 몬스터 스탯 데이터를 ScriptableObject 기반으로 분리해서 프리팹별 스탯 관리와 밸런싱 작업을 쉽게 만들었다!
+
+
 **우선 순위 중 다른 우선 순위가 있지만 꼭 다음 씬으로 가기 전 등장할 보스 몬스터 추가를 해보자. 새로 에셋을 다운 받기에는 현재의 작품의 이미지와 맞지 않아서 기존의 몬스터의 크기를 확 키우고 색도 다르게 입혀서 만들어보자**
 **EnemyDifficulty에서 몬스터 레벨 UI도 옵저버 패턴으로 바꾸자, 아마 장애물 스크립트도 비슷할 수 있으니 가능하면 이것도 같이 옵저버로 변경해보자**
 
@@ -71,7 +110,7 @@ Enemy 스크립트의 EnemyStats를 class → struct로 리팩토링
 **메인화면에 크레딧으로 사용한 무료 에셋들을 표시하자 (아래에서 위로 글이 올라가는 형식으로)**
 **내가 서버를 직접 만들지는 못해, 하지만 서버랑 클라이언트의 관련성과 서로 협업(통신)의 원리만 알아보자 SDK라던지...**
 **플레이어, 매니저 스크립트의 UI와의 연결을 옵저버 패턴 탐구 및 적용**
-**ScriptableObject는 지금 내 작품에선 사용을 안해. 하지만 언젠간 작업량이 많아질때 추가 해보도록 하자**
+**이제 ScriptableObject로 몬스터의 스텟을 정하니까 추가가 끝나면 ScriptableObject에 대한 내용을 노션 포폴에 추가하자**
 **내 작품은 계속 Window로 플렛폼을 만들었어. 나중에는 플렛폼을 안드로이드(모바일)로 만들어보자**
 **다음씬으로 넘어갈 포탈이 생성 되기 전 보스 몬스터를 추가해보자, 지금은 몬스터 몰다가 임무만 채우고 몬스터 몰면서 뺑뻉이만 돌고 다음 씬으로 가니까 긴장감이 없어**
 **메인화면 씬에서도 옵션창(사운드,효과음 조절)을 추가해보자**
