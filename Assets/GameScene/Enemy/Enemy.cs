@@ -1,44 +1,24 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using static EnemyDifficulty;//Enemy 스크립트에서 EnemyDifficulty 클래스의 static 멤버를 더 편하게 사용하기 위한 문법이야.
+using static EnemyDifficulty;//StatType enum 등을 EnemyDifficulty. 접두사 없이 사용
 
 public class Enemy : MonoBehaviour
 {
-    //Step 1: 템플릿 만들기 (struct + Serializable)
-    //[Serializable]의 역할: "몬스터마다 스피드, 공격력 변수 하나하나 선언하기 귀찮아. '스탯 세트'라는 템플릿을 하나 만들자!"
-    //struct은 그저 데이터 묶음이야 (3/3일. struct, class 둘 다 가능한데, 지금은 순수 데이터 묶음이라 struct로 바꿨어(값 타입))
-    [Serializable]
-    public struct EnemyStats//값은 인스펙터에서 설정
-    {
-        public float MoveSpeed;
-        public float StopDistance;
-        public float AttackCooldown;
-        public float AttackDamage;
-        public float DetectionRange;
-        public Color SpriteColor;//몬스터 색
-        public int ScoreValue;//몬스터 처치 시 얻을 점수 (기본값 10점, 인스펙터에서 수정 가능)
-    }
-
-    //Step 2: 카테고리 나누기 (enum)
     public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
     public EnemyType enemyType = EnemyType.Normal;//enum을 담을 변수 선언, 인스펙터에서 설정할 몬스터 기본 타입
 
-
-    //Step 3: 데이터와 이름표 연결하기
-    [Header("몬스터 타입별 스텟")]//struct는 기본 생성자를 직접 정의 못 하기 때문에 굳이 = new EnemyStats() 안 써도 돼.
-    public EnemyStats NormalStats;
-    public EnemyStats StrongStats;//Strong과 Elite도 동일
-    public EnemyStats EliteStats;
+    [Header("Stats (ScriptableObject)")]
+    [SerializeField] private EnemyStatsSO statsData;//Prefab별 스탯 데이터(SO)
 
 
     [Header("스크립트 연결(코드 내 자동 연결)")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
 
-
+    
     [Header("Targeting Offset(플레이어 Y축 중심)")]
     [SerializeField] private float playerTargetOffsetY = -2.7f;
-    //플레이어 목표 Y축 오프셋 (인스펙터나 스크립트에서 조절해. 지금은 -2.7이 제일 적당해)
+    //몬스터가 플레이어 오브젝트의 중앙으로 이동 Y축 오프셋 (pivot/center 보정)
 
 
     [Header("사운드")]//사운드 관련
@@ -53,13 +33,13 @@ public class Enemy : MonoBehaviour
     private Collider2D[] colliders;
     //외부 스크립트(Start에서 초기화)
     private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
-    private PlayerShield playerShield;//선언(보관함)은 저장 공간이고, Start()의 GetComponent는 그 공간에 값을 넣어주는 역할
+    private PlayerShield playerShield;
     private TimeFreeze timeFreeze;//캐싱용
     //런타임 스탯 및 상태
-    private float currentMoveSpeed;//이동속도
+    private float currentMoveSpeed;
     private float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
-    private float currentAttackCooldown;//공격 쿨타임
-    private float currentAttackDamage;//데미지
+    private float currentAttackCoolTime;
+    private float currentAttackDamage;
     private float currentDetectionRange;//몬스터가 플레이어를 감지하는 거리
     private int currentScoreValue;//몬스터 처치 시 플레이어가 받을 점수
     //상태변수
@@ -87,9 +67,9 @@ public class Enemy : MonoBehaviour
         timeFreeze = TimeFreeze.Instance;//시간정지 스크립트 캐싱 (매번 Instance 찾지 않게)
 
         SetEnmeyStats();//몬스터 시작 시 능력치와 외형을 설정하는 함수 호출
-        lastAttackTime = Time.time - currentAttackCooldown;//시작하자마자 공격가능, 실행되고 쿨타임 기다리지 않고 바로 공격
+        lastAttackTime = Time.time - currentAttackCoolTime;//시작하자마자 공격가능, 실행되고 쿨타임 기다리지 않고 바로 공격
     }
-
+    
     private void InitializeReferences()//참조 연결 로직 분리
     {
         GameObject playerGameObject = GameObject.FindWithTag("Player");//플레이어 관련 연결(태그로 찾기)
@@ -99,9 +79,8 @@ public class Enemy : MonoBehaviour
             playerShield = playerGameObject.GetComponent<PlayerShield>();
         }
 
-        //스포너 자동 연결 (최신 문법 적용)
-        if (EnemySpawner == null)
-            EnemySpawner = UnityEngine.Object.FindFirstObjectByType<EnemySpawn>();
+        //스포너 자동 연결
+        if (EnemySpawner == null) EnemySpawner = UnityEngine.Object.FindFirstObjectByType<EnemySpawn>();
     }
 
     private void CheckInitialization()//검수 함수
@@ -111,21 +90,24 @@ public class Enemy : MonoBehaviour
         if (rb == null) Debug.LogError($"{gameObject.name}: Rigidbody2D가 누락됐어!");
         if (animator == null) Debug.LogError($"{gameObject.name}: Animator가 누락됐어!");
         if (spriteRenderer == null) Debug.LogError($"{gameObject.name}: SpriteRenderer가 누락됐어!");
+        if (statsData == null) Debug.LogError($"{gameObject.name}: statsData(EnemyStatsSO)가 연결되지 않았어!");
     }
 
     void FixedUpdate()//FixedUpdate에선 Time.deltaTime보단 Time.fixedDeltaTime(정확한 물리 계산과 일관된 이동 속도를 보장)
     {
+        if (statsData == null) return;
+
         if (timeFreeze != null && timeFreeze.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
         {
-            animator.enabled = false;//애니메이터가 활성화되어 있다면
-                                     //애니메이터 비활성화: 몬스터가 그 상태 그대로 얼어붙음
+            animator.enabled = false;//시간정지 시 애니메이션도 정지
+
 
             if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
             {
                 rb.linearVelocity = Vector2.zero;//물리적인 움직임 정지
                 animator.SetBool("Move", false);//애니메이션 정지
             }
-            return;//시간 정지 상태이니 FixedUpdate의 나머지 모든 추적/공격 로직을 건너뛰고 함수 종료
+            return;//시간 정지 동안  FixedUpdate의 AI/공격 로직 스킵
         }
         if (!animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
 
@@ -154,59 +136,49 @@ public class Enemy : MonoBehaviour
         //긴 조건문을 대체하여 가독성을 높이는 지역 변수
         bool isInDetectionRange = distanceToPlayer <= currentDetectionRange;
         bool isInStopDistance = distanceToPlayer <= currentStopDistance;
-        bool canAttack = Time.time >= lastAttackTime + currentAttackCooldown;
+        bool canAttack = Time.time >= lastAttackTime + currentAttackCoolTime;
 
 
         //주 로직 분리 (세분화된 함수 호출)
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
     }
 
-    public void SetEnmeyStats()//몬스터 시작 시 능력치와 외형을 설정하는 함수
+    public void SetEnmeyStats()//몬스터 시작 시 스탯과 외형을 설정 함수(ScriptableObject 스크립트와 Enemy Stats SO 파일)
     {
-        if (spriteRenderer == null)//SpriteRenderer가 없으면 진행 불가
+        if (spriteRenderer == null)
         {
-            Debug.LogError($"Enemy: {gameObject.name}에 SpriteRenderer 컴포넌트가 없어! 스탯 설정에 실패했어!");
+            Debug.LogError($"Enemy: {gameObject.name}에 SpriteRenderer가 없어! 스탯 설정 실패!");
             return;
         }
 
-        EnemyStats selectedStats;//현재 타입에 맞는 능력치 세트를 저장할 변수
-        switch (enemyType)
+        if (statsData == null)
         {
-            case EnemyType.Normal:
-                selectedStats = NormalStats;
-                break;
-            case EnemyType.Strong:
-                selectedStats = StrongStats;
-                break;
-            case EnemyType.Elite:
-                selectedStats = EliteStats;
-                break;
-            default://기본값
-                selectedStats = NormalStats;
-                break;
+            Debug.LogError($"Enemy: {gameObject.name}에 statsData(EnemyStatsSO)가 연결되지 않았어!");
+            return;
         }
 
+        //난이도 적용(EnemyDifficulty가 있으면 강화된 값 사용)
         if (EnemyDifficulty.Instance != null)
         {
-            currentMoveSpeed = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.MoveSpeed, StatType.MoveSpeed);
-            //난이도 영향 없으면 그대로
-            currentStopDistance = selectedStats.StopDistance;
-            currentAttackCooldown = selectedStats.AttackCooldown;
-            currentAttackDamage = EnemyDifficulty.Instance.GetAdjustedMonsterStat(selectedStats.AttackDamage, StatType.AttackDamage);
-            currentDetectionRange = selectedStats.DetectionRange;
-            currentScoreValue = selectedStats.ScoreValue;
+            currentMoveSpeed = EnemyDifficulty.Instance.GetAdjustedMonsterStat(statsData.MoveSpeed, StatType.MoveSpeed);
+            currentAttackDamage = EnemyDifficulty.Instance.GetAdjustedMonsterStat(statsData.AttackDamage, StatType.AttackDamage);
+
+            //아래 값들은 난이도 영향 없으면 그대로
+            currentStopDistance = statsData.StopDistance;
+            currentAttackCoolTime = statsData.AttackCooldown;
+            currentDetectionRange = statsData.DetectionRange;
+            currentScoreValue = statsData.ScoreValue;
         }
-        else//EnemyDifficulty 인스턴스가 없으면 기본 스탯 사용
+        else
         {
-            Debug.LogWarning("EnemyDifficulty.Instance를 찾을 수 없어, 몬스터가 기본 스탯으로 생성할게.");
-            currentMoveSpeed = selectedStats.MoveSpeed;
-            currentStopDistance = selectedStats.StopDistance;
-            currentAttackCooldown = selectedStats.AttackCooldown;
-            currentAttackDamage = selectedStats.AttackDamage;
-            currentDetectionRange = selectedStats.DetectionRange;
-            currentScoreValue = selectedStats.ScoreValue;
+            currentMoveSpeed = statsData.MoveSpeed;
+            currentStopDistance = statsData.StopDistance;
+            currentAttackCoolTime = statsData.AttackCooldown;
+            currentAttackDamage = statsData.AttackDamage;
+            currentDetectionRange = statsData.DetectionRange;
+            currentScoreValue = statsData.ScoreValue;
         }
-        spriteRenderer.color = selectedStats.SpriteColor;
+        spriteRenderer.color = statsData.SpriteColor;
     }
     
     void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
@@ -226,7 +198,7 @@ public class Enemy : MonoBehaviour
         else Debug.LogError("PlayerShield 스크립트가 플레이어 오브젝트에 없어! 방어력 시스템에 연결되지 않았어!");
     }
 
-    public void Attack()//몬스터가 플레이어에게 공격
+    public void Attack()//Animation Event에서 호출 (공격 타이밍)
     {
         //이 함수는 호출되면 다시 한번 플레이어와의 거리(+ 1.5f의 추가 공격 범위)를 체크한 후, DealDamageToPlayer()를 호출
         //Attack 애니메이션 이벤트가 호출될 때, 플레이어와의 거리를 다시 확인
@@ -243,8 +215,8 @@ public class Enemy : MonoBehaviour
     //AttackCooldown마다 주기적으로 데미지를 적용하는 함수.
     //이 함수는 DealDamageToPlayer()를 호출하여 데미지를 최종적으로 적용하는 전달자 역할 수행.
     //(주로 ProcessMovementAndAttack AI 로직에서 호출됨)
-    void ApplyTouchDamage() => DealDamageToPlayer();//통합 함수 호출
-  
+    void ApplyTouchDamage() => DealDamageToPlayer();//근접 접촉 데미지
+
 
     //플레이어가 몬스터의 탐지/공격 범위 안에 들어왔을 때 행동을 결정하는 핵심 함수 (AI 분기점)
     private void ProcessMovementAndAttack(bool isInDetectionRange, bool isInStopDistance, bool canAttack, Vector3 playerCenterPosition)
@@ -278,7 +250,7 @@ public class Enemy : MonoBehaviour
             MoveTowardsPlayer(playerCenterPosition);
         }
     }
-
+    
     public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
     {
         if (isDead) return;//죽은 몬스터는 넉백되지 않음
@@ -294,8 +266,7 @@ public class Enemy : MonoBehaviour
         isKnockedBack = true;//넉백 활성화
         rb.linearVelocity = Vector2.zero;//현재 속도 초기화 (이전 움직임 영향 제거)
 
-        //넉백 힘 적용
-        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);//넉백 힘 적용
 
         StartCoroutine(KnockbackRoutine(duration));//넉백 지속 시간만큼 기다린 후 넉백 상태 해제
     }
@@ -391,7 +362,8 @@ public class Enemy : MonoBehaviour
         ExecuteDeathSequence();//시간이 정상일 때 지연 없이 즉시 사망 시퀀스 실행
     }
     public void ExecuteDeathSequence()//시간 정지로 지연되었던 사망 시퀀스(사운드, 모션, 파괴)를 실행하는 함수
-    {                                 //시간 정지가 아닐때에도 여기서 몬스터의 사망 시퀀스를 발동해
+    {                                 //**시간 정지가 아닐때에도 여기서 몬스터의 사망 시 행동을 발동해**
+
         //1. 사운드 재생 (시간이 풀렸으니 사운드 재생)
         if (deathSound != null && SoundManager.Instance != null) SoundManager.Instance.PlaySFX(deathSound);
 
@@ -399,10 +371,7 @@ public class Enemy : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Die");
-            float DieTime = 1.5f;
-            //시간이 풀리면 1.5초 뒤에 사라지도록 예약
-            //Destroy(gameObject, DieTime)는 TimeScale의 영향을 받지 않는 RealTime을 사용하므로, 
-            //여기서 호출해야 1.5초 뒤에 사라져.
+            float DieTime = 1.5f;//사망 애니 재생 후 제거 1.5초 후
             Destroy(gameObject, DieTime);
         }
         //3. 플래그 초기화
@@ -418,7 +387,7 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
 
         //강화 화살에 여러 번 맞아도 이동 속도가 계속 줄어들지 않도록 방지
-        if (currentMoveSpeed < NormalStats.MoveSpeed)
+        if (currentMoveSpeed < statsData.MoveSpeed)
         {
             Debug.Log($"{gameObject.name} 이미 슬로우 상태이므로 중첩하지 않아!");
             return;

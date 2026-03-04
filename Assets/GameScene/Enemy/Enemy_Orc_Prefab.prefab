@@ -162,6 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
+  statsData: {fileID: 11400000, guid: 7e46496354e17af4a8bc8453f29a7be4, type: 2}
   NormalStats:
     MoveSpeed: 4
     StopDistance: 0.5

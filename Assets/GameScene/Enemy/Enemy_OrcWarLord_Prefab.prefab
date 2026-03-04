@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 1
+  statsData: {fileID: 11400000, guid: 872ee51e3e77ac9429a9e3a9294548d2, type: 2}
   NormalStats:
     MoveSpeed: 4
     StopDistance: 0.5
@@ -197,13 +198,12 @@ MonoBehaviour:
     MoveSpeed: 5
     StopDistance: 0.5
     AttackCooldown: 1
-    AttackDamage: 4
+    AttackDamage: 5
     DetectionRange: 100
     SpriteColor: {r: 1, g: 0, b: 0, a: 1}
     ScoreValue: 30
   EnemySpawner: {fileID: 0}
   playerTargetOffsetY: -2.9
-  deathAudioSource: {fileID: -1440002924710958642}
   deathSound: {fileID: 8300000, guid: 16a3580b89e7bca408a355525e3a7514, type: 3}
 --- !u!114 &1624329084087567441
 MonoBehaviour:

@@ -19285,7 +19285,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   PlayerScript: {fileID: 1160467230741501110}
-  EnemySpawnCollider: {fileID: 0}
+  EnemySpawnCollider: {fileID: 1534034577}
   NormalKillsForStrongEnemy: 3
   StrongEnemyPrefabIndex: 1
   EliteSpawnScoreThreshold: 150
