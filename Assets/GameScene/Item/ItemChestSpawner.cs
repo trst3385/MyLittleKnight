@@ -5,6 +5,10 @@ using UnityEngine.Tilemaps;//Tilemap을 사용하려면 이 using 문이 필요
 
 public class ItemChestSpawner : MonoBehaviour
 {
+    //---------옵저버 [아이템 스폰 방송 채널 추가]----
+    public static event System.Action<string> OnItemSpawned;
+    //------------------------------------------------
+
     public static ItemChestSpawner Instance { get; private set; }//싱글톤 선언
 
     [Header("아이템 상자 프리팹 설정")]
@@ -92,9 +96,8 @@ public class ItemChestSpawner : MonoBehaviour
         if (spawnSound != null && SoundManager.Instance != null)
             SoundManager.Instance.PlaySFX(spawnSound);
 
-
-        if (TextAlimManager.Instance != null)//TextAlimManager에게 아이템 상자가 등장했다는 텍스트를 보내
-            TextAlimManager.Instance.ShowNotification("<color=yellow>아이템 상자 발견!</color>");
+        //직접 호출 대신 방송을 쏴 (TextAlimManager가 이걸 받고 화면에 출력하지)
+        OnItemSpawned?.Invoke("<color=yellow>아이템 상자 발견!</color>");
     }
 
     Vector3 GetValidSpawnPosition()//유효한 스폰 위치를 찾는 함수 (EnemySpawn 스크립트와 동일)

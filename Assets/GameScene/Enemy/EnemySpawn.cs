@@ -20,9 +20,9 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     public BoxCollider2D EnemySpawnCollider;
 
     [Header("Strong 몬스터 스폰 설정:몇명을 잡아야 스폰,몇번째 프리팹의 몬스터를")]//Inspector에서 시각적으로 구분
-    public int NormalKillsForStrongEnemy = 3;//강한 몬스터 스폰을 위해 잡아야 할 Normal 몬스터 수
-    public int StrongEnemyPrefabIndex = 1;//강한 몬스터 프리팹의 EnemyPrefabs 배열 인덱스 (예: EnemyPrefabs[1])
-    
+    public int NormalKillsForStrongEnemy = 3;//Strong 몬스터 스폰을 위해 잡아야 할 Normal 몬스터 수
+    public int StrongEnemyPrefabIndex = 1;//Strong 몬스터 프리팹의 EnemyPrefabs 배열 인덱스 (예: EnemyPrefabs[1])
+
 
     [Header("Elite 몬스터 스폰 설정: 특정 점수 도달 시")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public int EliteSpawnScoreThreshold = 150;//Elite 몬스터가 처음 스폰되는 점수
@@ -34,7 +34,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     //내부에서 사용할 변수들
     private float spawnTimer;//스폰 주기 계산용 타이머
     private float currentEnemyCount;//현재 생성된 몬스터 수를 담을 변수
-    private int normalEnemyKilledSinceLastStrong = 0;//마지막 강한 몬스터 스폰 후 잡은 Normal 몬스터 수
+    private int normalEnemyKilledSinceLastStrong = 0;//마지막 Strong 몬스터 스폰 후 잡은 Normal 몬스터 수
     private TextAlimManager textalimManager;//TextAlimManager 스크립트를 참조할 변수 추가
     private float normalSpawnTime;//Normal 몬스터의 스폰 주기 (EnemyDifficulty에서 가져온 고정값)
     private int normalSpawnCount = 1;//EnemyDifficulty 스크립트에서 받아올 동시 스폰 개수
@@ -87,9 +87,9 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             Debug.LogError("EnemySpawn: EnemyPrefabs 배열이 비어있어!");
 
 
-        //강한 몬스터 프리팹 인덱스 유효성 검사 (EnemyPrefabs 배열의 크기보다 크거나 0보다 작으면 안됨)
+        //Strong 몬스터 프리팹 인덱스 유효성 검사 (EnemyPrefabs 배열의 크기보다 크거나 0보다 작으면 안됨)
         if (StrongEnemyPrefabIndex >= EnemyPrefabs.Length || StrongEnemyPrefabIndex < 0)
-            Debug.LogWarning("Strong Enemy Prefab Index가 EnemyPrefabs 배열 범위를 벗어났어! 강한 몬스터 스폰이 안될 수 있어!");
+            Debug.LogWarning("Strong Enemy Prefab Index가 EnemyPrefabs 배열 범위를 벗어났어! Strong 몬스터 스폰이 안될 수 있어!");
 
 
         //Elite 몬스터 프리팹 인덱스 유효성 검사
@@ -162,29 +162,26 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         //몬스터 프리팹 유효성 검사 및 인덱스 확인
         if (EnemyPrefabs == null || EnemyPrefabs.Length <= StrongEnemyPrefabIndex || StrongEnemyPrefabIndex < 0)
         {
-            Debug.LogError("강한 몬스터 프리팹이 할당되지 않았거나 인덱스가 잘못됐어! 인스펙터를 확인해!.");
+            Debug.LogError("Strong 몬스터 프리팹이 할당되지 않았거나 인덱스가 잘못됐어! 인스펙터를 확인해!.");
             return;
         }
 
         Vector3 spawnPosition = GetValidSpawnPosition();//유효한 스폰 위치 찾기, GetValidSpawnPosition 호출
         if (spawnPosition == Vector3.zero)//유효한 위치를 찾지 못했으면
         {
-            Debug.LogWarning("강한 몬스터 스폰: 타일맵 내에서 유효한 스폰 위치를 찾을 수 없었어.");
+            Debug.LogWarning("Strong 몬스터 스폰: 타일맵 내에서 유효한 스폰 위치를 찾을 수 없었어.");
             return;
         }
-      
-        //강한 몬스터 프리팹 선택 
+
+        //Strong 몬스터 프리팹 선택 
         GameObject enemyToSpawn = EnemyPrefabs[StrongEnemyPrefabIndex];
         Enemy.EnemyType enemyTypeToSpawn =Enemy.EnemyType.Strong;
-        Debug.Log("<color=red>강한 몬스터 스폰!</color>");
+        Debug.Log("<color=red>Strong 몬스터 스폰!</color>");
 
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);
 
-        //강한 몬스터가 스폰되었으니 카운트 초기화
-        normalEnemyKilledSinceLastStrong = 0;
-
-        //TextAlimManager 스크립트에 텍스트 알림 표시
-        if (textalimManager != null) textalimManager.ShowNotification("<color=red>강한 몬스터 등장!</color>");
+        //Strong 몬스터가 스폰되었으니 카운트 초기화
+        normalEnemyKilledSinceLastStrong = 0;//Strong 몬스터가 스폰되었으니 카운트 초기화
     }
 
     void SpawnEliteEnemy()//Elite 몬스터를 호출하는 함수
@@ -211,7 +208,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         SpawnEnemy(enemyToSpawn, spawnPosition, enemyTypeToSpawn);
 
         //TextAlimManager 스크립트에 텍스트 알림 표시
-        if (textalimManager != null) textalimManager.ShowNotification("<color=purple>엘리트 몬스터 등장!</color>");//색깔 변경
+        if (textalimManager != null) textalimManager.ShowMonsterNotification("<color=purple>엘리트 몬스터 등장!</color>");//색깔 변경
     }
 
 
@@ -275,12 +272,12 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         if (!isStrongOrEliteEnemyDied)//죽은 몬스터가 Normal 몬스터일 때
         {
             normalEnemyKilledSinceLastStrong++;//Normal 몬스터 킬 카운트 증가, ++ 연산자는 변수의 값을 1씩 더해
-            Debug.Log("Normal 몬스터 사망! 강한 몬스터 스폰까지 남은 킬 수: " + (NormalKillsForStrongEnemy - normalEnemyKilledSinceLastStrong) + "마리.");
+            Debug.Log("Normal 몬스터 사망! Strong 몬스터 스폰까지 남은 킬 수: " + (NormalKillsForStrongEnemy - normalEnemyKilledSinceLastStrong) + "마리.");
 
             //Strong 몬스터 스폰 조건 충족 시
             if (normalEnemyKilledSinceLastStrong >= NormalKillsForStrongEnemy) SpawnStrongEnemy();//Strong 몬스터 스폰! (따로 스폰됨)
         }
-        else Debug.Log("강한/엘리트 몬스터가 사망했습니다. Normal 몬스터 킬 카운트에는 영향을 주지 않아!");
+        else Debug.Log("Strong/엘리트 몬스터가 사망했습니다. Normal 몬스터 킬 카운트에는 영향을 주지 않아!");
 
         //Player 스크립트가 연결되어 있고, 플레이어가 살아있을 때만 점수 기반 스폰 체크
         if (PlayerScript != null && !PlayerScript.IsDead)

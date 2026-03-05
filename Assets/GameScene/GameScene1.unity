@@ -13282,7 +13282,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93f3cad3969ada4db18f87daca34d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextAlimManager
-  TextAlim: {fileID: 1411278485817935057}
+  monsterAlimText: {fileID: 0}
+  levelText: {fileID: 0}
+  itemAlimText: {fileID: 0}
   DisplayDuration: 2
   FadeDuration: 0.5
 --- !u!1 &1662352688
@@ -16579,8 +16581,8 @@ RectTransform:
   - {fileID: 727970863632157078}
   - {fileID: 1246682333}
   - {fileID: 2680314946668671606}
-  - {fileID: 8597165635893589654}
   - {fileID: 599409027371697464}
+  - {fileID: 8597165635893589654}
   - {fileID: 5878962561206981804}
   - {fileID: 7989533729425226719}
   - {fileID: 4172993625591255565}
@@ -20852,9 +20854,6 @@ MonoBehaviour:
   AtkIncreaseRatio: 0.2
   HPIncreaseRatio: 0.2
   SpeedIncreaseRatio: 0.15
-  enemyDifficultyStatsText: {fileID: 0}
-  enemyLevelText: {fileID: 0}
-  textalimManager: {fileID: 0}
 --- !u!224 &7578132618782736197
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21032,7 +21031,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &7929378355567109969
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,52 +2,40 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using TMPro;//TextMeshPro를 사용하기 위해 추가
+using System;//Action(옵저버)을 쓰기 위해 추가
 
 
 public class EnemyDifficulty : MonoBehaviour
 {
-    //외부에서 currentNormalSpawnTime 값을 읽을 수 있게 해주는 읽기 전용 속성
-    public float CurrentNormalSpawnTime => currentNormalSpawnTime;
-    //외부에서 currentNormalSpawnCount 값을 읽을 수 있게 해주는 읽기 전용 속성
-    public int CurrentNormalSpawnCount => currentNormalSpawnCount;
-    /* * => (람다 연산자): '식 본문 멤버(Expression-bodied Member)' 문법으로, 
-     * 값을 계산 없이 단순히 반환할 때 get { return ... } 구문을 생략하고 간결하게 처리함.
-     * - 역할: Get 접근자를 대체하며, 뒤의 식(currentNormalSpawnTime) 값을 즉시 반환함.
-     * - 장점: 읽기 전용(Read-Only)임을 명확히 하고, 코드 간결성을 높임. (set 접근자 가질 수 없음)
-    */
+    //---[옵저버 패턴: 방송국 설정]------
+    public static event Action<int> OnMonsterLevelUp;//현재 난이도 레벨 (레벨 텍스트 갱신용)
+    public static event Action<string> OnDifficultyNotification;//강화 알림 메시지 (3초 알림용)
+    //-----------------------------------
 
-    //스탯 타입을 구분하기 위한 Enum
-    public enum StatType
-    {
-        AttackDamage,
-        Health,
-        MoveSpeed
-    }
+
+    public float CurrentNormalSpawnTime => currentNormalSpawnTime;
+    //외부에서 값을 읽을 수 있게 해주는 읽기 전용 속성
+    public int CurrentNormalSpawnCount => currentNormalSpawnCount;
+
+
+    public enum StatType { AttackDamage, Health, MoveSpeed }//스탯 타입을 구분하기 위한 Enum
 
     [Header("Normal 몬스터 스폰 초기 스폰 시간")]
     public float NormalSpawnTime = 4f;//게임 시작 시 Normal 몬스터의 스폰 주기 (예: 4초)
-
     [Header("Normal 몬스터 동시 스폰 개수 조절")]
     public int NormalSpawnCount = 1;//게임 시작 시 Normal 몬스터 동시 스폰 개수
     public int NormalSpawnCountUp = 1;//난이도 레벨마다 동시 스폰 개수 증가량
     public int MaxNormalSpawnCount = 5;//동시 스폰 개수 최대치 (너무 많아지는 것 방지)
 
-    //몬스터 스탯 난이도 조절 변수들
-    [Header("몬스터 스탯 난이도 조절")]
+
+    [Header("몬스터 스탯 난이도 조절")]//몬스터 스탯 난이도 조절 변수들
     [SerializeField] private float StatLevelUpTime = 20f;//몬스터 스탯이 강해지는 시간 간격 (초)
     [SerializeField] private float AtkIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 공격력 증가 비율 (20% = 0.2) -> 20%씩
     [SerializeField] private float HPIncreaseRatio = 0.2f;//난이도 레벨마다 몬스터 체력 증가 비율 (20% = 0.2) -> 20%씩
     [SerializeField] private float SpeedIncreaseRatio = 0.15f;//난이도 레벨마다 몬스터 이동 속도 증가 비율 (1% = 0.01) -> 1%씩
 
 
-    [Header("UI, 오브젝트 연결(코드에서 자동으로 연결된 상태)")]
-    [SerializeField] private TextMeshProUGUI enemyDifficultyStatsText;
-    [SerializeField] private TextMeshProUGUI enemyLevelText;
-    [SerializeField] private TextAlimManager textalimManager;
-
-
-    public static EnemyDifficulty Instance { get; private set; }
+    public static EnemyDifficulty Instance { get; private set; }//싱글톤 설정
 
     //내부에서 사용할 변수들
     private float timeSinceLastLevelUp = 0f;//게임 시작 후 총 경과 시간(타이머 리셋 방식)
@@ -61,54 +49,18 @@ public class EnemyDifficulty : MonoBehaviour
         //싱글톤 설정 (중복 방지 및 유지)
         if (Instance == null)
             Instance = this;
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        else { Destroy(gameObject); return; }
 
-        //Awake에서 모든 참조 자동 연결
-        InitializeReferences();
-
-        //초기화 로직
+        //시작 시 초기화
         currentNormalSpawnTime = NormalSpawnTime;//게임 시작 시 초기 스폰 주기로 설정
         currentNormalSpawnCount = NormalSpawnCount;//시작 시 동시 스폰 개수 초기화
         timeSinceLastLevelUp = 0f;//게임 타이머 초기화
         currentDifficultyLevel = 0;//난이도 레벨 초기화
     }
 
-    private void InitializeReferences()// 씬이 바뀌었을 때도 UI를 새로 찾을 수 있게 함수로 분리
-
-    {
-        //UI 텍스트 찾기
-        if (enemyDifficultyStatsText == null)
-        {
-            GameObject enemydifficultystatsText = GameObject.Find("EnemyDifficultyStatsText");
-            if (enemydifficultystatsText != null) enemyDifficultyStatsText = enemydifficultystatsText.GetComponent<TextMeshProUGUI>();
-            else Debug.LogWarning("EnemyDifficulty: 'EnemyDifficultyStatsText' UI 오브젝트를 찾을 수 없어! 이름을 확인해봐!");
-        }
-
-        if (enemyLevelText == null)
-        {
-            GameObject enemydifficultyleveltext = GameObject.Find("EnemyDifficultyLevelText");
-            if (enemydifficultyleveltext != null) enemyLevelText = enemydifficultyleveltext.GetComponent<TextMeshProUGUI>();
-            else Debug.LogWarning("EnemyDifficulty: 'EnemyDifficultyLevelText' UI 오브젝트를 찾을 수 없어! 이름을 확인해봐!");
-        }
-
-        //타 매니저 찾기 (싱글톤이 아니거나 컴포넌트 방식일 때)
-        if (textalimManager == null)
-        {
-            textalimManager = FindFirstObjectByType<TextAlimManager>();
-            if (textalimManager == null) Debug.LogError("EnemyDifficulty: 씬에 TextAlimManager UI가 없어!");
-        }
-
-    }
-
     void Start()
-    {   
-        UpdateMonsterLevelText();
-         
-        if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";//게임 시작 시 UI 텍스트를 비움
+    {
+        OnMonsterLevelUp?.Invoke(currentDifficultyLevel);//시작하자마자 레벨 0이라고 방송 한 번 쏴주기
     }
     
     void Update()
@@ -117,63 +69,35 @@ public class EnemyDifficulty : MonoBehaviour
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
 
 
-
         //게임 시간 경과 및 스탯 난이도 레벨 증가 로직
-        timeSinceLastLevelUp += Time.deltaTime;
-        if(timeSinceLastLevelUp >= StatLevelUpTime)
+        timeSinceLastLevelUp += Time.deltaTime;//프레임에 맞게 deltaTime으로 Update
+        if (timeSinceLastLevelUp >= StatLevelUpTime)
         {
             currentDifficultyLevel++;
-            Debug.Log($"몬스터 스탯 난이도 레벨 증가! 현재 레벨: {currentDifficultyLevel}");
 
-
-            UpdateMonsterLevelText();//몬스터 레벨이 증가한 직후, EnemyDifficultyLevelText UI를 업데이트할 함수를 호출해
-
+            //[옵저버] 방송만 보낸다. 누가 듣는지는 상관 안해!(이 신호를 받을려는 스크립트만 받기)
+            OnMonsterLevelUp?.Invoke(currentDifficultyLevel);
+            OnDifficultyNotification?.Invoke($"<color=red>몬스터가 더 강해졌다! (레벨 {currentDifficultyLevel})</color>");
 
             //스탯 난이도 레벨 증가 시 동시 스폰 개수 업데이트
             currentNormalSpawnCount = Mathf.Min(MaxNormalSpawnCount, NormalSpawnCount + (currentDifficultyLevel * NormalSpawnCountUp));
             if (EnemySpawn.Instance != null)//EnemySpawn에 변경된 개수 전달
                 EnemySpawn.Instance.SetNormalSpawnCount(currentNormalSpawnCount);
 
-            if (enemyDifficultyStatsText != null)//EnemyDifficultyStatsText UI로 전달
-            {
-                enemyDifficultyStatsText.text = $"<color=red>몬스터가 더 강해졌다! (레벨 {currentDifficultyLevel})</color>";
-                Invoke("ClearNotification", 3f);
-            }
             timeSinceLastLevelUp = 0f;//타이머 리셋
         } 
     }
 
-    private void UpdateMonsterLevelText()//EnemyDifficultyLevelText UI로 보낼 함수
-    {                                    //notificationText UI랑 다르게 Lv.0 ~ 1 ~ 2 증가하게 할거야
-        if (enemyLevelText != null) enemyLevelText.text = $"몬스터 Lv.{currentDifficultyLevel}";
-    }
-    private void ClearNotification()//이 함수는 notificationText UI 알림을 화면에서 지워주는 역할
-    {                               //이 함수는 보통 Invoke("ClearNotification", 3f);처럼 일정 시간 뒤에 자동으로 호출되도록 해서,
-                                    //"몬스터가 강해졌습니다!" 같은 알림이 3초 후에 사라지게 만드는 용도로 쓰여.
-        if (enemyDifficultyStatsText != null) enemyDifficultyStatsText.text = "";
-    }
-
-
     public float GetAdjustedMonsterStat(float baseStat, StatType statType)//몬스터 스탯을 현재 난이도에 맞춰 조정하여 반환하는 함수
-    {       //Enemy 스크립트가 이 함수를 호출해
+    {                                                                     //Enemy 스크립트가 이 함수를 호출해
         float increaseRatio = 0f;
 
         switch (statType)
         {
-            case StatType.AttackDamage:
-                increaseRatio = AtkIncreaseRatio;
-                break;
-            case StatType.Health:
-                increaseRatio = HPIncreaseRatio;
-                break;
-            case StatType.MoveSpeed:
-                increaseRatio = SpeedIncreaseRatio;
-                break;
-            default:
-                Debug.LogWarning($"EnemyDifficulty: 알 수 없는 스탯 타입 요청됨 - {statType}");
-                break;
+            case StatType.AttackDamage: increaseRatio = AtkIncreaseRatio; break;
+            case StatType.Health: increaseRatio = HPIncreaseRatio; break;
+            case StatType.MoveSpeed: increaseRatio = SpeedIncreaseRatio; break;
         }
-        float adjustedStat = baseStat * (1f + increaseRatio * currentDifficultyLevel);
-        return adjustedStat;
+        return baseStat * (1f + increaseRatio * currentDifficultyLevel);
     }
 } 

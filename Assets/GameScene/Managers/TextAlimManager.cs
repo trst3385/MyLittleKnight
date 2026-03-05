@@ -8,8 +8,10 @@ public class TextAlimManager : MonoBehaviour
 {
     public static TextAlimManager Instance { get; private set; }//싱글톤 선언
 
-    [Header("UI 연결")]
-    public TextMeshProUGUI TextAlim;//인스펙터에서 UI 텍스트 컴포넌트를 할당할 변수
+    [Header("UI 연결(자동으로 찾음)")]
+    [SerializeField] private TextMeshProUGUI monsterAlimText;//인스펙터에서 UI 텍스트 컴포넌트를 할당할 변수
+    [SerializeField] private TextMeshProUGUI levelText;//몬스터 강화 레벨 표시
+    [SerializeField] private TextMeshProUGUI itemAlimText;//아이템 상자 스폰 알림 (TextAlim)
 
     [Header("알림이 표시, 사라질 시간")]
     public float DisplayDuration = 2f;//알림이 화면에 표시될 시간 (초)
@@ -23,66 +25,88 @@ public class TextAlimManager : MonoBehaviour
         if (Instance == null) Instance = this;//싱글톤 설정
         else { Destroy(gameObject); return; }
 
-        if (TextAlim == null)
-        {
-            //만약 깜빡하고 연결 안 했다면 씬 전체에서 딱 하나 있는 알림 텍스트를 찾아봄
-            //하지만 가급적 인스펙터에서 직접 드래그해주는 게 성능상 좋아!
-            TextAlim = GameObject.Find("TextAlim")?.GetComponent<TextMeshProUGUI>();
+        //자동 연결
+        if (monsterAlimText == null)
+            monsterAlimText = GameObject.Find("EnemyDifficultyStatsText")?.GetComponent<TextMeshProUGUI>();
+        if (levelText == null)
+            levelText = GameObject.Find("EnemyDifficultyLevelText")?.GetComponent<TextMeshProUGUI>();
+        if (itemAlimText == null)
+            itemAlimText = GameObject.Find("TextAlim")?.GetComponent<TextMeshProUGUI>();
 
-            if (TextAlim == null)
-                Debug.LogError("TextAlimManager: 연결된 UI 텍스트가 없어!");
-        }
-        //시작 시 텍스트를 숨김
-        if (TextAlim != null) TextAlim.color = new Color(TextAlim.color.r, TextAlim.color.g, TextAlim.color.b, 0);
-        //TextAlim.color는 값 복사본을 반환해, 그래서 새 Color를 만들어서 통째로 다시 넣는 거야.
-    }
-    
-
-    public void ShowNotification(string message)//외부에서 알림을 요청할 때 호출되는 함수
-    {//외부에서 받은 텍스트를 string 형식의 message 매개변수에 담아두고 DisplayNotification 코루틴으로 보냄
-
-        //이전에 실행 중인 코루틴이 있다면 중지 간결화
-        if (currentNotificationCoroutine != null) StopCoroutine(currentNotificationCoroutine);
-
-        //접수받은 message 값을 DisplayNotification 코루틴을 시작
-        currentNotificationCoroutine = StartCoroutine(DisplayNotification(message));
-        //ShowNotification이 자신의 message 변수(복사본)에 있는 문자열 값을 다시 복사해서 DisplayNotification에 넘겨줌.
+        //초기화 (처음에는 모두 투명하게)
+        InitText(monsterAlimText);
+        InitText(itemAlimText);
     }
 
-    
-    IEnumerator DisplayNotification(string message)//ShowNotification이 넘겨준 메세지를 UI에 뜨게 하는 역할
+    private void InitText(TextMeshProUGUI txt)
     {
-        TextAlim.text = message;//UI에 받은 텍스트를 보냄
+        if (txt != null)
+        {
+            txt.color = new Color(txt.color.r, txt.color.g, txt.color.b, 0);
+            txt.text = "";
+        }
+    }
 
-        //페이드인 (투명도 0 -> 1)
+    //여기서 직접 방송을 구독
+    private void OnEnable()//몬스터 강화 알림, 레벨 알림, 아이템 상자 스폰 알림 방송 구독
+    {
+        EnemyDifficulty.OnDifficultyNotification += ShowMonsterNotification;
+        EnemyDifficulty.OnMonsterLevelUp += UpdateLevelUI;
+        ItemChestSpawner.OnItemSpawned += ShowItemNotification;//아이템 상자 스폰 방송 구독
+    }
+    private void OnDisable()//안전하게 해제
+    {
+        EnemyDifficulty.OnDifficultyNotification -= ShowMonsterNotification;
+        EnemyDifficulty.OnMonsterLevelUp -= UpdateLevelUI;
+        ItemChestSpawner.OnItemSpawned -= ShowItemNotification;
+    }
+
+
+
+    //---몬스터 강화 알림 (전용 코루틴)---
+    public void ShowMonsterNotification(string message)
+    {
+        if (monsterAlimText != null) StartCoroutine(DisplayFade(monsterAlimText, message));
+    }
+
+    //---아이템 등장 알림 (전용 코루틴)---
+    public void ShowItemNotification(string message)//ItemChestSpawner에서 이걸 호출
+    {
+        if (itemAlimText != null)
+            StartCoroutine(DisplayFade(itemAlimText, message));
+    }
+
+    private void UpdateLevelUI(int level)//레벨 숫자를 바꿔주는 함수
+    {
+        if (levelText != null) levelText.text = $"몬스터 Lv.{level}";
+    }
+
+    //공용 페이드 코루틴 (어떤 텍스트든 받아서 연출해줌)
+    IEnumerator DisplayFade(TextMeshProUGUI target, string message)
+    {
+        target.text = message;
+
+        //페이드 인
         float timer = 0f;
-        Color startColor = new Color(TextAlim.color.r, TextAlim.color.g, TextAlim.color.b, 0);
-        Color targetColor = new Color(TextAlim.color.r, TextAlim.color.g, TextAlim.color.b, 1);
         while (timer < FadeDuration)
         {
-            TextAlim.color = Color.Lerp(startColor, targetColor, timer / FadeDuration);
             timer += Time.deltaTime;
-            yield return null;//한 프레임 대기
+            target.color = new Color(target.color.r, target.color.g, target.color.b, timer / FadeDuration);
+            yield return null;
         }
-        TextAlim.color = targetColor;//정확히 불투명하게 설정
+        target.color = new Color(target.color.r, target.color.g, target.color.b, 1);
 
         yield return new WaitForSeconds(DisplayDuration);
-        //알림이 displayDuration 변수에 설정된 시간(초)만큼 화면에 유지되도록 대기
-        //이 코루틴이 잠시 멈춰있다가, 이 줄 아래의 코드를 실행하여 알림을 사라지게 합니다.
-        
-        //페이드아웃 (투명도 1 -> 0)
-        timer = 0f;
-        startColor = targetColor;//현재 색상 (불투명)
-        targetColor = new Color(TextAlim.color.r, TextAlim.color.g, TextAlim.color.b, 0);
 
-        while (timer < FadeDuration)//텍스트의 페이드인/페이드아웃 애니메이션
+        //페이드 아웃
+        timer = 0f;
+        while (timer < FadeDuration)
         {
-            //시간에 따라 텍스트 색상을 시작(startColor)부터 목표(targetColor)까지 부드럽게 변화시킴 (페이드인/아웃 애니메이션)
-            TextAlim.color = Color.Lerp(startColor, targetColor, timer / FadeDuration);
-            timer += Time.deltaTime;//프레임당 경과 시간만큼 타이머 증가
-            yield return null;//다음 프레임까지 대기하여 애니메이션 업데이트
+            timer += Time.deltaTime;
+            target.color = new Color(target.color.r, target.color.g, target.color.b, 1 - (timer / FadeDuration));
+            yield return null;
         }
-        TextAlim.color = targetColor;//완전히 투명하게 설정
-        TextAlim.text = "";//텍스트 내용도 비워주기
+        target.color = new Color(target.color.r, target.color.g, target.color.b, 0);
+        target.text = "";
     }
 }
