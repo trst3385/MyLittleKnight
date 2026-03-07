@@ -7,9 +7,8 @@ using static EnemyDifficulty;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("몬스터의 HP")]
-    //기존 HP 변수 (이제 기본값 역할을 함)
-    [SerializeField] private float baseMaxHP = 5f;//몬스터의 기본 체력 (난이도 적용 전)
+    [Header("Stats 연결")]                          //3.7이제 SO 파일에서 몬스터의 스탯을 관리해
+    [SerializeField] private EnemyStatsSO statsData;//SO 파일 연결(몬스터의 체력, 데미지, 색상 등등 들어있으니까!)
 
     [Header("몬스터의 에니메이터 컴포넌트 연결")]
     public Animator Animator;//몬스터의 에니메이터를 연결할 변수
@@ -22,15 +21,24 @@ public class EnemyHealth : MonoBehaviour
     void Awake()//Start()보다 먼저 호출되어야 Enemy.cs에서 참조하기 전 체력 초기화가 됨.
     {
         enemyScript = GetComponent<Enemy>();//Enemy 스크립트 참조 (EnemyDie 호출용)
+    }
 
-        if (EnemyDifficulty.Instance != null)//EnemyDifficulty 스크립트를 통해 현재 난이도에 맞춰 몬스터의 최대 체력을 조정
+    void Start()
+    {
+        if (statsData == null)
+        {
+            Debug.LogError($"{gameObject.name}: statsData가 연결되지 않았어!");
+            return;
+        }
+
+        float baseMaxHP = statsData.MaxHP;//SO의 체력을 기본값으로 사용
+
+        if (EnemyDifficulty.Instance != null)//난이도에 따른 HP 보정 로직
             currentMaxHP = EnemyDifficulty.Instance.GetAdjustedMonsterStat(baseMaxHP, StatType.Health);
         else
-        {   //EnemyDifficulty스크립트가 없으면 기본 체력 사용
-            Debug.LogWarning("EnemyDifficulty.Instance를 찾을 수 없어!. 몬스터 체력이 기본값으로 설정할께!.");
             currentMaxHP = baseMaxHP;
-        }
-        currentHP = currentMaxHP;//조정된 최대 체력으로 현재 체력 초기화
+
+        currentHP = currentMaxHP;
     }
 
     public void TakeDamage(float damageAmount)

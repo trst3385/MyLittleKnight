@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0672313654db6140a6cff6aa1efc3df, type: 3}
-  m_Name: EnemyStats_Normal
+  m_Name: EnemyStats_LastBoss
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
-  MaxHP: 3
-  MoveSpeed: 4
+  MaxHP: 20
+  MoveSpeed: 10
   StopDistance: 0.5
   AttackCooldown: 1
-  AttackDamage: 2
+  AttackDamage: 10
   DetectionRange: 100
-  SpriteColor: {r: 1, g: 1, b: 1, a: 1}
-  ScoreValue: 10
+  SpriteColor: {r: 0.18039216, g: 0.1764706, b: 0.1764706, a: 1}
+  ScoreValue: 100
