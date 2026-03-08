@@ -25,18 +25,20 @@ public class EnemyHealth : MonoBehaviour
 
     void Start()
     {
-        if (statsData == null)
+        if (statsData == null)//만약 내(EnemyHealth) 인스펙터가 비어있다면
         {
-            Debug.LogError($"{gameObject.name}: statsData가 연결되지 않았어!");
+            if (enemyScript != null) statsData = enemyScript.statsData;//같은 오브젝트에 붙어있는 Enemy 스크립트에서 statsData를 가져와
+        }
+        if (statsData == null)//둘 다 뒤졌는데도 없으면 그때 statsData가 없다고 에러를 띄워
+        {
+            Debug.LogError($"{gameObject.name}: Enemy 스크립트에도 statsData가 없어! SO를 연결해줘!");
             return;
         }
 
         float baseMaxHP = statsData.MaxHP;//SO의 체력을 기본값으로 사용
-
         if (EnemyDifficulty.Instance != null)//난이도에 따른 HP 보정 로직
             currentMaxHP = EnemyDifficulty.Instance.GetAdjustedMonsterStat(baseMaxHP, StatType.Health);
-        else
-            currentMaxHP = baseMaxHP;
+        else currentMaxHP = baseMaxHP;
 
         currentHP = currentMaxHP;
     }

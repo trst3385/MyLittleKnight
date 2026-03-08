@@ -18,5 +18,6 @@ MonoBehaviour:
   AttackCooldown: 1
   AttackDamage: 10
   DetectionRange: 100
+  PlayerTargetOffsetY: -5.5
   SpriteColor: {r: 0.18039216, g: 0.1764706, b: 0.1764706, a: 1}
   ScoreValue: 100

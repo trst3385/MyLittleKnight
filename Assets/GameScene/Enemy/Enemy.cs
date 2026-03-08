@@ -9,16 +9,11 @@ public class Enemy : MonoBehaviour
     public EnemyType enemyType = EnemyType.Normal;//enum을 담을 변수 선언, 인스펙터에서 설정할 몬스터 기본 타입
 
     [Header("Stats (ScriptableObject)")]
-    [SerializeField] private EnemyStatsSO statsData;//Prefab별 스탯 데이터(SO)
+    public EnemyStatsSO statsData;//Prefab별 스탯 데이터(SO), public으로 변경해서 EnemyHealth가 이곳에서 SO를 가져올 수 있게
 
 
     [Header("스크립트 연결(코드 내 자동 연결)")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
-
-    
-    [Header("Targeting Offset(플레이어 Y축 중심)")]
-    [SerializeField] private float playerTargetOffsetY = -2.7f;
-    //몬스터가 플레이어 오브젝트의 중앙으로 이동 Y축 오프셋 (pivot/center 보정)
 
 
     [Header("사운드")]//사운드 관련
@@ -128,7 +123,7 @@ public class Enemy : MonoBehaviour
 
         //플레이어와의 거리 계산
         Vector3 playerCenterPosition = playerScript.GetCenterPosition();//플레이어의 중앙 위치 가져오기
-        playerCenterPosition.y += playerTargetOffsetY;//Y축 오프셋 적용
+        playerCenterPosition.y += statsData.PlayerTargetOffsetY;//Y축 오프셋 적용
 
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerCenterPosition);
