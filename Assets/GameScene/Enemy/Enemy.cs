@@ -5,7 +5,7 @@ using static EnemyDifficulty;//StatType enum 등을 EnemyDifficulty. 접두사 �
 
 public class Enemy : MonoBehaviour
 {
-    public enum EnemyType { Normal, Strong, Elite }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
+    public enum EnemyType { Normal, Strong, Elite, Boss }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
     public EnemyType enemyType = EnemyType.Normal;//enum을 담을 변수 선언, 인스펙터에서 설정할 몬스터 기본 타입
 
     [Header("Stats (ScriptableObject)")]

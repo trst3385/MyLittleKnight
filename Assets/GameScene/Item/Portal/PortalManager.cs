@@ -13,6 +13,8 @@ public class PortalManager : MonoBehaviour
 
     private bool isActivated = false;
     private GameTimerManager gameTimer;//매 프레임 Find를 하지 않기 위해 미리 캐싱해둘 변수
+    private bool isBossSpawned = false;
+    private bool isBossDefeated = false;//보스 처치 여부(보스 몬스터가 처치 되야 포탈 생성)
 
     void Awake()
     {
@@ -38,17 +40,16 @@ public class PortalManager : MonoBehaviour
 
         if (portalObject == null)
         {
-            // Resources.FindObjectsOfTypeAll은 씬에 있는 모든 '컴포넌트'를 뒤질 때 가장 강력해.
-            // 포탈에 붙어있는 'NextStagePortal' 스크립트를 직접 찾아보자.
+            //Resources.FindObjectsOfTypeAll은 씬에 있는 모든 '컴포넌트'를 뒤질 때 가장 강력해.
+            //포탈에 붙어있는 'NextStagePortal' 스크립트를 직접 찾아보자.
             NextStagePortal[] portals = Resources.FindObjectsOfTypeAll<NextStagePortal>();
 
             foreach (var portal in portals)
             {
-                // 프리팹이 아니고 실제 씬에 배치된 오브젝트인지 확인
+                //프리팹이 아니고 실제 씬에 배치된 오브젝트인지 확인
                 if (portal.gameObject.hideFlags == HideFlags.None && portal.gameObject.scene.name != null)
                 {
-                    // 태그까지 확인하면 더 확실하겠지?
-                    if (portal.CompareTag("Portal"))
+                    if (portal.CompareTag("Portal"))//태그까지 확인하면 더 확실하겠지?
                     {
                         portalObject = portal.gameObject;
                         break;
@@ -72,15 +73,28 @@ public class PortalManager : MonoBehaviour
         if (isActivated) return;//이미 활성화됐다면 더 이상 계산할 필요 없음
 
         //1. 시간 조건 체크 (캐싱해둔 gameTimer 사용)
-        bool timeReached = false;
-        if (gameTimer != null) timeReached = gameTimer.GetElapsedTime() >= targetTime;
-
+        bool timeReached = (gameTimer != null) && gameTimer.GetElapsedTime() >= targetTime;
         //2. 몬스터 미션 조건 체크 (이미 싱글톤인 MonsterCountManager 사용)
         bool missionOk = (MonsterCountManager.Instance != null) && MonsterCountManager.Instance.IsMissionComplete();
 
-        //3. 모든 조건 충족 시 포탈 활성화
-        if (timeReached && missionOk) ActivatePortal();
+        //3. 1,2의 미션을 달성 후 등장할 보스 몬스터(한번만 실행)
+        if (timeReached && missionOk && !isBossSpawned)
+        {
+            isBossSpawned = true;
+            if (EnemySpawn.Instance != null) EnemySpawn.Instance.SpawnBossEnemy();
+        }
+
+        //4. 모든 조건 + 보스 처치까지 완료 시 포탈 활성화
+        if (timeReached && missionOk && isBossDefeated)//isBossDefeated가 true여야만 포탈이 열림!
+            ActivatePortal();
     }
+
+    public void ReportBossDeath()//보스 몬스터가 죽었을 때 호출될 함수
+    {
+        isBossDefeated = true;
+        Debug.Log("PortalManager: 보스 몬스터 사망 확인. 포탈을 활성화!");
+    }
+
     private void ActivatePortal()
     {
         isActivated = true;

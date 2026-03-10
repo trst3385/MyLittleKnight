@@ -795,7 +795,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93f3cad3969ada4db18f87daca34d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextAlimManager
-  TextAlim: {fileID: 1912168529966635034}
+  monsterAlimText: {fileID: 0}
+  levelText: {fileID: 0}
+  itemAlimText: {fileID: 0}
   DisplayDuration: 2
   FadeDuration: 0.5
 --- !u!1 &278293335 stripped
@@ -1526,6 +1528,37 @@ SpriteMask:
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
   m_MaskSource: 0
+--- !u!1 &475664153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 475664154}
+  m_Layer: 0
+  m_Name: BossSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &475664154
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475664153}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.0980835, y: 11.389465, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9155138148688312401}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &503108961
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16009,6 +16042,7 @@ MonoBehaviour:
   - {fileID: 5691345466426852434, guid: c6df29c5dc7e35249b295ec9e8ebaf01, type: 3}
   - {fileID: 7442406002320563516, guid: 3a361cfe9be0d0f4fa78e20f99aebc31, type: 3}
   - {fileID: 7442406002320563516, guid: fd4903702231f9e4aa5817b12e0b1b9c, type: 3}
+  - {fileID: 7442406002320563516, guid: 3530c8c404b77d946aa241fdbe52c085, type: 3}
   TargetTilemap: {fileID: 0}
   SpawnableLayer:
     serializedVersion: 2
@@ -16020,6 +16054,7 @@ MonoBehaviour:
   EliteSpawnScoreThreshold: 150
   EliteSpawnScoreInterval: 150
   EliteEnemyPrefabIndex: 2
+  BossEnemyPrefabIndex: 3
 --- !u!222 &392666360590253844
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19503,9 +19538,6 @@ MonoBehaviour:
   AtkIncreaseRatio: 0.2
   HPIncreaseRatio: 0.2
   SpeedIncreaseRatio: 0.15
-  enemyDifficultyStatsText: {fileID: 0}
-  enemyLevelText: {fileID: 0}
-  textalimManager: {fileID: 0}
 --- !u!114 &4516540387739327469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23900,6 +23932,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2123023967}
+  - {fileID: 475664154}
   m_Father: {fileID: 5250910145962019462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9161233659185655334

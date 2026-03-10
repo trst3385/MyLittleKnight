@@ -175,12 +175,12 @@ PrefabInstance:
     - target: {fileID: 8108346583137167064, guid: 9131c2dbea986fe46842b5772e107122,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.5
+      value: -0.88
       objectReference: {fileID: 0}
     - target: {fileID: 8108346583137167064, guid: 9131c2dbea986fe46842b5772e107122,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.4
+      value: 1.39
       objectReference: {fileID: 0}
     - target: {fileID: 8108346583137167064, guid: 9131c2dbea986fe46842b5772e107122,
         type: 3}
@@ -15029,9 +15029,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93f3cad3969ada4db18f87daca34d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextAlimManager
-  TextAlim: {fileID: 1411278486909843492}
+  monsterAlimText: {fileID: 0}
+  levelText: {fileID: 0}
+  itemAlimText: {fileID: 0}
   DisplayDuration: 2
   FadeDuration: 0.5
+--- !u!1 &1720036371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1720036372}
+  m_Layer: 0
+  m_Name: BossSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1720036372
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1720036371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -30.41, y: 30.93, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9155138148856704426}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1774235543 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7508116785346154267, guid: 9e7797bb065982d4497d030f065d6e2f,
@@ -16063,6 +16096,7 @@ MonoBehaviour:
   - {fileID: 5691345466426852434, guid: c6df29c5dc7e35249b295ec9e8ebaf01, type: 3}
   - {fileID: 7442406002320563516, guid: 3a361cfe9be0d0f4fa78e20f99aebc31, type: 3}
   - {fileID: 7442406002320563516, guid: fd4903702231f9e4aa5817b12e0b1b9c, type: 3}
+  - {fileID: 7442406002320563516, guid: 3530c8c404b77d946aa241fdbe52c085, type: 3}
   TargetTilemap: {fileID: 0}
   SpawnableLayer:
     serializedVersion: 2
@@ -16074,6 +16108,7 @@ MonoBehaviour:
   EliteSpawnScoreThreshold: 150
   EliteSpawnScoreInterval: 150
   EliteEnemyPrefabIndex: 2
+  BossEnemyPrefabIndex: 3
 --- !u!222 &396665570282725728
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19818,9 +19853,6 @@ MonoBehaviour:
   AtkIncreaseRatio: 0.2
   HPIncreaseRatio: 0.2
   SpeedIncreaseRatio: 0.15
-  enemyDifficultyStatsText: {fileID: 0}
-  enemyLevelText: {fileID: 0}
-  textalimManager: {fileID: 0}
 --- !u!114 &4499882710486069091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24159,6 +24191,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1885842560}
+  - {fileID: 1720036372}
   m_Father: {fileID: 5250910146196217725}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9177627823107746511

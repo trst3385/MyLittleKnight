@@ -29,7 +29,11 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     public int EliteSpawnScoreInterval = 150;//첫 스폰 이후에 Elite 몬스터가 스폰되는 점수 간격 (예: ~~점마다)
     public int EliteEnemyPrefabIndex = 2;//Elite 몬스터 프리팹의 EnemyPrefabs 배열 인덱스 (예: EnemyPrefabs[2])
     private int nextEliteSpawnScore;//다음 Elite 몬스터가 스폰될 점수 임계값
-     
+
+    [Header("Boss 몬스터 스폰 설정")]
+    public int BossEnemyPrefabIndex = 3;//배열에서 보스 프리팹 위치
+    private Transform bossSpawnPoint;//자동으로 찾을 자식 오브젝트
+
 
     //내부에서 사용할 변수들
     private float spawnTimer;//스폰 주기 계산용 타이머
@@ -51,15 +55,13 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     private void InitializeReferences()
     {
         //타일맵 찾기
-        if (TargetTilemap == null)
-            TargetTilemap = FindFirstObjectByType<Tilemap>();
+        if (TargetTilemap == null) TargetTilemap = FindFirstObjectByType<Tilemap>();
 
         //코드 내에서 자식 콜라이더 자동 연결 (오늘의 핵심!)
         if (EnemySpawnCollider == null)
         {
             EnemySpawnCollider = GetComponentInChildren<BoxCollider2D>();
-            if (EnemySpawnCollider != null)
-                Debug.Log($"{EnemySpawnCollider.gameObject.name}을 스폰 범위로 자동 연결했어!");
+            if (EnemySpawnCollider != null) Debug.Log($"{EnemySpawnCollider.gameObject.name}을 스폰 범위로 자동 연결했어!");
             else Debug.LogError("자식 오브젝트에서 BoxCollider2D를 찾을 수 없어!");
         }
 
@@ -70,9 +72,22 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             if (playerscript != null) PlayerScript = playerscript.GetComponent<Player>();
         }
 
+        //자식 중에 "BossSpawnPoint"라는 이름을 가진 오브젝트를 찾음
+        if (bossSpawnPoint == null)
+        {
+            //transform.Find는 자식 오브젝트만 뒤지기 때문에 효율적이야
+            Transform foundPoint = transform.Find("BossSpawnPoint");
+            if (foundPoint != null)
+            {
+                bossSpawnPoint = foundPoint;
+                Debug.Log("보스 스폰 위치를 자동으로 찾았어!: " + bossSpawnPoint.name);
+            }
+            else Debug.LogWarning("자식 오브젝트 중 'BossSpawnPoint'를 찾을 수 없어! 보스가 센터에서 소환될 거야.");
+
+        }
+
         //텍스트 알림 매니저 찾기
-        if (textalimManager == null)
-            textalimManager = FindFirstObjectByType<TextAlimManager>();
+        if (textalimManager == null) textalimManager = FindFirstObjectByType<TextAlimManager>();
     }
 
 
@@ -209,6 +224,29 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
 
         //TextAlimManager 스크립트에 텍스트 알림 표시
         if (textalimManager != null) textalimManager.ShowMonsterNotification("<color=purple>엘리트 몬스터 등장!</color>");//색깔 변경
+    }
+
+    public void SpawnBossEnemy()//Boss 몬스터를 호출하는 함수
+    {
+        if (EnemyPrefabs == null || EnemyPrefabs.Length <= BossEnemyPrefabIndex)
+        {
+            Debug.LogError("보스 프리팹 인덱스가 잘못되었거나 배열이 비어있어!");
+            return;
+        }
+
+        //bossSpawnPoint가 없으면 그냥 매니저 위치(this.transform)에서 생성하도록 예외 처리
+        Vector3 spawnPos = (bossSpawnPoint != null) ? bossSpawnPoint.position : transform.position;
+
+        GameObject bossPrefab = EnemyPrefabs[BossEnemyPrefabIndex];
+        Enemy.EnemyType type = Enemy.EnemyType.Boss;
+
+        Debug.Log("<color=red><b>최종 보스 출현!</b></color>");
+
+        SpawnEnemy(bossPrefab, spawnPos, type);//기존에 만들어둔 SpawnEnemy 함수를 그대로 활용 (재사용성)
+
+        //보스 등장 시 알림 메시지 (TextAlimManager 활용)
+        if (textalimManager != null)
+            textalimManager.ShowMonsterNotification("<color=red>최종 보스가 등장했습니다!</color>");
     }
 
 
