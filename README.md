@@ -48,7 +48,7 @@
 ### 1. 핵심 스크립트 (Scripts)
 `Assets/_Project/Scripts/` 내에 **단일 책임 원칙(SRP)**에 따라 역할별로 분류되어 있습니다.
 
-* **Player**: 캐릭터 이동, 공격 로직(검/활), 상태 관리 및 체력 시스템 구현
+* **[Player](./Assets/_Project/Scripts/Player)**: 캐릭터 이동, 공격 로직(검/활), 상태 관리 및 체력 시스템 구현
 * **Enemy**: FSM 기반 AI, 스폰 시스템, 몬스터 스탯 관리(ScriptableObject 활용)
 * **Item**: 아이템 드랍 로직 및 아이템 상자 상호작용 시스템
 * **Managers**: 게임 루프 및 전역 상태 관리, 시간 경과에 따른 몬스터/장애물 난이도 동적 강화 시스템(Level Design), 아이템 스폰 시스템 등 프로젝트의 중추를 담당
