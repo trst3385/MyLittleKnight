@@ -12,30 +12,33 @@ public class Arrow : MonoBehaviour
     [HideInInspector] public bool IsEnhanced = false;//강화 화살인지 (BowWeapon 스크립트에서 설정됨)
     [HideInInspector] public float SlowFactor = 0f;//몬스터 이동 속도 감소 비율 (0.5f = 50% 느려짐)
 
+    private List<GameObject> hitEnemies = new List<GameObject>();//이미 강화화살에 맞은 적들을 기억할 리스트
+
     void Start()
     {   
         Destroy(gameObject, LifeTime);   
     }
     
-    private void OnTriggerEnter2D(Collider2D other)//다른 Collider와 충돌 했을때 호출
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        //충돌한 오브젝트 태그가 Enemy인지 확인
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy"))//충돌한 오브젝트 태그가 Enemy인지 확인
         {
-            EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();//EnemyHealth스크립트와 연결
+            if (hitEnemies.Contains(other.gameObject)) return;//이미 맞은 적이면 무시 (다단 히트 방지)
+
+            EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
+                hitEnemies.Add(other.gameObject);//이미 화살에 맞은 적인지 확인
+
                 enemyHealth.TakeDamage(ArrowDamage);
                 Debug.Log($"{other.name}에게 {ArrowDamage} 데미지!");
 
                 if (IsEnhanced)
                 {
-                    //EnemyHealth 스크립트에서 몬스터 오브젝트의 Enemy 스크립트를 찾음
-                    Enemy enemyScript = other.GetComponent<Enemy>();
+                    Enemy enemyScript = other.GetComponent<Enemy>();//EnemyHealth 스크립트에서 몬스터 오브젝트의 Enemy 스크립트를 찾음
                     if (enemyScript != null)
                     {
-                        //다음 단계에서 구현할 Enemy 스크립트의 함수를 호출
-                        enemyScript.ApplySlowEffect(SlowFactor);
+                        enemyScript.ApplySlowEffect(SlowFactor);//Enemy 스크립트의 ApplySlowEffect(강화 화살에 맞으면 슬로우) 호출
                         Debug.Log($"{other.name}에게 슬로우 효과 적용됨!");
                     }
                 }

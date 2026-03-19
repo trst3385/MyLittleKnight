@@ -10,6 +10,9 @@ public class SwordEnergy : MonoBehaviour
     [HideInInspector]public float damage;//외부에서 데미지를 받아서 저장할 변수
     //HideInInspector는 public 변수를 인스펙터에 숨길 수 있어!
 
+    //이미 데미지를 입힌 적들을 저장하는 리스트
+    private List<GameObject> hitEnemies = new List<GameObject>();
+
     void Start()
     {
         Destroy(gameObject, DestroyTime);//(DestroyTime)초 뒤에 발사체 오브젝트를 스스로 파괴
@@ -21,16 +24,19 @@ public class SwordEnergy : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)//콜라이더와 충돌했을 때 실행되는 함수
-    {//콜라이더의 Is Trigger가 켜져 있어야한다구!
-
+    private void OnTriggerEnter2D(Collider2D other)//(몬스터의)콜라이더와 충돌했을 때 실행되는 함수
+    {
         //부딪힌 오브젝트의 태그가 Enemy인지 확인하기
         if (other.CompareTag("Enemy"))
         {
+            if (hitEnemies.Contains(other.gameObject)) return;//리스트에 이미 있는 적이라면 데미지를 주지 않고 무시(return)해
+
             //EnemyHealth 스크립트를 찾아서 몬스터에게 데미지 추기
             EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
+                hitEnemies.Add(other.gameObject);//데미지를 주기 전에 리스트에 추가해서 '이미 맞았음'을 표시
+
                 enemyHealth.TakeDamage(damage);
                 Debug.Log(other.name + "에게 검기 발사체 데미지 부여!");
             }
