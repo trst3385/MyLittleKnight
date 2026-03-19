@@ -15,6 +15,12 @@
   </a>
 </p>
 
+## 🛠 Tech Stack
+- **Engine**: Unity 6000.3.11f1 (LTS)
+- **Language**: C#
+- **Patterns**: Singleton, FSM (Finite State Machine), Observer Pattern, Drag & Drop
+- **Tools**: Git/GitHub, ScriptableObjects, Gemini
+  
 ---
 ## Build History
 * **v1.7.0**: 포탈 생성 조건 달성 후 등장하는 보스 몬스터까지 처치해야 다음 씬으로 가는 포탈 생성(1->2, 2->3), 포탈 생성 목표의 몬스터 킬수와 게임시간 증가
@@ -45,7 +51,7 @@
 * **Player**: 캐릭터 이동, 공격 로직(검/활), 상태 관리 및 체력 시스템 구현
 * **Enemy**: FSM 기반 AI, 스폰 시스템, 몬스터 스탯 관리(ScriptableObject 활용)
 * **Item**: 아이템 드랍 로직 및 아이템상자 상호작용 시스템
-* **Managers**: 게임 루프, 전역 상태(Sound, UI, Game, Spawn), 게임 난이도(몬스터 강화, 장애물 강화) 동적 강화 시스템, 아이템 스폰 관리 등 게임 전반을 관장하는 싱글톤 매니저 그룹
+* **Managers**: 게임 루프 및 전역 상태 관리, 시간 경과에 따른 몬스터/장애물 난이도 동적 강화 시스템(Level Design), 아이템 스폰 시스템 등 프로젝트의 중추를 담당
 * **MainScene**: 메인 화면 연출(배경 캐릭터/몬스터 배치), 패럴렉스 스크롤 효과, UI 버튼 상호작용 제어
 
 ### 2. 에셋 및 데이터 관리
