@@ -41,25 +41,34 @@
 
 ## 📂 주요 소스 코드 및 프로젝트 구조
 
-본 프로젝트는 유지보수와 확장을 고려하여 **기능 단위(Feature-based)**로 폴더를 구성하였으며, 모든 핵심 로직과 에셋은 `Assets/_Project` 경로 내에서 체계적으로 관리됩니다.
+본 프로젝트는 유지보수와 확장을 고려하여 `기능 단위(Feature-based)`로 폴더를 구성하였으며, 모든 핵심 로직과 에셋은 `Assets/_Project` 경로 내에서 체계적으로 관리됩니다.
 
 > 💡 **Build Versions:** 빌드가 완료된 실행 파일은 `BuildVersions` 폴더 또는 GitHub **Releases**에서 확인하실 수 있습니다.
 
 ### 1. 핵심 스크립트 (Scripts)
-`Assets/_Project/Scripts/` 내에 **단일 책임 원칙(SRP)**에 따라 역할별로 분류되어 있습니다.
+`Assets/_Project/Scripts/` 내에 `단일 책임 원칙(SRP)`에 따라 역할별로 분류되어 있습니다.
 
-* **[Player](./Assets/_Project/Scripts/Player)**: 캐릭터 이동, 공격 로직(검/활), 상태 관리 및 체력 시스템 구현
-* **[Enemy](./Assets/_Project/Scripts/Enemy)**: FSM 기반 AI, 스폰 시스템, 몬스터 스탯 관리(ScriptableObject 활용)
-* **[Item](./Assets/_Project/Scripts/Item)**: 아이템 드랍 로직 및 아이템 상자 상호작용 시스템
-* **[Managers](./Assets/_Project/Scripts/Managers)**: 게임 루프 및 전역 상태 관리, 시간 경과에 따른 몬스터/장애물 난이도 동적 강화 시스템(Level Design), 아이템 스폰 시스템 등 프로젝트의 중추를 담당
-* **[MainScene](./Assets/_Project/Scripts/MainScene)**: 메인 화면 연출(배경 캐릭터/몬스터 배치), 패럴렉스(Parallax) 스크롤 효과, UI 버튼 상호작용 제어
+* **[Player](./Assets/_Project/Scripts/Player)**:
+  - **컴포넌트 기반 설계(SRP)**: 이동, 입력, 공격, 체력 로직을 독립된 스크립트로 분리하여 관리.
+  - **이벤트 기반 상태 알림**: 옵저버 패턴(Action)을 활용해 플레이어 상태 변화를 UI 및 게임 매니저와 동기화.
+* **[Enemy](./Assets/_Project/Scripts/Enemy)**: 
+  - **상태 기반 AI (FSM)**: 몬스터의 추격, 공격, 사망 상태를 제어하는 공통 AI 로직 구현.
+  - **데이터 기반 스탯 관리**: ScriptableObject를 활용해 다양한 몬스터 타입과 스탯 데이터를 효율적으로 확장.
+* **[Item](./Assets/_Project/Scripts/Item)**:
+  - 아이템과 아이템 랜덤 상자와 플레이어와의 충돌/획득 시너지 로직 관리.
+* **[Managers](./Assets/_Project/Scripts/Managers)**:
+  - **싱글톤 패턴**: 사운드, UI, 스폰, 난이도 조절 등 게임의 중추 역할을 하는 전역 매니저 그룹.
+  - **레벨 디자인 제어**: 시간 경과에 따른 몬스터/장애물의 동적 난이도 상승 시스템 구현.
+* **[MainScene](./Assets/_Project/Scripts/MainScene)**:
+  - 메뉴 화면의 움직이는 오브젝트, UI 버튼 제어 및 패럴렉스 효과를 이용한 배경 연출 로직 포함.
 
 ### 2. 에셋 및 데이터 관리
 로직과 데이터를 분리하여 관리함으로써 프로젝트의 가독성과 재사용성을 높였습니다.
 
-* **Prefabs**: 스크립트가 조립된 완성형 오브젝트 (Player, Enemy, UI 등)
-* **Scenes**: 게임의 씬(GameScene1,2,3, MainMenuScene)의 위치
-* **Audio**: 게임에 사용되는 각종 사운드 파일
+* **[Prefabs](./Assets/_Project/Prefabs)**: 스크립트가 조립된 완성형 오브젝트 (Player, Enemy, Item 등)
+* **[Scenes](./Assets/_Project/Scenes)**: 게임의 핵심 씬(GameScene 1, 2, 3 및 MainMenuScene) 관리
+* **[Audio](./Assets/_Project/Audio)**: 게임 내 몰입감을 높이는 각종 효과음(SFX) 및 배경음악(BGM) 에셋
+* **[PostProcessing](./Assets/_Project/PostProcessing)**: 시각적 완성도를 높이기 위한 포스트 프로세싱 설정 파일(TimeFreeze 아이템으로 시간 정지 시 화면 색상 변경)
 
 ---
 
