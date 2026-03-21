@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8377741010557115876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4186602676425484018}
+  m_Layer: 0
+  m_Name: EnergySpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4186602676425484018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8377741010557115876}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0159, y: 0.487, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7684625701416924505}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &572172122834766420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -145,16 +176,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7878350319992209165, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4186602676425484018}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -2253911629886400664, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1380360688965729001}
+      addedObject: {fileID: 1624329084087567441}
     - targetCorrespondingSourceObject: {fileID: -2253911629886400664, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1624329084087567441}
+      addedObject: {fileID: 6330983163540310868}
     - targetCorrespondingSourceObject: {fileID: -2253911629886400664, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}
       insertIndex: -1
@@ -179,22 +214,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 572172122834766420}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1380360688965729001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7442406002320563516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58cdcbb6d5c383e45b5100bbbb400ff5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyType: 2
-  statsData: {fileID: 11400000, guid: 967c920e4215b9847bd6f7864305ad6a, type: 2}
-  EnemySpawner: {fileID: 0}
-  deathSound: {fileID: 8300000, guid: 2e3f7a5ee4fd5794aa0938af2991e7f8, type: 3}
 --- !u!114 &1624329084087567441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,8 +226,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e6335ba3142c64ea3064d035370881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statsData: {fileID: 0}
+  statsData: {fileID: 11400000, guid: 967c920e4215b9847bd6f7864305ad6a, type: 2}
   Animator: {fileID: 0}
+--- !u!114 &6330983163540310868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7442406002320563516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab96c4ea0bcbd7046be5a33c46ac45c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LastBossEnemy
+  enemyType: 0
+  statsData: {fileID: 11400000, guid: 967c920e4215b9847bd6f7864305ad6a, type: 2}
+  EnemySpawner: {fileID: 0}
+  deathSound: {fileID: 0}
+  energyPrefab: {fileID: 5505100635091821837, guid: a1b2652e43cd8714b8438919b30cdca6,
+    type: 3}
+  energySpawnPoint: {fileID: 4186602676425484018}
+  energySpeed: 13
+  numberOfEnergies: 8
+  burstCoolTime: 5
+  minDistanceToShoot: 5
 --- !u!61 &8371844091458674630
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -426,3 +468,9 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!4 &7684625701416924505 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7878350319992209165, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
+    type: 3}
+  m_PrefabInstance: {fileID: 572172122834766420}
+  m_PrefabAsset: {fileID: 0}

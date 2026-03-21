@@ -3,14 +3,14 @@ using System.Collections;
 using UnityEngine;
 using static EnemyDifficulty;//StatType enum 등을 EnemyDifficulty. 접두사 없이 사용
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크립트의 상속을 받아
 {
     public enum EnemyType { Normal, Strong, Elite, Boss }//인스펙터창에 '드롭다운' 으로 Normal, Strong, Elite표시
     public EnemyType enemyType = EnemyType.Normal;//enum을 담을 변수 선언, 인스펙터에서 설정할 몬스터 기본 타입
 
     [Header("Stats (ScriptableObject)")]
     public EnemyStatsSO statsData;//Prefab별 스탯 데이터(SO), public으로 변경해서 EnemyHealth가 이곳에서 SO를 가져올 수 있게
-
+    [HideInInspector]
 
     [Header("스크립트 연결(코드 내 자동 연결)")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
@@ -18,31 +18,31 @@ public class Enemy : MonoBehaviour
 
     [Header("사운드")]//사운드 관련
     [SerializeField] private AudioClip deathSound;
-
+    
 
     //-----내부변수-----//
-    //내부 컴포넌트(Awake에서 초기화)
-    private Rigidbody2D rb;
-    private Animator animator;
-    private SpriteRenderer spriteRenderer;
-    private Collider2D[] colliders;
+    //내부 컴포넌트(Awake에서 초기화), LastBossEnemy 스크립트가 상속을 받으니 protected으로 안전하게 변경
+    protected Rigidbody2D rb;
+    protected Animator animator;
+    protected SpriteRenderer spriteRenderer;
+    protected Collider2D[] colliders;
     //외부 스크립트(Start에서 초기화)
-    private Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
-    private PlayerShield playerShield;
-    private TimeFreeze timeFreeze;//캐싱용
+    protected Player playerScript;//런타임에 Player 태그를 이용해 찾아 연결할 변수
+    protected PlayerShield playerShield;
+    protected TimeFreeze timeFreeze;//캐싱용
     //런타임 스탯 및 상태
-    private float currentMoveSpeed;
-    private float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
-    private float currentAttackCoolTime;
-    private float currentAttackDamage;
-    private float currentDetectionRange;//몬스터가 플레이어를 감지하는 거리
-    private int currentScoreValue;//몬스터 처치 시 플레이어가 받을 점수
+    protected float currentMoveSpeed;
+    protected float currentStopDistance;//플레이어와 이 거리에 닿으면 멈춤
+    protected float currentAttackCoolTime;
+    protected float currentAttackDamage;
+    protected float currentDetectionRange;//몬스터가 플레이어를 감지하는 거리
+    protected int currentScoreValue;//몬스터 처치 시 플레이어가 받을 점수
     //상태변수
-    private float lastAttackTime;//마지막으로 공격한 시간
-    private bool playerWasDead = false;//플레이어가 이전에 죽었었는지 추적하는 변수
-    private bool isDead = false;//사망 변수(기본값 false)
-    private bool isKnockedBack = false;//넉백 중인지 여부를 나타내는 플래그
-    private bool isPendingDeath = false;//처리를 시간 정지 해제 시까지 대기시키는 플래그
+    protected float lastAttackTime;//마지막으로 공격한 시간
+    protected bool playerWasDead = false;//플레이어가 이전에 죽었었는지 추적하는 변수
+    protected bool isDead = false;//사망 변수(기본값 false)
+    protected bool isKnockedBack = false;//넉백 중인지 여부를 나타내는 플래그
+    protected bool isPendingDeath = false;//처리를 시간 정지 해제 시까지 대기시키는 플래그
 
 
     void Awake()//내부 컴포넌트는 Awake에
@@ -88,8 +88,8 @@ public class Enemy : MonoBehaviour
         if (statsData == null) Debug.LogError($"{gameObject.name}: statsData(EnemyStatsSO)가 연결되지 않았어!");
     }
 
-    void FixedUpdate()//FixedUpdate에선 Time.deltaTime보단 Time.fixedDeltaTime(정확한 물리 계산과 일관된 이동 속도를 보장)
-    {
+    protected virtual void FixedUpdate()//외부 호출 없으니 protected으로 결정
+    {                                   
         if (statsData == null) return;
 
         if (timeFreeze != null && timeFreeze.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
@@ -138,7 +138,7 @@ public class Enemy : MonoBehaviour
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
     }
 
-    public void SetEnmeyStats()//몬스터 시작 시 스탯과 외형을 설정 함수(ScriptableObject 스크립트와 Enemy Stats SO 파일)
+    public virtual void SetEnmeyStats()//몬스터 시작 시 스탯과 외형을 설정 함수(ScriptableObject 스크립트와 Enemy Stats SO 파일)
     {
         if (spriteRenderer == null)
         {
@@ -176,7 +176,7 @@ public class Enemy : MonoBehaviour
         spriteRenderer.color = statsData.SpriteColor;
     }
     
-    void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
+    public virtual void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
     {                        //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
 
         if (playerScript == null || playerScript.IsDead)//플레이어 생존/연결 체크
@@ -193,7 +193,7 @@ public class Enemy : MonoBehaviour
         else Debug.LogError("PlayerShield 스크립트가 플레이어 오브젝트에 없어! 방어력 시스템에 연결되지 않았어!");
     }
 
-    public void Attack()//Animation Event에서 호출 (공격 타이밍)
+    public virtual void Attack()//Animation Event에서 호출 (공격 타이밍)
     {
         //이 함수는 호출되면 다시 한번 플레이어와의 거리(+ 1.5f의 추가 공격 범위)를 체크한 후, DealDamageToPlayer()를 호출
         //Attack 애니메이션 이벤트가 호출될 때, 플레이어와의 거리를 다시 확인
@@ -210,11 +210,11 @@ public class Enemy : MonoBehaviour
     //AttackCooldown마다 주기적으로 데미지를 적용하는 함수.
     //이 함수는 DealDamageToPlayer()를 호출하여 데미지를 최종적으로 적용하는 전달자 역할 수행.
     //(주로 ProcessMovementAndAttack AI 로직에서 호출됨)
-    void ApplyTouchDamage() => DealDamageToPlayer();//근접 접촉 데미지
+    public virtual void ApplyTouchDamage() => DealDamageToPlayer();//근접 접촉 데미지
 
 
     //플레이어가 몬스터의 탐지/공격 범위 안에 들어왔을 때 행동을 결정하는 핵심 함수 (AI 분기점)
-    private void ProcessMovementAndAttack(bool isInDetectionRange, bool isInStopDistance, bool canAttack, Vector3 playerCenterPosition)
+    public virtual void ProcessMovementAndAttack(bool isInDetectionRange, bool isInStopDistance, bool canAttack, Vector3 playerCenterPosition)
     {
         if (!isInDetectionRange)//탐지 범위 밖이라면 (추격 포기)
         {
@@ -246,7 +246,7 @@ public class Enemy : MonoBehaviour
         }
     }
     
-    public void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
+    public virtual void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
     {
         if (isDead) return;//죽은 몬스터는 넉백되지 않음
 
@@ -265,7 +265,7 @@ public class Enemy : MonoBehaviour
 
         StartCoroutine(KnockbackRoutine(duration));//넉백 지속 시간만큼 기다린 후 넉백 상태 해제
     }
-    private IEnumerator KnockbackRoutine(float duration)//넉백 코루틴
+    public virtual IEnumerator KnockbackRoutine(float duration)//넉백 코루틴
     {
         yield return new WaitForSeconds(duration);//SwordWeapon 스크립트의 KnockbackDuration = 0.2f(초) 동안 밀려남
 
@@ -274,7 +274,7 @@ public class Enemy : MonoBehaviour
         Debug.Log(gameObject.name + " 넉백 종료.");
     }
 
-    private void MoveTowardsPlayer(Vector3 targetPosition)//플레이어 추적/이동 로직
+    public virtual void MoveTowardsPlayer(Vector3 targetPosition)//플레이어 추적/이동 로직
     {
         Vector2 direction = (targetPosition - transform.position).normalized;
         rb.linearVelocity = direction * currentMoveSpeed;
@@ -283,23 +283,23 @@ public class Enemy : MonoBehaviour
         FlipSprite(direction.x);//좌우 반전 함수 호출
     }
 
-    public void OnAttackFinished() => animator.SetBool("Attack", false);//코드를 엄청 간결하게 만들어주는 표현식 본문 멤버
+    public virtual void OnAttackFinished() => animator.SetBool("Attack", false);//코드를 엄청 간결하게 만들어주는 표현식 본문 멤버
     //공격 애니메이션이 끝난 후에 Attack Bool을 다시 false로 바꿔주는 함수, 몬스터의 Animation에서 이 함수를 호출해 공격 종료.
 
 
-    private void StopMovement()//움직임 정지 로직
+    public virtual void StopMovement()//움직임 정지 로직
     {
         rb.linearVelocity = Vector2.zero;
         animator.SetBool("Move", false);
     }
 
-    private void FlipSprite(float directionX)//몬스터 스프라이트 좌우 반전
+    public virtual void FlipSprite(float directionX)//몬스터 스프라이트 좌우 반전
     {
         //방향이 0이 아닐 때만 처리 (0일 땐 flipX가 유지됨)
         if (directionX != 0) spriteRenderer.flipX = directionX < 0;//directionX가 음수일 때 (왼쪽) true, 양수일 때 (오른쪽) false
     }
 
-    private bool HandlePlayerDeath()//플레이어가 죽었을때 몬스터의 행동을 정지
+    public virtual bool HandlePlayerDeath()//플레이어가 죽었을때 몬스터의 행동을 정지
     {
         bool isPlayerDead = (playerScript != null && playerScript.IsDead);
 
@@ -322,7 +322,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void EnemyDie()//몬스터 사망
+    public virtual void EnemyDie()//몬스터 사망
     {
         if (isDead) return;//이미 죽은 상태라면, 더 이상 아무것도 하지 않고 함수를 종료
         isDead = true;
@@ -356,7 +356,7 @@ public class Enemy : MonoBehaviour
 
         ExecuteDeathSequence();//시간이 정상일 때 지연 없이 즉시 사망 시퀀스 실행
     }
-    public void ExecuteDeathSequence()//시간 정지로 지연되었던 사망 시퀀스(사운드, 모션, 파괴)를 실행하는 함수
+    public virtual void ExecuteDeathSequence()//시간 정지로 지연되었던 사망 시퀀스(사운드, 모션, 파괴)를 실행하는 함수
     {                                 //**시간 정지가 아닐때에도 여기서 몬스터의 사망 시 행동을 발동해**
 
         //1. 사운드 재생 (시간이 풀렸으니 사운드 재생)
@@ -377,7 +377,7 @@ public class Enemy : MonoBehaviour
     /// 강화 화살에 피격 시 호출되어 몬스터에게 슬로우 효과를 적용.
     /// </summary>
     /// <param name="factor">이동 속도 감소 비율 (예: 0.5f = 50% 느려짐)</param>
-    public void ApplySlowEffect(float factor)
+    public virtual void ApplySlowEffect(float factor)
     {
         if (isDead) return;
 

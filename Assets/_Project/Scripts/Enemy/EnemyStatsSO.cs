@@ -13,5 +13,7 @@ public class EnemyStatsSO : ScriptableObject//MonoBehaviour 대신 ScriptableObj
     public float PlayerTargetOffsetY;//몬스터가 플레이어 오브젝트의 중앙으로 이동 Y축 오프셋 (pivot/center 보정)
     public Color SpriteColor;//색상
     public int ScoreValue;//몬스터 처치 시 받을 점수
-    //다음엔 몬스터가 플레이어 중앙에 도착하는 변수도 여기에 추가하자 (현재 Enemy스크립트에 있어)
+
+    [Tooltip("보스 전용: 탄막 데미지")]
+    public float energyDamage;//보스몬스터 전용 발사체 데미지
 }

@@ -18,7 +18,7 @@ public class SwordEnergy : MonoBehaviour
         Destroy(gameObject, DestroyTime);//(DestroyTime)초 뒤에 발사체 오브젝트를 스스로 파괴
     }
 
-    public void SetDamage(float amount)// 검 에너지의 최종 데미지 값을 설정하는 함수 (SwordWeapon에서 호출)
+    public void SetDamage(float amount)//검 에너지의 최종 데미지 값을 설정하는 함수 (SwordWeapon에서 호출)
     {                            
         damage = amount;//SwordWeapon에서 계산된 'amount' 값을 이 스크립트의 'damage' 변수에 저장하여 적용                                           
     }

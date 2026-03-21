@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0672313654db6140a6cff6aa1efc3df, type: 3}
   m_Name: EnemyStats_LastBoss
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
-  MaxHP: 20
+  MaxHP: 40
   MoveSpeed: 10
   StopDistance: 0.5
   AttackCooldown: 1
@@ -21,3 +21,4 @@ MonoBehaviour:
   PlayerTargetOffsetY: -5.5
   SpriteColor: {r: 0.18039216, g: 0.1764706, b: 0.1764706, a: 1}
   ScoreValue: 100
+  energyDamage: 8
