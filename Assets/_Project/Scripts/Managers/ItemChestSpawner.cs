@@ -49,8 +49,6 @@ public class ItemChestSpawner : MonoBehaviour
         if (ItemChestSpawnCollider == null)
         {
             ItemChestSpawnCollider = GetComponentInChildren<BoxCollider2D>();
-            if (ItemChestSpawnCollider != null)
-                Debug.Log($"{ItemChestSpawnCollider.gameObject.name}을 아이템 스폰 범위로 연결했어!");
         }
 
         //레이어마스크 자동 설정

@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab96c4ea0bcbd7046be5a33c46ac45c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LastBossEnemy
-  enemyType: 0
+  enemyType: 3
   statsData: {fileID: 11400000, guid: 967c920e4215b9847bd6f7864305ad6a, type: 2}
   EnemySpawner: {fileID: 0}
   deathSound: {fileID: 0}
@@ -249,7 +249,7 @@ MonoBehaviour:
   energySpawnPoint: {fileID: 4186602676425484018}
   energySpeed: 13
   numberOfEnergies: 8
-  burstCoolTime: 5
+  energyCoolTime: 3
   minDistanceToShoot: 5
 --- !u!61 &8371844091458674630
 BoxCollider2D:

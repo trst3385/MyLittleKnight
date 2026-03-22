@@ -80,9 +80,8 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
             if (foundPoint != null)
             {
                 bossSpawnPoint = foundPoint;
-                Debug.Log("보스 스폰 위치를 자동으로 찾았어!: " + bossSpawnPoint.name);
             }
-            else Debug.LogWarning("자식 오브젝트 중 'BossSpawnPoint'를 찾을 수 없어! 보스가 센터에서 소환될 거야.");
+            else Debug.LogWarning("자식 오브젝트 중 'BossSpawnPoint'를 찾을 수 없어!");
 
         }
 
@@ -95,7 +94,7 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     {
         spawnTimer = 2f;//게임 시작 시 첫 몬스터 스폰을 2초 뒤로 늦춤
         nextEliteSpawnScore = EliteSpawnScoreThreshold;//첫 Elite 스폰 점수 초기화
-
+        
 
         //EnemyPrefabs 배열이 비어있는지 확인 (에러 방지)
         if (EnemyPrefabs == null || EnemyPrefabs.Length == 0)

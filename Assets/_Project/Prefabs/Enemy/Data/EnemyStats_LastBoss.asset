@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyStats_LastBoss
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
   MaxHP: 40
-  MoveSpeed: 10
+  MoveSpeed: 8
   StopDistance: 0.5
   AttackCooldown: 1
   AttackDamage: 10
@@ -22,3 +22,7 @@ MonoBehaviour:
   SpriteColor: {r: 0.18039216, g: 0.1764706, b: 0.1764706, a: 1}
   ScoreValue: 100
   energyDamage: 8
+  DashSpeed: 30
+  DashDuration: 0.5
+  DashCoolTime: 6
+  DashReadyTime: 1.5

@@ -50,15 +50,19 @@ public class ItemSpawner : MonoBehaviour
         if (ItemSpawnCollider == null)
         {
             ItemSpawnCollider = GetComponentInChildren<BoxCollider2D>();
-            if (ItemSpawnCollider != null)
-                Debug.Log($"{ItemSpawnCollider.gameObject.name}을 일반 아이템 스폰 범위로 연결했어!");
         }
 
         //알림 매니저 자동 연결
-        if (textalimManager == null) textalimManager = FindFirstObjectByType<TextAlimManager>();
+        if (textalimManager == null)  
+        {
+            textalimManager = FindFirstObjectByType<TextAlimManager>();
+        }
 
         //레이어 기본값 설정 (Ground 레이어 가정)
-        if (SpawnableLayer == 0) SpawnableLayer = LayerMask.GetMask("Ground");
+        if (SpawnableLayer == 0)
+        {
+            SpawnableLayer = LayerMask.GetMask("Ground");
+        }
     }
 
     void Start()

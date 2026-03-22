@@ -81,7 +81,7 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
     private void CheckInitialization()//검수 함수
     {
         if (playerScript == null) Debug.LogWarning($"{gameObject.name}: Player를 찾을 수 없어! 태그를 확인해!");
-        if (EnemySpawner == null) Debug.LogWarning($"{gameObject.name}: EnemySpawn 스파너가 씬에 없어!");
+        if (EnemySpawner == null) Debug.LogWarning($"{gameObject.name}: EnemySpawn 스포너가 씬에 없어!");
         if (rb == null) Debug.LogError($"{gameObject.name}: Rigidbody2D가 누락됐어!");
         if (animator == null) Debug.LogError($"{gameObject.name}: Animator가 누락됐어!");
         if (spriteRenderer == null) Debug.LogError($"{gameObject.name}: SpriteRenderer가 누락됐어!");
@@ -124,17 +124,16 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
         //플레이어와의 거리 계산
         Vector3 playerCenterPosition = playerScript.GetCenterPosition();//플레이어의 중앙 위치 가져오기
         playerCenterPosition.y += statsData.PlayerTargetOffsetY;//Y축 오프셋 적용
-
-
+        //1. 매 프레임마다 플레이어와 나 사이의 직선 거리를 계산
         float distanceToPlayer = Vector2.Distance(transform.position, playerCenterPosition);
-
-        //긴 조건문을 대체하여 가독성을 높이는 지역 변수
-        bool isInDetectionRange = distanceToPlayer <= currentDetectionRange;
+        //2. 그 거리가 내가 설정한 '멈춤 거리(StopDistance)'보다 작은지 체크해
         bool isInStopDistance = distanceToPlayer <= currentStopDistance;
+
+        bool isInDetectionRange = distanceToPlayer <= currentDetectionRange;
         bool canAttack = Time.time >= lastAttackTime + currentAttackCoolTime;
 
 
-        //주 로직 분리 (세분화된 함수 호출)
+        //주 로직 분리 (세분화된 함수 호출), 
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
     }
 
@@ -205,12 +204,10 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
 
     }
 
-    //<접촉 데미지 실행 경로>
-    //몬스터가 플레이어에게 붙어있는 상태에서 (StopDistance 이내)
-    //AttackCooldown마다 주기적으로 데미지를 적용하는 함수.
-    //이 함수는 DealDamageToPlayer()를 호출하여 데미지를 최종적으로 적용하는 전달자 역할 수행.
-    //(주로 ProcessMovementAndAttack AI 로직에서 호출됨)
     public virtual void ApplyTouchDamage() => DealDamageToPlayer();//근접 접촉 데미지
+    //스크립트에서는 유니티의 충돌 이벤트(OnTrigger)에 의존하는 대신,
+    //FixedUpdate에서 Vector2.Distance를 이용해 실시간 거리 기반 AI를 구현. 이를 통해 콜라이더 크기에 구애받지 않고,
+    //유연하게 공격 사거리를 제어하고, 접촉 상태를 지속적으로 감지하여 접촉데미지를 줄 수 있도록 설계
 
 
     //플레이어가 몬스터의 탐지/공격 범위 안에 들어왔을 때 행동을 결정하는 핵심 함수 (AI 분기점)
