@@ -23,8 +23,8 @@ public class ObstacleDifficultyManager : MonoBehaviour
 
     [Header("발사체 속도 조절")]//헤더는 이건 순전히 유니티 인스펙터 창을 정리하고 보기 좋게 만들기 위한 기능이야
     public float FireBallSpeed = 5f;//초기 발사체 속도. 게임이 시작될 때 발사체가 움직이는 기본 속도
-    public float MaxFireBallSpeed = 30f;//최대 발사체 속도
-    public float FireBallSpeedUp = 2f;//속도 증가량. 발사체의 속도가 한 번 빨라질 때마다 몇씩 증가할지 정하는 값
+    public float MaxFireBallSpeed = 20f;//최대 발사체 속도
+    public float FireBallSpeedUp = 1f;//속도 증가량. 발사체의 속도가 한 번 빨라질 때마다 몇씩 증가할지 정하는 값
                                           
     [Header("발사체 생성 주기 조절")]
     public float FireBallSpawnTime = 6f;//초기 생성 주기. 게임이 시작될 때 발사체가 생성되는 기본 시간 간격.

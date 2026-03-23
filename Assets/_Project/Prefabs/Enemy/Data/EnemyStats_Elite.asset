@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyStats_Elite
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
   MaxHP: 10
-  MoveSpeed: 8
+  MoveSpeed: 7
   StopDistance: 0.5
   AttackCooldown: 1
   AttackDamage: 8
@@ -21,3 +21,8 @@ MonoBehaviour:
   PlayerTargetOffsetY: -3.5
   SpriteColor: {r: 0.61960787, g: 0.30588236, b: 1, a: 1}
   ScoreValue: 60
+  energyDamage: 0
+  DashSpeed: 0
+  DashDuration: 0
+  DashCoolTime: 0
+  DashReadyTime: 0

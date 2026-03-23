@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;//Tilemap 관련 기능을 사용하기 위해
 
-public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하는 것이 C#의 표준 코딩 컨벤션이야.
+public class EnemySpawn : MonoBehaviour
 {   //이렇게 통일하면 코드가 훨씬 깔끔하고 다른 개발자들이 봤을 때도 이해하기 쉬워져.
 
     public static EnemySpawn Instance { get; private set; }//싱글톤 선언
@@ -33,9 +34,14 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
     [Header("Boss 몬스터 스폰 설정")]
     public int BossEnemyPrefabIndex = 3;//배열에서 보스 프리팹 위치
     private Transform bossSpawnPoint;//자동으로 찾을 자식 오브젝트
+    [Header("무한 모드에서 Boss 몬스터 스폰 설정")]
+    [SerializeField] private float bossSpawnInterval = 60f;//1분(60초)
+    private float bossTimer;//보스 소환용 타이머
+    private bool isInfiniteMode = false;//현재 3번 씬인지 체크
 
 
     //내부에서 사용할 변수들
+    private bool stopSpawning = false;//잡몹 스폰 중단 스위치
     private float spawnTimer;//스폰 주기 계산용 타이머
     private float currentEnemyCount;//현재 생성된 몬스터 수를 담을 변수
     private int normalEnemyKilledSinceLastStrong = 0;//마지막 Strong 몬스터 스폰 후 잡은 Normal 몬스터 수
@@ -120,7 +126,14 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         {
             Debug.LogError("EnemySpawn: EnemyDifficulty.Instance를 찾을 수 없어! EnemyDifficulty 스크립트가 씬에 있는지 확인해!");
             normalSpawnTime = 4f;//기본값으로 설정 (오류 방지)
-        } 
+        }
+
+        //현재 씬이 GameScene3인지 미리 체크해두기(3번씬에서는 보스 몬스터는 1분마다 등장)
+        if (SceneManager.GetActiveScene().name == "GameScene3")
+        {
+            isInfiniteMode = true;
+            bossTimer = bossSpawnInterval;//첫 보스는 1분 뒤에 나오도록 설정
+        }
     }
 
     void Update()
@@ -128,19 +141,40 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         //TimeFreeze로 시간이 멈췄는지 체크하고, 멈췄다면 타이머 감소 및 스폰 로직을 건너뜀
         if (TimeFreeze.Instance != null && TimeFreeze.Instance.IsTimeFrozen) return;
 
+        //무한 모드(게임씬3) 전용 보스 스폰 로직
+        if (isInfiniteMode)
+        {
+            bossTimer -= Time.deltaTime;
+            if (bossTimer <= 0f)
+            {
+                SpawnBossEnemy();//보스 소환 함수 호출
+                bossTimer = bossSpawnInterval;//타이머 다시 1분으로 리셋, 1분후 또 재등장
+            }
+        }
+
+        if (stopSpawning) return;//스폰 중단 상태면 일반/스트롱/엘리트 스폰 로직을 모두 건너뜀(1,2씬에서 보스 몬스터가 등장하면)
 
         spawnTimer -= Time.deltaTime;//남은 시간 감소
-
         if (spawnTimer <= 0f)//타이머가 0이하가 되면 스폰
         {
             //normalSpawnCount 만큼 반복해서 스폰
             for (int i = 0; i < normalSpawnCount; i++) SpawnNormalEnemy();//일반 몬스터 생성 함수 호출
 
             spawnTimer = normalSpawnTime;//다음 몬스터 스폰을 위해 타이머 초기화
-            //08.23 여기 if문은 중괄호를 없애지 않았어. if밑에는 for문이 있어. 그래서 더 밑의 spawnTimer = normalSpawnTime가
-            //if문의 영향을 받지 않아서야. 괄호가 없으면 if밑에 있는 하나만 작동하고 더 밑에 있는건 if문과 연결되지 않아서야
-        }
-    }   
+        }    
+    }
+
+    public void StopAllSpawning()//외부에서 스폰을 멈추게 할 함수(1,2씬에서만 잡몹 스폰 중단)
+    {
+        stopSpawning = true;
+        Debug.Log("<color=orange>EnemySpawn: 보스가 등장하여 잡몹 스폰을 중단합니다!</color>");
+    }
+    public void ResumeSpawning()//외부다시 스폰을 시작하는 함수
+    {
+        stopSpawning = false;
+        Debug.Log("<color=green>EnemySpawn: 보스 처치 완료! 잡몹 스폰을 재개합니다.</color>");
+    }
+
     public void SetNormalSpawnCount(int newCount)//동시 스폰 개수를 받음 함수
     {
         normalSpawnCount = newCount;
@@ -239,13 +273,13 @@ public class EnemySpawn : MonoBehaviour//public 필드는 대문자로 시작하
         GameObject bossPrefab = EnemyPrefabs[BossEnemyPrefabIndex];
         Enemy.EnemyType type = Enemy.EnemyType.Boss;
 
-        Debug.Log("<color=red><b>최종 보스 출현!</b></color>");
+        Debug.Log("<color=red><b>보스 출현!</b></color>");
 
         SpawnEnemy(bossPrefab, spawnPos, type);//기존에 만들어둔 SpawnEnemy 함수를 그대로 활용 (재사용성)
 
         //보스 등장 시 알림 메시지 (TextAlimManager 활용)
         if (textalimManager != null)
-            textalimManager.ShowMonsterNotification("<color=red>최종 보스가 등장했습니다!</color>");
+            textalimManager.ShowMonsterNotification("<color=red>보스가 등장했습니다!</color>");
     }
 
 

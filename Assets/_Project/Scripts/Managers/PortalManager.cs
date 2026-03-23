@@ -81,7 +81,11 @@ public class PortalManager : MonoBehaviour
         if (timeReached && missionOk && !isBossSpawned)
         {
             isBossSpawned = true;
-            if (EnemySpawn.Instance != null) EnemySpawn.Instance.SpawnBossEnemy();
+            if (EnemySpawn.Instance != null)
+            {   //보스 소환 전/후에 잡몹 스폰 중단 명령
+                EnemySpawn.Instance.StopAllSpawning();
+                EnemySpawn.Instance.SpawnBossEnemy();
+            }
         }
 
         //4. 모든 조건 + 보스 처치까지 완료 시 포탈 활성화
@@ -93,6 +97,12 @@ public class PortalManager : MonoBehaviour
     {
         isBossDefeated = true;
         Debug.Log("PortalManager: 보스 몬스터 사망 확인. 포탈을 활성화!");
+
+        if (EnemySpawn.Instance != null)//보스 몬스터가 죽으니 잡몹은 다시 스폰
+        {
+            EnemySpawn.Instance.ResumeSpawning();
+        }
+            
     }
 
     private void ActivatePortal()

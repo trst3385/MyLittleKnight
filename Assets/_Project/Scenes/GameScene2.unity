@@ -15423,11 +15423,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 601696427782021996, guid: d2e2bfe462c5ab54aa6a160157960a97,
+        type: 3}
+      propertyPath: ArrowPrefab
+      value: 
+      objectReference: {fileID: 8721798935197128527, guid: bb4d7fcacdce2ae4bacecaea58a7a694,
+        type: 3}
+    - target: {fileID: 601696427782021996, guid: d2e2bfe462c5ab54aa6a160157960a97,
+        type: 3}
+      propertyPath: EnhancedArrowPrefab
+      value: 
+      objectReference: {fileID: 1013926235032774517, guid: b1040cee3badb4d4583ac3e954b0dc4d,
+        type: 3}
     - target: {fileID: 2703361774327676212, guid: d2e2bfe462c5ab54aa6a160157960a97,
         type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5103668957875058008, guid: d2e2bfe462c5ab54aa6a160157960a97,
+        type: 3}
+      propertyPath: SwordEnergy
+      value: 
+      objectReference: {fileID: 5505100635091821837, guid: 26d16007de3fd2f41a07e51858435bd6,
+        type: 3}
     - target: {fileID: 8257849298911782875, guid: d2e2bfe462c5ab54aa6a160157960a97,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16128,6 +16146,7 @@ MonoBehaviour:
   EliteSpawnScoreInterval: 150
   EliteEnemyPrefabIndex: 2
   BossEnemyPrefabIndex: 3
+  bossSpawnInterval: 60
 --- !u!222 &396665570282725728
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18289,7 +18308,7 @@ MonoBehaviour:
   FireBallDamage: 3
   FireBallDamageUp: 2
   FireBallSpeed: 5
-  MaxFireBallSpeed: 20
+  MaxFireBallSpeed: 10
   FireBallSpeedUp: 1
   FireBallSpawnTime: 6
   MinSpawnTime: 2
