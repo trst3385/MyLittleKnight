@@ -34,13 +34,13 @@ public class GameOverManager : MonoBehaviour
     }
 
     //옵저버 패턴: 구독 로직 추가
-    private void OnEnable()//OnEnable (+=): "지금부터 방송을 듣겠다!" (안테나 ON)
+    private void OnEnable()//OnEnable (+=): "지금부터 방송을 들을게요!" (안테나 ON), OnEnable = 오브젝트가 활성화될 때 (켜질 때)
     {
         Player.OnPlayerDead += OnGameOver;//Player의 사망 제보(OnPlayerDead)를 받으면 OnGameOver를 실행해!
     }
     //람다 방식으로 하면 한 줄이라 편해 보이지만, 컴퓨터 입장에서는 "이름 없는 새로운 일회용 함수"를 만들어서 등록하는 거야,
     //문제는 -=를 할 때 발생해. 새로 만든 일회용 함수는 이름이 없어서 나중에 취소(-=)하고 싶어도 어떤 놈을 빼야 할지 찾을 수가 없어.
-    private void OnDisable()//OnDisable (-=): "이제 방송 안 듣겠다!" (안테나 OFF)
+    private void OnDisable()//OnDisable (-=): "이제 방송 안 들을래요!" (안테나 OFF), OnDisable = 오브젝트가 비활성화될 때 (꺼질 때)
     {
         Player.OnPlayerDead -= OnGameOver;//오브젝트가 꺼질 때 해지(오브젝트가 비활성화)
     }
