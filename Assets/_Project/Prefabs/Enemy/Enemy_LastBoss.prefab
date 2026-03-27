@@ -58,7 +58,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 3049c4e5fb4a6f849a7c0d92eb79cbc1, type: 2}
+      objectReference: {fileID: 9100000, guid: 24f47cb30cda6954788b26142e2d3b53, type: 2}
     - target: {fileID: 3626916397498700004, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}
       propertyPath: m_FlipX

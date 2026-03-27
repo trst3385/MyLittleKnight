@@ -159,9 +159,9 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
         if (animator != null)
         {
+            animator.SetTrigger("BossDashAttack");
             animator.speed = 1f;
-            animator.Play("BossDashAttack", 0, 0f);
-            yield return new WaitForEndOfFrame();//한 프레임만 딱 보여주고 바로 멈춰서 도끼 든 자세 고정
+            animator.Play("BossDashAttack", 0, 0f);//강제로 모션을 0:00 프레임으로 보내버려, 즉시 도끼 든 자세로 시작
             animator.speed = 0f;
         }
 
@@ -181,9 +181,7 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
         //돌진 방향 결정 (준비가 끝난 시점의 플레이어 위치 방향)
         Vector3 targetPos = playerScript.GetCenterPosition(); //플레이어 중앙 좌표
         targetPos.y += statsData.PlayerTargetOffsetY;         //SO에 설정한 오프셋 더하기
-
         Vector2 dashDirection = (targetPos - transform.position).normalized;
-
         rb.linearVelocity = dashDirection * dashSpeed;
 
         yield return new WaitForSeconds(dashDuration);//dashDuration 동안 물리 엔진이 밀어주는 힘을 유지하도록 대기
@@ -194,8 +192,7 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
         if (animator != null)
         {
-            animator.speed = 1f;//속도 복구
-            animator.Play("Idle", 0, 0f);//다음 대쉬를 위해 애니메이션 상태를 Idle로 강제 전이시키거나 초기화
+            animator.speed = 1f;//애니메이션 속도 정상화
         }
         yield return new WaitForSeconds(0.5f);//돌진 후 잠깐 멍 때리는 시간 (플레이어의 딜 타임)
     }

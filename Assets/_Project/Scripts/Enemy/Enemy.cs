@@ -318,7 +318,7 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
             return false;
         }
     }
-
+    
     public virtual void EnemyDie()//몬스터 사망
     {
         if (isDead) return;//이미 죽은 상태라면, 더 이상 아무것도 하지 않고 함수를 종료
