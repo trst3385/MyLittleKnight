@@ -3,9 +3,7 @@
  # My Little Knight
 
   2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
-
-### 🔗 [상세 포트폴리오 (Notion) 보러가기](https://quilted-wolfsbane-760.notion.site/My-Little-Knight-2770cecbe1f380ad8c3dcfcac5f73740?source=copy_link)
-
+  
 </div>
 
 <p align="center">
@@ -16,6 +14,8 @@
     <img src="https://img.youtube.com/vi/MoL6xk28l9U/maxresdefault.jpg" alt="My Little Knight v1.8.0 플레이 영상 썸네일" width="700">
   </a>
 </p>
+
+### 🔗 [상세 포트폴리오 (Notion) 보러가기](https://quilted-wolfsbane-760.notion.site/My-Little-Knight-2770cecbe1f380ad8c3dcfcac5f73740?source=copy_link)
 
 ## 🛠 Tech Stack
 - **Engine**: Unity 6000.3.11f1 (LTS)
