@@ -4,6 +4,8 @@
 
   2D 픽셀 스타일의 로그라이크 생존 게임입니다.  
 
+### 🔗 [상세 포트폴리오 (Notion) 보러가기](https://quilted-wolfsbane-760.notion.site/My-Little-Knight-2770cecbe1f380ad8c3dcfcac5f73740?source=copy_link)
+
 </div>
 
 <p align="center">
