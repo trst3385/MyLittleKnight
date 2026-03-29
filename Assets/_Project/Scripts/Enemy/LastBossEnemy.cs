@@ -17,6 +17,10 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
     [SerializeField] private float energyCoolTime = 3f;//발사 간격 (초)
     [SerializeField] private float minDistanceToShoot = 5f;//이 거리보다 멀어야 발사
 
+    [Header("보스 전용 사운드")]
+    [SerializeField] private AudioClip dashReadySound;//대쉬 기 모을 때 소리
+    [SerializeField] private AudioClip energyShootSound;//탄막 발사 소리
+
 
     //---SO에서 받아올 보스 몬스터의 대쉬 관련 변수---
     private float dashSpeed;
@@ -118,6 +122,11 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
             return;  
         }
 
+        //탄막 발사 사운드 재생
+        if (energyShootSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(energyShootSound);
+        }
 
         float angleStep = 360f / numberOfEnergies;
 
@@ -156,6 +165,12 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
     {
         isPreparing = true;
         rb.linearVelocity = Vector2.zero;//1. 돌진 전에는 무조건 정지
+
+        //1-1. 대쉬 준비 사운드 재생
+        if (dashReadySound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(dashReadySound);
+        }
 
         if (animator != null)
         {

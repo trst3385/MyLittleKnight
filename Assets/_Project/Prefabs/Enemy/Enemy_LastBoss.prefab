@@ -243,7 +243,7 @@ MonoBehaviour:
   enemyType: 3
   statsData: {fileID: 11400000, guid: 967c920e4215b9847bd6f7864305ad6a, type: 2}
   EnemySpawner: {fileID: 0}
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 3cbc621430663f64aa4646dbe0e3b9a6, type: 3}
   energyPrefab: {fileID: 5505100635091821837, guid: a1b2652e43cd8714b8438919b30cdca6,
     type: 3}
   energySpawnPoint: {fileID: 4186602676425484018}
@@ -251,6 +251,8 @@ MonoBehaviour:
   numberOfEnergies: 8
   energyCoolTime: 3
   minDistanceToShoot: 5
+  dashReadySound: {fileID: 8300000, guid: 4a30a39780d05df4899b0b956f081e97, type: 3}
+  energyShootSound: {fileID: 8300000, guid: c906956c198a2b84fa9557f48ead05af, type: 3}
 --- !u!61 &8371844091458674630
 BoxCollider2D:
   m_ObjectHideFlags: 0
