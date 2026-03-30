@@ -978,79 +978,6 @@ PolygonCollider2D:
       - {x: 1.3382941, y: 2.3983362}
       - {x: 1.3509003, y: 2.4559767}
   m_UseDelaunayMesh: 0
---- !u!1001 &300898491
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1723377121794967452, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 3049c4e5fb4a6f849a7c0d92eb79cbc1, type: 2}
-    - target: {fileID: 7442406002320563516, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_Name
-      value: Enemy_LastBoss
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.9841385
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -14.726827
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7684625701416924505, guid: 3530c8c404b77d946aa241fdbe52c085,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3530c8c404b77d946aa241fdbe52c085, type: 3}
 --- !u!1001 &344370439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19264,6 +19191,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5505100635091821837, guid: 26d16007de3fd2f41a07e51858435bd6,
         type: 3}
+    - target: {fileID: 5103668957875058008, guid: d2e2bfe462c5ab54aa6a160157960a97,
+        type: 3}
+      propertyPath: SwordEnergyDamage
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8257849298911782875, guid: d2e2bfe462c5ab54aa6a160157960a97,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -22500,4 +22432,3 @@ SceneRoots:
   - {fileID: 855360423}
   - {fileID: 899266145}
   - {fileID: 2002080437}
-  - {fileID: 300898491}

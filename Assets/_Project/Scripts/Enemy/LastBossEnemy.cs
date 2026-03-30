@@ -5,7 +5,11 @@
 //override  자식         함수 내용 수정     부모가 허락한 함수를 내가 직접 고쳐 쓰겠다
 //base      자식         부모 함수 호출     내가 고쳐 쓰더라도, 부모의 원래 기능은 일단 실행하겠다
 public class LastBossEnemy : Enemy//Enemy 스크립트 상속
-{   //3.21 이제부턴 한줄만 있는 if문이라도 {}를 사용하자. 가독성을 위해 한줄로 썻다지만 이것도 어찌보면 가독성을 저해 하는것처럼 느껴져
+{   //부모 클래스(Enemy)를 상속받아 override한 이유가 뭐야?
+    //모든 몬스터가 공통으로 가지는 추격, 이동 로직은 부모인 Enemy에 두고 재사용하기 위해서야.
+    //보스만 가지는 특수한 패턴(대쉬, 탄막)만 자식 클래스에서 override하여 확장함으로써 코드 중복을 줄이고 유지보수를 쉽게 만들었지.
+
+    //3.21 이제부턴 한줄만 있는 if문이라도 {}를 사용하자. 가독성을 위해 한줄로 썻다지만 이것도 어찌보면 가독성을 저해 하는것처럼 느껴져
 
     [Header("보스 발사체 설정")]
     [SerializeField] private GameObject energyPrefab;//발사할 에너지 프리팹
@@ -161,6 +165,10 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
         }
     }
 
+    //왜 코루틴을 사용해 대쉬를 구현했어?
+    //대쉬는 '준비 - 실행 - 후딜레이'라는 시간의 흐름이 필요한 동작이기 때문이야.
+    //Update에서 복잡한 if문이나 타이머 변수를 여러 개 쓰는 것보다,
+    //코루틴의 yield return을 활용해 가독성 높고 직관적인 상태 제어를 하기 위해 선택했어.
     private System.Collections.IEnumerator DashRoutine()//대쉬 공격의 3단계 과정을 관리하는 코루틴
     {
         isPreparing = true;
@@ -211,12 +219,28 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
         }
         yield return new WaitForSeconds(0.5f);//돌진 후 잠깐 멍 때리는 시간 (플레이어의 딜 타임)
     }
-}
-//왜 코루틴을 사용해 대쉬를 구현했어?
-//대쉬는 '준비 - 실행 - 후딜레이'라는 시간의 흐름이 필요한 동작이기 때문이야.
-//Update에서 복잡한 if문이나 타이머 변수를 여러 개 쓰는 것보다,
-//코루틴의 yield return을 활용해 가독성 높고 직관적인 상태 제어를 하기 위해 선택했어.
 
-//부모 클래스(Enemy)를 상속받아 override한 이유가 뭐야?
-//모든 몬스터가 공통으로 가지는 추격, 이동 로직은 부모인 Enemy에 두고 재사용하기 위해서야.
-//보스만 가지는 특수한 패턴(대쉬, 탄막)만 자식 클래스에서 override하여 확장함으로써 코드 중복을 줄이고 유지보수를 쉽게 만들었지.
+    public override void EnemyDie()//부모(Enemy)의 사망 함수를 보스 전용으로 재정의(Override)
+    {
+        StopAllCoroutines();//1. 보스가 돌진(DashRoutine) 중에 죽었다면, 그 코루틴을 즉시 멈춰
+
+        //2.상태 변수들도 확실히 꺼주기
+        isDashing = false;
+        isPreparing = false;
+
+        if (rb != null)//3. 돌진(Dash 코루틴 발동) 중이더라도 즉시 정지
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        //4. 이전 돌진 패턴(기 모으기 0배속, 돌진 1.5배속 등)에서 변경된 애니메이션 속도를 
+        //1(정상)로 복구하여, 사망 모션이 정상적인 속도로 출력되게 함
+        if (animator != null)
+        {
+            animator.speed = 1f;
+        }
+
+        //5.부모(Enemy)가 가진 기본 사망 로직(점수 추가, 콜라이더 끄기 등) 실행
+        base.EnemyDie();
+    }
+}
