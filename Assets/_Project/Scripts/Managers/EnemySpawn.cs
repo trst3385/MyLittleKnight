@@ -277,9 +277,11 @@ public class EnemySpawn : MonoBehaviour
 
         SpawnEnemy(bossPrefab, spawnPos, type);//기존에 만들어둔 SpawnEnemy 함수를 그대로 활용 (재사용성)
 
-        //보스 등장 시 알림 메시지 (TextAlimManager 활용)
-        if (textalimManager != null)
-            textalimManager.ShowMonsterNotification("<color=red>보스가 등장했습니다!</color>");
+        if (TextAlimManager.Instance != null)//보스 등장 알림 (TextAlimManager 활용)
+        {
+            //<b> 태그를 써서 더 굵게
+            TextAlimManager.Instance.ShowBossNotification("<color=red><b>WARNING: BOSS APPEARED</b></color>");
+        }
     }
 
 
