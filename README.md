@@ -10,7 +10,7 @@
   **👇 클릭해서 v1.8.0 플레이 영상 보기 (유튜브 이미지 링크)**
  
 <p align="center">
-  <a href="https://youtu.be/MoL6xk28l9U">
+  <a href="https://youtu.be/bvwJiXdElF0">
     <img src="https://img.youtube.com/vi/MoL6xk28l9U/maxresdefault.jpg" alt="My Little Knight v1.8.0 플레이 영상 썸네일" width="700">
   </a>
 </p>
