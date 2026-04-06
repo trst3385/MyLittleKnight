@@ -1,8 +1,9 @@
 ﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;//TextMeshPro를 사용하려면 추가
+using Unity.VectorGraphics;
+using UnityEngine;
 using UnityEngine.Audio;//AudioMixer를 사용하기 위한 네임스페이스
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class OptionsManager : MonoBehaviour
@@ -52,13 +53,15 @@ public class OptionsManager : MonoBehaviour
 
     private void InitializeReferences()
     {
-        //최상위 패널 찾기 (비활성화 상태여도 찾아야 함)
-        if (optionsPanel == null)
+        if (optionsPanel == null)//최상위 패널 찾기 (비활성화 상태여도 찾아야 함)
         {
             Canvas[] allCanvases = Resources.FindObjectsOfTypeAll<Canvas>();
             foreach (Canvas canvas in allCanvases)
             {
-                if (canvas.gameObject.scene.name == null) continue; // 프리팹 제외
+                if (canvas.gameObject.scene.name == null)
+                {
+                    continue;//프리팹 제외
+                }
                 Transform found = canvas.transform.Find("OptionsPanel");
                 if (found != null)
                 {
@@ -88,6 +91,7 @@ public class OptionsManager : MonoBehaviour
             SetupButton("BackButton", CloseSoundControls);
             SetupButton("QuitGameButton", QuitGame);
 
+
             //슬라이더 자동 연결
             if (bgmSlider != null)
             {
@@ -100,8 +104,27 @@ public class OptionsManager : MonoBehaviour
                 sfxSlider.onValueChanged.AddListener(SetSFXVolume);
             }
 
+            //---메인화면 씬에서의 옵션창(사운드조정 창만 사용)---
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (sceneName == "MainMenuScene")
+            {
+                //메인 씬: 'Options' 버튼 그룹은 끄고, '사운드 조절창'만 켜진 상태로 세팅
+                if (Options != null) Options.SetActive(false);
+                if (soundControlPanel != null) soundControlPanel.SetActive(true);
+            }
+            else
+            {
+                //게임 씬: 원래대로 'Options' 버튼 그룹을 먼저 보여줌
+                if (Options != null) Options.SetActive(true);
+                if (soundControlPanel != null) soundControlPanel.SetActive(false);
+            }
+            //---.........................................---
+
             optionsPanel.SetActive(false);//시작할 때 옵션창 꺼두기
-            if (warningText != null) warningText.gameObject.SetActive(false);
+            if (warningText != null)
+            {
+                warningText.gameObject.SetActive(false);
+            } 
         }
     }
 
@@ -232,14 +255,40 @@ public class OptionsManager : MonoBehaviour
     public void OpenSoundControls()//SoundButton 클릭 시 호출
     {
         PlayClickSound();//Sound창 버튼을 누를때 사운드
-        Options.SetActive(false);//1. 메인 버튼 컨테이너를 숨기고
-        soundControlPanel.SetActive(true);//2. 사운드 조절 패널을 보여줘
+
+        if (optionsPanel != null)//1. 전체 패널이 꺼져있을 수도 있으니 먼저 켜줘
+        {
+            optionsPanel.SetActive(true);
+        }
+        //2. 메인 버튼들(Restart, Quit 등) 숨기기
+        //게임 씬에서는 Options가 찾아졌을 테니 정상적으로 작동하고,
+        //메인 씬에서는 null이라도 에러 없이 그냥 통과해
+        if (Options != null)
+        {
+            Options.SetActive(false);
+        }
+
+        if (soundControlPanel != null)//3. 사운드 조절 패널 보여주기
+        {
+            soundControlPanel.SetActive(true);
+        }
     }
     public void CloseSoundControls()//SoundControlPanel의 BackButton 클릭 시 호출
     {
         PlayClickSound();//Sound창의 Done 버튼을 누를때 사운드
-        soundControlPanel.SetActive(false);//1. 사운드 조절 패널을 숨기고
-        Options.SetActive(true);//2. 메인 버튼 컨테이너를 다시 보여줘
+
+        string sceneName = SceneManager.GetActiveScene().name;//현재 씬 이름을 확인
+        if (sceneName == "MainMenuScene")
+        {
+            //1. 메인 씬이라면? 그냥 전체 옵션 패널을 아예 꺼버려!
+            if (optionsPanel != null) optionsPanel.SetActive(false);
+        }
+        else
+        {
+            //2. 게임 씬이라면? 원래대로 사운드 창만 끄고 메인 버튼들(Restart 등)을 보여줘
+            if (soundControlPanel != null) soundControlPanel.SetActive(false);
+            if (Options != null) Options.SetActive(true);
+        }
     }
 
     public void RestartGame()//게임 재시작 함수 (현재 씬을 재시작)
