@@ -108,24 +108,45 @@ public class OptionsManager : MonoBehaviour
             string sceneName = SceneManager.GetActiveScene().name;
             if (sceneName == "MainMenuScene")
             {
-                //메인 씬: 'Options' 버튼 그룹은 끄고, '사운드 조절창'만 켜진 상태로 세팅
                 if (Options != null) Options.SetActive(false);
                 if (soundControlPanel != null) soundControlPanel.SetActive(true);
+
+                //메인 씬에서는 버튼을 눌렀을 때만 나타나야 하니까 일단 패널 자체는 꺼둠
+                optionsPanel.SetActive(false);
             }
             else
             {
-                //게임 씬: 원래대로 'Options' 버튼 그룹을 먼저 보여줌
                 if (Options != null) Options.SetActive(true);
                 if (soundControlPanel != null) soundControlPanel.SetActive(false);
-            }
-            //---.........................................---
 
-            optionsPanel.SetActive(false);//시작할 때 옵션창 꺼두기
+                //게임 씬에서도 시작할 때는 꺼둠
+                optionsPanel.SetActive(false);
+            }
+            //---............................................---
+
+            RefreshSliderUI();//씬 로드(다음 씬으로 이동 등) 시 슬라이더 UI와 실제 오디오 설정값 일치화
+
             if (warningText != null)
             {
                 warningText.gameObject.SetActive(false);
             } 
         }
+    }
+
+    private void RefreshSliderUI()//사운드 바 슬라이더 UI를 저장된 데이터 값에 맞게 새로고침하는 함수
+    {                             //씬 전환 시 슬라이더가 초기화되는 현상을 방지하기 위해 데이터 주입
+
+        //1. 내가 마지막으로 사운드바를 조정해서 '저장'했던 값을 금고(PlayerPrefs)에서 꺼내와.
+        //(만약 저장한 적이 없으면 소리를 최대(1.0)로 가져와)
+        float bgm = PlayerPrefs.GetFloat("BGMVolume", 1f);
+        float sfx = PlayerPrefs.GetFloat("SFXVolume", 1f);
+
+        //2. 씬이 바뀌면서 새로 생긴 사운드바(Slider)가 있다면...
+        //3. 그 사운드 바의 위치를 내가 아까 조정했던 값의 그 상태 그대로 유지시켜줘
+        if (bgmSlider != null) bgmSlider.value = bgm;
+        if (sfxSlider != null) sfxSlider.value = sfx;
+
+        Debug.Log($"[동기화] BGM: {bgm}, SFX: {sfx}");
     }
 
     private GameObject FindChildEx(Transform parent, string name)//이름만으로 자식을 뒤져서 찾아주는 헬퍼 함수
@@ -142,7 +163,10 @@ public class OptionsManager : MonoBehaviour
 
     private void SetupButton(string btnName, UnityEngine.Events.UnityAction action)//버튼을 찾아 함수(리스너)를 직접 달아주는 함수
     {
-        GameObject btnObj = FindChildEx(optionsPanel.transform, btnName);
+        //transform.parent으로 "옵션 패널의 부모인 '메인 메뉴(Canvas)' 전체를 뒤져서 버튼을 찾아
+        //메인 메뉴(Canvas)에는'옵션 패널'도 있고 '사운드 버튼'도 같이 있잖아?,
+        //그러니까 Canvas 전체를 뒤져서 SoundButton을 찾아내서 기능을  연결해 준 거야.
+        GameObject btnObj = FindChildEx(optionsPanel.transform.parent, btnName);
         if (btnObj != null)
         {
             Button btn = btnObj.GetComponent<Button>();
@@ -151,6 +175,10 @@ public class OptionsManager : MonoBehaviour
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(action);
             }
+        }
+        else
+        {
+            Debug.LogWarning($"{btnName}을 찾지 못했어! 하이어라키 위치를 확인해봐.");
         }
     }
 
@@ -252,7 +280,7 @@ public class OptionsManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public void OpenSoundControls()//SoundButton 클릭 시 호출
+    public void OpenSoundControls()//메인화면 씬에서 SoundButton 클릭 시 호출
     {
         PlayClickSound();//Sound창 버튼을 누를때 사운드
 
