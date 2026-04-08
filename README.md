@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  **👇 클릭해서 v1.9.0 플레이 영상 보기 (유튜브 이미지 링크)**
+  **👇 클릭해서 v1.10.0 플레이 영상 보기 (유튜브 이미지 링크)**
  
 <p align="center">
   <a href="https://youtu.be/bvwJiXdElF0">
