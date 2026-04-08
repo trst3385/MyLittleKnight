@@ -11,7 +11,7 @@
  
 <p align="center">
   <a href="https://youtu.be/bvwJiXdElF0">
-    <img src="https://img.youtube.com/vi/MoL6xk28l9U/maxresdefault.jpg" alt="My Little Knight v1.8.0 플레이 영상 썸네일" width="700">
+    <img src="https://img.youtube.com/vi/bvwJiXdElF0/maxresdefault.jpg" alt="My Little Knight v1.9.0 플레이 영상 썸네일" width="700">
   </a>
 </p>
 
