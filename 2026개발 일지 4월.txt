@@ -162,7 +162,6 @@ UI 참조 소실: DontDestroyOnLoad로 OptionsManager는 유지되지만, 씬이
 
 
 @@가능한 빠른 시일 내에 완성할것!@@
-**사운드, 효과음 바를 최소로 낮춘 후 다음 씬으로 넘어가면 사운드 바는 최대로 되있지만 소리는 최저 상태**
 **Enemy 스크립트에 있는 몬스터 사망 로직을 EnemyHealth 스크립트 안에서 처리할지 고민해보자**
 **아이템 스크립트도 SO 적용**
 **시간정지 아이템(TimeFreeze)에 데이터 파일(SO) 만들기, TimeFreezeItem 클래스에 포함된 freezeDuration을 **ScriptableObject(SO)**로 분리하여 데이터와 로직을 완전히 분리할 것, 아이템의 종류가 늘어나더라도 스크립트 수정 없이 데이터 파일만 생성하여 확장성 높임**
