@@ -200,7 +200,27 @@ public class OptionsManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) ToggleOptionsPanel();//옵션 패널이 꺼져있을 때만 Esc를 누르면 패널을 켜
+        //1. 우선 Esc 키가 눌렸는지 확인해 (공통 입구)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            //2. 현재 어떤 씬인지 이름을 가져와
+            string sceneName = SceneManager.GetActiveScene().name;
+
+            //3. 메인 씬일 때와 아닐 때를 명확하게 나눠서 처리해
+            if (sceneName == "MainMenuScene")
+            {
+                //메인 씬에서는 아무것도 안 함 (필요하면 나중에 여기에 코드 추가 가능)
+                Debug.Log("메인 메뉴에서는 Esc 키가 작동하지 않아. 여기선 사용을 안해");
+
+                //나중에 메인 씬에서 Esc를 눌렀을 때 "정말 종료하시겠습니까?" 같이 종료 기능을 켜거나 아니면 바로 게임을 종료할때,
+                //if문 안에 코드만 추가하면 돼서 확장이 편해.
+            }
+            else
+            {
+                //게임 씬(혹은 다른 필요한 씬)일 때만 옵션창을 켜고 꺼
+                ToggleOptionsPanel();//옵션 패널이 꺼져있을 때만 Esc를 누르면 패널을 켜
+            }
+        }
     }
 
     public void ToggleOptionsPanel()//옵션창과 활성화될때 게임의 일시정지 기능을 켜고 끄는 역할
