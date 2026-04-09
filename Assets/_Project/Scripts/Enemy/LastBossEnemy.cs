@@ -43,8 +43,16 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
     protected override void FixedUpdate()
     {   
-        if (playerScript == null || isDead)
+        if (playerScript == null)//플레이어가 없으면 아무것도 안 함
         {
+            return;
+        }
+
+        base.FixedUpdate();//부모(Enemy)가 가진 모든 이동, 추격, 거리 체크 로직을 실행,
+                           //중요!: 부모의 사망 지연 로직(TimeFreeze 대응)을 먼저 실행하기 위해 최상단에 배치
+
+        if (isDead)//중요!: 체력이 0이 되어 부모로직의 사망(isDead)이 확정되었다면,    
+        {          //보스의 개별 패턴(이동,대쉬, 탄막 등)은 실행하지 않고 종료
             return;
         }
 
@@ -69,8 +77,6 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
         }
 
         if (isDashing || isPreparing) return;
-
-        base.FixedUpdate();//부모(Enemy)가 가진 모든 이동, 추격, 거리 체크 로직을 실행, 대쉬 공격 if문 밑에 둬서 끊김 방지.
 
         //대쉬 쿨타임 체크
         if (Time.time >= lastDashTime + dashCoolTime)

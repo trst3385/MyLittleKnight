@@ -54,22 +54,14 @@ public class EnemyHealth : MonoBehaviour
         
     public void Die()//몬스터가 사망했다고 Enemy 스크립트로 보내
     {
-        //1. 먼저 Enemy 스크립트의 EnemyDie 호출
+        //체력이 0이 되면 Enemy 스크립트의 EnemyDie() 호출, 사망 로직 발동
         if (enemyScript != null)
         {
-            enemyScript.EnemyDie();
-
-            //2. 이제 캐싱된 enemyScript를 통해 타입 확인!
-            if (enemyScript.enemyType == Enemy.EnemyType.Boss)
-            {   //보스 몬스터가 죽었다고 PortalManager에 신호를 보내
-                if (PortalManager.Instance != null) PortalManager.Instance.ReportBossDeath();
-            }
+            enemyScript.EnemyDie();      
         }
-        else Debug.LogError("EnemyHealth: Enemy 스크립트 컴포넌트를 찾을 수 없어!");
+        else
+        {
+            Debug.LogError("EnemyHealth: Enemy 스크립트 컴포넌트를 찾을 수 없어!");
+        } 
     }
 }
-
-
-
-
-

@@ -328,16 +328,25 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
         foreach (Collider2D col in colliders)
             if (col != null) col.enabled = false;
 
-        Debug.Log(enemyType + "몬스터 컷!");
-
 
         //타입별 몬스터가 죽으면 죽인 횟수를 MonsterCountManager에게 전달
-        if (MonsterCountManager.Instance != null) MonsterCountManager.Instance.DeathCount(this.enemyType);
+        if (MonsterCountManager.Instance != null)
+        {
+            MonsterCountManager.Instance.DeathCount(this.enemyType);
+        }
 
+        //보스 몬스터일 경우 포탈 매니저에게 알림
+        if (enemyType == EnemyType.Boss)
+        {   //보스 몬스터가 죽었다고 PortalManager에 신호를 보내
+            if (PortalManager.Instance != null) PortalManager.Instance.ReportBossDeath();
+        }
 
-        if (playerScript != null) playerScript.AddScore(currentScoreValue);//몬스터가 죽으면 플레이어가 몬스터의 점수 획득
-        if (EnemySpawner != null)
-        {   //현재 몬스터의 타입이 Strong 또는 Elite인지 확인
+        if (playerScript != null)
+        {
+            playerScript.AddScore(currentScoreValue);//몬스터가 죽으면 플레이어가 몬스터의 점수 획득
+        } 
+        if (EnemySpawner != null)//현재 몬스터의 타입이 Strong 또는 Elite인지 확인
+        {   
             bool isThisStrongOrElite = (enemyType == EnemyType.Strong || enemyType == EnemyType.Elite);
             EnemySpawner.EnemyDied(isThisStrongOrElite);//EnemySpawn 스크립트의 EnemyDied 함수를 호출하여 몬스터가 죽었음을 알림
         }
