@@ -9,7 +9,9 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
     //모든 몬스터가 공통으로 가지는 추격, 이동 로직은 부모인 Enemy에 두고 재사용하기 위해서야.
     //보스만 가지는 특수한 패턴(대쉬, 탄막)만 자식 클래스에서 override하여 확장함으로써 코드 중복을 줄이고 유지보수를 쉽게 만들었지.
 
-    //3.21 이제부턴 한줄만 있는 if문이라도 {}를 사용하자. 가독성을 위해 한줄로 썻다지만 이것도 어찌보면 가독성을 저해 하는것처럼 느껴져
+    //자식 클래스에서 override 키워드 없이 부모와 똑같은 이름의 함수를 쓰면,
+    //이건 '재정의'가 아니라 '별개의 새 함수'를 만든 걸로 간주해. 이걸 전문 용어로 **메서드 숨기기(Method Hiding)**라고 불러.
+
 
     [Header("보스 발사체 설정")]
     [SerializeField] private GameObject energyPrefab;//발사할 에너지 프리팹
@@ -43,9 +45,15 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
     protected override void FixedUpdate()
     {   
-        if (playerScript == null)//플레이어가 없으면 아무것도 안 함
+        if (playerScript == null || isDead)//플레이어가 없거나 죽으면 아무것도 안 함
         {
             return;
+        }
+
+        if (isDashing || isPreparing)//보스가 돌진 준비 중이라면 부모의 일반 이동/공격 로직(base)을 아예 실행하지 않기
+        {
+            HandleDashCollision();//돌진 중 플레이어와 닿았는지 체크
+            return;//돌진 모션 중엔 아래의 일반 추격 / 패턴 로직은 실행하지 않음
         }
 
         base.FixedUpdate();//부모(Enemy)가 가진 모든 이동, 추격, 거리 체크 로직을 실행,
@@ -56,29 +64,8 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
             return;
         }
 
-        //대쉬(isDashing) 중일 때만 별도로 거리 체크해서 닿음데미지 주기
-        if (isDashing)
-        {
-            //1. 플레이어 중앙 위치 계산 (오프셋 포함)
-            Vector3 targetPos = playerScript.GetCenterPosition();
-            targetPos.y += statsData.PlayerTargetOffsetY;
 
-            //2. 보스와 플레이어 사이의 거리 계산
-            float dist = Vector2.Distance(transform.position, targetPos);
-
-            //3. 멈춤 거리(StopDistance)보다 가까워지면 데미지!
-            //부모 로직처럼 쿨타임(lastAttackTime)을 체크
-            if (dist <= statsData.StopDistance && Time.time >= lastAttackTime + statsData.AttackCooldown)
-            {
-                ApplyTouchDamage();//부모의 닿을때의 데미지 함수
-                lastAttackTime = Time.time;
-                Debug.Log("대쉬 중 몸통 박치기 성공!");
-            }
-        }
-
-        if (isDashing || isPreparing) return;
-
-        //대쉬 쿨타임 체크
+        //돌진 쿨타임 체크
         if (Time.time >= lastDashTime + dashCoolTime)
         {
             StartCoroutine(DashRoutine());
@@ -86,6 +73,7 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
             return;//대쉬 시작했으면 이번 프레임은 여기서 끝
         }
 
+        //원거리 공격 발사 로직
         float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);//플레이어와의 거리 계산
         //1. 쿨타임이 지났는지 + 2. 플레이어와 충분히 멀리 있는지 체크
         if (Time.time >= lastEnergyTime + energyCoolTime && distanceToPlayer >= minDistanceToShoot)
@@ -94,7 +82,36 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
             lastEnergyTime = Time.time;
         }
     }
-    
+
+    private void HandleDashCollision()//돌진 상태일 때 닿으면 데미지를 주는 로직
+    {
+        if (isDashing)//1. 오직 '대쉬 중'일 때만 충돌 데미지 체크를 수행
+        {
+            //2. 플레이어의 중심 위치(Y축 보정 포함)를 가져와서
+            Vector3 targetPos = playerScript.GetCenterPosition();
+            targetPos.y += statsData.PlayerTargetOffsetY;
+
+            //3. 보스와 플레이어 사이의 실제 거리를 계산해
+            float dist = Vector2.Distance(transform.position, targetPos);
+
+            //4. 거리가 가깝고(StopDistance), 공격 쿨타임이 지났다면?
+            if (dist <= statsData.StopDistance && Time.time >= lastAttackTime + statsData.AttackCooldown)
+            {
+                ApplyTouchDamage();//닿을때 데미지
+                lastAttackTime = Time.time;//쿨타임 갱신
+            }
+        }
+    }
+
+    protected override bool HandleTimeFreeze()
+    {
+        //보스 몬스터는 부모의 '정지 로직'을 실행하지 않아.
+        //대신 애니메이터가 꺼져있다면 다시 켜주기만 하고 false를 반환해
+        if (!animator.enabled) animator.enabled = true;
+
+        return false;//"난 안 멈췄으니까 행동을 계속 진행해"
+    }
+
     public override void SetEnmeyStats()
     {
         base.SetEnmeyStats();//부모의 기본 스탯 설정(속도, 데미지 등)을 먼저 받아와
@@ -113,7 +130,18 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
     public override void Attack()
     {
-        base.Attack();//부모의 기본 공격(데미지 주기, 사운드 등)을 그대로 실행
+        //보스는 덩치가 크니까 일반 몬스터보다 판정 범위를 넉넉하게(예: + 3f) 잡아줘
+        float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
+
+        //1.5f 대신 보스에게 맞는 적당한 값(예: 3.5f~4f)으로 보정해봐
+        if (distanceToPlayer <= currentStopDistance + 3.5f)
+        {
+            DealDamageToPlayer();//공격 데미지 입히기
+        }
+        else 
+        {
+            Debug.Log("보스 공격: 사거리가 살짝 모자라! 거리: " + distanceToPlayer);
+        }
     }
 
 
@@ -248,5 +276,15 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
 
         //5.부모(Enemy)가 가진 기본 사망 로직(점수 추가, 콜라이더 끄기 등) 실행
         base.EnemyDie();
+    }
+
+    public override void ApplySlowEffect(float factor)//부모(Enemy)의 슬로우 로직을 보스만 무시하도록 재정의
+    {
+        // [설계 의도]
+        //1. base.ApplySlowEffect(factor)를 호출하지 않은 이유: 
+        //   부모(Enemy)에 정의된 실제 이동 속도 감소 로직이 실행되는 것을 원천 차단하기 위해서야.
+        //2. 함수 내부를 비워둔 이유: 
+        //   보스는 상태 이상(슬로우)에 면역이어야 하므로, 호출 시 아무런 연산도 일어나지 않게 '무시' 처리.
+        Debug.Log("보스: 슬로우 면역!");
     }
 }

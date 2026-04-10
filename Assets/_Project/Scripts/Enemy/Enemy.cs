@@ -92,21 +92,10 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
     {                                   
         if (statsData == null) return;
 
-        if (timeFreeze != null && timeFreeze.IsTimeFrozen)//TimeFreeze로 시간이 멈췄는지 체크
-        {
-            animator.enabled = false;//시간정지 시 애니메이션도 정지
+        //1. 시간 정지 체크 로직을 '가상 함수'로 호출
+        if (HandleTimeFreeze()) return;
 
-
-            if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
-            {
-                rb.linearVelocity = Vector2.zero;//물리적인 움직임 정지
-                animator.SetBool("Move", false);//애니메이션 정지
-            }
-            return;//시간 정지 동안  FixedUpdate의 AI/공격 로직 스킵
-        }
-        if (!animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
-
-        //시간이 풀렸을 때, 대기 중인 사망이 있다면 실행, 사망 모션이 아니여도 여기서 몬스터 사망시 행동 발동
+        //2. 어제(4/9) 작업한 사망 지연 로직 (이건 보스도 똑같이 실행해야 하니까 여기 두자)
         if (isPendingDeath) ExecuteDeathSequence();//지연된 사망 시퀀스 실행 (사망 사운드/모션 발동)
 
 
@@ -135,6 +124,23 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
 
         //주 로직 분리 (세분화된 함수 호출), 
         ProcessMovementAndAttack(isInDetectionRange, isInStopDistance, canAttack, playerCenterPosition);
+    }
+
+    protected virtual bool HandleTimeFreeze()
+    {
+        if (timeFreeze != null && timeFreeze.IsTimeFrozen)
+        {
+            animator.enabled = false;//시간정지 시 애니메이션도 정지
+
+            if (!isKnockedBack)//몬스터가 넉백 중이 아니라면 정지
+            {
+                rb.linearVelocity = Vector2.zero;//물리적인 움직임 정지
+                animator.SetBool("Move", false);//이동 애니메이션 정지
+            }
+            return true;//"시간 멈췄으니까 로직 중단해!"
+        }
+        if (!animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
+        return false;//"시간 정상이야, 계속 진행해!"
     }
 
     public virtual void SetEnmeyStats()//몬스터 시작 시 스탯과 외형을 설정 함수(ScriptableObject 스크립트와 Enemy Stats SO 파일)

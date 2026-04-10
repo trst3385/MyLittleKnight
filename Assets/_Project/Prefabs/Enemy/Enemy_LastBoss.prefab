@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4186602676425484018}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EnergySpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ PrefabInstance:
     - target: {fileID: -2253911629886400664, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -2253911629886400664, guid: 7175f6ed4b6d478448a710c7f9ce42d6,
         type: 3}

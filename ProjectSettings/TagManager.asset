@@ -20,11 +20,11 @@ TagManager:
   - UI
   - Player
   - Boundary
-  - Monster
+  - Enemy
   - Silhouette
   - MapWall
-  - 
-  - 
+  - Tree
+  - BossEnemy
   - 
   - 
   - 
