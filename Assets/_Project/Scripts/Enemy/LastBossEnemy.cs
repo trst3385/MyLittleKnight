@@ -133,7 +133,7 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
         //보스는 덩치가 크니까 일반 몬스터보다 판정 범위를 넉넉하게(예: + 3f) 잡아줘
         float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
 
-        //1.5f 대신 보스에게 맞는 적당한 값(예: 3.5f~4f)으로 보정해봐
+        //1.5f 대신 보스에게 맞는 적당한 값(예: 3.5f~4f)으로 보정
         if (distanceToPlayer <= currentStopDistance + 3.5f)
         {
             DealDamageToPlayer();//공격 데미지 입히기
