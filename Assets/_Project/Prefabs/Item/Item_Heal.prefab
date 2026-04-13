@@ -37,6 +37,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7815231802436033014
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -82,6 +83,7 @@ SpriteRenderer:
   m_SortingLayerID: -77865855
   m_SortingLayer: 5
   m_SortingOrder: 1
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 269cf6447493b8c42941e5f49a44aff8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -91,7 +93,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!61 &-6613834415894395091
 BoxCollider2D:
@@ -151,14 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b14a79e92aba44a9244a3148a83dd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemType: 3
-  itemSound: {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
-  EffectDamage: 1
-  AttackCooldown: 0.2
-  Speed: 1
-  Healing: 5
-  ShieldAmount: 4
-  DespawnTime: 10
+  data: {fileID: 11400000, guid: b18afc91ce8743341b5e08759b20b219, type: 2}
 --- !u!82 &584290219511278387
 AudioSource:
   m_ObjectHideFlags: 0

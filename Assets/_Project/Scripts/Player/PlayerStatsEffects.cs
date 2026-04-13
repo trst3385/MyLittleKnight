@@ -120,19 +120,21 @@ public class PlayerStatsEffects : MonoBehaviour
     }
 
 
-    public void SwordDamageUp(float ItemCSdamage)//검 강화
+    public void SwordDamageUp(float ItemCSdamage, float cooldownDecrease)//검 강화
     {
         if (currentSwordLevel < AttackItemMaxLevel)//현재 레벨이 MaxLevel보다 작을 때만 실행
         {
             if(swordWeapon != null)
             {
-                swordWeapon.SwordDamage += ItemCSdamage;
-                swordWeapon.SwordEnergyDamage += ItemCSdamage;
+                swordWeapon.SwordDamage += ItemCSdamage;//검 데미지 증가
+                swordWeapon.SwordEnergyDamage += ItemCSdamage;//검기 에너지 데미지 증가
 
-                swordWeapon.AcquireSwordEnhanceItem();//쿨타임 감소 및 누적 스택 처리는 여기서 한 번만 호출!
+                //검 쿨타임 및 스택 로직은 SwordWeapon에게 맡기기
+                swordWeapon.AcquireSwordEnhanceItem(cooldownDecrease);
 
-                currentSwordLevel++;//검 강화 숫자 증가
+                currentSwordLevel++;//UI에 검 스택(레벨) 증가
                 OnSwordLevelChanged?.Invoke(currentSwordLevel, AttackItemMaxLevel);
+
                 Debug.Log("PlayerStatsEffects: 검+검기 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);
             }
         }

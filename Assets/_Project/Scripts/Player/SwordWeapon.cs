@@ -159,16 +159,15 @@ public class SwordWeapon : MonoBehaviour
     ///<summary>
     ///외부 (아이템 스크립트)에서 호출되어 강화 스택을 1 증가.
     ///</summary>
-    public void AcquireSwordEnhanceItem()//외부(Item스크립트)에서 호출되어 검 강화 스택을 1 증가시키는 함수
+    public void AcquireSwordEnhanceItem(float cooldownDecrease)//외부(Item스크립트)에서 호출되어 검 강화 스택을 1 증가시키는 함수
     {
         currentEnhanceStacks++; // 누적 스택 증가 (초기화 안 함)
 
         // 3개 쌓일 때마다 쿨타임 감소 (3, 6, 9... 번째에 발동)
         if (currentEnhanceStacks > 0 && currentEnhanceStacks % 3 == 0)
         {
-            SwordSkillCooldown -= EnhancedCooldownDecrease;
+            SwordSkillCooldown -= cooldownDecrease;
             if (SwordSkillCooldown < 5f) SwordSkillCooldown = 5f;
-
             Debug.Log($"[강화 발동] 현재 쿨타임: {SwordSkillCooldown}초");
         }
         Debug.Log($"검 강화 아이템 획득! 누적 스택: {currentEnhanceStacks}");
