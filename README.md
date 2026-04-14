@@ -180,6 +180,75 @@
 
 </details>
 
+<details>
+<summary><b>상속을 통한 보스 몬스터 설계 & 다형성 섹션(LastBossEnemy.cs)</b></summary>
+<br/>
+
+### 문제점
+
+- 모든 몬스터 로직을 Enemy.cs 하나에 담으려다 보니 코드가 비대해지고, 일반 몬스터와 보스의 특수 로직이 뒤섞여 유지보수가 어려워지는 문제가 발생했습니다.
+- 특히 **크기(Scale)**가 가장 큰 보스 몬스터의 외형에 비해 부모 클래스의 짧은 공격 사거리가 그대로 적용되어, 시각적 연출과 실제 피격 판정이 일치하지 않는 논리적 오류를 해결해야 했습니다.
+   
+
+### 해결 방안: 계층적 구조 설계 (Inheritance & Polymorphism)
+
+1. 상속(Inheritance)을 통한 코드 재사용성 확보
+   * 공통 로직(추격 AI, 기본 물리)은 부모 클래스(Enemy)에 집중시키고, 보스 전용 로직은 자식 클래스(LastBossEnemy)로 분리하여 코드 중복을 100% 제거했습니다.
+2. 다형성(Polymorphism)을 통한 특수 로직 구현
+   * virtual과 override를 활용하여 기존 시스템의 수정 없이 보스만의 예외 상황(면역 등)을 구현했습니다.
+```csharp
+//[부모 Enemy.cs] - 공통 사거리 설정
+public virtual void Attack()
+{
+    float dist = Vector2.Distance(transform.position, player.position);
+    if (dist <= currentStopDistance + 1.5f) DealDamageToPlayer();
+}
+
+//[자식 LastBossEnemy.cs] - 보스 전용 사거리 확장 (다형성)
+public override void Attack()
+{
+    float dist = Vector2.Distance(transform.position, player.position);
+    //보스 크기에 맞춰 판정 범위를 3.5f로 상향 조정 (가독성과 직관성 확보)
+    if (dist <= currentStopDistance + 3.5f) DealDamageToPlayer();
+}
+```
+
+3. 메서드 재정의를 통한 '상태 이상 면역' 시스템
+   * 부모의 슬로우 로직을 의도적으로 비워두거나(Empty Override), HandleTimeFreeze()를 재정의하여 보스다운 강력함을 코드로 증명했습니다.
+```csharp
+//부모의 시간 정지(TimeFreeze) 로직을 무력화하여 보스 몬스터만의 면역 시스템 구축.
+//false를 반환함으로써 부모(Enemy)의 고정 업데이트 로직이 중단 없이 실행되도록 유도함.
+protected override bool HandleTimeFreeze()
+{
+    //대신, 비활성화된 애니메이터만 복구. 
+    if (!animator.enabled) animator.enabled = true;
+
+    return false;//행동 지속을 위해 false 반환
+}
+
+//보스 몬스터 전용 상태 이상 면역: 강화 화살의 슬로우 효과를 원천 차단
+public override void ApplySlowEffect(float factor)
+{
+    //base.ApplySlowEffect(factor)를 호출하지 않음으로써 부모의 속도 감소 로직을 완전 무시함.
+    Debug.Log("보스: 슬로우 면역!");
+}
+```
+
+
+### 핵심 기술 및 성과
+
+1. 코루틴(Coroutine) 기반 시퀀스 제어:
+   * DashRoutine()을 통해 [준비(기 모으기) - 실행(돌진) - 종료(후딜레이)] 과정을 직관적으로 구현했습니다.
+   * FixedUpdate의 복잡한 조건문 대신 시간의 흐름을 제어하는 비동기 방식을 선택해 가독성을 높였습니다.
+2. 물리 최적화 및 조작감 개선:
+   * Layer Collision Matrix: 전용 레이어(BossEnemy)를 할당하여 일반 몬스터나 장애물과의 물리 충돌을 제외, 돌진 시 멈춤 현상을 해결했습니다.
+   * 거리 기반 판정: 물리적 밀어내기 대신 Vector2.Distance를 활용한 데미지 판정으로 부드러운 전투 조작감을 확보했습니다.
+3. 안정적인 사망 시퀀스: 보스가 돌진 패턴 도중 사망하더라도 StopAllCoroutines()와 animator.speed 복구를 통해 런타임 오류와 애니메이션 버그를 원천 차단했습니다.
+4. 유지보수 효율 증대: 기존 시스템을 수정하지 않고도 새로운 기능을 안전하게 확장하는 **개방-폐쇄 원칙(OCP)**의 실무적 적용을 경험했습니다.
+
+
+</details>
+
 
 <details>
 <summary><b>몬스터 물리 충돌 및 플레이어 접근 버그 해결</b></summary>
