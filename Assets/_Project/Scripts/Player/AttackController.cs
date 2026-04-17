@@ -11,7 +11,8 @@ public class AttackController : MonoBehaviour
     private SwordWeapon swordWeapon;
     private InvincibilitySkill invincSkill;//무적 아이템 사용(E 버튼입력)을 위해 추가
 
-    private bool isAttacking = false;//현재 공격 중인지 확인하는 변수
+    private bool isBowAttacking = false;//현재 활공격 중인지 확인하는 변수
+    private bool isSwordAttacking = false;//현재 검공격 중인지 확인하는 변수
 
 
     void Awake()
@@ -24,8 +25,7 @@ public class AttackController : MonoBehaviour
         swordWeapon = GetComponent<SwordWeapon>();
         invincSkill = GetComponent<InvincibilitySkill>();
 
-        //[방어적 프로그래밍] 참조 검증
-        CheckInitialization();
+        CheckInitialization();//[방어적 프로그래밍] 참조 검증
     }
 
     private void CheckInitialization()
@@ -46,21 +46,33 @@ public class AttackController : MonoBehaviour
         if ((player != null && player.IsDead) || !CountdownManager.isCountdownFinished)
             return;
 
-        HandleInputs();//공격 입력 처리 함수 호출
+        HandleAutoAttack();//자동 공격 처리 (활)
+        HandleInputs();//수동 입력 처리 (검, 무적)
     }
 
-    void HandleInputs()//각 공격 입력 처리 함수
+    //---활: 자동 공격 로직---
+    void HandleAutoAttack()//4.17:활 공격 키인 Space 입력 없이 쿨타임만 차면 자동으로 실행(자동 공격)
     {
-        //활 공격 (Space)
-        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
+        if (bowWeapon != null && !isBowAttacking)//활이 있고, 현재 활 쏘는 모션 중이 아닐 때
         {
-            if (bowWeapon != null && bowWeapon.CanAttack()) ExecuteAttack("Attack(Bow)");
+            //쿨타임까지 찼다면 발사!
+            if (bowWeapon.CanAttack())
+            {
+                ExecuteBowAttack();
+            }
         }
+    }
 
-        //검 공격 (Q)
-        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking)
+    //---검 & 무적: 수동 입력 로직---
+    void HandleInputs()
+    {
+        //검 공격 (Q) - 활 공격 중이어도 검 상태가 false면 실행 가능
+        if (Input.GetKeyDown(KeyCode.Q) && !isSwordAttacking)
         {
-            if (swordWeapon != null && swordWeapon.CanAttack()) ExecuteAttack("Attack(Sword)");
+            if (swordWeapon != null && swordWeapon.CanAttack())
+            {
+                ExecuteSwordAttack();
+            }
         }
 
         //무적 스킬 (E)
@@ -73,18 +85,22 @@ public class AttackController : MonoBehaviour
         }
     }
 
-    private void ExecuteAttack(string triggerName)//공격 실행 및 상태 관리 집중화
+    //---실행 함수들---
+    private void ExecuteBowAttack()
     {
-        isAttacking = true;
-        if (animator != null)
-        {
-            animator.SetTrigger(triggerName);
-        }
+        isBowAttacking = true;//중복 실행 방지 잠금
+        animator.SetTrigger("Attack(Bow)");
+    }
+    private void ExecuteSwordAttack()
+    {
+        isSwordAttacking = true;//중복 실행 방지 잠금
+        animator.SetTrigger("Attack(Sword)");
     }
 
-    public void OnAttackEnd() => isAttacking = false;//검 공격과 활 공격 애니메이션이 끝났을 때 isAttacking을 false로 되돌릴 함수
-    //선언과 같이 이것도 false. 게임 플레이 도중에 공격이 끝났을 때의 상태를 false로 바꿔주는 역할을 해.                              
-    //애니메이션의 SwordAttack, ShootArrow 이벤트와 겹쳐져 있어
+    //검 공격과 활 공격 애니메이션이 끝났을 때 is...Attacking변수를 false로 되돌릴 함수
+    //선언과 같이 이것도 false. 공격을 해서 true가 된 후, 공격이 끝났을 때의 상태를 false로 바꿔주는 역할을 해.                              
+    public void OnBowAttackEnd() => isBowAttacking = false;
+    public void OnSwordAttackEnd() => isSwordAttacking = false;
 }
 
 

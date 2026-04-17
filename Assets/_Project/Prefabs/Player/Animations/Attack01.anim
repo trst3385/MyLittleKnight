@@ -88,7 +88,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.3
-    functionName: OnAttackEnd
+    functionName: OnSwordAttackEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
