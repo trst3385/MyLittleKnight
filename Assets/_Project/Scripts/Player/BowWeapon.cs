@@ -180,9 +180,6 @@ public class BowWeapon : MonoBehaviour
             return true;
         else
         {
-            //쿨타임이 남았을 경우 남은 시간을 로그 출력
-            float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
-            Debug.Log("활 공격 쿨타임 중. 남은 시간: " + timeRemaining.ToString("F1") + "초");
             return false;
         }
     }

@@ -70,4 +70,12 @@ public class Sil_Player : MonoBehaviour
                 stateInfo.normalizedTime);//(어디부터?)원본이 진행된 그 지점(%)부터 이어서 재생해서 끊김 없는 부드러운 동기화
         }
     }
+
+    //---애니메이션 이벤트 수신기 (에러 방지용 빈 함수)---
+    // 실루엣은 실제로 화살을 쏘거나 로직을 처리할 필요가 없으므로 
+    // 이름만 같은 빈 함수를 만들어 에러를 막아준다.
+    public void ShootArrow() { /* 실루엣은 화살을 쏘지 않음 */ }
+    public void OnBowAttackEnd() { /* 실루엣은 공격 상태 체크가 필요 없음 */ }
+    public void SwordAttack() {/* 위와 동일 */ }
+    public void OnSwordAttackEnd() { /* 위와 동일 */ }
 }

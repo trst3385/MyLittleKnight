@@ -94,6 +94,9 @@ public class AttackController : MonoBehaviour
     private void ExecuteSwordAttack()
     {
         isSwordAttacking = true;//중복 실행 방지 잠금
+        isBowAttacking = false;//활 공격 중에 검 공격이 들어온 거니까, 
+                               //활 공격이 끝났다고 강제로 표시해줘야 다음 자동 공격이 돌아가
+   
         animator.SetTrigger("Attack(Sword)");
     }
 
@@ -102,8 +105,3 @@ public class AttackController : MonoBehaviour
     public void OnBowAttackEnd() => isBowAttacking = false;
     public void OnSwordAttackEnd() => isSwordAttacking = false;
 }
-
-
-
-
-
