@@ -67,7 +67,7 @@ public class AttackController : MonoBehaviour
     void HandleInputs()
     {
         //검 공격 (Q) - 활 공격 중이어도 검 상태가 false면 실행 가능
-        if (Input.GetKeyDown(KeyCode.Q) && !isSwordAttacking)
+        if (Input.GetKeyDown(KeyCode.Space) && !isSwordAttacking)
         {
             if (swordWeapon != null && swordWeapon.CanAttack())
             {
