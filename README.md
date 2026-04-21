@@ -7,11 +7,11 @@
 </div>
 
 <p align="center">
-  **👇 클릭해서 v1.10.0 플레이 영상 보기 (유튜브 이미지 링크)**
+  **👇 클릭해서 v1.11.0 플레이 영상 보기 (유튜브 이미지 링크)**
  
 <p align="center">
-  <a href="https://youtu.be/bvwJiXdElF0">
-    <img src="https://img.youtube.com/vi/bvwJiXdElF0/maxresdefault.jpg" alt="My Little Knight v1.9.0 플레이 영상 썸네일" width="700">
+  <a href="https://youtu.be/N2Pkw67UgK4">
+    <img src="https://img.youtube.com/vi/N2Pkw67UgK4/maxresdefault.jpg" alt="My Little Knight v1.11.0 플레이 영상 썸네일" width="700">
   </a>
 </p>
 
@@ -125,7 +125,7 @@
 ## 🎮 게임 플레이 & 특징
 
 - **두 종류의 무기**: 플레이어는 **검**과 **활**을 사용하여 몬스터를 공격할 수 있습니다. 각 무기는 독특한 공격 방식과 애니메이션을 가지고 있습니다.
-  - 활 공격은 기본 공격이며 최소 2초의 쿨타임에서 최대 1초까지 공격 쿨타임을 활 아이템 획득으로 줄일 수 있습니다.
+  - 활 공격은 기본 자동 공격이며 최소 2초의 쿨타임에서 최대 1초까지 공격 쿨타임을 활 아이템 획득으로 줄일 수 있습니다.
   - 검 공격은 10초마다 사용이 가능하며 가까이에 붙은 몬스터들을 넉백 시키며 에너지 탄을 발사해 일직선 상으로 몬스터들에게 데미지를 줍니다.
   - 각 무기의 아이템을 3회 획득할 시, 다음 공격은 강화가 적용됩니다.
     * 활 공격은 몬스터 관통과 영구적인 이동속도 저하.
