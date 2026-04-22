@@ -297,7 +297,7 @@ public override void ApplySlowEffect(float factor)
   
 #### 📌 해결 결과
 ![몬스터 간 콜라이더 문제 해결](https://github.com/trst3385/MyLittleKnight/blob/main/Image(README%EC%9A%A9)/%EB%AA%AC%EC%8A%A4%ED%84%B0%EA%B0%84%20%EC%BD%9C%EB%9D%BC%EC%9D%B4%EB%8D%94%20%EB%AC%B8%EC%A0%9C%20%ED%95%B4%EA%B2%B0.gif?raw=true)<br>
-콜라이더 분리 및 레이어 설정을 통해 몬스터와 플레이어가 정상적으로 겹치며 공격 범위 내로 진입
+**콜라이더 분리 및 레이어 설정을 통해 몬스터와 플레이어가 정상적으로 겹치며 공격 범위 내로 진입**
 
 
 ### 배운 점
