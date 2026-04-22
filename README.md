@@ -295,6 +295,8 @@ public override void ApplySlowEffect(float factor)
 4.  **`SwordPoint` 수정**:
     - `SwordPoint`의 `Is Trigger`를 `켜짐` 상태로 변경하여, 물리적인 충돌을 일으키지 않고 감지 영역 역할만 하도록 수정했습니다.
 
+(https://github.com/trst3385/MyLittleKnight/blob/main/Image(README%EC%9A%A9)/%EB%AA%AC%EC%8A%A4%ED%84%B0%EA%B0%84%20%EC%BD%9C%EB%9D%BC%EC%9D%B4%EB%8D%94%20%EB%AC%B8%EC%A0%9C%20%ED%95%B4%EA%B2%B0.gif?raw=true)
+
 ### 배운 점
 
 - 유니티의 **콜라이더 역할 분리**와 **`Is Trigger` 속성의 정확한 활용법**을 이해했습니다.
