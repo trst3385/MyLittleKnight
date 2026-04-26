@@ -52,13 +52,24 @@ public class PlayerStatsEffects : MonoBehaviour
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
 
-    private void CheckInitialization()
+    private void CheckInitialization()//필수 컴포넌트 체크
     {
-        //필수 컴포넌트 체크
-        if (player == null) Debug.LogWarning("Stats: Player 미연결!");
-        if (bowWeapon == null) Debug.LogWarning("Stats: BowWeapon 미연결!");
-        if (playerShield == null) Debug.LogWarning("Stats: playerShield 미연결!");
-        if (swordWeapon == null) Debug.LogWarning("Stats: swordWeapon 미연결!");
+        if (player == null)
+        {
+            Debug.LogWarning("Stats: Player 미연결!");
+        }
+        if (bowWeapon == null)
+        {
+            Debug.LogWarning("Stats: BowWeapon 미연결!");
+        }
+        if (playerShield == null)
+        {
+            Debug.LogWarning("Stats: playerShield 미연결!");
+        }
+        if (swordWeapon == null)
+        {
+            Debug.LogWarning("Stats: swordWeapon 미연결!");
+        }
     }
 
     void Start()
@@ -83,14 +94,10 @@ public class PlayerStatsEffects : MonoBehaviour
 
             if (currentStacks > 0 && currentStacks % 3 == 0)
             {
-                OnArrowEnhancedEffect?.Invoke(); // 기존: UI/이펙트용 이벤트
+                OnArrowEnhancedEffect?.Invoke();// 기존: UI/이펙트용 이벤트
 
-                // ★ 여기에 추가: 3스택 달성 시 특별 사운드 재생 요청
-                // SoundManager를 통해 바로 재생하거나, 이벤트를 통해 재생
                 if (SoundManager.Instance != null)
                 {
-                    // AudioClip은 여기에 직접 넣거나, SO에서 가져오도록 설계해도 돼!
-                    // 일단은 SoundManager에 PlayEnhancedBowSound 같은 함수를 만들거나 직접 재생하자.
                     Debug.Log("활 3스택 달성! 강화 사운드 재생!");
                 }
             }
@@ -111,12 +118,17 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log($"[Stats] 활 공격력 증가: {bowWeapon.ArrowDamage}");
             }
         }
-        else Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 메시지
+        else //최대 레벨에 도달했을 때의 메시지
+        {
+            Debug.Log("PlayerStatsEffects: 화살 레벨이 이미 최대치야!");
+        }
     }
     public void RefreshArrowStackStatus()
     {
         if (bowWeapon != null)//현재 스택이 3으로 강화가 되면 true(금색), 아니면 false(흰색)를 보냄
+        {
             OnArrowColorStateChanged?.Invoke(bowWeapon.GetCurrentStacks() >= 3);
+        }    
     }
 
 
@@ -138,7 +150,10 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log("PlayerStatsEffects: 검+검기 공격력이 " + ItemCSdamage + " 증가했다! 현재 공격력: " + swordWeapon.SwordDamage);
             }
         }
-        else Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");//최대 레벨에 도달했을 때의 로그
+        else//최대 레벨에 도달했을 때의 로그
+        {
+            Debug.Log("PlayerStatsEffects: 검 레벨이 이미 최대치야!");
+        }
     }
 
     public void MoveSpeedUp(float amount)//이동속도 강화
@@ -153,7 +168,10 @@ public class PlayerStatsEffects : MonoBehaviour
                 Debug.Log("PlayerStatsEffects: 이동 속도가 " + amount + " 증가했다! 현재 속도: " + player.MoveSpeed);
             }
         }
-        else Debug.Log("PlayerStatsEffects: 이동속도 레벨이 이미 최대치야!");// 최대 레벨에 도달하면 경고 메시지 출력
+        else//최대 레벨에 도달하면 경고 메시지 출력
+        {
+            Debug.Log("PlayerStatsEffects: 이동속도 레벨이 이미 최대치야!");
+        }
     }
     public void Heal(float amount)
     {

@@ -38,8 +38,10 @@ public class BowWeapon : MonoBehaviour
         //같은 오브젝트의 컴포넌트,스크립트
         Transform sndBowTransform = transform.Find("SND_Bow");//자식 오브젝트 중 "SND_Bow"를 찾아서 거기 있는 AudioSource를 가져옴
         if (sndBowTransform != null)
+        {
             bowAudioSource = sndBowTransform.GetComponent<AudioSource>();
-
+        }
+            
         statsEffects = GetComponent<PlayerStatsEffects>();
 
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
@@ -47,12 +49,24 @@ public class BowWeapon : MonoBehaviour
 
     private void CheckInitialization()
     {
-        if (arrowSpawnPoint == null) Debug.LogWarning($"{gameObject.name}: ArrowSpawnPoint를 자식에서 찾을 수 없어!");
-        if (bowAudioSource == null) Debug.LogWarning($"{gameObject.name}: AudioSource 미연결!");
+        if (arrowSpawnPoint == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: ArrowSpawnPoint를 자식에서 찾을 수 없어!");
+        }
+        if (bowAudioSource == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: AudioSource 미연결!");
+        }
 
         //에셋 체크 (드래그 필수 항목)
-        if (ArrowPrefab == null) Debug.LogError($"{gameObject.name}: ArrowPrefab이 비어있어!");
-        if (bowAttackSound == null) Debug.LogWarning($"{gameObject.name}: bowAttackSound 클립이 비어있어!");
+        if (ArrowPrefab == null)
+        {
+            Debug.LogError($"{gameObject.name}: ArrowPrefab이 비어있어!");
+        }
+        if (bowAttackSound == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: bowAttackSound 클립이 비어있어!");
+        }
     }
 
     void Start()
@@ -66,7 +80,9 @@ public class BowWeapon : MonoBehaviour
             float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
 
             if (timeRemaining > 0)
+            {
                 OnBowCooldownChanged?.Invoke(timeRemaining, currentArrowCooldown);//방송: "아직 쿨타임 중이야! 남은 시간은 이만큼이야!"
+            }   
             else
             {
                 //방송: "쿨타임 끝! 이제 UI 꺼도 돼!"
@@ -87,9 +103,14 @@ public class BowWeapon : MonoBehaviour
             Debug.Log(">>> 특수 강화 공격 발동! (관통 + 슬로우)");
         }
 
-        if (bowAudioSource != null && bowAttackSound != null) bowAudioSource.PlayOneShot(bowAttackSound);//활 공격 시 사운드 재생
-        else Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
-        //PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
+        if (bowAudioSource != null && bowAttackSound != null)//활 공격 시 사운드 재생
+        {
+            bowAudioSource.PlayOneShot(bowAttackSound);
+        }//PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
+        else
+        {
+            Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
+        }
 
         if (activeArrowPrefab == null)
         {
@@ -102,41 +123,9 @@ public class BowWeapon : MonoBehaviour
 
         for (int i = 0; i < NumberOfArrows360; i++)
         {
-            float angle = i * angleStep;//현재 화살의 각도(0, 45, 90, ...)
-
-            //Cos/Sin 계산을 위해 '도(Degree)' 단위를 '라디안(Radian)'으로 변환 (컴퓨터가 이해하는 각도 단위로 변경)
-            float radianAngle = angle * Mathf.Deg2Rad;
-
-            //발사 방향 벡터 계산
-            Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
-
-            //화살 생성 (플레이어의 중앙에서 발사되도록 ArrowSpawnPoint 오브젝트 사용)                  
-            GameObject arrow = Instantiate(activeArrowPrefab, arrowSpawnPoint.position, Quaternion.identity);
-            
-            Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
-            if (arrowRb != null)
-            {
-                arrowRb.linearVelocity = direction * ArrowSpeed;
-
-                //화살을 움직이는 방향에 따라 회전
-                angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-                Arrow arrowScript = arrow.GetComponent<Arrow>();//화살의 Arrow 스크립트에 데미지 설정
-                if (arrowScript != null)
-                {
-                    arrowScript.ArrowDamage = activeArrowDamage;//현재 ArrowDamage 값 
-
-                    if (isEnhanced)//강화 화살에 슬로우 및 관통 정보 전달
-                    {
-                        arrowScript.IsEnhanced = true;//Arrow 스크립트에서 IsEnhanced 변수를 추가해야 해.
-                        arrowScript.SlowFactor = SlowFactor;
-                    }
-                }                                                    
-                else Debug.LogWarning("생성된 화살 프리팹에 'Arrow' 스크립트가 없어! 데미지 설정 불가능!");
-            }
-            else Debug.LogWarning("생성된 화살 프리팹에 Rigidbody2D가 없어!");
+            SpawnArrow(isEnhanced, activeArrowPrefab, activeArrowDamage, angleStep, i);
         }
+
         lastArrowAttackTime = Time.time;
 
         if (isEnhanced)//강화공격을 했다면
@@ -144,7 +133,54 @@ public class BowWeapon : MonoBehaviour
             currentEnhanceStacks -= MAX_ENHANCE_STACKS;
 
             if (statsEffects != null)
+            {
                 statsEffects.RefreshArrowStackStatus();
+            }          
+        }
+    }
+
+    //4.26 ShootArrow() 함수의 화살 발사 로직을 '메서드 추출'로 분리(ShootArrow함수의 가독성 향상)
+    private void SpawnArrow(bool isEnhanced, GameObject activeArrowPrefab, float activeArrowDamage, float angleStep, int i)
+    {
+        float angle = i * angleStep;//현재 화살의 각도(0, 45, 90, ...)
+
+        //Cos/Sin 계산을 위해 '도(Degree)' 단위를 '라디안(Radian)'으로 변환 (컴퓨터가 이해하는 각도 단위로 변경)
+        float radianAngle = angle * Mathf.Deg2Rad;
+
+        //발사 방향 벡터 계산
+        Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
+
+        //화살 생성 (플레이어의 중앙에서 발사되도록 ArrowSpawnPoint 오브젝트 사용)                  
+        GameObject arrow = Instantiate(activeArrowPrefab, arrowSpawnPoint.position, Quaternion.identity);
+
+        Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
+        if (arrowRb != null)
+        {
+            arrowRb.linearVelocity = direction * ArrowSpeed;
+
+            //화살을 움직이는 방향에 따라 회전
+            angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+            Arrow arrowScript = arrow.GetComponent<Arrow>();//화살의 Arrow 스크립트에 데미지 설정
+            if (arrowScript != null)
+            {
+                arrowScript.ArrowDamage = activeArrowDamage;//현재 ArrowDamage 값 
+
+                if (isEnhanced)//강화 화살에 슬로우 및 관통 정보 전달
+                {
+                    arrowScript.IsEnhanced = true;//Arrow 스크립트에서 IsEnhanced 변수를 추가해야 해.
+                    arrowScript.SlowFactor = SlowFactor;
+                }
+            }
+            else
+            {
+                Debug.LogWarning("생성된 화살 프리팹에 'Arrow' 스크립트가 없어! 데미지 설정 불가능!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("생성된 화살 프리팹에 Rigidbody2D가 없어!");
         }
     }
 
@@ -167,7 +203,9 @@ public class BowWeapon : MonoBehaviour
             case WeaponType.Bow://전달받은 타입이 활(Bow)일 경우에만 쿨타임 감소 로직 실행
                 currentArrowCooldown -= coolDown;//현재 적용되는 쿨타임에서 감소량(coolDown)을 뺀다
                 if (currentArrowCooldown < 1.0f)//여기서 활 공격의 최소 쿨타임을 1초로 제한
+                {
                     currentArrowCooldown = 1.0f;//1.0초 이하로는 쿨타임이 줄어들지 않도록 제한
+                }
                 break;
         }
         Debug.Log($"쿨타임 감소 후 현재 쿨타임: {currentArrowCooldown}");
@@ -175,12 +213,16 @@ public class BowWeapon : MonoBehaviour
 
     public bool CanAttack()//쿨타임 체크
     {
-        //마지막 공격 시간이 -1f 이거나 쿨타임이 지났으면 True 반환
-        if (lastArrowAttackTime < 0f || Time.time >= lastArrowAttackTime + currentArrowCooldown)
-            return true;
-        else
-        {
-            return false;
-        }
+        //마지막 공격 시간이 -1f 이거나 쿨타임이 지났으면 True 반환, 이 조건문 결과 자체가 true 아니면 false니까 바로 리턴
+        //4.26 더 간결하게 논리 연산자를 활용
+        return lastArrowAttackTime < 0f || Time.time >= lastArrowAttackTime + currentArrowCooldown;
+
+        ////마지막 공격 시간이 -1f 이거나 쿨타임이 지났으면 True 반환
+        //if (lastArrowAttackTime < 0f || Time.time >= lastArrowAttackTime + currentArrowCooldown)
+        //    return true;
+        //else
+        //{
+        //    return false;
+        //}
     }
 }

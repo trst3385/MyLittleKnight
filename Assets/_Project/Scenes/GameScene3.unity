@@ -3492,7 +3492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneName
   sceneText: {fileID: 0}
   startPosition: {x: 0, y: 400}
-  endPosition: {x: 750, y: 480}
+  endPosition: {x: 720, y: 480}
   startScale: 2
   endScale: 1
   moveDuration: 1

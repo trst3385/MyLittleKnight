@@ -43,7 +43,10 @@ public class InvincibilitySkill : MonoBehaviour
         //사운드 소스 연결 (자식 오브젝트 중 "SND_Invincibility" 찾기)
         Transform sndTransform = transform.Find("SND_Invincibility");
         if (sndTransform != null)
+        {
             audioSource = sndTransform.GetComponent<AudioSource>();
+        }
+            
 
         //UI 연결 (하이어라키에서 이름으로 찾기)
         //부모 아이콘 오브젝트를 먼저 찾고, 그 자식들을 찾는 게 가장 안전!
@@ -54,8 +57,14 @@ public class InvincibilitySkill : MonoBehaviour
 
     private void CheckInitialization()
     {
-        if (player == null) Debug.LogError($"{gameObject.name}: Player 스크립트가 없어!");
-        if (audioSource == null) Debug.LogWarning($"{gameObject.name}: SND_Invincibility 오브젝트나 AudioSource가 없어!");
+        if (player == null)
+        {
+            Debug.LogError($"{gameObject.name}: Player 스크립트가 없어!");
+        }
+        if (audioSource == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: SND_Invincibility 오브젝트나 AudioSource가 없어!");
+        }
     }
 
     void Update()
@@ -76,7 +85,10 @@ public class InvincibilitySkill : MonoBehaviour
 
         //사운드 재생
         if (audioSource != null && invincibilitySound != null)
+        {
             audioSource.PlayOneShot(invincibilitySound);
+        }
+            
 
         StartCoroutine(InvincibilityRoutine());//무적 코루틴 시작
     }
@@ -84,15 +96,30 @@ public class InvincibilitySkill : MonoBehaviour
     private IEnumerator InvincibilityRoutine()
     {
         isEffectActive = true;
-        if (player != null) player.isInvincible = true;
-        if (spriteRenderer != null) spriteRenderer.color = invincibilityColor;
+        if (player != null)
+        {
+            player.isInvincible = true;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = invincibilityColor;
+        }
 
         Debug.Log("무적 발동!");
 
         yield return new WaitForSeconds(skillDuration);
 
-        if (player != null) player.isInvincible = false;
-        if (spriteRenderer != null) spriteRenderer.color = Color.white;
+        if (player != null)
+        {
+            player.isInvincible = false;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.white;
+        }
+
         isEffectActive = false;
 
         Debug.Log("무적 종료");

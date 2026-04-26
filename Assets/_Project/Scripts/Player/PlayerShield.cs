@@ -36,16 +36,14 @@ public class PlayerShield : MonoBehaviour
     private void CheckInitialization()
     {
         if (playerScript == null)
+        {
             Debug.LogError($"{gameObject.name}: Player 컴포넌트를 찾을 수 없어!");
+        }
 
-        //핵심 참조가 없으면 스크립트를 정지시켜 에러 확산을 방지
-        //enabled는 인스펙터 창에서 스크립트 이름 왼쪽에 있는 그 '체크박스'를 코드로 끄고 켜는 거야.
-        //enabled = true; : 체크박스 체크 (스크립트 작동 중), enabled = false; : 체크박스 해제(스크립트 정지)
         if (playerHealth == null)
         {
-            Debug.LogError($"{gameObject.name}: PlayerHealth 컴포넌트를 찾을 수 없어! 스크립트를 비활성화!");
-            enabled = false;//enabled: 이 스크립트(컴포넌트)의 체크박스를 해제해 기능을 정지시켜,
-        }                   //Null 에러가 발생하여 게임이 멈추는 것을 방지하는 안전장치야.
+            Debug.LogError($"{gameObject.name}: PlayerHealth 컴포넌트를 찾을 수 없어!");
+        }
     }
 
 
@@ -69,7 +67,10 @@ public class PlayerShield : MonoBehaviour
                 playerHealth.TakeDamage(remainingDamage);//남은 데미지는 플레이어 체력에 적용
             }
         }
-        else playerHealth.TakeDamage(damage);//방어력이 이미 0이면 바로 체력에 데미지 적용
+        else//방어력이 이미 0이면 바로 체력에 데미지 적용
+        {
+            playerHealth.TakeDamage(damage);
+        }
 
         OnShieldChanged?.Invoke(CurrentShield, MaxShield);//[방송]데미지를 받았다는 신호를 보내 (옵저버 패턴)
     }

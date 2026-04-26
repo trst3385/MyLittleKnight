@@ -55,10 +55,16 @@ public class Player : MonoBehaviour
 
         //자식 오브젝트 및 사운드 자동 연결, 자식 중에서 이름으로 찾기
         var sndFootstep = transform.Find("SND_Footstep");
-        if (sndFootstep != null) walkingaudioSource = sndFootstep.GetComponent<AudioSource>();
+        if (sndFootstep != null)
+        {
+            walkingaudioSource = sndFootstep.GetComponent<AudioSource>();
+        }
 
         var silObj = transform.Find("Sil_Player");//자식 오브젝트 이름에 맞게!
-        if (silObj != null) silplayer = silObj.GetComponent<Sil_Player>();
+        if (silObj != null)
+        {
+            silplayer = silObj.GetComponent<Sil_Player>();
+        }
 
         targetCollider = GetComponent<Collider2D>();//플레이어 본인의 콜라이더 사용
 
@@ -69,8 +75,15 @@ public class Player : MonoBehaviour
 
     private void CheckInitialization()//없거나 제대로 연결이 안되면 뜰 로그 에러
     {
-        if (walkingaudioSource == null) Debug.LogError("자식 오브젝트 SND_Footstep의 AudioSource를 찾을 수 없어!");
-        if (silplayer == null) Debug.LogWarning("자식 오브젝트 실루엣을 찾을 수 없어!");
+        if (walkingaudioSource == null)
+        {
+            Debug.LogError("자식 오브젝트 SND_Footstep의 AudioSource를 찾을 수 없어!");
+        }
+
+        if (silplayer == null)
+        {
+            Debug.LogWarning("자식 오브젝트 실루엣을 찾을 수 없어!");
+        }
     }
 
 
@@ -83,7 +96,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (IsDead) return;//죽었으면 이후의 모든 로직을 건너뜀
+        if (IsDead)//죽었으면 이후의 모든 로직을 건너뜀
+        {
+            return;
+        }
 
         //살아있을 때만 입력 처리
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -94,23 +110,38 @@ public class Player : MonoBehaviour
         HandleWalkingSound();//이동시엔 걷기 사운드(함수) 재생
 
 
-        if (animator != null) animator.SetBool("Move", movement.magnitude > 0);
+        if (animator != null)
+        {
+            animator.SetBool("Move", movement.magnitude > 0);
+        }
 
         // 케릭터 방향 전환(좌우반전)
         //<0 = Horizontal값이 0보다 작다, -1이 됐기에 왼쪽으로 이동
         //>0 = 반대로 Horizontal값이 0보다 크기에 오른쪽으로 이동
-        if (horizontalInput < 0) spriteRenderer.flipX = true;
-        else if (horizontalInput > 0) spriteRenderer.flipX = false;
+        if (horizontalInput < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else if (horizontalInput > 0)
+        {
+            spriteRenderer.flipX = false;
+        }
     }
 
     public void PlayerDie()//플레이어 사망시
     {
-        if (IsDead) return;
+        if (IsDead)
+        {
+            return;
+        }
 
         IsDead = true;//죽으면 IsDead 실행
         Debug.Log("플레이어 사망!");
 
-        if (walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();//걷기 사운드를 즉시 중지
+        if (walkingaudioSource != null && walkingaudioSource.isPlaying)//걷기 사운드를 즉시 중지
+        {
+            walkingaudioSource.Stop();
+        }
 
         if (animator != null)
         {
@@ -122,16 +153,17 @@ public class Player : MonoBehaviour
             StartCoroutine(GameOverSequence(1.0f));//1초 뒤에 CallGameOverManager의 게임오버 UI창을 호출
             //02.21 invoke에서 코루틴으로 변경, 문자열 기반의 불안정한 방식에서 안정적이고 확장성 있는 코드(코루틴)으로 변경,
         }
-        if (rb != null) rb.simulated = false;//물리 시뮬레이션 중지
+        if (rb != null)//물리 시뮬레이션 중지
+        {
+            rb.simulated = false;
+        }
     }
     private IEnumerator GameOverSequence(float delay)//플레이어가 죽으면 1초 뒤 게임오버창이 뜰 코루틴
     {
 
         yield return new WaitForSeconds(delay);//플레이어가 죽은 후 지정된 시간(1.0f)만큼 대기 후 게임오버창 생성
 
-        Debug.Log("1초 지남: 사망 방송 송출!");
         //2. 방송 송출 (Invoke): 이 채널을 구독 중인 모든 시청자(스크립트)에게 신호를 보내.
-
         //?. 은 "만약 구독자가 한 명도 없으면 송출하지마!"라는 안전장치야.
         Player.OnPlayerDead?.Invoke();
     }
@@ -139,8 +171,10 @@ public class Player : MonoBehaviour
 
     public Vector3 GetCenterPosition()//몬스터들이 플레이어의 '중앙'이라고 인식하고 추적/공격할 위치, Enemy 스크립트에서 이 함수를 참조
     {                             
-        if (targetCollider != null) return targetCollider.bounds.center;//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때
-
+        if (targetCollider != null)//True일때, 플레이어 오브젝트에 Collider2D 컴포넌트가 붙어 있을 때
+        {
+            return targetCollider.bounds.center;
+        }
         return transform.position;//false일때, Collider2D 컴포넌트가 붙어 있지 않을 때
     }
 
@@ -160,19 +194,26 @@ public class Player : MonoBehaviour
         }
         else//움직이지 않을 때 소리 멈춤
         {
-            if (walkingaudioSource != null && walkingaudioSource.isPlaying) walkingaudioSource.Stop();
+            if (walkingaudioSource != null && walkingaudioSource.isPlaying)
+            {
+                walkingaudioSource.Stop();
+            }
         }
     }
 
 
+    //----------무적 스크립트의 무적 상태때 색상 변화와 중복 오류-----------------------
+    //무적 스크립트에서 색상을 정할지, 플레이어 스크립트에서 색상을 정할지 정하자-------
     public void SetInvincible(bool active)//무적 효과 발동시
     {
         isInvincible = active;
 
-        //시각적 피드백 (스킬 스크립트에서 직접 해도 되지만 여기서 하면 관리가 편해)
-        if (spriteRenderer != null)
+        if (spriteRenderer != null)//시각적 피드백 (스킬 스크립트에서 직접 해도 되지만 여기서 하면 관리가 편해)
+        {
             spriteRenderer.color = active ? new Color(1f, 1f, 0.5f, 0.8f) : Color.white;
+        }
     }
+
 
     public void AddScore(int amount)//점수를 추가하는 함수
     {

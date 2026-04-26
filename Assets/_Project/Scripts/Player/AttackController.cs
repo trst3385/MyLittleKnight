@@ -30,13 +30,26 @@ public class AttackController : MonoBehaviour
 
     private void CheckInitialization()
     {
-        if (player == null) Debug.LogError($"{gameObject.name}: Player 스크립트를 찾을 수 없어!");
-        if (animator == null) Debug.LogError($"{gameObject.name}: Animator를 찾을 수 없어!");
-
-        //무기는 없을 수도 있으니 경고(Warning) 정도로 처리
-        if (bowWeapon == null) Debug.LogWarning($"{gameObject.name}: BowWeapon 미연결! (활 공격 불가)");
-        if (swordWeapon == null) Debug.LogWarning($"{gameObject.name}: SwordWeapon 미연결! (검 공격 불가)");
-        if (invincSkill == null) Debug.LogWarning($"{gameObject.name}: InvincibilitySkill 미연결!");
+        if (player == null)
+        {
+            Debug.LogError($"{gameObject.name}: Player 스크립트를 찾을 수 없어!");
+        }
+        if (animator == null)
+        {
+            Debug.LogError($"{gameObject.name}: Animator를 찾을 수 없어!");
+        }
+        if (bowWeapon == null)
+        {
+            Debug.LogError($"{gameObject.name}: BowWeapon 미연결! (활 공격 불가)");
+        }
+        if (swordWeapon == null)
+        {
+            Debug.LogError($"{gameObject.name}: SwordWeapon 미연결! (검 공격 불가)");
+        }
+        if (invincSkill == null)
+        {
+            Debug.LogError($"{gameObject.name}: InvincibilitySkill 미연결!");
+        }
     }
 
 
@@ -44,7 +57,9 @@ public class AttackController : MonoBehaviour
     {
         //플레이어가 죽었거나, 카운트다운이 아직 안 끝났으면 공격 입력 무시!
         if ((player != null && player.IsDead) || !CountdownManager.isCountdownFinished)
+        {
             return;
+        }
 
         HandleAutoAttack();//자동 공격 처리 (활)
         HandleInputs();//수동 입력 처리 (검, 무적)
