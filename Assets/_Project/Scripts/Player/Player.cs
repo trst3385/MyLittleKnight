@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
 
     [Header("무적 상태")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
     [Tooltip("체력 감소가 되지 않는 무적 상태인지 여부")]
-    public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인
+    public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인(무적, 방어력 스크립트에서 참조)
 
     [Header("사운드 에셋")]
     [SerializeField] private AudioClip walkSound;//소리 파일 자체는 드래그가 필요해
@@ -115,16 +115,17 @@ public class Player : MonoBehaviour
             animator.SetBool("Move", movement.magnitude > 0);
         }
 
-        // 케릭터 방향 전환(좌우반전)
-        //<0 = Horizontal값이 0보다 작다, -1이 됐기에 왼쪽으로 이동
-        //>0 = 반대로 Horizontal값이 0보다 크기에 오른쪽으로 이동
+        //캐릭터 좌우 반전 처리
+        //키 입력값(-1, 0, 1)에 따른 방향 전환
+        //0(입력 없음)일 때는 조건문을 타지 않아 마지막 방향이 유지
+        //else if를 사용해서 0(입력 없음)일 때는 방향을 바꾸지 않고 유지
         if (horizontalInput < 0)
         {
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX = true;//왼쪽
         }
-        else if (horizontalInput > 0)
-        {
-            spriteRenderer.flipX = false;
+        else if (horizontalInput > 0)//else를 쓰면 "아무것도 안 누를 때"를 처리 못 해서 캐릭터가 오른쪽만 바라보게 돼.
+        {                            //그래서 정확히 방향이 있을 때만 반응하도록 else if로 칸막이를 쳐주는 거야
+            spriteRenderer.flipX = false;//오른쪽
         }
     }
 
@@ -200,20 +201,6 @@ public class Player : MonoBehaviour
             }
         }
     }
-
-
-    //----------무적 스크립트의 무적 상태때 색상 변화와 중복 오류-----------------------
-    //무적 스크립트에서 색상을 정할지, 플레이어 스크립트에서 색상을 정할지 정하자-------
-    public void SetInvincible(bool active)//무적 효과 발동시
-    {
-        isInvincible = active;
-
-        if (spriteRenderer != null)//시각적 피드백 (스킬 스크립트에서 직접 해도 되지만 여기서 하면 관리가 편해)
-        {
-            spriteRenderer.color = active ? new Color(1f, 1f, 0.5f, 0.8f) : Color.white;
-        }
-    }
-
 
     public void AddScore(int amount)//점수를 추가하는 함수
     {
