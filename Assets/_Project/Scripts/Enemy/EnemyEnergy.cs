@@ -23,10 +23,12 @@ public class EnemyEnergy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)//플레이어 콜라이더와 충돌했을 때 실행되는 함수
     {
-        //부딪힌 오브젝트의 태그가 Player인지 확인하기
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player"))//부딪힌 오브젝트의 태그가 Player인지 확인하기
         {
-            if (hitPlayer.Contains(other.gameObject)) return;//중복 데미지 방지
+            if (hitPlayer.Contains(other.gameObject))//중복 데미지 방지
+            {
+                return;
+            }
 
             //플레이어의 방패/체력 스크립트 가져오기(방어력 스크립트 내부에 체력 스크립트로 전달하는 로직이 있다)
             PlayerShield shield = other.GetComponent<PlayerShield>();

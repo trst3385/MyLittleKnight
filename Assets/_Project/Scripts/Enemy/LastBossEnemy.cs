@@ -107,7 +107,10 @@ public class LastBossEnemy : Enemy//Enemy 스크립트 상속
     {
         //보스 몬스터는 부모의 '정지 로직'을 실행하지 않아.
         //대신 애니메이터가 꺼져있다면 다시 켜주기만 하고 false를 반환해
-        if (!animator.enabled) animator.enabled = true;
+        if (!animator.enabled)
+        {
+            animator.enabled = true;
+        }
 
         return false;//"난 안 멈췄으니까 행동을 계속 진행해"
     }

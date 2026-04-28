@@ -48,7 +48,10 @@ public class Sil_Player : MonoBehaviour
 
         //playerTransform이 null이거나 스크립트가 비활성 상태면 실행 안 함
         //Awake에서 연결에 실패했을 경우를 대비한 최소한의 안전장치!
-        if (!enabled || playerTransform == null || playerAnimator == null) return;
+        if (!enabled || playerTransform == null || playerAnimator == null)
+        {
+            return;
+        }
 
         //위치 동기화
         transform.position = playerTransform.position;
@@ -59,16 +62,18 @@ public class Sil_Player : MonoBehaviour
         silhouetteRenderer.flipX = playerRenderer.flipX;//방향 동기화 (좌우 반전), Player 스크립트가 SpriteRenderer.flipX를 제어
 
         //애니메이션 상태 상세 동기화(모든 레이어 반복)
-        for (int i = 0; i < playerAnimator.layerCount; i++)
-        {
+        for (int i = 0; i < playerAnimator.layerCount; i++)//실루엣이 플레이어와 프레임 단위로 완벽하게 똑같이 움직이게 하려고,                                                  
+        {                                                  //애니메이션 재생 시간(normalizedTime)을 강제로 맞출 목적
             //원본 플레이어가 '현재' 어떤 상태인지 파악(걷는 중인지, 공격 중인지, 사망했는지)
             AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(i);
 
-            //실루엣에게 복사 명령. 실루엣 애니메이터에게 원본과 똑같이 따라 하라고 명령해.
-            silplayerAnimator.Play(stateInfo.fullPathHash,//(무엇을?)원본이 지금 하는 그 애니메이션의 이름표(ID)
-                                                        i,//(어디서?)원본과 같은 레이어(층)에서
-                stateInfo.normalizedTime);//(어디부터?)원본이 진행된 그 지점(%)부터 이어서 재생해서 끊김 없는 부드러운 동기화
-        }
+            //실루엣 애니메이터를 원본과 동일하게 강제 동기화
+            silplayerAnimator.Play(
+            stateInfo.fullPathHash, //애니메이션 ID (무엇을?)
+            i,                      //애니메이션 레이어 (어디서?)
+            stateInfo.normalizedTime//재생 진행률 (어느 지점부터?)
+            );                      
+        }   
     }
 
     //---애니메이션 이벤트 수신기 (에러 방지용 빈 함수)---

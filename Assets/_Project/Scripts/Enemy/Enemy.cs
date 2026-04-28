@@ -10,7 +10,6 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
 
     [Header("Stats (ScriptableObject)")]
     public EnemyStatsSO statsData;//Prefab별 스탯 데이터(SO), public으로 변경해서 EnemyHealth가 이곳에서 SO를 가져올 수 있게
-    [HideInInspector]
 
     [Header("스크립트 연결(코드 내 자동 연결)")]
     public EnemySpawn EnemySpawner;//EnemySpawn 스크립트 참조, EnemySpawn 스크립트가 이 몬스터 프리팹을 가져오기에 연결해준거야
@@ -75,29 +74,52 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
         }
 
         //스포너 자동 연결
-        if (EnemySpawner == null) EnemySpawner = UnityEngine.Object.FindFirstObjectByType<EnemySpawn>();
+        if (EnemySpawner == null)
+        {
+            EnemySpawner = FindFirstObjectByType<EnemySpawn>();
+        }
     }
 
-    private void CheckInitialization()//검수 함수
+    //-----------검수 함수----------------
+    private void CheckInitialization()
     {
-        if (playerScript == null) Debug.LogWarning($"{gameObject.name}: Player를 찾을 수 없어! 태그를 확인해!");
-        if (EnemySpawner == null) Debug.LogWarning($"{gameObject.name}: EnemySpawn 스포너가 씬에 없어!");
-        if (rb == null) Debug.LogError($"{gameObject.name}: Rigidbody2D가 누락됐어!");
-        if (animator == null) Debug.LogError($"{gameObject.name}: Animator가 누락됐어!");
-        if (spriteRenderer == null) Debug.LogError($"{gameObject.name}: SpriteRenderer가 누락됐어!");
-        if (statsData == null) Debug.LogError($"{gameObject.name}: statsData(EnemyStatsSO)가 연결되지 않았어!");
+        AssertNotNull(playerScript, "Player (Tag를 확인해!)");
+        AssertNotNull(EnemySpawner, "EnemySpawner (씬에 스포너가 없어!)");
+        AssertNotNull(rb, "Rigidbody2D");
+        AssertNotNull(animator, "Animator");
+
+        //SO에셋
+        AssertNotNull(spriteRenderer, "SpriteRenderer");
+        AssertNotNull(statsData, "EnemyStatsSO");
     }
+    private void AssertNotNull(object member, string memberName)//null이면 에러 로그를 남김
+    {
+        if (member == null)
+        {
+            Debug.LogError($"{gameObject.name}: {memberName}이(가) 연결되지 않았어!");
+        }
+    }
+    //-----------검수 함수----------------
+
 
     protected virtual void FixedUpdate()//외부 호출 없으니 protected으로 결정
     {                                   
-        if (statsData == null) return;
+        if (statsData == null)//So연결이 안되면 종료
+        {
+            return;
+        }
 
         //1. 시간 정지 체크 로직을 '가상 함수'로 호출
-        if (HandleTimeFreeze()) return;
+        if (HandleTimeFreeze())//시간 정지 상태면 행동을 멈춰
+        {
+            return;
+        }
 
         //2. 어제(4/9) 작업한 사망 지연 로직 (이건 보스도 똑같이 실행해야 하니까 여기 두자)
-        if (isPendingDeath) ExecuteDeathSequence();//지연된 사망 시퀀스 실행 (사망 사운드/모션 발동)
-
+        if (isPendingDeath)//지연된 사망 시퀀스 실행 (사망 사운드/모션 발동)
+        {
+            ExecuteDeathSequence();
+        }
 
         if (isDead)//몬스터 사망시
         {
@@ -105,10 +127,20 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
             return;
         }
 
-        if (isKnockedBack) return;//넉백 중일 때는 이동 로직을 건너뜀
+        if (isKnockedBack)//넉백 중일 때는 이동 로직을 건너뜀
+        {
+            return;
+        }
 
-        if (HandlePlayerDeath()) return;//플레이어 사망 시 멈춤
-        if (playerScript == null) return;//Player 스크립트가 없으면 이동/공격 로직 진행하지 않음
+        if (HandlePlayerDeath())//플레이어 사망 시 멈춤
+        {
+            return;
+        }
+
+        if (playerScript == null)//Player 스크립트가 없으면 이동/공격 로직 진행하지 않음
+        {
+            return;
+        }
 
         //플레이어와의 거리 계산
         Vector3 playerCenterPosition = playerScript.GetCenterPosition();//플레이어의 중앙 위치 가져오기
@@ -139,48 +171,39 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
             }
             return true;//"시간 멈췄으니까 로직 중단해!"
         }
-        if (!animator.enabled) animator.enabled = true;//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
-        return false;//"시간 정상이야, 계속 진행해!"
+        if (!animator.enabled)//시간이 풀렸을 때 몬스터의 애니메이터를 다시 활성화
+        {
+            animator.enabled = true;
+        }
+
+        return false;//시간 정지가 끝나면 행동을 재개
     }
 
     public virtual void SetEnmeyStats()//몬스터 시작 시 스탯과 외형을 설정 함수(ScriptableObject 스크립트와 Enemy Stats SO 파일)
     {
-        if (spriteRenderer == null)
-        {
-            Debug.LogError($"Enemy: {gameObject.name}에 SpriteRenderer가 없어! 스탯 설정 실패!");
-            return;
-        }
-
-        if (statsData == null)
-        {
-            Debug.LogError($"Enemy: {gameObject.name}에 statsData(EnemyStatsSO)가 연결되지 않았어!");
-            return;
-        }
-
-        //난이도 적용(EnemyDifficulty가 있으면 강화된 값 사용)
+        //1. 난이도 매니저 유무에 따라 '변하는' 스탯 결정, 체력은 체력 스크립트에서 강화
         if (EnemyDifficulty.Instance != null)
         {
             currentMoveSpeed = EnemyDifficulty.Instance.GetAdjustedMonsterStat(statsData.MoveSpeed, StatType.MoveSpeed);
             currentAttackDamage = EnemyDifficulty.Instance.GetAdjustedMonsterStat(statsData.AttackDamage, StatType.AttackDamage);
-
-            //아래 값들은 난이도 영향 없으면 그대로
-            currentStopDistance = statsData.StopDistance;
-            currentAttackCoolTime = statsData.AttackCooldown;
-            currentDetectionRange = statsData.DetectionRange;
-            currentScoreValue = statsData.ScoreValue;
         }
         else
         {
             currentMoveSpeed = statsData.MoveSpeed;
-            currentStopDistance = statsData.StopDistance;
-            currentAttackCoolTime = statsData.AttackCooldown;
             currentAttackDamage = statsData.AttackDamage;
-            currentDetectionRange = statsData.DetectionRange;
-            currentScoreValue = statsData.ScoreValue;
         }
+
+        //2. 공통 스탯 설정 (난이도 영향 없이 SO 값을 그대로 쓰는 애들)
+        currentStopDistance = statsData.StopDistance;
+        currentAttackCoolTime = statsData.AttackCooldown;
+        currentDetectionRange = statsData.DetectionRange;
+        currentScoreValue = statsData.ScoreValue;
+
+        //3. 외형 설정
         spriteRenderer.color = statsData.SpriteColor;
     }
-    
+
+
     public virtual void DealDamageToPlayer()//몬스터가 플레이어에게 피해를 주는 핵심 로직을 통합
     {                        //플레이어의 방패와 체력 스크립트를 찾아 데미지를 계산하고 적용하는 로직의 최종 목표 지점
 
@@ -195,7 +218,10 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
             playerShield.TakeShieldDamage(currentAttackDamage);
             Debug.Log("몬스터가 플레이어의 방어력에 " + currentAttackDamage + " 데미지를 줬어!");
         }
-        else Debug.LogError("PlayerShield 스크립트가 플레이어 오브젝트에 없어! 방어력 시스템에 연결되지 않았어!");
+        else
+        {
+            Debug.LogError("PlayerShield 스크립트가 플레이어 오브젝트에 없어! 방어력 시스템에 연결되지 않았어!");
+        }
     }
 
     public virtual void Attack()//Animation Event에서 호출 (공격 타이밍)
@@ -205,9 +231,14 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
         float distanceToPlayer = Vector2.Distance(transform.position, playerScript.transform.position);
 
         //1.5f는 몬스터 멈춤 지점 및 추가 공격 범위. 콜라이더 밖 거리에서도 데미지 가능
-        if (distanceToPlayer <= currentStopDistance + 1.5f) DealDamageToPlayer();//통합 함수 호출
-        else Debug.Log("공격 범위 밖이라 데미지를 줄 수 없어!");
-
+        if (distanceToPlayer <= currentStopDistance + 1.5f)//통합 함수 호출
+        {
+            DealDamageToPlayer();
+        }
+        else
+        {
+            Debug.Log("공격 범위 밖이라 데미지를 줄 수 없어!");
+        }
     }
 
     public virtual void ApplyTouchDamage() => DealDamageToPlayer();//근접 접촉 데미지
@@ -239,11 +270,17 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
             }
 
             if (!animator.GetBool("Attack"))
+            {
                 animator.SetBool("Attack", true);//닿았을때 데미지와 별개로아직 공격 애니메이션이 시작되지 않았다면 시작
+            }
+                
         }
         else//공격 범위 밖에 있을 때
         {   //공격 범위 밖이라면 공격 애니메이션을 끄고 무조건 플레이어를 추적
-            if (animator.GetBool("Attack")) animator.SetBool("Attack", false);
+            if (animator.GetBool("Attack"))
+            {
+                animator.SetBool("Attack", false);
+            }
 
             MoveTowardsPlayer(playerCenterPosition);
         }
@@ -251,7 +288,10 @@ public class Enemy : MonoBehaviour//LastBossEnemy 스크립트가 Enemy 스크�
     
     public virtual void TakeKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)//SwordWeapon 스크립트에서 호출될 넉백 함수
     {
-        if (isDead) return;//죽은 몬스터는 넉백되지 않음
+        if (isDead)//죽은 몬스터는 넉백되지 않음
+        {
+            return;
+        }
 
         if (rb == null)
         {

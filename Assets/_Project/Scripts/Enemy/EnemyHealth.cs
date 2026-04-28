@@ -27,7 +27,10 @@ public class EnemyHealth : MonoBehaviour
     {
         if (statsData == null)//만약 내(EnemyHealth) 인스펙터가 비어있다면
         {
-            if (enemyScript != null) statsData = enemyScript.statsData;//같은 오브젝트에 붙어있는 Enemy 스크립트에서 statsData를 가져와
+            if (enemyScript != null)//같은 오브젝트에 붙어있는 Enemy 스크립트에서 statsData를 가져와
+            {
+                statsData = enemyScript.statsData;
+            }
         }
         if (statsData == null)//둘 다 뒤졌는데도 없으면 그때 statsData가 없다고 에러를 띄워
         {
@@ -37,25 +40,31 @@ public class EnemyHealth : MonoBehaviour
 
         float baseMaxHP = statsData.MaxHP;//SO의 체력을 기본값으로 사용
         if (EnemyDifficulty.Instance != null)//난이도에 따른 HP 보정 로직
+        {
             currentMaxHP = EnemyDifficulty.Instance.GetAdjustedMonsterStat(baseMaxHP, StatType.Health);
-        else currentMaxHP = baseMaxHP;
+        }         
+        else
+        {
+            currentMaxHP = baseMaxHP;
+        }
 
         currentHP = currentMaxHP;
     }
 
     public void TakeDamage(float damageAmount)
     {
-        //받은 데미지만큼 현재 체력을 감소시킨다.
+        //받은 데미지만큼 현재 체력을 감소
         currentHP -= damageAmount;
 
-        //현재 체력이 0보다 작거나 같으면 몬스터가 죽었는지 확인한다.
-        if (currentHP <= 0) Die();//몬스터가 죽었을 때 호출하는 함수
+        if (currentHP <= 0)//몬스터 체력이 0이 되서 죽었을 때 호출하는 함수
+        {
+            Die();
+        }
     }
         
     public void Die()//몬스터가 사망했다고 Enemy 스크립트로 보내
     {
-        //체력이 0이 되면 Enemy 스크립트의 EnemyDie() 호출, 사망 로직 발동
-        if (enemyScript != null)
+        if (enemyScript != null)//체력이 0이 되면 Enemy 스크립트의 EnemyDie() 호출, 사망 로직 발동
         {
             enemyScript.EnemyDie();      
         }

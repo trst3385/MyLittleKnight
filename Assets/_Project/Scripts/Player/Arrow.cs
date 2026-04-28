@@ -23,7 +23,10 @@ public class Arrow : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))//충돌한 오브젝트 태그가 Enemy인지 확인
         {
-            if (hitEnemies.Contains(other.gameObject)) return;//이미 맞은 적이면 무시 (다단 히트 방지)
+            if (hitEnemies.Contains(other.gameObject))//이미 맞은 적이면 무시 (다단 히트 방지)
+            {
+                return;
+            }
 
             EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
@@ -43,10 +46,15 @@ public class Arrow : MonoBehaviour
                     }
                 }
             }
-            if (!IsEnhanced) Destroy(gameObject);//일반 화살은 충돌 후 파괴
+
+            if (!IsEnhanced)//일반 화살은 충돌 후 파괴
+            {
+                Destroy(gameObject);
+            }
         }
-        else if (other.CompareTag("Ground")) Destroy(gameObject);//화살이 타일맵 경계선에 닿으면 파괴
-        //콜라이더 범위(타일맵 밖) 밖으로 화살이 나가면 화살 파괴, 타일맵(Tag:Ground) 안에 있어서 OnTriggerEnter2D의 상황이 아님!
-        //타일맵의 콜라이더 밖 (경계선)에 화살이 닿으면 그때 함수가 작동해 화살이 파괴
+        else if (other.CompareTag("Ground"))//화살이 Ground태그인 타일맵 경계선에 닿으면 파괴
+        {
+            Destroy(gameObject);
+        }
     }
 }

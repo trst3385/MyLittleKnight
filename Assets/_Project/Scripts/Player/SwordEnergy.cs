@@ -8,7 +8,7 @@ public class SwordEnergy : MonoBehaviour
     public float DestroyTime = 5f;//발사체가 사라질 시간
 
     [HideInInspector]public float damage;//외부에서 데미지를 받아서 저장할 변수
-    //HideInInspector는 public 변수를 인스펙터에 숨길 수 있어!
+    //HideInInspector는 public 변수를 인스펙터에 숨길 수 있어
 
     //이미 데미지를 입힌 적들을 저장하는 리스트
     private List<GameObject> hitEnemies = new List<GameObject>();
@@ -29,7 +29,10 @@ public class SwordEnergy : MonoBehaviour
         //부딪힌 오브젝트의 태그가 Enemy인지 확인하기
         if (other.CompareTag("Enemy"))
         {
-            if (hitEnemies.Contains(other.gameObject)) return;//리스트에 이미 있는 적이라면 데미지를 주지 않고 무시(return)해
+            if (hitEnemies.Contains(other.gameObject))//리스트에 이미 있는 적이라면 데미지를 주지 않고 무시(return)해
+            {
+                return;
+            }
 
             //EnemyHealth 스크립트를 찾아서 몬스터에게 데미지 추기
             EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
