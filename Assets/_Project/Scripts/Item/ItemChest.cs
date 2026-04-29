@@ -24,14 +24,19 @@ public class ItemChest : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
 
-        //상자에 닿을때 열린 상자 이미지가 제대로 들어있는지 확인(디버깅용)
-        if (OpenChestSprite == null ) Debug.Log("OpenChest 스프라이트가 할당되지 않음! 인스팩터를 확인하라고!");
+
+        if (OpenChestSprite == null)//상자에 닿을때 열린 상자 이미지가 제대로 들어있는지 확인(디버깅용)
+        {
+            Debug.Log("OpenChest 스프라이트가 할당되지 않았어! 인스팩터 확인해!");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    {   //상자가 아직 열리지 않았고, 닿은 오브젝트의 태그가 "Player"인지 확인
-        //OnTriggerEnter2D 함수가 작동 될려면 Box Collider 2D가 Is Trigger로 켜져 있어야 해
-        if (!isOpen && other.CompareTag("Player")) OpenChest();//조건을 만족하면 상자를 여는 함수 호출
+    {   
+        if (!isOpen && other.CompareTag("Player"))//상자가 아직 열리지 않았고, 닿은 오브젝트의 태그가 "Player"인지 확인
+        {
+            OpenChest();
+        }
     }
 
     void OpenChest()
@@ -39,12 +44,20 @@ public class ItemChest : MonoBehaviour
         isOpen = true;//상자가 열린 상태로 변경
 
         //1.OpenChest함수가 발동되면 openedChestSprite(열린 상자)로 교체
-        if (OpenChestSprite != null) spriteRenderer.sprite = OpenChestSprite;
-        //1-2.콜라이더 비활성화. 열린 상자는 더 이상 플레이어와 충돌(트리거)할 필요 없으므로 콜라이더 비활성화
-        if (boxCollider2D != null) boxCollider2D.enabled = false;
+        if (OpenChestSprite != null)
+        {
+            spriteRenderer.sprite = OpenChestSprite;
+        }
+        //1-2.이미 상자가 열렸고 아이템도 등장했으니 더 이상 플레이어의 감지(Trigger)를 막기 위해 비활성화
+        if (boxCollider2D != null)
+        {
+            boxCollider2D.enabled = false;
+        }
 
         if (openSound != null && SoundManager.Instance != null)//사운드 매니저 싱글톤 활용
+        {
             SoundManager.Instance.PlaySFX(openSound);//상자에 닿을때의 사운드 재생
+        }
 
         SpawnItems();//2.여러 아이템 스폰 함수 호출
         Destroy(gameObject, 5f);//아이템 획득 후 5초 후 아이템상자 오브젝트 파괴
@@ -79,11 +92,3 @@ public class ItemChest : MonoBehaviour
         }
     }       
 }
-
-
-
-
-
-
-
-

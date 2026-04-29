@@ -29,13 +29,14 @@ public class Item: MonoBehaviour
         } 
     }
 
-    private void OnTriggerEnter2D(Collider2D other)//어떤 콜라이더"(other)와 "접촉이 발생했을 때
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player") || isUsed) return;//닿은 오브젝트가 "Player" 태그를 가지고 있는지 확인
-                                                          //이 아이템이 이미 사용된 건지 확인해, 이미 획득했으면 함수 종료(중복 획득 방지)
+        if (!other.CompareTag("Player") || isUsed)//닿은 오브젝트가 Player 태그를 가지고 있는지 확인,
+        {                                         //이미 획득했으면 함수 종료(중복 획득 방지)
+            return;
+        }
 
         isUsed = true;//획득한 아이템은 이 아이템은 이미 사용됐으니 중복 사용 방지
-
 
         //PlayerStatsEffects 컴포넌트 가져오기
         if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))
