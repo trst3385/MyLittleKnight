@@ -13,12 +13,15 @@ public class Player : MonoBehaviour
     //static으로 선언하면 어디서든 'Player. ...'로 접근할 수 있어 편리해.
     public static event Action OnPlayerDead;//방송 채널 개설: "플레이어가 죽으면 송출되는 채널", 옵저버 패턴의 시작이야.
     public static event Action<int> OnScoreChanged;//점수 갱신 방송 채널(이벤트)
+    public static event Action<int, int> OnMoveSpeedLevelChanged;//이동 속도 변경 방송 채널 (현재 속도, 최대 레벨 등 전달용)
     //-----------------------------//
 
     [Header("이동 관련 변수")]
-    public float MoveSpeed = 5f;
+    public float MoveSpeed = 8f;//인스펙터의 값과 다를 수 있으니 확인!
+    private int currentMoveSpeedLevel = 0;//현재 이동속도
+    private const int MAX_MOVE_SPEED_LEVEL = 10;//최대 이속 증가 레벨
 
-    [Header("무적 상태")]//[Tooltip("")]이란? 인스펙터에 해당 변수 이름 위에 마우스 올렸을때 툴팁에 적은 설명이 나타나.
+    [Header("무적 상태")]
     [Tooltip("체력 감소가 되지 않는 무적 상태인지 여부")]
     public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인(무적, 방어력 스크립트에서 참조)
 
@@ -72,7 +75,6 @@ public class Player : MonoBehaviour
         //[방어적 프로그래밍] 검증 로직
         CheckInitialization();
     }
-
     private void CheckInitialization()//없거나 제대로 연결이 안되면 뜰 로그 에러
     {
         if (walkingaudioSource == null)
@@ -86,6 +88,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, MAX_MOVE_SPEED_LEVEL);//실행 시 처음은 0레벨이라고 UI에 전달
+    }
 
     void FixedUpdate()//물리연산은 (이동 등) FixedUpdate.
     {
@@ -202,18 +208,32 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void UpgradeMoveSpeed(float amount)//이속 아이템 획득 시 처리
+    {
+        if (currentMoveSpeedLevel >= MAX_MOVE_SPEED_LEVEL)
+        {
+            Debug.Log("이동속도가 이미 최대치야!");
+            return;//레벨이10(MAX)이 되면 이속 아이템을 먹어도 이속이 증가하지 않아
+        }
+
+        MoveSpeed += amount;
+        currentMoveSpeedLevel++;
+
+        //내 데이터가 바뀌었으니 UI에게 방송
+        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, MAX_MOVE_SPEED_LEVEL);
+        Debug.Log($"[이속 강화] 현재 속도: {MoveSpeed}");
+    }
+
     public void AddScore(int amount)//점수를 추가하는 함수
     {
         CurrentScore += amount;//전달받은 amount(점수)만큼 점수를 더해줌
         Debug.Log("현재 점수: " + CurrentScore);
 
         OnScoreChanged?.Invoke(CurrentScore);//기존의 UI 업데이트하던 코드는 지우고, 이 한 줄만 넣어! 옵저버 패턴으로 점수를 UI로 보내.
-        //if (ScoreTextUI != null) ScoreTextUI.text = "Score: " + CurrentScore.ToString();                             
     }
     public void ResetScore()//점수를 초기화하는 함수
     {
         CurrentScore = 0;
         OnScoreChanged?.Invoke(0);//옵저버 패턴으로 변경 02.22
-        //if (ScoreTextUI != null) ScoreTextUI.text = "Score: 0";
     }
 }

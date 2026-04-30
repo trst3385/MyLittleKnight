@@ -7,8 +7,10 @@ using UnityEngine.UI;
 
 
 public class SwordWeapon : MonoBehaviour
-{   //---------옵저버 패턴----------//
+{   
+    //---------옵저버 패턴----------//
     public static event Action<float, float> OnSwordCooldownChanged;//(남은 시간, 총 시간)
+    public static event Action<int, int> OnSwordLevelChanged;//검 레벨 방송
     //---------옵저버 패턴----------//
 
     [Header("에셋 설정 (프리팹 & 사운드)")]
@@ -33,7 +35,9 @@ public class SwordWeapon : MonoBehaviour
     private Transform swordEnergySpawnPoint;//검기 발사체 생성 오브젝트 위치(SwordEnergySpawnPoint)
     //UI 관련
     [HideInInspector] public int currentEnhanceStacks = 0;//현재 검 강화 스택
-    public float lastSwordSkillTime = -10f;//마지막으로 검공격을 한 시간,
+    [HideInInspector] public float lastSwordSkillTime = -10f;//마지막으로 검공격을 한 시간
+    private int currentSwordLevel = 0;
+    private const int SWORD_MAX_LEVEL = 10;
 
 
     void Awake()
@@ -79,6 +83,10 @@ public class SwordWeapon : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        OnSwordLevelChanged?.Invoke(currentSwordLevel, SWORD_MAX_LEVEL);//시작 시 검 레벨 0으로 시작
+    }
 
     void Update()
     {
@@ -205,23 +213,38 @@ public class SwordWeapon : MonoBehaviour
     //쿨타임이 끝났는지 여부를 반환하는 간결한 메서드(표현식 본문 메서드)
     public bool CanAttack() => Time.time >= lastSwordSkillTime + SwordSkillCooldown;
 
-    ///<summary>
-    ///외부 (아이템 스크립트)에서 호출되어 강화 스택을 1 증가.
-    ///</summary>
-    public void AcquireSwordEnhanceItem(float cooldownDecrease)//외부(Item스크립트)에서 호출되어 검 강화 스택을 1 증가시키는 함수
-    {
-        currentEnhanceStacks++; // 누적 스택 증가 (초기화 안 함)
 
-        // 3개 쌓일 때마다 쿨타임 감소 (3, 6, 9... 번째에 발동)
+    public void UpgradeSword(float damagePlus, float cooldownMinus)//검 강화 함수
+    {
+        //1. 최대 레벨 체크
+        if (currentSwordLevel >= SWORD_MAX_LEVEL)
+        {
+            Debug.Log("검 레벨이 이미 최대치야!");
+            return;
+        }
+
+        //2. 능력치 상승 (검 + 검기 둘 다)
+        SwordDamage += damagePlus;
+        SwordEnergyDamage += damagePlus;
+
+        //3. 레벨 및 스택 관리
+        currentSwordLevel++;
+        currentEnhanceStacks++;
+
+        //3스택마다 검 쿨타임 감소 로직
         if (currentEnhanceStacks > 0 && currentEnhanceStacks % 3 == 0)
         {
-            SwordSkillCooldown -= cooldownDecrease;
+            SwordSkillCooldown -= cooldownMinus;
             if (SwordSkillCooldown < 5f)
             {
                 SwordSkillCooldown = 5f;
             }
-            Debug.Log($"[강화 발동] 현재 쿨타임: {SwordSkillCooldown}초");
+            Debug.Log($"[검 강화 발동] 현재 쿨타임: {SwordSkillCooldown}초");
         }
-        Debug.Log($"검 강화 아이템 획득! 누적 스택: {currentEnhanceStacks}");
-    }
+
+        //4. UI에게 방송 (현재 레벨로 방송)
+        OnSwordLevelChanged?.Invoke(currentSwordLevel, SWORD_MAX_LEVEL);
+
+        Debug.Log($"[SwordUpgrade] LV:{currentSwordLevel} ATK:{SwordDamage} Cool:{SwordSkillCooldown}");
+    }  
 }

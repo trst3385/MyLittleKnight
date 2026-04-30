@@ -31,14 +31,8 @@ public class PlayerStatusUIManager : MonoBehaviour
         arrowLevelText = GameObject.Find("ArrowLevelText")?.GetComponent<TextMeshProUGUI>();
         swordLevelText = GameObject.Find("SwordLevelText")?.GetComponent<TextMeshProUGUI>();
         moveSpeedLevelText = GameObject.Find("MoveSpeedLevelText")?.GetComponent<TextMeshProUGUI>();
-
-        CheckInitialization();
     }
-    private void CheckInitialization()
-    {
-        if (shieldBar == null) Debug.LogWarning("UI: PlayerShieldBar 못 찾았어!");
-        if (arrowLevelText == null) Debug.LogWarning("UI: ArrowLevelText 못 찾았어!");
-    }
+ 
 
     private void OnEnable()
     {
@@ -47,13 +41,14 @@ public class PlayerStatusUIManager : MonoBehaviour
         PlayerHealth.OnHealthChanged += UpdateHealthUI;
         PlayerShield.OnShieldChanged += UpdateShieldUI;
 
-        //이벤트 구독 (무기 능력치 레벨 - PlayerStatsEffects에서 방송하는 것들)
-        PlayerStatsEffects.OnArrowLevelChanged += UpdateArrowUI;
-        PlayerStatsEffects.OnSwordLevelChanged += UpdateSwordUI;
-        PlayerStatsEffects.OnMoveSpeedLevelChanged += UpdateMoveSpeedUI;
+        Player.OnMoveSpeedLevelChanged += UpdateMoveSpeedUI;
+
+        //검 강화 연출 구독
+        SwordWeapon.OnSwordLevelChanged += UpdateSwordUI;
         //활 강화 연출 구독
-        PlayerStatsEffects.OnArrowEnhancedEffect += PlayArrowEnhancedFX;
-        PlayerStatsEffects.OnArrowColorStateChanged += SetArrowTextColor;
+        BowWeapon.OnArrowLevelChanged += UpdateArrowUI;
+        BowWeapon.OnArrowEnhancedEffect += PlayArrowEnhancedFX;
+        BowWeapon.OnArrowColorStateChanged += SetArrowTextColor;
     }
 
     private void OnDisable()
@@ -63,12 +58,15 @@ public class PlayerStatusUIManager : MonoBehaviour
         PlayerHealth.OnHealthChanged -= UpdateHealthUI;
         PlayerShield.OnShieldChanged -= UpdateShieldUI;
 
-        PlayerStatsEffects.OnArrowLevelChanged -= UpdateArrowUI;
-        PlayerStatsEffects.OnSwordLevelChanged -= UpdateSwordUI;
-        PlayerStatsEffects.OnMoveSpeedLevelChanged -= UpdateMoveSpeedUI;
+        //이속 강화 연출 구독 해지
+        Player.OnMoveSpeedLevelChanged -= UpdateMoveSpeedUI;
+        //검 강화 연출 구독 해지
+        SwordWeapon.OnSwordLevelChanged -= UpdateSwordUI;
 
-        PlayerStatsEffects.OnArrowEnhancedEffect -= PlayArrowEnhancedFX;
-        PlayerStatsEffects.OnArrowColorStateChanged -= SetArrowTextColor;
+        //활 강화 연출 구독 해지
+        BowWeapon.OnArrowLevelChanged -= UpdateArrowUI;
+        BowWeapon.OnArrowEnhancedEffect -= PlayArrowEnhancedFX;
+        BowWeapon.OnArrowColorStateChanged -= SetArrowTextColor;
     }
 
     //콜백 함수: 체력/방패
@@ -83,13 +81,21 @@ public class PlayerStatusUIManager : MonoBehaviour
     private void PlayArrowEnhancedFX()//활 강화시 텍스트 연출 함수
     {
         if (effectsAudioSource && enhancedArrowReadySound)
+        {
             effectsAudioSource.PlayOneShot(enhancedArrowReadySound);
+        }
 
-        if (arrowLevelText) StartCoroutine(PunchScale(arrowLevelText.rectTransform));
+        if (arrowLevelText)
+        {
+            StartCoroutine(PunchScale(arrowLevelText.rectTransform));
+        }
     }
-    private void SetArrowTextColor(bool isEnhanced)//강화시 텍스트 색 변경
+    private void SetArrowTextColor(bool isEnhanced)//활 강화시 텍스트 색 변경
     {
-        if (arrowLevelText) arrowLevelText.color = isEnhanced ? levelUpColor : defaultColor;
+        if (arrowLevelText)
+        {
+            arrowLevelText.color = isEnhanced ? levelUpColor : defaultColor;
+        }
     }
 
 

@@ -9,6 +9,9 @@ public class BowWeapon : MonoBehaviour
 {
     //---------옵저버 패턴----------//
     public static event Action<float, float> OnBowCooldownChanged;//[옵저버] 쿨타임바 방송국 (남은 시간, 총 쿨타임)
+    public static event Action<int, int> OnArrowLevelChanged; //레벨 방송국 이동
+    public static event Action OnArrowEnhancedEffect;         //강화 연출 방송국 이동
+    public static event Action<bool> OnArrowColorStateChanged;//색상 변경 방송국 이동
     //------------------------------//
 
     [Header("활 설정 (데이터 & 에셋)")]
@@ -24,8 +27,9 @@ public class BowWeapon : MonoBehaviour
     //--- 내부 참조 (자동 연결) ---
     private Transform arrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
     private AudioSource bowAudioSource;//화살 사운드 오디오소스
-    private PlayerStatsEffects statsEffects;//PlayerStatsEffects 스크립트 참조
 
+    private int currentArrowLevel = 0;//활의 강화 횟수를 저장할 변수
+    private const int BOW_ITEM_MAX_LEVEL = 10;//활 레벨에 적용할 최대치
     private float currentArrowCooldown;
     private float lastArrowAttackTime = -1f;
     private int currentEnhanceStacks = 0;
@@ -42,8 +46,6 @@ public class BowWeapon : MonoBehaviour
             bowAudioSource = sndBowTransform.GetComponent<AudioSource>();
         }
             
-        statsEffects = GetComponent<PlayerStatsEffects>();
-
         CheckInitialization();//[방어적 프로그래밍] 검증 로직(Awake 함수의 가독성 문제로 로그 알림 함수로 분리)
     }
 
@@ -72,7 +74,10 @@ public class BowWeapon : MonoBehaviour
     void Start()
     {
         currentArrowCooldown = BaseArrowCooldown;
+        
+        OnArrowLevelChanged?.Invoke(currentArrowLevel, BOW_ITEM_MAX_LEVEL);//게임 시작 시 초기 레벨(0)
     }
+
     void Update()
     {
         if (lastArrowAttackTime > 0)//[옵저버] 매 프레임 UI 함수를 부르는 대신, 방송만 쏜다! 
@@ -130,12 +135,7 @@ public class BowWeapon : MonoBehaviour
 
         if (isEnhanced)//강화공격을 했다면
         {
-            currentEnhanceStacks -= MAX_ENHANCE_STACKS;
-
-            if (statsEffects != null)
-            {
-                statsEffects.RefreshArrowStackStatus();
-            }          
+            ResetEnhanceStackAfterShoot();
         }
     }
 
@@ -188,27 +188,48 @@ public class BowWeapon : MonoBehaviour
     //현재 쌓인 0, 1, 2, 3 스택값을 알려줌
     public int GetCurrentStacks() => currentEnhanceStacks;
 
-
-    public void AcquireBowEnhanceItem()//활 아이템 획득 시 강화 스택를 갱신하고, 이를 UI에 즉시 반영하도록 요청하는 함수.
+    public void UpgradeBow(float damagePlus, float cooldownMinus)//아이템 스크립트에서 직접 호출할 강화 함수
     {
-        //1. 강화 스택 숫자를 1 증가 (3, 6, 9... 계속 쌓임)
+        //1. 최대 레벨 체크
+        if (currentArrowLevel >= BOW_ITEM_MAX_LEVEL)
+        {
+            Debug.Log("활 레벨이 이미 최대치야!");
+            return;
+        }
+
+        //2. 실제 수치 강화
+        ArrowDamage += damagePlus;
+        currentArrowCooldown -= cooldownMinus;
+
+        //쿨타임 최소 제한 (1초)
+        if (currentArrowCooldown < 1.0f)
+        {
+            currentArrowCooldown = 1.0f;
+        }
+
+        //3. 레벨 및 스택 증가
+        currentArrowLevel++;
         currentEnhanceStacks++;
-        Debug.Log($"활 강화 아이템 획득! 현재 누적 스택: {currentEnhanceStacks}");
+
+        //4. 옵저버 패턴: UI 및 연출 방송
+        OnArrowLevelChanged?.Invoke(currentArrowLevel, BOW_ITEM_MAX_LEVEL);
+
+        //3스택 달성 시 강화 효과 방송 (이 로직도 무기 안으로 들어옴)
+        if (currentEnhanceStacks >= MAX_ENHANCE_STACKS)
+        {
+            OnArrowEnhancedEffect?.Invoke();
+            OnArrowColorStateChanged?.Invoke(true);
+        }
+
+        Debug.Log($"[BowUpgrade] LV:{currentArrowLevel} ATK:{ArrowDamage} Cool:{currentArrowCooldown} Stack:{currentEnhanceStacks}");
     }
 
-    public void DecreaseAttackCooldown(float coolDown, WeaponType weaponType)//활 공격력 강화(아이템 획득) 시 쿨타임 감소 함수
-    {                                                                   
-        switch (weaponType)
-        {
-            case WeaponType.Bow://전달받은 타입이 활(Bow)일 경우에만 쿨타임 감소 로직 실행
-                currentArrowCooldown -= coolDown;//현재 적용되는 쿨타임에서 감소량(coolDown)을 뺀다
-                if (currentArrowCooldown < 1.0f)//여기서 활 공격의 최소 쿨타임을 1초로 제한
-                {
-                    currentArrowCooldown = 1.0f;//1.0초 이하로는 쿨타임이 줄어들지 않도록 제한
-                }
-                break;
-        }
-        Debug.Log($"쿨타임 감소 후 현재 쿨타임: {currentArrowCooldown}");
+    public void ResetEnhanceStackAfterShoot()//강화 화살 발사 후 스택 초기화 함수
+    {
+        currentEnhanceStacks -= MAX_ENHANCE_STACKS;
+
+        //3스택 미만이 되면 다시 일반 색상(false)으로 방송
+        OnArrowColorStateChanged?.Invoke(currentEnhanceStacks >= MAX_ENHANCE_STACKS);
     }
 
     public bool CanAttack()//쿨타임 체크

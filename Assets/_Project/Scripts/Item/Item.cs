@@ -38,20 +38,14 @@ public class Item: MonoBehaviour
 
         isUsed = true;//획득한 아이템은 이 아이템은 이미 사용됐으니 중복 사용 방지
 
-        //PlayerStatsEffects 컴포넌트 가져오기
-        if (other.TryGetComponent<PlayerStatsEffects>(out var statsEffects))
-        {
-            UseItem(statsEffects, other);//실제 아이템 효과 적용 (플레이어 오브젝트(other)를 함께 넘겨줌)
-        }
+        UseItem(other);//플레이어 본체(other)를 UseItem()에 넘겨줌
 
-        //싱글톤 스포너에 알림
-        if (ItemSpawner.Instance != null)
+        if (ItemSpawner.Instance != null)//싱글톤 스포너에 알림
+
         {
             ItemSpawner.Instance.ItemDestroyed();
         }
-
-        //SO에 저장된 전용 사운드 재생
-        if (data != null && data.itemSound != null && SoundManager.Instance != null)
+        if (data != null && data.itemSound != null && SoundManager.Instance != null)//SO에 저장된 전용 사운드 재생
         {
             SoundManager.Instance.PlaySFX(data.itemSound);
         }
@@ -59,8 +53,8 @@ public class Item: MonoBehaviour
         Destroy(gameObject);//아이템은 한번만 먹고 사라져야해
     }
 
-    void UseItem(PlayerStatsEffects statsEffects, Collider2D player)
-    {//실제 아이템 효과를 적용하는 함수. itemType에 따라 다른 효과를 줘.
+    void UseItem(Collider2D player)
+    {
         if (data == null)
         {
             Debug.LogError($"{gameObject.name}: ItemDataSO(data)가 연결되지 않았어!");
@@ -70,24 +64,42 @@ public class Item: MonoBehaviour
         switch (data.itemType)
         {
             case ItemType.ArrowPower:
-                //활 데미지 및 공속 수치를 SO에서 가져옴
-                statsEffects.ArrowDamageUp(data.effectValue, data.attackCooldown);
+                if (player.TryGetComponent<BowWeapon>(out var bow))//player 오브젝트에서 바로 BowWeapon을 찾아, 검 아이템도 동일
+                {    
+                    bow.UpgradeBow(data.effectValue, data.attackCooldown);
+                }
                 break;
 
             case ItemType.SwordPower:
-                statsEffects.SwordDamageUp(data.effectValue, data.swordCooldownDecrease);
+                if (player.TryGetComponent<SwordWeapon>(out var sword))
+                {
+                    sword.UpgradeSword(data.effectValue, data.swordCooldownDecrease);
+                }
                 break;
 
             case ItemType.Heal:
-                statsEffects.Heal(data.effectValue);
+                if (player.TryGetComponent<PlayerHealth>(out var health))
+                {
+                    health.Heal(data.effectValue);
+                }
                 break;
 
             case ItemType.ShieldHeal:
-                statsEffects.HealShield(data.effectValue);
+                if (player.TryGetComponent<PlayerShield>(out var shield))
+                {
+                    shield.HealShield(data.effectValue);
+                }
                 break;
 
             case ItemType.MoveSpeed:
-                statsEffects.MoveSpeedUp(data.effectValue);
+                if (player.TryGetComponent<Player>(out var p))
+                {
+                    p.UpgradeMoveSpeed(data.effectValue);
+                }
+                else
+                {
+                    Debug.LogWarning("플레이어 본체 스크립트(Player)를 찾을 수 없어!");
+                }
                 break;
 
             case ItemType.None:
