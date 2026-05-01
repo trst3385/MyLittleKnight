@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2c074e28b2fce014f9657d4e96c6576d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  - invincibilitySound: {fileID: 8300000, guid: 725a0198a4038bd439c617dfff3b9998,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

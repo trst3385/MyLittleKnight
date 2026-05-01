@@ -16,17 +16,19 @@ public class Player : MonoBehaviour
     public static event Action<int, int> OnMoveSpeedLevelChanged;//이동 속도 변경 방송 채널 (현재 속도, 최대 레벨 등 전달용)
     //-----------------------------//
 
+    //SO 참조 (인스펙터에서 여기에만 연결)
+    [Header("설정 데이터")]
+    [SerializeField] private PlayerStatsSO stats;
+    public PlayerStatsSO Stats => stats;//다른 스크립트에서 읽을 수 있게 프로퍼티 제공
+
     [Header("이동 관련 변수")]
-    public float MoveSpeed = 8f;//인스펙터의 값과 다를 수 있으니 확인!
+    private float moveSpeed;
     private int currentMoveSpeedLevel = 0;//현재 이동속도
-    private const int MAX_MOVE_SPEED_LEVEL = 10;//최대 이속 증가 레벨
+    private int maxMoveSpeedLevel = 10;//최대 이속 증가 레벨
 
     [Header("무적 상태")]
     [Tooltip("체력 감소가 되지 않는 무적 상태인지 여부")]
     public bool isInvincible = false;//플레이어가 지금 무적상태인지 확인(무적, 방어력 스크립트에서 참조)
-
-    [Header("사운드 에셋")]
-    [SerializeField] private AudioClip walkSound;//소리 파일 자체는 드래그가 필요해
 
 
     //외부 참조 변수 (캐싱용)
@@ -51,15 +53,25 @@ public class Player : MonoBehaviour
     void Awake()//내부 컴포넌트는 Awake에,              
     {           //Null 체크도 Awake에. Start()보다 먼저 호출되기 때문에, 최대한 일찍 초기화하고 검증할수록 안정성이 높아져
 
+        if (stats != null)//SO에서 데이터를 가져와서 초기화하기
+        {
+            moveSpeed = stats.moveSpeed;
+            maxMoveSpeedLevel = stats.maxMoveSpeedLevel;
+        }
+        else
+        {
+            Debug.LogError("PlayerStatsSO가 연결되지 않았어! 인스펙터를 확인해줘.");
+        }
+
         //내부 컴포넌트 자동 연결
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        //자식 오브젝트 및 사운드 자동 연결, 자식 중에서 이름으로 찾기
+        //자식 오브젝트 및 사운드 자동 연결, 자식 중에서 이름으로 찾기, 개별 볼륨 및 믹서 제어를 위해 자식 오브젝트로 분리함
         var sndFootstep = transform.Find("SND_Footstep");
         if (sndFootstep != null)
-        {
+        {   //이름으로 찾은 자식 오브젝트에서 오디오 컴포넌트를 가져와 캐싱 (인스펙터 드래그 대체)
             walkingaudioSource = sndFootstep.GetComponent<AudioSource>();
         }
 
@@ -90,12 +102,12 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, MAX_MOVE_SPEED_LEVEL);//실행 시 처음은 0레벨이라고 UI에 전달
+        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, maxMoveSpeedLevel);//실행 시 처음은 0레벨이라고 UI에 전달
     }
 
     void FixedUpdate()//물리연산은 (이동 등) FixedUpdate.
     {
-        rb.linearVelocity = movement * MoveSpeed;//살아있는 경우 정상적인 물리 이동
+        rb.linearVelocity = movement * moveSpeed;//살아있는 경우 정상적인 물리 이동
         //Rigidbody를 이용해 이동, velocity는 Rigidbody의 현재 속도를 나타냄
         //백터2의 movement값과 내 케릭터의 이동속도(Move)를 계산해 Rigidbody에 적용
     }
@@ -185,16 +197,16 @@ public class Player : MonoBehaviour
         return transform.position;//false일때, Collider2D 컴포넌트가 붙어 있지 않을 때
     }
 
-    void HandleWalkingSound()//이동시 걷기 사운드 함수
+    void HandleWalkingSound()//이동시 사운드 함수
     {
         //캐릭터가 움직이는지 확인
         bool isMoving = (horizontalInput != 0 || verticalInput != 0);
 
         if(isMoving)
         {
-            if (walkingaudioSource != null && walkSound != null && !walkingaudioSource.isPlaying)
+            if (walkingaudioSource != null && stats.walkSound != null && !walkingaudioSource.isPlaying)
             {
-                walkingaudioSource.clip = walkSound;
+                walkingaudioSource.clip = stats.walkSound;
                 walkingaudioSource.loop = true;//반복재생
                 walkingaudioSource.Play();//위의 상태로 사운드 플레이 시작, true 상태일때 계속 소리가 들리는거야
             }
@@ -210,18 +222,18 @@ public class Player : MonoBehaviour
 
     public void UpgradeMoveSpeed(float amount)//이속 아이템 획득 시 처리
     {
-        if (currentMoveSpeedLevel >= MAX_MOVE_SPEED_LEVEL)
+        if (currentMoveSpeedLevel >= maxMoveSpeedLevel)
         {
             Debug.Log("이동속도가 이미 최대치야!");
             return;//레벨이10(MAX)이 되면 이속 아이템을 먹어도 이속이 증가하지 않아
         }
 
-        MoveSpeed += amount;
+        moveSpeed += amount;
         currentMoveSpeedLevel++;
 
         //내 데이터가 바뀌었으니 UI에게 방송
-        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, MAX_MOVE_SPEED_LEVEL);
-        Debug.Log($"[이속 강화] 현재 속도: {MoveSpeed}");
+        OnMoveSpeedLevelChanged?.Invoke(currentMoveSpeedLevel, maxMoveSpeedLevel);
+        Debug.Log($"[이속 강화] 현재 속도: {moveSpeed}");
     }
 
     public void AddScore(int amount)//점수를 추가하는 함수

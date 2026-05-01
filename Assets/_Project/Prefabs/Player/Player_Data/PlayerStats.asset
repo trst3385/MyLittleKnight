@@ -9,8 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 517e7d3d4f37a6e40a4ac9a8ed1c067c, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c074e28b2fce014f9657d4e96c6576d, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsSO
-  MoveSpeed: 5
-  WalkSound: {fileID: 0}
+  moveSpeed: 8
+  maxMoveSpeedLevel: 10
+  walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  invincibilityDuration: 3
+  invincibilityCooldown: 20
+  invincibilityColor: {r: 1, g: 1, b: 0.5, a: 0.8}
+  invincibilitySound: {fileID: 8300000, guid: 725a0198a4038bd439c617dfff3b9998, type: 3}
