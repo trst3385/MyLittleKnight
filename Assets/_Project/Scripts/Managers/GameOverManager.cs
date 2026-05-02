@@ -50,7 +50,6 @@ public class GameOverManager : MonoBehaviour
     {
         if (GameOverPanel != null)//게임오버 UI의 패널을 찾았다면 그 자식 텍스트들을 연결
         {
-            //FindChildEx는 어제 OptionsManager 때 썼던 함수랑 똑같아! 아래에 추가해줄게.
             FinalScoreText = FindChildEx(GameOverPanel.transform, "FinalScoreText")?.GetComponent<TextMeshProUGUI>();
             NormalKillText = FindChildEx(GameOverPanel.transform, "FinalNormalKillText")?.GetComponent<TextMeshProUGUI>();
             StrongKillText = FindChildEx(GameOverPanel.transform, "FinalStrongKillText")?.GetComponent<TextMeshProUGUI>();

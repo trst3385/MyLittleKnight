@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0672313654db6140a6cff6aa1efc3df, type: 3}
   m_Name: EnemyStats_LastBoss
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
-  MaxHP: 40
+  MaxHP: 60
   MoveSpeed: 8
   StopDistance: 0.5
   AttackCooldown: 1

@@ -14,32 +14,25 @@ public class BowWeapon : MonoBehaviour
     public static event Action<bool> OnArrowColorStateChanged;//색상 변경 방송국 이동
     //------------------------------//
 
-    [Header("활 설정 (데이터 & 에셋)")]
-    public GameObject ArrowPrefab;//화살 프리팹
-    public GameObject EnhancedArrowPrefab;//강화 화살 프리팹
-    public AudioClip bowAttackSound;//화살 발사 사운드
-    public float ArrowSpeed = 10f;//발사속도
-    public float ArrowDamage = 1f;//데미지
-    public int NumberOfArrows360 = 8;//360도 회전 시 발사할 화살의 수 (예: 8방향)
-    public float SlowFactor = 0.5f;//강화 화살에맞은 몬스터의 이동 속도 감소 비율(0.5f = 50% 느려짐)
-    public float BaseArrowCooldown = 2f;//활의 초기/최대 공격 쿨타임 (아이템 효과 미적용 원본)
 
     //--- 내부 참조 (자동 연결) ---
+    private Player player;//Player 스크립트 참조를 통해 SO에 접근
     private Transform arrowSpawnPoint;//플레이어 오브젝트 자식에 있는 화살 생성 위치 오브젝트
     private AudioSource bowAudioSource;//화살 사운드 오디오소스
 
     private int currentArrowLevel = 0;//활의 강화 횟수를 저장할 변수
-    private const int BOW_ITEM_MAX_LEVEL = 10;//활 레벨에 적용할 최대치
-    private float currentArrowCooldown;
-    private float lastArrowAttackTime = -1f;
+    private float currentArrowCooldown;//현재 활 쿨타임
+    private float currentArrowDamage;//강화로 인해 변하는 실시간 데미지
     private int currentEnhanceStacks = 0;
-    private const int MAX_ENHANCE_STACKS = 3;//활 아이템 3회 획득시 강화
+    private float lastArrowAttackTime = -1f;//마지막으로 화살을 발사한 시점의 시간 (쿨타임 계산 및 UI 업데이트용)
+                                            //초기값 -1f의 의미: 게임 시작 직후에는 아직 한 번도 쏜 적이 없다는 걸,
+                                            //컴퓨터에게 알려주기 위한 신호
 
     void Awake()
     {
-        arrowSpawnPoint = transform.Find("ArrowSpawnPoint");//플레이어의 자식 오브젝트에서 "ArrowSpawnPoint" 찾기
+        player = GetComponent<Player>();//플레이어 스크립트 참조 가져오기
 
-        //같은 오브젝트의 컴포넌트,스크립트
+        arrowSpawnPoint = transform.Find("ArrowSpawnPoint");//플레이어의 자식 오브젝트에서 "ArrowSpawnPoint" 찾기
         Transform sndBowTransform = transform.Find("SND_Bow");//자식 오브젝트 중 "SND_Bow"를 찾아서 거기 있는 AudioSource를 가져옴
         if (sndBowTransform != null)
         {
@@ -51,6 +44,11 @@ public class BowWeapon : MonoBehaviour
 
     private void CheckInitialization()
     {
+        if (player == null || player.Stats == null)
+        {
+            Debug.LogError($"{gameObject.name}: Player 또는 PlayerStatsSO를 찾을 수 없어!");
+        }
+
         if (arrowSpawnPoint == null)
         {
             Debug.LogWarning($"{gameObject.name}: ArrowSpawnPoint를 자식에서 찾을 수 없어!");
@@ -59,28 +57,21 @@ public class BowWeapon : MonoBehaviour
         {
             Debug.LogWarning($"{gameObject.name}: AudioSource 미연결!");
         }
-
-        //에셋 체크 (드래그 필수 항목)
-        if (ArrowPrefab == null)
-        {
-            Debug.LogError($"{gameObject.name}: ArrowPrefab이 비어있어!");
-        }
-        if (bowAttackSound == null)
-        {
-            Debug.LogWarning($"{gameObject.name}: bowAttackSound 클립이 비어있어!");
-        }
     }
 
     void Start()
     {
-        currentArrowCooldown = BaseArrowCooldown;
-        
-        OnArrowLevelChanged?.Invoke(currentArrowLevel, BOW_ITEM_MAX_LEVEL);//게임 시작 시 초기 레벨(0)
+        if (player != null && player.Stats != null)//SO에서 초기값 가져오기
+        {
+            currentArrowCooldown = player.Stats.baseArrowCooldown;
+            currentArrowDamage = player.Stats.baseArrowDamage;
+            OnArrowLevelChanged?.Invoke(currentArrowLevel, player.Stats.maxBowLevel);
+        }
     }
 
     void Update()
     {
-        if (lastArrowAttackTime > 0)//[옵저버] 매 프레임 UI 함수를 부르는 대신, 방송만 쏜다! 
+        if (lastArrowAttackTime > 0)//[옵저버] 매 프레임 UI 함수를 부르는 대신, 방송만 쏜다
         {
             float timeRemaining = lastArrowAttackTime + currentArrowCooldown - Time.time;
 
@@ -92,95 +83,79 @@ public class BowWeapon : MonoBehaviour
             {
                 //방송: "쿨타임 끝! 이제 UI 꺼도 돼!"
                 OnBowCooldownChanged?.Invoke(0, currentArrowCooldown);
-                lastArrowAttackTime = -1f;//방송 한 번만 하고 멈추기 위해
+                lastArrowAttackTime = -1f;
             }
         }
     }
 
     public void ShootArrow()//360도 화살 발사
     {
-        bool isEnhanced = currentEnhanceStacks >= MAX_ENHANCE_STACKS;//강화 화살
-        GameObject activeArrowPrefab = ArrowPrefab;
-        float activeArrowDamage = ArrowDamage;
-        if (isEnhanced)
+        var stats = player.Stats;//타이핑을 줄이기 위해 변수화
+        if (stats == null)//SO가 없으면 종료
         {
-            activeArrowPrefab = EnhancedArrowPrefab;//1.강화 화살 프리팹 사용
-            Debug.Log(">>> 특수 강화 공격 발동! (관통 + 슬로우)");
-        }
-
-        if (bowAudioSource != null && bowAttackSound != null)//활 공격 시 사운드 재생
-        {
-            bowAudioSource.PlayOneShot(bowAttackSound);
-        }//PlayOneShot은 이미 재생 중인 소리가 있어도 다른 소리를 끊지 않고, 새로운 소리를 겹쳐서 재생시키는 함수
-        else
-        {
-            Debug.LogWarning("활 공격 사운드 AudioSource 또는 AudioClip이 설정되지 않았어!");
-        }
-
-        if (activeArrowPrefab == null)
-        {
-            Debug.LogError("사용할 화살 Prefab이 설정되지 않았어!");
             return;
         }
-        Debug.Log("화살 발사! 설정된 데미지: " + activeArrowDamage);//화살을 발사할 때 로그에 알림
 
-        float angleStep = 360f / NumberOfArrows360;//각 화살의 각도 계산
+        //현재 스택이 SO에 설정된 최대 스택(3) 이상인지 체크해서 true / false를 확인
+        bool isEnhanced = currentEnhanceStacks >= stats.maxEnhanceStacks;//강화 화살
 
-        for (int i = 0; i < NumberOfArrows360; i++)
+        //위에서 판단한 결과(isEnhanced)에 따라 발사할 프리팹을 선택하고,
+        //true면 강화 화살(enhancedArrowPrefab), false면 일반 화살(arrowPrefab)을 변수에 담아
+        GameObject activeArrowPrefab = isEnhanced ? stats.enhancedArrowPrefab : stats.arrowPrefab;
+
+  
+        if (bowAudioSource != null && stats.bowAttackSound != null)// 발사 사운드 재생
         {
-            SpawnArrow(isEnhanced, activeArrowPrefab, activeArrowDamage, angleStep, i);
+            bowAudioSource.PlayOneShot(stats.bowAttackSound);
+        }
+
+        if (activeArrowPrefab == null)//화살 프리팹이 없으면 종료
+        {
+            return;
+        }
+
+        float angleStep = 360f / stats.numberOfArrows360;//각 발사될 화살의 각도 계산
+        for (int i = 0; i < stats.numberOfArrows360; i++)
+        {
+            SpawnArrow(isEnhanced, activeArrowPrefab, currentArrowDamage, angleStep, i);
         }
 
         lastArrowAttackTime = Time.time;
 
-        if (isEnhanced)//강화공격을 했다면
+        if (isEnhanced)//강화공격을 했다면?
         {
-            ResetEnhanceStackAfterShoot();
+            ResetEnhanceStackAfterShoot();//강화 화살 발사 후 강화 화살 초기화 
         }
     }
 
     //4.26 ShootArrow() 함수의 화살 발사 로직을 '메서드 추출'로 분리(ShootArrow함수의 가독성 향상)
-    private void SpawnArrow(bool isEnhanced, GameObject activeArrowPrefab, float activeArrowDamage, float angleStep, int i)
+    private void SpawnArrow(bool isEnhanced, GameObject activeArrowPrefab, float damage, float angleStep, int i)
     {
+        var stats = player.Stats;
         float angle = i * angleStep;//현재 화살의 각도(0, 45, 90, ...)
-
-        //Cos/Sin 계산을 위해 '도(Degree)' 단위를 '라디안(Radian)'으로 변환 (컴퓨터가 이해하는 각도 단위로 변경)
         float radianAngle = angle * Mathf.Deg2Rad;
-
-        //발사 방향 벡터 계산
-        Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;
+        Vector2 direction = new Vector2(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle)).normalized;//발사 방향 벡터 계산
 
         //화살 생성 (플레이어의 중앙에서 발사되도록 ArrowSpawnPoint 오브젝트 사용)                  
         GameObject arrow = Instantiate(activeArrowPrefab, arrowSpawnPoint.position, Quaternion.identity);
-
         Rigidbody2D arrowRb = arrow.GetComponent<Rigidbody2D>();
         if (arrowRb != null)
         {
-            arrowRb.linearVelocity = direction * ArrowSpeed;
-
+            arrowRb.linearVelocity = direction * stats.arrowSpeed;
             //화살을 움직이는 방향에 따라 회전
-            angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            float rotAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            arrow.transform.rotation = Quaternion.AngleAxis(rotAngle, Vector3.forward);
 
-            Arrow arrowScript = arrow.GetComponent<Arrow>();//화살의 Arrow 스크립트에 데미지 설정
+            Arrow arrowScript = arrow.GetComponent<Arrow>();
             if (arrowScript != null)
             {
-                arrowScript.ArrowDamage = activeArrowDamage;//현재 ArrowDamage 값 
-
-                if (isEnhanced)//강화 화살에 슬로우 및 관통 정보 전달
+                arrowScript.ArrowDamage = damage;
+                if (isEnhanced)
                 {
-                    arrowScript.IsEnhanced = true;//Arrow 스크립트에서 IsEnhanced 변수를 추가해야 해.
-                    arrowScript.SlowFactor = SlowFactor;
+                    arrowScript.IsEnhanced = true;
+                    arrowScript.SlowFactor = stats.slowFactor;
                 }
-            }
-            else
-            {
-                Debug.LogWarning("생성된 화살 프리팹에 'Arrow' 스크립트가 없어! 데미지 설정 불가능!");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("생성된 화살 프리팹에 Rigidbody2D가 없어!");
+            }         
         }
     }
 
@@ -190,46 +165,33 @@ public class BowWeapon : MonoBehaviour
 
     public void UpgradeBow(float damagePlus, float cooldownMinus)//아이템 스크립트에서 직접 호출할 강화 함수
     {
-        //1. 최대 레벨 체크
-        if (currentArrowLevel >= BOW_ITEM_MAX_LEVEL)
+        var stats = player.Stats;
+        if (stats == null || currentArrowLevel >= stats.maxBowLevel)//활이 최대 레벨(10)에 도달하면 더 이상 강화하지 않아
         {
-            Debug.Log("활 레벨이 이미 최대치야!");
             return;
         }
 
-        //2. 실제 수치 강화
-        ArrowDamage += damagePlus;
-        currentArrowCooldown -= cooldownMinus;
+        currentArrowDamage += damagePlus;//아이템 획득 시 현재 데미지 증가
+        currentArrowCooldown = Mathf.Max(1.0f, currentArrowCooldown - cooldownMinus);//쿨타임도 감소
 
-        //쿨타임 최소 제한 (1초)
-        if (currentArrowCooldown < 1.0f)
+        currentArrowLevel++;//활 레벨 증가
+        currentEnhanceStacks++;//아이템 하나 획득 시 강화 스텍 1 증가
+
+        OnArrowLevelChanged?.Invoke(currentArrowLevel, stats.maxBowLevel);//[옵저버] 강화됐다고 UI에 알림
+
+        if (currentEnhanceStacks >= stats.maxEnhanceStacks)//만약 현재 쌓인 강화 스택이 목표치(3스택) 이상이라면?
         {
-            currentArrowCooldown = 1.0f;
+            OnArrowEnhancedEffect?.Invoke();//활 강화시 UI 텍스트 연출
+            OnArrowColorStateChanged?.Invoke(true);//활 강화 시 UI 텍스트 색 변화
         }
-
-        //3. 레벨 및 스택 증가
-        currentArrowLevel++;
-        currentEnhanceStacks++;
-
-        //4. 옵저버 패턴: UI 및 연출 방송
-        OnArrowLevelChanged?.Invoke(currentArrowLevel, BOW_ITEM_MAX_LEVEL);
-
-        //3스택 달성 시 강화 효과 방송 (이 로직도 무기 안으로 들어옴)
-        if (currentEnhanceStacks >= MAX_ENHANCE_STACKS)
-        {
-            OnArrowEnhancedEffect?.Invoke();
-            OnArrowColorStateChanged?.Invoke(true);
-        }
-
-        Debug.Log($"[BowUpgrade] LV:{currentArrowLevel} ATK:{ArrowDamage} Cool:{currentArrowCooldown} Stack:{currentEnhanceStacks}");
     }
 
     public void ResetEnhanceStackAfterShoot()//강화 화살 발사 후 스택 초기화 함수
     {
-        currentEnhanceStacks -= MAX_ENHANCE_STACKS;
+        currentEnhanceStacks -= player.Stats.maxEnhanceStacks;//강화 활 사용 후 강화 스택을 0으로 되돌려(다시 3번 획득하면 강화)
 
         //3스택 미만이 되면 다시 일반 색상(false)으로 방송
-        OnArrowColorStateChanged?.Invoke(currentEnhanceStacks >= MAX_ENHANCE_STACKS);
+        OnArrowColorStateChanged?.Invoke(currentEnhanceStacks >= player.Stats.maxEnhanceStacks);
     }
 
     public bool CanAttack()//쿨타임 체크

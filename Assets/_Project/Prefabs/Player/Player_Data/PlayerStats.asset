@@ -15,6 +15,18 @@ MonoBehaviour:
   moveSpeed: 8
   maxMoveSpeedLevel: 10
   walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  arrowPrefab: {fileID: 8721798935197128527, guid: bb4d7fcacdce2ae4bacecaea58a7a694,
+    type: 3}
+  enhancedArrowPrefab: {fileID: 1013926235032774517, guid: b1040cee3badb4d4583ac3e954b0dc4d,
+    type: 3}
+  bowAttackSound: {fileID: 8300000, guid: 2c027b93938f53e43a9118001fc0435b, type: 3}
+  arrowSpeed: 20
+  baseArrowDamage: 1
+  baseArrowCooldown: 2
+  numberOfArrows360: 8
+  slowFactor: 0.5
+  maxBowLevel: 10
+  maxEnhanceStacks: 3
   invincibilityDuration: 3
   invincibilityCooldown: 20
   invincibilityColor: {r: 1, g: 1, b: 0.5, a: 0.8}

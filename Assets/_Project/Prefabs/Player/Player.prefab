@@ -209,7 +209,6 @@ GameObject:
   - component: {fileID: 4716031735929635320}
   - component: {fileID: 957166671389326722}
   - component: {fileID: 8901804706971115391}
-  - component: {fileID: 5996682045684479364}
   - component: {fileID: 5531364705190635044}
   - component: {fileID: 601696427782021996}
   - component: {fileID: 5103668957875058008}
@@ -367,6 +366,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &3127337152928395318
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -412,6 +412,7 @@ SpriteRenderer:
   m_SortingLayerID: -105541197
   m_SortingLayer: 4
   m_SortingOrder: 2
+  m_MaskInteraction: 2
   m_Sprite: {fileID: -1555232660197650828, guid: 71880871ffb06284591ac71a0ad12f0e,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -422,7 +423,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!95 &3262351668784632995
 Animator:
@@ -458,10 +458,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514c7e71942574e4ca9867ba951f546f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 8
-  IsDead: 0
+  stats: {fileID: 0}
   isInvincible: 0
-  walkSound: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  IsDead: 0
   CurrentScore: 0
 --- !u!114 &957166671389326722
 MonoBehaviour:
@@ -491,23 +490,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxShield: 20
   CurrentShield: 0
---- !u!114 &5996682045684479364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2703361774327676212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f9eba2785728cd4cb687973f7e6450e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttackItemMaxLevel: 10
-  enhancedArrowReadySound: {fileID: 8300000, guid: 8be3715ddaebea345b40ad69d3208208,
-    type: 3}
-  levelUpColor: {r: 1, g: 0.84, b: 0, a: 1}
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &5531364705190635044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,10 +562,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b66f7907f995fa489fed00fee203492, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InvincibilitySkill
-  skillDuration: 3
-  skillCooldown: 20
-  invincibilityColor: {r: 1, g: 1, b: 0.5, a: 0.8}
-  invincibilitySound: {fileID: 8300000, guid: 725a0198a4038bd439c617dfff3b9998, type: 3}
 --- !u!1 &3492759181141413010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1386,6 +1364,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1599561036241792556
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1431,6 +1410,7 @@ SpriteRenderer:
   m_SortingLayerID: -105541197
   m_SortingLayer: 4
   m_SortingOrder: 3
+  m_MaskInteraction: 1
   m_Sprite: {fileID: -1555232660197650828, guid: 71880871ffb06284591ac71a0ad12f0e,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1441,7 +1421,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 1
   m_SpriteSortPoint: 0
 --- !u!95 &7456106871354353544
 Animator:
