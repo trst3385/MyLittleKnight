@@ -27,6 +27,20 @@ MonoBehaviour:
   slowFactor: 0.5
   maxBowLevel: 10
   maxEnhanceStacks: 3
+  swordEnergyPrefab: {fileID: 5505100635091821837, guid: 26d16007de3fd2f41a07e51858435bd6,
+    type: 3}
+  swordAttackSound: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
+  enemyTag: Enemy
+  baseSwordDamage: 2
+  knockbackForce: 10
+  knockbackDuration: 0.2
+  baseSwordEnergyDamage: 5
+  swordEnergySpeed: 22
+  baseSwordSkillCooldown: 10
+  enhancedCooldownDecrease: 2
+  minSwordCooldown: 5
+  maxSwordLevel: 10
+  swordEnhanceStackLimit: 3
   invincibilityDuration: 3
   invincibilityCooldown: 20
   invincibilityColor: {r: 1, g: 1, b: 0.5, a: 0.8}

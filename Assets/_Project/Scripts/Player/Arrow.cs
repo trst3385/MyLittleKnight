@@ -5,7 +5,7 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
     [Header("화살  데미지, 생성시간")]
-    public float ArrowDamage = 1f;
+    [HideInInspector]public float ArrowDamage = 1f;
     public float LifeTime = 3f;//()초가 지나면 화살이 사라짐
 
     [Header("강화 화살 속성")]
