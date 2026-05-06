@@ -458,7 +458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514c7e71942574e4ca9867ba951f546f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: c76ead7b5b56f5c44b75624941cb2982, type: 2}
   isInvincible: 0
   IsDead: 0
   CurrentScore: 0
@@ -474,8 +474,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77c30aec94d35a5469aabdb89382b8e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 20
-  CurrentHealth: 0
 --- !u!114 &8901804706971115391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,8 +486,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f87b35514b9f14687694b60b4a8059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxShield: 20
-  CurrentShield: 0
 --- !u!114 &5531364705190635044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,16 +510,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a5ac3ea0feba2449e7a0e3387d40dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ArrowPrefab: {fileID: 5126479728598522483, guid: e43a00f37f4b1914898827bebdf83ca7,
-    type: 3}
-  EnhancedArrowPrefab: {fileID: 7820076382309403483, guid: 3595dfc4c6969d24991df91f89a39275,
-    type: 3}
-  bowAttackSound: {fileID: 8300000, guid: 2c027b93938f53e43a9118001fc0435b, type: 3}
-  ArrowSpeed: 20
-  ArrowDamage: 1
-  NumberOfArrows360: 8
-  SlowFactor: 0.5
-  BaseArrowCooldown: 2
 --- !u!114 &5103668957875058008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,20 +522,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76cb5bf0b052f144c8237fd87e6d4372, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SwordEnergy: {fileID: 6016595970588860633, guid: a228d3d2dc3707d4397e46c7bcc4f287,
-    type: 3}
-  swordAttackSound: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
-  SwordDamage: 3
-  KnockbackForce: 10
-  KnockbackDuration: 0.2
-  SwordEnergyDamage: 5
-  SwordEnergySpeed: 20
-  SwordSkillCooldown: 10
-  EnhancedCooldownDecrease: 2
-  MAX_ENHANCE_STACKS: 3
-  EnemyTag: Enemy
-  currentEnhanceStacks: 0
-  lastSwordSkillTime: -10
 --- !u!114 &2097155689493009466
 MonoBehaviour:
   m_ObjectHideFlags: 0

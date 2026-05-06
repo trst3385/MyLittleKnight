@@ -45,3 +45,5 @@ MonoBehaviour:
   invincibilityCooldown: 20
   invincibilityColor: {r: 1, g: 1, b: 0.5, a: 0.8}
   invincibilitySound: {fileID: 8300000, guid: 725a0198a4038bd439c617dfff3b9998, type: 3}
+  maxHealth: 20
+  maxShield: 20

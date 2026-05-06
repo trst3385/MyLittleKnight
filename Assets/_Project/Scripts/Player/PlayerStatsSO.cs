@@ -9,7 +9,6 @@ public class PlayerStatsSO : ScriptableObject
     public int maxMoveSpeedLevel = 10;     //최대 이속 에벨
     public AudioClip walkSound;            //이동 사운드
 
-
     //------------활--------------------
     [Header("--- 활(Bow) 관련 데이터 ---")]
     public GameObject arrowPrefab;         //일반 화살 프리팹
@@ -43,14 +42,18 @@ public class PlayerStatsSO : ScriptableObject
     public int maxSwordLevel = 10;         //검 최대 레벨
     public int swordEnhanceStackLimit = 3; //강화 스택 기준 (3회)
 
-
     //------------무적------------------
     [Header("--- 무적 스킬 데이터 ---")]
     [Tooltip("무적 지속 시간")]
-    public float invincibilityDuration = 3f; //무적 시간
+    public float invincibilityDuration = 3f;//무적 시간
     [Tooltip("무적 스킬 쿨타임")]
     public float invincibilityCooldown = 20f;//쿨타임
     [Tooltip("무적 상태 시 캐릭터 색상")]
     public Color invincibilityColor = new Color(1f, 1f, 0.5f, 0.8f);//무적 시 색상
     public AudioClip invincibilitySound;//무적 사운드
+
+    //------------체력, 방어력-----------
+    [Header("--- 플레이어 생존 능력치 ---")]
+    public float maxHealth = 20f;    //최대 체력
+    public float maxShield = 20f;    //최대 방어력
 }
