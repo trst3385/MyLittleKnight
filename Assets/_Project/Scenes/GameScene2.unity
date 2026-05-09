@@ -14996,7 +14996,8 @@ MonoBehaviour:
   startScale: 2
   endScale: 1
   moveDuration: 1
-  titleColor: {r: 0, g: 0.6981132, b: 0.07469919, a: 1}
+  delayBeforeStart: 1
+  titleColor: {r: 1, g: 0.9532511, b: 0, a: 1}
 --- !u!1 &1605283103 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8199604799029797720, guid: 9e7797bb065982d4497d030f065d6e2f,
