@@ -201,6 +201,64 @@ SceneName 스크립트 리펙토링
       2-3. Start() 함수는 전체적인 '실행 순서'를 보여주는 '목차' 역할을 해야 해, SetupInitialUI()처럼 이름을 붙여 분리하면, 코드를 읽는 사람은 내부 로직을 일일이 분석하지 않아도 "아하! 여기서 초기 설정을 하는구나"라고 즉시 의도를 파악할 수 있지
 
 
+
+5/10
+Dictionary, Mathf.SmoothStep의 재이해
+
+- SceneName 스크립트에서 쓰인 Dictionary, Mathf.SmoothStep가 아직 이해가 안가서 복습했어.
+- SmoothStep과 Lerp의 관계를 머릿속에 그릴 때 이렇게 떠올려보자. 일반 Lerp는 대각선 직선(/)이지만, SmoothStep은 부드러운 곡선(~)이라는 점. 이 차이가 자연스러운 연출의 차이를 만든 거야.
+
+- Dictionary. 딕셔너리는 '열쇠(Key)'를 주면 그에 맞는 '값(Value)' Dictionary<TKey, TValue>:을 바로 꺼내주는 보관함이야.
+    //씬 파일 이름과 표시될 이름을 매핑
+    private Dictionary<string, string> sceneNames = new Dictionary<string, string>()
+    {
+    { "GameScene1", "Stage 1" },
+    { "GameScene2", "Stage 2" },
+    { "GameScene3", "Stage 3 Challenge" },
+    { "MainMenuScene", "메인 메뉴" }//이건 사용은 안하지만 일단 씬이 있으니 넣어둔거야
+    };
+   1. 왜 썼어?: 유니티의 실제 씬 이름은 GameScene1처럼 개발용 이름으로 되어 있어. 하지만 화면에는 유저에게 "Stage 1"이라는 이름을  보여주고 싶지. 이때 딕셔너리가 "GameScene1"이라는 키를 받아 "Stage 1"이라는 값을 연결해 주는 다리 역할을 해
+   2. { "GameScene1", "Stage 1" }//{열쇠, 값}
+   3. 유니티가 "지금 씬 이름이 뭐야?"라고 물어서 GameScene1을 가져오면, 딕셔너리에서 그 열쇠를 찾아 "아, 화면엔 'Stage 1'이라고 띄울게!" 하고 값을 가져오는 거야
+   4. 왜 썼어? (확장성): 만약 if (sceneName == "GameScene1")처럼 조건문을 썼다면, 스테이지가 50개일 때 if문도 50개가 되어야 해. 하지만 딕셔너리는 데이터만 한 줄 추가하면 로직을 건드릴 필요가 없어
+- 핵심 메서드: TryGetValue.
+   1. sceneNames.TryGetValue(currentSceneFile, out string displayName);
+   2. 이 방식은 매우 안전해. 만약 딕셔너리에 없는 씬 이름을 넣어도 에러를 뿜으며 게임이 멈추는 게 아니라, 그냥 "없네?" 하고 false를 반환하며 조용히 넘어가. 실무에서 에러 방지를 위해 가장 권장되는 방식이야
+
+- Mathf.SmoothStep: 부드러운 가감속 연출.
+   1. 개념: 일반 Lerp는 등속(일정한 속도)으로 움직이지만, SmoothStep은 시작과 끝에 가감속(Ease-in/out)을 자동으로 더해줘
+   2. 원리: 0에서 1까지 직선으로 흐르는 시간값을 S자 곡선으로 비틀어주는 필터 역할
+      2-1. 시작(t=0 근처): 변화율이 완만해서 천천히 가속해 (Ease-in)
+      2-2. 중간(t=0.5 근처): 속도가 가장 빨라져
+      2-3. 끝(t=1 근처): 다시 변화율이 줄어들며 부드럽게 안착해 (Ease-out)
+   3. 기존에 썻던 방식의 t = t * t * (3f - 2f * t); 코드는 "이게 뭐 하는 수학 공식이지?"라고 한참 함수를 찾아봐야 해
+      3-1. 현재로 수정의 Mathf.SmoothStep(0, 1, t); 는 함수 이름을 보는 순간 "아, 부드럽게(Smooth) 움직이게 하려는 거구나!" 하고 의도를 바로 알 수 있어
+- 그럼 내 코드에선?:
+   1. float t = timer / moveDuration; (0에서 1까지 일정하게 증가하는 값)
+   2. float smoothT = Mathf.SmoothStep(0f, 1f, t); (일정한 속도를 부드러운 S자 속도로 변환)
+   3. 이 smoothT를 Lerp에 넣어서 위치를 이동시킴
+
+- Lerp: "비율에 따른 위치 배달":
+- textRectTransform.anchoredPosition = Vector2.Lerp(startPosition, endPosition, smoothT);//위치 이동
+- textRectTransform.localScale = Vector3.Lerp(Vector3.one * startScale, Vector3.one * endScale, smoothT);//크기 조절	
+   1. 정의: 두 지점(A, B) 사이의 특정 지점을 비율(t)에 맞춰 계산하는 기능
+   2. 역할 분담:
+      2-1. SmoothStep: "얼마나 빨리 갈까?" (속도/비율 결정)
+      2-2. Lerp: "그래서 지금 정확히 어디야?" (실제 좌표 계산)
+   3. 작동 원리:
+      3-1. smoothT가 0이면 startPosition(화면 중앙)
+      3-2. smoothT가 1이면 endPosition(화면 구석)
+      3-3. smoothT가 0.5이면 두 지점의 정중앙 좌표 반환
+   4. 효과: 매 프레임(yield return null)마다 변하는 smoothT 값을 Lerp에 넣음으로써, 끊김 없이 미끄러지듯 이동하는 텍스트 이동 완성
+
+- 로직의 흐름: AnimateSceneName() 코루틴은 이 세 단계의 합작품이야.
+   1. 기다림: 게임 시작 후(카운트다운 종료 후) delayBeforeStart 변수에 설정된 시간 동안 유저가 스테이지를 인지할 시간 확보
+   2. 계산: 매 프레임(yield return null)마다 시간이 흐른 비율(t)을 구함
+   3. 작동: SmoothStep으로 그 비율을 부드럽게 깎고, Lerp로 실제 UI의 위치와 크기를 바꿈
+**Dictionary로 이름표를 뽑고, SmoothStep으로 속도 필터를 걸어, Lerp로 최종 목적지까지 배달**
+
+
+
 @@당장 내일 아니더라도 꼭 추가할 것! 조급해하지 말고 하나씩!@@
 **새로운 스테이지를 추가하자. 3스테이지에서 가시 함정을 추가하고 4스테이지가 지금의 3스테이지의 무한모드 식으로**
 **UniTask, UniRx에 대해 배워보자**
