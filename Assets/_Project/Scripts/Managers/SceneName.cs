@@ -1,6 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement;//SceneManager를 쓰기 위해 선언
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,14 +8,15 @@ using System.Collections.Generic;
 
 public class SceneName : MonoBehaviour
 {
-    //씬 파일 이름과 표시될 이름을 매핑
-    private Dictionary<string, string> sceneNames = new Dictionary<string, string>()
-    {
-    { "GameScene1", "Stage 1" },
-    { "GameScene2", "Stage 2" },
-    { "GameScene3", "Stage 3 Challenge" },
-    { "MainMenuScene", "메인 메뉴" }
-    };
+    //5.12 씬이 사실상 3개 뿐이고 내가 완전히 이해하지 못할 딕셔너리를 사용한것보단 조금 번거로워도 확실하게 아는 방식으로 바꿨어
+    ////씬 파일 이름과 표시될 이름을 매핑
+    //private Dictionary<string, string> sceneNames = new Dictionary<string, string>()
+    //{
+    //{ "GameScene1", "Stage 1" },
+    //{ "GameScene2", "Stage 2" },
+    //{ "GameScene3", "Stage 3 Challenge" },
+    //{ "MainMenuScene", "메인 메뉴" }
+    //};
 
     private const string TARGET_UI_NAME = "SceneNameText";//관리할 UI 이름을 딱 한 곳에서 정의
 
@@ -70,19 +71,62 @@ public class SceneName : MonoBehaviour
 
     private void SetupInitialUI()
     {
-        sceneText.color = titleColor;//텍스트 색상을 인스펙터에서 설정한 색으로 바꿈
-        string currentSceneFile = SceneManager.GetActiveScene().name;//현재 활성화된 씬의 파일 이름을 가져옴
+        sceneText.color = titleColor;
+        string currentSceneFile = SceneManager.GetActiveScene().name;
 
-        //딕셔너리에서 파일 이름(Key)에 맞는 스테이지 이름(Value)을 찾어,
-        //TryGetValue는 값이 없어도 에러를 내지 않고 안전하게 확인해줘
-        sceneNames.TryGetValue(currentSceneFile, out string displayName);
+        //5.12 딕셔너리 대신 switch문으로 대체.
+        //여기서 직접 게임씬 이름과 스테이지에서 보일 이름을 적어야해!
+        switch (currentSceneFile)
+        {   //여기서 일일히 씬에서 보일 텍스트를 적어야 하지만 대신, 내가 확실하게 알 수 있는 방식이야,
+            //지금 규모에는 이 도구(switch)가 더 적당해! 라고 내가 판단해서 수정한 거니까
+            case "GameScene1":
+                sceneText.text = "Stage 1";
+                break;
+            case "GameScene2":
+                sceneText.text = "Stage 2";
+                break;
+            case "GameScene3":
+                sceneText.text = "Stage 3 Challenge";
+                break;
+            case "MainMenuScene"://메인 메뉴도 일단은 추가
+                sceneText.text = "메인 메뉴";
+                break;
+            default:
+                Debug.LogError($"[SceneName 에러] '{currentSceneFile}' 이름 설정 누락!");
+                sceneText.text = "<color=red>ERR: MISSING NAME</color>";
+                return;//텍스트 위치/크기가 변경되기 전에 여기서 멈춰
+        }
 
-        //만약 찾은 이름이 비어있다면 파일 이름을 그대로 쓰고, 있다면 스테이지 이름을 표시함
-        sceneText.text = string.IsNullOrEmpty(displayName) ? currentSceneFile : displayName;
-
-        //애니메이션이 시작되기 전, 텍스트의 초기 위치(중앙)와 크기를 설정함
+        //성공했을 때만 실행되는 초기 위치/크기 세팅
         textRectTransform.anchoredPosition = startPosition;
         textRectTransform.localScale = Vector3.one * startScale;
+
+        //-------------------------------------------------//
+
+        //5.12 씬이 사실상 3개 뿐이고 내가 완전히 이해하지 못할 딕셔너리를 사용한것보단 조금 번거로워도 확실하게 아는 방식으로 바꿨어
+        //sceneText.color = titleColor;//텍스트 색상을 인스펙터에서 설정한 색으로 바꿈
+        //string currentSceneFile = SceneManager.GetActiveScene().name;//현재 활성화된 씬의 파일 이름을 가져옴
+
+        ////TryGetValue의 결과(bool)를 직접 체크해.(TryGetValue는 성공하면 true, 실패하면 false 반환)
+        ////딕셔너리에서 파일 이름(Key)에 맞는 스테이지 이름(Value)을 찾아서 UI에 스테이지 이름을 보내
+        ////있으면 displayName지역변수에 담아(out)
+        //if (sceneNames.TryGetValue(currentSceneFile, out string displayName))
+        //{
+        //    sceneText.text = displayName;//성공: 딕셔너리에 있는 이름을 할당
+        //}
+        //else
+        //{
+        //    //실패: 빨간색 에러 로그를 띄우고 함수를 즉시 종료(return)
+        //    Debug.LogError($"[SceneName 에러!] '{currentSceneFile}' 씬이 딕셔너리에 등록되지 않았어!");
+        //    sceneText.text = "<color=red>ERR: MISSING NAME</color>";//화면에도 에러임을 표시 (개발 중에 바로 알 수 있게)
+
+        //    return;//틀리면 else에서 함수가 끝나기 때문에 아래 위치/크기 설정 코드는 실행 안 됨!
+        //}
+        ////성공했을 때만 실행되는 초기 위치/크기 세팅
+        //textRectTransform.anchoredPosition = startPosition;
+        //textRectTransform.localScale = Vector3.one * startScale;
+
+        //-------------------------------------------------//
     }
 
     IEnumerator AnimateSceneName()
