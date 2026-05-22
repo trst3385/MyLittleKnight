@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public enum WeaponType { None, Bow, Sword, Axe }
-
 public class Player : MonoBehaviour
 {
     //---------옵저버 패턴----------//
@@ -45,6 +43,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool IsDead = false;
     [HideInInspector] public int CurrentScore = 0;
 
+    private float totalPlayTime;
     private float horizontalInput;
     private float verticalInput;
     private Vector2 movement;
@@ -114,6 +113,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        totalPlayTime += Time.deltaTime;//게임 시간 측정
+
         if (IsDead)//죽었으면 이후의 모든 로직을 건너뜀
         {
             return;
@@ -175,6 +176,11 @@ public class Player : MonoBehaviour
         if (rb != null)//물리 시뮬레이션 중지
         {
             rb.simulated = false;
+        }
+
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.SendDataToServer(CurrentScore, currentMoveSpeedLevel, (int)totalPlayTime);
         }
     }
     private IEnumerator GameOverSequence(float delay)//플레이어가 죽으면 1초 뒤 게임오버창이 뜰 코루틴
