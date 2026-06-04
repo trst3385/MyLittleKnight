@@ -52,9 +52,9 @@
 
 6/4
 기존까지 하드코딩된 모든 스크립트들을 데이터 중심 설계(Data-Driven Design)로 리팩토링, ScriptableObject(SO)를 활용해 데이터와 로직을 완전히 분리.
+타워의 사거리 설정 및 관리 방식의 개선(SphereCollider의 Radius 방식에서 SO의 range 변수값으로 변경)
 
 - 데이터 관리: EnemyData, TowerData, PlayerData를 각각 ScriptableObject로 생성.
-
 - 특히 몬스터(빨간 큐브)는 EnemyMovement -> NormalEnemy으로 이름 변경. 이 스크립트 중심축으로 삼아 몬스터의 데이터를 관리.
    1. NormalEnemy 스크립트에 EnemyData So를 연결
    2. EnemyHealth 스크립트는 NormalEnemy에 연결된 So를 받아 체력값 설정
@@ -67,6 +67,13 @@
 
 **생명주기(Life Cycle)란?: 용어는 프로그래밍, 특히 유니티 같은 게임 엔진에서 아주 중요한 개념이야. 쉽게 말해 "오브젝트가 태어나서부터 죽을 때까지 겪는 일련의 과정"을 뜻해**
 **즉, 생명주기가 서로 다른 오브젝트들이 서로의 존재에 의존하지 않게 만드는 것(독립성), 이게 바로 프로그래밍에서 말하는 '안전한 설계'의 핵심이야**
+
+
+- 기존에는 인스펙터에서 SphereCollider의 Radius 값을 직접 수정해서 사거리를 조정했지만 SO를 도입했기에 TowerData SO에 range 변수를 별도로 선언.
+- 우선순위 결정 및 자동화:
+   1. AttackTower 스크립트의 Start() 함수에서 col.radius = towerData.range; 코드를 호출함으로써, 에디터 상의 Radius 값보다 SO의 range 변수가 항상 우선하도록 강제
+   2. 이를 통해서 인스펙터에서의 Radius는 개발자가 타워의 사거리를 시각적으로 확인하기 위한 '가이드라인'으로 활용하고, 실제 게임 로직상의 사거리는 SO 파일 하나로 통합 관리하는 구조를 확립
+   3. 콜라이더를 0으로 두지 않고 시각적 가이드를 유지함으로써 디자인 편의성을 챙기는 동시에, 게임 실행 시점에는 SO의 값만을 받아 정확한 데이터값이 적용되도록 하여 '데이터 무결성'과 '생산성' 을 동시에 확보한거야
 
 
 **나중에 3D작품에 적을 내용**
